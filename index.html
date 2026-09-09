@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="BG3 Gear">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
-<title>BG3 – Complete Gear Collector v7.4 NO-PWA CLEANROOM</title>
+<title>BG3 – Complete Gear Collector v7.5 ANON SESSION DIAGNOSTIC</title>
 <style>
 :root{--bg:#0d0f11;--panel:#181b1f;--panel2:#21252a;--line:#343a40;--text:#f1f3f5;--muted:#abb2ba;--gold:#d4af37;--green:#37b24d;--red:#e8590c;--blue:#4dabf7}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b0d0f,#15181b);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -41,7 +41,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 </style></head>
 <body>
 <header><div class=wrap>
-<h1>BG3 – Complete Gear Collector <span class="badge">v7.4 NO-PWA CLEANROOM</span></h1>
+<h1>BG3 – Complete Gear Collector <span class="badge">v7.5 ANON SESSION DIAGNOSTIC</span></h1>
 <div class=sub>Act 1 • Act 2 • Act 3 · 556-item catalog · rarity + S/A/B/C tier · Stories · cloud-ready autosync · v5/v6 import · responsive mobile UI</div>
 <div class=storybar id=storyBar>
  <div>
@@ -50,7 +50,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
  </div>
  <div>
   <div class=storylabel>Konto & cloud</div>
-  <div id=authSignedOut class=authgroup><input id=authEmail type=email placeholder="din@email.se" autocomplete=email><button id=sendMagicLink class="smallbtn primary">Skicka inloggningslänk</button></div>
+  <div id=authSignedOut class=authgroup><input id=authEmail type=email placeholder="din@email.se" autocomplete=email><button id=sendMagicLink class="smallbtn primary">Skicka inloggningslänk</button><button id=anonSessionTest class="smallbtn">🧪 Testa session utan email</button></div>
   <div id=authSignedIn class="authgroup hidden"><span id=userEmail class=muted></span><button id=signOut class=smallbtn>Logga ut</button><button id=syncNow class=smallbtn>↻ Synka nu</button></div>
  </div>
  <div id=cloudStatus class="cloudstatus"><span class="syncdot offline"></span>Startar…</div>
@@ -80,7 +80,8 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 <input id=file type=file accept=.json hidden>
 </div><div class=status id=status></div>
 <div class=status id=cleanroomStatus>NO-PWA aktiv · kontrollerar gamla Service Workers/cache i bakgrunden…</div>
-<div class=status style="color:#ffd43b"><b>CLEANROOM:</b> PWA, Service Worker och app-cache är avstängda. Endast vanlig GitHub Pages + Supabase testas.</div>
+<div class=status id=authDiagStatus>Auth diagnostic: väntar.</div>
+<div class=status style="color:#ffd43b"><b>SESSION DIAGNOSTIC:</b> Ingen PWA/cache. Anonymous login testar enbart om Supabase-sessionen överlever refresh.</div>
 </div></header>
 <main><div class=wrap>
 <div id=notice class="notice warn"><b>Databasstatus:</b> laddar…</div>
@@ -88,7 +89,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 <th>✓</th><th>Act</th><th>Item</th><th>Rarity</th><th>Tier</th><th>Typ</th><th>Område</th><th>Location / hur du får den</th><th>Egenskaper</th><th>Effekt</th><th>Flaggor</th><th>Källa</th>
 </tr></thead><tbody id=body></tbody></table></div>
 <div id=mobileCount class=mobilecount></div><div id=cards class=mobilecards></div><div id=empty class=empty hidden>Inga items matchar filtren.</div>
-<footer>v7.4 CLEANROOM använder samma itemnycklar, Stories, cloud-progress och authkod som v7.3. Ingen PWA/Service Worker registreras.</footer>
+<footer>v7.5 SESSION DIAGNOSTIC använder samma itemnycklar, Stories och cloud-progress som v7.4. Anonymous login är endast ett tillfälligt persistence-test.</footer>
 </div></main>
 <script>
 window.BG3_CLOUD_CONFIG = {
@@ -175,6 +176,27 @@ async function migrateLegacyAuthStorage(){
 
 function authStoragePresent(){
   try{return !!localStorage.getItem(AUTH_STORAGE_KEY)}catch(_){return false}
+}
+
+function shortId(id){return id?String(id).slice(0,8):"—"}
+function updateAuthDiag(session=null,label=""){
+  const el=$("authDiagStatus");
+  if(!el)return;
+  let stored=false,bytes=0;
+  try{
+    const raw=localStorage.getItem(AUTH_STORAGE_KEY);
+    stored=!!raw;
+    bytes=raw?raw.length:0;
+  }catch(_){}
+  const user=session?.user||currentUser||null;
+  const anon=!!(user?.is_anonymous || user?.app_metadata?.provider==="anonymous");
+  el.textContent=[
+    "Auth diagnostic:",
+    label|| (user?"session aktiv":"ingen session"),
+    "user "+shortId(user?.id),
+    anon?"ANON":"permanent/okänd typ",
+    stored?`localStorage ✓ (${bytes} tecken)`:"localStorage ✗"
+  ].join(" · ");
 }
 
 function withTimeout(promise, ms, label="operation"){
@@ -274,13 +296,15 @@ async function handleSession(session,event="INITIAL"){
   if(currentUser){
     $("authSignedOut").classList.add("hidden");
     $("authSignedIn").classList.remove("hidden");
-    $("userEmail").textContent=currentUser.email||"Inloggad";
+    const isAnon=!!(currentUser.is_anonymous || currentUser?.app_metadata?.provider==="anonymous");
+    $("userEmail").textContent=isAnon?`🧪 Anonym testsession · ${shortId(currentUser.id)}`:(currentUser.email||"Inloggad");
     setCloudStatus(
       authStoragePresent()
-        ? "Inloggad · session sparad på denna enhet"
+        ? (isAnon?"Anonym testsession · session sparad på denna enhet":"Inloggad · session sparad på denna enhet")
         : "Inloggad · VARNING: sessionen kunde inte verifieras i lagringen",
       authStoragePresent()?"online":"pending"
     );
+    updateAuthDiag(session,event);
     await loadCloudStories();
   }else{
     $("authSignedIn").classList.add("hidden");
@@ -289,10 +313,11 @@ async function handleSession(session,event="INITIAL"){
 
     const persisted=authStoragePresent();
     if(persisted && !explicitSignOut){
-      setCloudStatus("Session finns i lagringen men kunde inte återställas · tryck Ladda om en gång","pending");
+      setCloudStatus("Session finns i lagringen men kunde inte återställas · persistence-fel","pending");
     }else{
       setCloudStatus("Inte inloggad på den här enheten","offline");
     }
+    updateAuthDiag(null,event);
     render();
   }
 }
@@ -506,6 +531,44 @@ async function requestMagicLinkDirect(email){
   }
 }
 
+
+$("anonSessionTest").onclick=async()=>{
+  if(!CLOUD_CONFIGURED || !supabaseClient){
+    alert("Supabase-klienten är inte redo ännu. Vänta någon sekund och försök igen.");
+    return;
+  }
+
+  const btn=$("anonSessionTest");
+  const previous=btn.textContent;
+  btn.disabled=true;
+  btn.textContent="Skapar testsession…";
+  setCloudStatus("Skapar anonym Supabase-testsession…","pending");
+  updateAuthDiag(null,"signInAnonymously start");
+
+  try{
+    const result=await withTimeout(
+      supabaseClient.auth.signInAnonymously({
+        options:{data:{purpose:"bg3-auth-persistence-diagnostic-v7.5"}}
+      }),
+      12000,
+      "signInAnonymously"
+    );
+    if(result?.error)throw result.error;
+    const session=result?.data?.session||null;
+    if(!session)throw new Error("Supabase returnerade ingen session.");
+    await handleSession(session,"ANON_SIGNED_IN");
+    updateAuthDiag(session,"ANON_SIGNED_IN");
+  }catch(err){
+    console.error("Anonymous session diagnostic failed",err);
+    setCloudStatus("Anonymous login misslyckades: "+(err?.message||err),"offline");
+    updateAuthDiag(null,"ANON ERROR");
+    alert("Kunde inte skapa anonym testsession: "+(err?.message||err));
+  }finally{
+    btn.disabled=false;
+    btn.textContent=previous;
+  }
+};
+
 $("sendMagicLink").onclick=async()=>{
   if(!CLOUD_CONFIGURED){
     alert("Cloud-konfigurationen är inte laddad. Ladda om sidan och försök igen.");
@@ -545,6 +608,8 @@ $("signOut").onclick=async()=>{
   explicitSignOut=true;
   if(supabaseClient)await supabaseClient.auth.signOut();
   try{localStorage.removeItem(AUTH_STORAGE_KEY)}catch(_){}
+  currentUser=null;
+  updateAuthDiag(null,"SIGNED_OUT");
   explicitSignOut=false;
 };
 $("syncNow").onclick=()=>syncCurrentStory();
@@ -553,7 +618,7 @@ window.addEventListener("focus",()=>{if(CLOUD_CONFIGURED&&currentUser)syncCurren
 
 // --- PWA shell / installation ---
 
-// ---------- v7.4 NO-PWA CLEANROOM ----------
+// ---------- v7.5 ANON SESSION DIAGNOSTIC ----------
 // This build deliberately does NOT register a service worker.
 // Old BG3 workers/caches are cleaned in the background and never block collector/auth startup.
 async function cleanupOldBg3Pwa(){
@@ -591,7 +656,7 @@ async function cleanupOldBg3Pwa(){
 cleanupOldBg3Pwa().then(r=>{
   const el=$("cleanroomStatus");
   if(el){
-    el.textContent=`NO-PWA aktiv · gamla workers borttagna: ${r.unregistered} · gamla app-cachar borttagna: ${r.deletedCaches}`;
+    el.textContent=`NO-PWA diagnostic · gamla workers borttagna: ${r.unregistered} · gamla app-cachar borttagna: ${r.deletedCaches}`;
   }
 }).catch(()=>{});
 
