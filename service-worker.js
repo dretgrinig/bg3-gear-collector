@@ -1,4 +1,4 @@
-// BG3 Gear Collector v7.6.1 — STORY ISOLATION HOTFIX
+// BG3 Gear Collector v7.7 — PASSWORD AUTH STABILITY
 // Page does NOT register this worker. It exists only to retire old workers if a browser checks the URL.
 self.addEventListener("install",()=>self.skipWaiting());
 self.addEventListener("activate",event=>{

@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="BG3 Gear">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
-<title>BG3 – Complete Gear Collector v7.6.1 STORY ISOLATION HOTFIX</title>
+<title>BG3 – Complete Gear Collector v7.7 PASSWORD AUTH STABILITY</title>
 <style>
 :root{--bg:#0d0f11;--panel:#181b1f;--panel2:#21252a;--line:#343a40;--text:#f1f3f5;--muted:#abb2ba;--gold:#d4af37;--green:#37b24d;--red:#e8590c;--blue:#4dabf7}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b0d0f,#15181b);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -30,6 +30,15 @@ tr:hover{background:#1f2328}tr.done{opacity:.52}tr.done .item{text-decoration:li
 .badge{display:inline-block;border:1px solid #4b5158;border-radius:999px;padding:2px 6px;margin:1px;font-size:10.5px;white-space:nowrap}.legendary{background:#604000}.veryrare{background:#57327b}.rare{background:#284c75}.uncommon{background:#285a3a}.vendor{background:#173b56}.miss{background:#4c3610}.wiki{color:#74c0fc;text-decoration:none}.muted{color:var(--muted)}.coords{white-space:nowrap}.empty{text-align:center;padding:28px;color:var(--muted)}
 footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 .mobilecards{display:none}.gearcard{background:var(--panel);border:1px solid var(--line);border-radius:13px;margin-bottom:10px;overflow:hidden}.gearcard.done{opacity:.58}.gearcard.done .cardname{text-decoration:line-through}.cardtop{display:flex;gap:12px;align-items:flex-start;padding:13px}.cardcheck{flex:0 0 auto;padding-top:2px}.cardcheck input{width:25px;height:25px}.cardmain{min-width:0;flex:1}.cardname{font-size:16px;line-height:1.25;margin:0 0 7px;overflow-wrap:anywhere}.cardbadges{display:flex;gap:4px;flex-wrap:wrap}.cardplace{padding:0 13px 12px 50px;color:#d7dadd;font-size:13px;line-height:1.4}.cardplace b{color:var(--text)}.carddetails{border-top:1px solid #2b3036}.carddetails summary{cursor:pointer;padding:11px 13px;font-size:13px;color:#d7dadd;user-select:none}.detailgrid{display:grid;gap:10px;padding:2px 13px 14px}.detailrow{font-size:12.5px;line-height:1.45;overflow-wrap:anywhere}.detailrow .label{display:block;color:var(--muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}.mobilecount{display:none;color:var(--muted);font-size:12px;margin:0 0 9px}
+
+.authgroup{flex-wrap:wrap}
+.authgroup input[type=email]{min-width:220px}
+.authgroup input[type=password]{min-width:180px}
+.passwordpanel{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.02)}
+.passwordpanel.hidden{display:none}
+.passwordpanel input{min-width:190px;flex:1}
+.authhint{font-size:11px;color:var(--muted);flex-basis:100%}
+@media(max-width:780px){.passwordpanel{align-items:stretch}.passwordpanel input,.passwordpanel button{width:100%;min-width:0}}
 @media(max-width:1100px){.stats{grid-template-columns:1fr 1fr}.controls{grid-template-columns:1fr 1fr}.controls input[type=search]{grid-column:1/-1}}
 @media(max-width:780px){
  .storybar{grid-template-columns:1fr;gap:8px}.cloudstatus{text-align:left}.authgroup input,.storygroup select{min-width:0;flex:1}.storygroup,.authgroup{align-items:stretch}
@@ -41,7 +50,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 </style></head>
 <body>
 <header><div class=wrap>
-<h1>BG3 – Complete Gear Collector <span class="badge">v7.6.1 STORY ISOLATION HOTFIX</span></h1>
+<h1>BG3 – Complete Gear Collector <span class="badge">v7.7 PASSWORD AUTH STABILITY</span></h1>
 <div class=sub>Act 1 • Act 2 • Act 3 · 556-item catalog · rarity + S/A/B/C tier · Stories · cloud-ready autosync · v5/v6 import · responsive mobile UI</div>
 <div class=storybar id=storyBar>
  <div>
@@ -50,8 +59,25 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
  </div>
  <div>
   <div class=storylabel>Konto & cloud</div>
-  <div id=authSignedOut class=authgroup><input id=authEmail type=email placeholder="din@email.se" autocomplete=email><button id=sendMagicLink class="smallbtn primary">Skicka inloggningslänk</button><button id=anonSessionTest class="smallbtn">🧪 Testa session utan email</button></div>
-  <div id=authSignedIn class="authgroup hidden"><span id=userEmail class=muted></span><button id=signOut class=smallbtn>Logga ut</button><button id=syncNow class=smallbtn>↻ Synka nu</button></div>
+  <div id=authSignedOut class=authgroup>
+    <input id=authEmail type=email placeholder="din@email.se" autocomplete=email>
+    <input id=authPassword type=password placeholder="Lösenord" autocomplete=current-password>
+    <button id=signInPassword class="smallbtn primary">Logga in</button>
+    <button id=sendMagicLink class=smallbtn title="Fallback under utveckling">Skicka magic link</button>
+  </div>
+  <div id=authSignedIn class="authgroup hidden">
+    <span id=userEmail class=muted></span>
+    <button id=showPasswordPanel class=smallbtn>Sätt/ändra lösenord</button>
+    <button id=signOut class=smallbtn>Logga ut</button>
+    <button id=syncNow class=smallbtn>↻ Synka nu</button>
+  </div>
+  <div id=passwordPanel class="passwordpanel hidden">
+    <input id=newPassword type=password placeholder="Nytt lösenord" autocomplete=new-password>
+    <input id=confirmPassword type=password placeholder="Bekräfta lösenord" autocomplete=new-password>
+    <button id=savePassword class="smallbtn primary">Spara lösenord</button>
+    <button id=cancelPassword class=smallbtn>Avbryt</button>
+    <span class=authhint>Minst 10 tecken. Lösenordet skickas direkt till Supabase Auth och sparas inte av Gear Collector.</span>
+  </div>
  </div>
  <div id=cloudStatus class="cloudstatus"><span class="syncdot offline"></span>Startar…</div>
 </div>
@@ -82,7 +108,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 <div class=status id=cleanroomStatus>NO-PWA aktiv · kontrollerar gamla Service Workers/cache i bakgrunden…</div>
 <div class=status id=authDiagStatus>Auth diagnostic: väntar.</div>
 <div class=status>Story isolation: ✓ global dual-write av · ✓ auto legacy-import av · ✓ aktiv Story scopen per användare</div>
-<div class=status style="color:#ffd43b"><b>STABILITY HOTFIX:</b> Auth från fungerande v7.5 är orörd. Progress är strikt isolerad per Story.</div>
+<div class=status style="color:#ffd43b"><b>AUTH STABILITY:</b> Password-login används för cross-device-test. Ingen PWA/cache. Story-progress är fortsatt isolerad.</div>
 </div></header>
 <main><div class=wrap>
 <div id=notice class="notice warn"><b>Databasstatus:</b> laddar…</div>
@@ -90,7 +116,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 <th>✓</th><th>Act</th><th>Item</th><th>Rarity</th><th>Tier</th><th>Typ</th><th>Område</th><th>Location / hur du får den</th><th>Egenskaper</th><th>Effekt</th><th>Flaggor</th><th>Källa</th>
 </tr></thead><tbody id=body></tbody></table></div>
 <div id=mobileCount class=mobilecount></div><div id=cards class=mobilecards></div><div id=empty class=empty hidden>Inga items matchar filtren.</div>
-<footer>v7.6.1 behåller v7.5-auth exakt men isolerar progress strikt per Story. Legacy JSON importeras bara explicit till vald Story.</footer>
+<footer>v7.7 behåller Story-isoleringen och lägger till password-login på samma Supabase-konto. Magic link är endast fallback under utveckling.</footer>
 </div></main>
 <script>
 window.BG3_CLOUD_CONFIG = {
@@ -244,6 +270,9 @@ async function initCloud(){
     ensureLocalStory();importLegacyIntoCurrentOnce();renderStorySelect();
     $("authSignedIn").classList.add("hidden");
     $("authSignedOut").classList.remove("hidden");
+    $("passwordPanel").classList.add("hidden");
+    $("newPassword").value="";
+    $("confirmPassword").value="";
     setCloudStatus("Cloud-konfiguration kunde inte laddas","offline");
     return;
   }
@@ -298,6 +327,9 @@ async function handleSession(session,event="INITIAL"){
   if(currentUser){
     $("authSignedOut").classList.add("hidden");
     $("authSignedIn").classList.remove("hidden");
+    $("passwordPanel").classList.add("hidden");
+    $("newPassword").value="";
+    $("confirmPassword").value="";
     const isAnon=!!(currentUser.is_anonymous || currentUser?.app_metadata?.provider==="anonymous");
     $("userEmail").textContent=isAnon?`🧪 Anonym testsession · ${shortId(currentUser.id)}`:(currentUser.email||"Inloggad");
     setCloudStatus(
@@ -500,40 +532,112 @@ async function requestMagicLinkDirect(email){
 }
 
 
-$("anonSessionTest").onclick=async()=>{
+
+$("signInPassword").onclick=async()=>{
   if(!CLOUD_CONFIGURED || !supabaseClient){
     alert("Supabase-klienten är inte redo ännu. Vänta någon sekund och försök igen.");
     return;
   }
 
-  const btn=$("anonSessionTest");
-  const previous=btn.textContent;
+  const email=$("authEmail").value.trim();
+  const password=$("authPassword").value;
+  if(!email){alert("Skriv in din e-postadress.");return}
+  if(!password){alert("Skriv in ditt lösenord.");return}
+
+  const btn=$("signInPassword");
   btn.disabled=true;
-  btn.textContent="Skapar testsession…";
-  setCloudStatus("Skapar anonym Supabase-testsession…","pending");
-  updateAuthDiag(null,"signInAnonymously start");
+  btn.textContent="Loggar in…";
+  setCloudStatus("Loggar in med lösenord…","pending");
 
   try{
     const result=await withTimeout(
-      supabaseClient.auth.signInAnonymously({
-        options:{data:{purpose:"bg3-auth-persistence-diagnostic-v7.5"}}
-      }),
+      supabaseClient.auth.signInWithPassword({email,password}),
       12000,
-      "signInAnonymously"
+      "signInWithPassword"
     );
     if(result?.error)throw result.error;
     const session=result?.data?.session||null;
     if(!session)throw new Error("Supabase returnerade ingen session.");
-    await handleSession(session,"ANON_SIGNED_IN");
-    updateAuthDiag(session,"ANON_SIGNED_IN");
+    $("authPassword").value="";
+    await handleSession(session,"PASSWORD_SIGNED_IN");
   }catch(err){
-    console.error("Anonymous session diagnostic failed",err);
-    setCloudStatus("Anonymous login misslyckades: "+(err?.message||err),"offline");
-    updateAuthDiag(null,"ANON ERROR");
-    alert("Kunde inte skapa anonym testsession: "+(err?.message||err));
+    console.error("Password sign-in failed",err);
+    $("authPassword").value="";
+    setCloudStatus("Kunde inte logga in med lösenord","offline");
+    alert("Inloggningen misslyckades: "+(err?.message||err));
   }finally{
     btn.disabled=false;
-    btn.textContent=previous;
+    btn.textContent="Logga in";
+  }
+};
+
+$("showPasswordPanel").onclick=()=>{
+  const isAnon=!!(currentUser?.is_anonymous || currentUser?.app_metadata?.provider==="anonymous");
+  if(isAnon){
+    alert("Sätt inte lösenord på den anonyma testsessionen. Logga ut och logga in på ditt riktiga konto först.");
+    return;
+  }
+  $("passwordPanel").classList.remove("hidden");
+  $("newPassword").focus();
+};
+
+$("cancelPassword").onclick=()=>{
+  $("newPassword").value="";
+  $("confirmPassword").value="";
+  $("passwordPanel").classList.add("hidden");
+};
+
+$("savePassword").onclick=async()=>{
+  if(!supabaseClient || !currentUser){
+    alert("Du måste vara inloggad först.");
+    return;
+  }
+
+  const isAnon=!!(currentUser?.is_anonymous || currentUser?.app_metadata?.provider==="anonymous");
+  if(isAnon){
+    alert("Lösenord kan inte sättas via den här testknappen på anonymous-kontot. Logga in på ditt riktiga konto.");
+    return;
+  }
+
+  const p1=$("newPassword").value;
+  const p2=$("confirmPassword").value;
+  if(p1.length<10){
+    alert("Välj minst 10 tecken.");
+    return;
+  }
+  if(p1!==p2){
+    alert("Lösenorden matchar inte.");
+    return;
+  }
+
+  const btn=$("savePassword");
+  btn.disabled=true;
+  btn.textContent="Sparar…";
+  setCloudStatus("Uppdaterar lösenord hos Supabase…","pending");
+
+  try{
+    const result=await withTimeout(
+      supabaseClient.auth.updateUser({password:p1}),
+      12000,
+      "updateUser password"
+    );
+    if(result?.error)throw result.error;
+
+    // Clear sensitive UI state immediately. Password is never persisted by this app.
+    $("newPassword").value="";
+    $("confirmPassword").value="";
+    $("passwordPanel").classList.add("hidden");
+    setCloudStatus("✓ Lösenord satt · du kan nu logga in på andra enheter utan auth-mail","online");
+    alert("Lösenordet är satt på ditt befintliga Supabase-konto. Siberia och ditt user-ID är oförändrade.");
+  }catch(err){
+    console.error("Password update failed",err);
+    $("newPassword").value="";
+    $("confirmPassword").value="";
+    setCloudStatus("Kunde inte sätta lösenord","offline");
+    alert("Kunde inte sätta lösenord: "+(err?.message||err));
+  }finally{
+    btn.disabled=false;
+    btn.textContent="Spara lösenord";
   }
 };
 
@@ -586,7 +690,7 @@ window.addEventListener("focus",()=>{if(CLOUD_CONFIGURED&&currentUser)syncCurren
 
 // --- PWA shell / installation ---
 
-// ---------- v7.6.1 STORY ISOLATION HOTFIX ----------
+// ---------- v7.7 PASSWORD AUTH STABILITY ----------
 // This build deliberately does NOT register a service worker.
 // Old BG3 workers/caches are cleaned in the background and never block collector/auth startup.
 async function cleanupOldBg3Pwa(){
