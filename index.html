@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="BG3 Gear">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
-<title>BG3 – Complete Gear Collector v7.5 ANON SESSION DIAGNOSTIC</title>
+<title>BG3 – Complete Gear Collector v7.6 STORY ISOLATION FIX</title>
 <style>
 :root{--bg:#0d0f11;--panel:#181b1f;--panel2:#21252a;--line:#343a40;--text:#f1f3f5;--muted:#abb2ba;--gold:#d4af37;--green:#37b24d;--red:#e8590c;--blue:#4dabf7}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b0d0f,#15181b);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -41,7 +41,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 </style></head>
 <body>
 <header><div class=wrap>
-<h1>BG3 – Complete Gear Collector <span class="badge">v7.5 ANON SESSION DIAGNOSTIC</span></h1>
+<h1>BG3 – Complete Gear Collector <span class="badge">v7.6 STORY ISOLATION FIX</span></h1>
 <div class=sub>Act 1 • Act 2 • Act 3 · 556-item catalog · rarity + S/A/B/C tier · Stories · cloud-ready autosync · v5/v6 import · responsive mobile UI</div>
 <div class=storybar id=storyBar>
  <div>
@@ -81,7 +81,8 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 </div><div class=status id=status></div>
 <div class=status id=cleanroomStatus>NO-PWA aktiv · kontrollerar gamla Service Workers/cache i bakgrunden…</div>
 <div class=status id=authDiagStatus>Auth diagnostic: väntar.</div>
-<div class=status style="color:#ffd43b"><b>SESSION DIAGNOSTIC:</b> Ingen PWA/cache. Anonymous login testar enbart om Supabase-sessionen överlever refresh.</div>
+<div class=status>Story isolation: ✓ ingen automatisk v5/v6-migrering · ✓ ingen global dual-write · ✓ aktiv Story är användarspecifik</div>
+<div class=status style="color:#ffd43b"><b>STABILITY FIX:</b> Ingen PWA/cache. Progress är nu strikt isolerad per Story och legacy-auto-migrering är avstängd.</div>
 </div></header>
 <main><div class=wrap>
 <div id=notice class="notice warn"><b>Databasstatus:</b> laddar…</div>
@@ -89,7 +90,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 <th>✓</th><th>Act</th><th>Item</th><th>Rarity</th><th>Tier</th><th>Typ</th><th>Område</th><th>Location / hur du får den</th><th>Egenskaper</th><th>Effekt</th><th>Flaggor</th><th>Källa</th>
 </tr></thead><tbody id=body></tbody></table></div>
 <div id=mobileCount class=mobilecount></div><div id=cards class=mobilecards></div><div id=empty class=empty hidden>Inga items matchar filtren.</div>
-<footer>v7.5 SESSION DIAGNOSTIC använder samma itemnycklar, Stories och cloud-progress som v7.4. Anonymous login är endast ett tillfälligt persistence-test.</footer>
+<footer>v7.6 isolerar progress strikt per Story. v5/v6 JSON stöds fortfarande via explicit Importera, men ingen legacy-progress skrivs/läses automatiskt mellan Stories.</footer>
 </div></main>
 <script>
 window.BG3_CLOUD_CONFIG = {
@@ -129,240 +130,7 @@ const quest=x=>/quest reward|reward|given by/i.test(x.location||"");
 const rarityRank={"Legendary":5,"Very Rare":4,"Rare":3,"Uncommon":2,"Common":1};
 function tierOf(x){return TIERMAP[x.name]||""}
 function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:x.actArea||"",location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:x.gameIds||[]}}
-function normalizeFallback(x){return {act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:x.area||"",location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]}}
-function canonicalizeProgress(input){
- const out={};
- if(!input||typeof input!=="object")return out;
- for(const [k,v] of Object.entries(input)){
-  if(v===true||v==="found"||(v&&typeof v==="object"&&(v.state==="found"||v.status==="found")))out[String(k).toLowerCase()]="found";
-  else if(v==="skipped"||(v&&typeof v==="object"&&(v.state==="skipped"||v.status==="skipped")))out[String(k).toLowerCase()]="skipped";
- }
- return out;
-}
-function nowIso(){return new Date().toISOString()}
-function localId(){return "local-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
-function legacyMap(){const out={};for(const [k,v] of Object.entries(progress))if(v==="found")out[k]=true;return out}
-function storyProgressKey(id){return STORY_PROGRESS_PREFIX+id}
-function recordsToProgress(records=storyRecords){const out={};for(const [k,r] of Object.entries(records||{}))if(r&&r.status&&r.status!=="todo")out[k]=r.status;return out}
-function saveStoryRecords(){if(!activeStoryId)return;localStorage.setItem(storyProgressKey(activeStoryId),JSON.stringify({format:"bg3-story-progress",formatVersion:1,storyId:activeStoryId,items:storyRecords}));progress=recordsToProgress();localStorage.setItem(LEGACY_PKEY,JSON.stringify(legacyMap()))}
-function loadStoryRecords(id){storyRecords={};try{const raw=JSON.parse(localStorage.getItem(storyProgressKey(id))||"null");if(raw&&raw.items)storyRecords=raw.items}catch(e){}progress=recordsToProgress()}
-function saveLocalStories(){localStorage.setItem(STORIES_KEY,JSON.stringify(stories.filter(s=>String(s.id).startsWith("local-"))))}
-function loadLocalStories(){try{stories=JSON.parse(localStorage.getItem(STORIES_KEY)||"[]")||[]}catch(e){stories=[]}}
-function ensureLocalStory(){loadLocalStories();if(!stories.length){stories=[{id:localId(),name:"Min story",local:true,created_at:nowIso()}];saveLocalStories()}activeStoryId=localStorage.getItem(ACTIVE_STORY_KEY)||stories[0].id;if(!stories.some(s=>s.id===activeStoryId))activeStoryId=stories[0].id;localStorage.setItem(ACTIVE_STORY_KEY,activeStoryId);loadStoryRecords(activeStoryId)}
-function importLegacyIntoCurrentOnce(){if(!activeStoryId)return;const marker="bg3-v7-legacy-migrated:"+activeStoryId;if(localStorage.getItem(marker))return;let old={};try{const v6=JSON.parse(localStorage.getItem(V6_PKEY)||"null");if(v6)old={...old,...canonicalizeProgress(v6.items||v6.progress||v6)}}catch(e){}try{old={...old,...canonicalizeProgress(JSON.parse(localStorage.getItem(LEGACY_PKEY)||"{}"))}}catch(e){}if(Object.keys(old).length){const ts=nowIso();for(const [k,status] of Object.entries(old))if(!storyRecords[k])storyRecords[k]={status,client_updated_at:ts,dirty:true};saveStoryRecords()}localStorage.setItem(marker,"1")}
-function progressFromPayload(o){if(!o||typeof o!=="object")throw new Error("Ogiltig progressfil");return canonicalizeProgress(o.items||o.progress||o)}
-function foundCount(p=progress){return Object.values(p).filter(v=>v==="found").length}
-function matchedCount(p){if(!ITEMS.length)return null;const valid=new Set(ITEMS.map(key));let n=0;for(const [k,v] of Object.entries(p))if(v==="found"&&valid.has(k))n++;return n}
-function done(x){return progress[key(x)]==="found"}
-function setCloudStatus(text,mode="offline"){const el=$("cloudStatus");if(!el)return;el.innerHTML=`<span class="syncdot ${mode}"></span>${esc(text)}`;el.className="cloudstatus "+(mode==="online"?"goodtxt":mode==="pending"?"warntxt":"")}
-function renderStorySelect(){const s=$("storySelect");if(!s)return;s.innerHTML="";for(const st of stories)s.add(new Option(st.name,st.id));if(activeStoryId&&stories.some(x=>x.id===activeStoryId))s.value=activeStoryId}
-async function activateStory(id,{sync=true}={}){if(!id)return;activeStoryId=id;localStorage.setItem(ACTIVE_STORY_KEY,id);loadStoryRecords(id);renderStorySelect();render();if(sync&&CLOUD_CONFIGURED&&currentUser&&!String(id).startsWith("local-"))await syncCurrentStory()}
-async function createStory(name){name=(name||"").trim();if(!name)return null;if(CLOUD_CONFIGURED&&currentUser){const {data,error}=await supabaseClient.from("stories").insert({user_id:currentUser.id,name}).select().single();if(error)throw error;stories.push(data);renderStorySelect();await activateStory(data.id,{sync:false});setCloudStatus("Ny story skapad och synkad","online");return data}const st={id:localId(),name,local:true,created_at:nowIso()};stories.push(st);saveLocalStories();renderStorySelect();await activateStory(st.id,{sync:false});setCloudStatus("LOCAL DEV – story sparad på den här enheten","offline");return st}
-async function renameActiveStory(name){name=(name||"").trim();if(!name||!activeStoryId)return;if(CLOUD_CONFIGURED&&currentUser&&!String(activeStoryId).startsWith("local-")){const {error}=await supabaseClient.from("stories").update({name}).eq("id",activeStoryId);if(error)throw error}else{const st=stories.find(s=>s.id===activeStoryId);if(st)st.name=name;saveLocalStories()}const st=stories.find(s=>s.id===activeStoryId);if(st)st.name=name;renderStorySelect()}
-function markRecord(itemKey,status){storyRecords[itemKey]={status,client_updated_at:nowIso(),dirty:true};saveStoryRecords();scheduleSync()}
-function toggleFound(x,checked){markRecord(key(x),checked?"found":"todo");render()}
-function scheduleSync(){if(!(CLOUD_CONFIGURED&&currentUser&&activeStoryId&&!String(activeStoryId).startsWith("local-")))return;setCloudStatus("Ändringar väntar på synk…","pending");clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncCurrentStory().catch(console.error),500)}
-function newer(a,b){return String(a||"")>String(b||"")}
-async function syncCurrentStory(){if(syncBusy||!CLOUD_CONFIGURED||!currentUser||!activeStoryId||String(activeStoryId).startsWith("local-"))return;syncBusy=true;try{setCloudStatus(navigator.onLine?"Synkar…":"Offline – sparar lokalt",navigator.onLine?"pending":"offline");if(!navigator.onLine)return;const {data:remote,error}=await supabaseClient.from("story_progress").select("item_key,status,client_updated_at").eq("story_id",activeStoryId);if(error)throw error;const remoteMap={};for(const r of remote||[])remoteMap[String(r.item_key).toLowerCase()]={status:r.status,client_updated_at:r.client_updated_at,dirty:false};const upserts=[];const all=new Set([...Object.keys(storyRecords),...Object.keys(remoteMap)]);for(const k of all){const l=storyRecords[k],r=remoteMap[k];if(l&&(!r||newer(l.client_updated_at,r.client_updated_at))){upserts.push({story_id:activeStoryId,item_key:k,status:l.status,client_updated_at:l.client_updated_at})}else if(r){storyRecords[k]=r}}if(upserts.length){const {error:e2}=await supabaseClient.from("story_progress").upsert(upserts,{onConflict:"story_id,item_key"});if(e2)throw e2;for(const u of upserts)storyRecords[u.item_key]={status:u.status,client_updated_at:u.client_updated_at,dirty:false}}saveStoryRecords();render();setCloudStatus("Synkad · "+foundCount()+" hittade","online")}catch(err){console.error(err);setCloudStatus("Synkfel – progress ligger kvar lokalt","offline")}finally{syncBusy=false}}
-async function loadCloudStories(){if(!currentUser)return;const {data,error}=await supabaseClient.from("stories").select("id,name,created_at,updated_at").order("created_at");if(error)throw error;stories=data||[];if(!stories.length){await createStory("Min story");return}let preferred=localStorage.getItem(ACTIVE_STORY_KEY);if(!stories.some(s=>s.id===preferred))preferred=stories[0].id;renderStorySelect();await activateStory(preferred)}
-async function migrateLegacyAuthStorage(){
-  try{
-    if(!localStorage.getItem(AUTH_STORAGE_KEY)){
-      const old=localStorage.getItem(LEGACY_SUPABASE_AUTH_KEY);
-      if(old)localStorage.setItem(AUTH_STORAGE_KEY,old);
-    }
-  }catch(err){console.warn("Auth storage migration failed",err)}
-}
-
-function authStoragePresent(){
-  try{return !!localStorage.getItem(AUTH_STORAGE_KEY)}catch(_){return false}
-}
-
-function shortId(id){return id?String(id).slice(0,8):"—"}
-function updateAuthDiag(session=null,label=""){
-  const el=$("authDiagStatus");
-  if(!el)return;
-  let stored=false,bytes=0;
-  try{
-    const raw=localStorage.getItem(AUTH_STORAGE_KEY);
-    stored=!!raw;
-    bytes=raw?raw.length:0;
-  }catch(_){}
-  const user=session?.user||currentUser||null;
-  const anon=!!(user?.is_anonymous || user?.app_metadata?.provider==="anonymous");
-  el.textContent=[
-    "Auth diagnostic:",
-    label|| (user?"session aktiv":"ingen session"),
-    "user "+shortId(user?.id),
-    anon?"ANON":"permanent/okänd typ",
-    stored?`localStorage ✓ (${bytes} tecken)`:"localStorage ✗"
-  ].join(" · ");
-}
-
-function withTimeout(promise, ms, label="operation"){
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_,reject)=>{
-      timer=setTimeout(()=>reject(new Error(label+" timed out after "+ms+"ms")),ms);
-    })
-  ]).finally(()=>clearTimeout(timer));
-}
-
-function readStoredSession(){
-  try{
-    const raw=localStorage.getItem(AUTH_STORAGE_KEY);
-    if(!raw)return null;
-    const parsed=JSON.parse(raw);
-    // Supabase browser storage is normally the direct session object.
-    const s=parsed?.currentSession || parsed?.session || parsed;
-    if(s?.access_token && s?.refresh_token && s?.user)return s;
-  }catch(err){console.warn("Could not parse stored auth session",err)}
-  return null;
-}
-
-async function recoverImplicitCallbackIfNeeded(){
-  // Supabase normally handles this automatically. This fallback explicitly adopts
-  // tokens from a magic-link callback if the SDK did not persist them itself.
-  try{
-    const h=new URLSearchParams(location.hash.startsWith("#")?location.hash.slice(1):location.hash);
-    const access_token=h.get("access_token"), refresh_token=h.get("refresh_token");
-    if(access_token&&refresh_token){
-      const {data,error}=await supabaseClient.auth.setSession({access_token,refresh_token});
-      if(error)throw error;
-      history.replaceState({},document.title,location.pathname+location.search);
-      return data?.session||null;
-    }
-  }catch(err){console.warn("Explicit magic-link callback recovery failed",err)}
-  return null;
-}
-
-async function initCloud(){
-  if(!CLOUD_CONFIGURED){
-    ensureLocalStory();importLegacyIntoCurrentOnce();renderStorySelect();
-    $("authSignedIn").classList.add("hidden");
-    $("authSignedOut").classList.remove("hidden");
-    setCloudStatus("Cloud-konfiguration kunde inte laddas","offline");
-    return;
-  }
-
-  await migrateLegacyAuthStorage();
-
-  supabaseClient=window.supabase.createClient(
-    CLOUD_CONFIG.supabaseUrl,
-    CLOUD_CONFIG.supabasePublishableKey,
-    {auth:{
-      persistSession:true,
-      autoRefreshToken:true,
-      detectSessionInUrl:true,
-      storage:authStorage,
-      storageKey:AUTH_STORAGE_KEY,
-      flowType:"implicit"
-    }}
-  );
-
-  // Never let auth bootstrap freeze the whole app.
-  let session=null;
-  try{
-    const result=await withTimeout(supabaseClient.auth.getSession(),4500,"getSession");
-    session=result?.data?.session||null;
-    if(result?.error)console.warn("getSession error",result.error);
-  }catch(err){
-    console.warn("Auth bootstrap did not resolve in time",err);
-    session=readStoredSession();
-    if(session)setCloudStatus("Session hittad lokalt · auth-validering fortsätter i bakgrunden","pending");
-  }
-
-  if(!session && location.hash.includes("access_token=")){
-    try{
-      session=await withTimeout(recoverImplicitCallbackIfNeeded(),4500,"magic-link callback");
-    }catch(err){console.warn("Callback recovery timed out",err)}
-  }
-
-  await handleSession(session);
-
-  supabaseClient.auth.onAuthStateChange((event,nextSession)=>{
-    console.log("[BG3 auth]",event,{
-      hasSession:!!nextSession,
-      persisted:authStoragePresent()
-    });
-    setTimeout(()=>handleSession(nextSession,event),0);
-  });
-}
-
-async function handleSession(session,event="INITIAL"){
-  currentUser=session?.user||null;
-
-  if(currentUser){
-    $("authSignedOut").classList.add("hidden");
-    $("authSignedIn").classList.remove("hidden");
-    const isAnon=!!(currentUser.is_anonymous || currentUser?.app_metadata?.provider==="anonymous");
-    $("userEmail").textContent=isAnon?`🧪 Anonym testsession · ${shortId(currentUser.id)}`:(currentUser.email||"Inloggad");
-    setCloudStatus(
-      authStoragePresent()
-        ? (isAnon?"Anonym testsession · session sparad på denna enhet":"Inloggad · session sparad på denna enhet")
-        : "Inloggad · VARNING: sessionen kunde inte verifieras i lagringen",
-      authStoragePresent()?"online":"pending"
-    );
-    updateAuthDiag(session,event);
-    await loadCloudStories();
-  }else{
-    $("authSignedIn").classList.add("hidden");
-    $("authSignedOut").classList.remove("hidden");
-    ensureLocalStory();importLegacyIntoCurrentOnce();renderStorySelect();
-
-    const persisted=authStoragePresent();
-    if(persisted && !explicitSignOut){
-      setCloudStatus("Session finns i lagringen men kunde inte återställas · persistence-fel","pending");
-    }else{
-      setCloudStatus("Inte inloggad på den här enheten","offline");
-    }
-    updateAuthDiag(null,event);
-    render();
-  }
-}
-function normalizeFallback(x){return {act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:x.area||"",location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]}}
-function canonicalizeProgress(input){
- const out={};
- if(!input||typeof input!=="object")return out;
- for(const [k,v] of Object.entries(input)){
-  if(v===true||v==="found"||(v&&typeof v==="object"&&v.state==="found"))out[String(k).toLowerCase()]="found";
-  else if(v==="skipped"||(v&&typeof v==="object"&&v.state==="skipped"))out[String(k).toLowerCase()]="skipped";
- }
- return out;
-}
-function legacyMap(){const out={};for(const [k,v] of Object.entries(progress))if(v==="found")out[k]=true;return out}
-function saveProgress(){
- const payload={format:"bg3-gear-progress",formatVersion:PROGRESS_FORMAT,appVersion:APP_VERSION,items:progress};
- localStorage.setItem(PKEY,JSON.stringify(payload));
- localStorage.setItem(LEGACY_PKEY,JSON.stringify(legacyMap()));
-}
-function loadProgress(){
- let currentProgress={};
- try{
-  const current=JSON.parse(localStorage.getItem(PKEY)||"null");
-  if(current)currentProgress=canonicalizeProgress(current.items||current.progress||current);
- }catch(e){}
- try{
-  const legacy=canonicalizeProgress(JSON.parse(localStorage.getItem(LEGACY_PKEY)||"{}"));
-  // Safety-first merge: any check-offs made later in old v5 are absorbed into v6.
-  // v5 cannot represent future v6-only states, so v6 remains the canonical format.
-  progress={...currentProgress,...legacy};
- }catch(e){progress=currentProgress}
- if(Object.keys(progress).length)saveProgress();
-}
-function progressFromPayload(o){
- if(!o||typeof o!=="object")throw new Error("Ogiltig progressfil");
- return canonicalizeProgress(o.items||o.progress||o);
-}
-function foundCount(p=progress){return Object.values(p).filter(v=>v==="found").length}
-function matchedCount(p){
- if(!ITEMS.length)return null;
- const valid=new Set(ITEMS.map(key));let n=0;
- for(const [k,v] of Object.entries(p))if(v==="found"&&valid.has(k))n++;
- return n;
-}
-loadProgress();
+/* v7.6: duplicate v6 legacy progress engine removed. Story progress is the only runtime source of truth. */
 function done(x){return progress[key(x)]==="found"}
 function setDB(arr,complete=false){ITEMS=arr;embeddedComplete=complete;populate();render();updateNotice()}
 function updateNotice(){
@@ -449,6 +217,12 @@ $("import").onclick=()=>{importMode="merge";$("file").click()};
 $("replaceImport").onclick=()=>{importMode="replace";$("file").click()};
 $("file").onchange=async e=>{
  const f=e.target.files[0];if(!f)return;
+ const isAnon=!!(currentUser?.is_anonymous || currentUser?.app_metadata?.provider==="anonymous");
+ if(isAnon){
+   alert("Import är avsiktligt blockerad i den anonyma testsessionen. Logga in på ditt riktiga konto och välj rätt Story innan du importerar progress.");
+   e.target.value="";
+   return;
+ }
  try{
   const o=JSON.parse(await f.text()),incoming=progressFromPayload(o),incomingFound=foundCount(incoming);
   if(importMode==="replace"&&!confirm(`Ersätta all progress i Storyn “${stories.find(s=>s.id===activeStoryId)?.name||"Story"}” med ${incomingFound} hittade items?`)){e.target.value="";return}
@@ -618,7 +392,7 @@ window.addEventListener("focus",()=>{if(CLOUD_CONFIGURED&&currentUser)syncCurren
 
 // --- PWA shell / installation ---
 
-// ---------- v7.5 ANON SESSION DIAGNOSTIC ----------
+// ---------- v7.6 STORY ISOLATION FIX ----------
 // This build deliberately does NOT register a service worker.
 // Old BG3 workers/caches are cleaned in the background and never block collector/auth startup.
 async function cleanupOldBg3Pwa(){

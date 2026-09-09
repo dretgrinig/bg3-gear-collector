@@ -1,5 +1,5 @@
-// BG3 Gear Collector v7.5 — ANON SESSION DIAGNOSTIC
-// Page does NOT register this worker. It exists only to retire old workers if a browser checks the URL.
+// BG3 Gear Collector v7.6 — STORY ISOLATION FIX
+// No PWA registration. This file only retires an old worker if a browser happens to update it.
 self.addEventListener("install",()=>self.skipWaiting());
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
