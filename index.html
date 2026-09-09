@@ -7,10 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BG3 Gear">
-<link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
-<title>BG3 – Complete Gear Collector v7.2 AUTH PERSISTENCE TEST</title>
+<title>BG3 – Complete Gear Collector v7.4 NO-PWA CLEANROOM</title>
 <style>
 :root{--bg:#0d0f11;--panel:#181b1f;--panel2:#21252a;--line:#343a40;--text:#f1f3f5;--muted:#abb2ba;--gold:#d4af37;--green:#37b24d;--red:#e8590c;--blue:#4dabf7}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b0d0f,#15181b);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -42,7 +41,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 </style></head>
 <body>
 <header><div class=wrap>
-<h1>BG3 – Complete Gear Collector <span class="badge">v7.2 AUTH PERSISTENCE TEST</span></h1>
+<h1>BG3 – Complete Gear Collector <span class="badge">v7.4 NO-PWA CLEANROOM</span></h1>
 <div class=sub>Act 1 • Act 2 • Act 3 · 556-item catalog · rarity + S/A/B/C tier · Stories · cloud-ready autosync · v5/v6 import · responsive mobile UI</div>
 <div class=storybar id=storyBar>
  <div>
@@ -76,12 +75,12 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 </div>
 <div class=actions>
 <button id=refresh class=primary>↻ Hämta/verifiera 556-item katalog</button><button id=onlyS>★ Visa S-tier</button>
-<button id=installApp class=offline hidden>＋ Installera app</button><button id=saveOffline class=offline>⬇ Spara komplett offline-kopia</button>
+<button id=saveOffline class=offline>⬇ Spara komplett offline-kopia</button>
 <button id=clear>Rensa filter</button><button id=export>Exportera progress</button><button id=import>Importera & slå ihop</button><button id=replaceImport>Ersätt progress</button><button id=reset>Nollställ progress</button>
 <input id=file type=file accept=.json hidden>
 </div><div class=status id=status></div>
-<div class=status id=installHint hidden>iPhone/iPad: öppna Dela-menyn i Safari och välj “Lägg till på hemskärmen”.</div>
-<div class=status style="color:#ffd43b"><b>AUTH TEST:</b> PWA/offline-cache är tillfälligt avstängd i v7.2 medan vi verifierar att login överlever refresh.</div>
+<div class=status id=cleanroomStatus>NO-PWA aktiv · kontrollerar gamla Service Workers/cache i bakgrunden…</div>
+<div class=status style="color:#ffd43b"><b>CLEANROOM:</b> PWA, Service Worker och app-cache är avstängda. Endast vanlig GitHub Pages + Supabase testas.</div>
 </div></header>
 <main><div class=wrap>
 <div id=notice class="notice warn"><b>Databasstatus:</b> laddar…</div>
@@ -89,7 +88,7 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 <th>✓</th><th>Act</th><th>Item</th><th>Rarity</th><th>Tier</th><th>Typ</th><th>Område</th><th>Location / hur du får den</th><th>Egenskaper</th><th>Effekt</th><th>Flaggor</th><th>Källa</th>
 </tr></thead><tbody id=body></tbody></table></div>
 <div id=mobileCount class=mobilecount></div><div id=cards class=mobilecards></div><div id=empty class=empty hidden>Inga items matchar filtren.</div>
-<footer>v7.2 AUTH TEST använder samma itemnycklar och progressmotor som v6/v5. Den är responsiv, installerbar från en HTTPS-hostad sida och kan använda lokalt cachad katalog/progress offline efter första laddningen.</footer>
+<footer>v7.4 CLEANROOM använder samma itemnycklar, Stories, cloud-progress och authkod som v7.3. Ingen PWA/Service Worker registreras.</footer>
 </div></main>
 <script>
 window.BG3_CLOUD_CONFIG = {
@@ -178,6 +177,28 @@ function authStoragePresent(){
   try{return !!localStorage.getItem(AUTH_STORAGE_KEY)}catch(_){return false}
 }
 
+function withTimeout(promise, ms, label="operation"){
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_,reject)=>{
+      timer=setTimeout(()=>reject(new Error(label+" timed out after "+ms+"ms")),ms);
+    })
+  ]).finally(()=>clearTimeout(timer));
+}
+
+function readStoredSession(){
+  try{
+    const raw=localStorage.getItem(AUTH_STORAGE_KEY);
+    if(!raw)return null;
+    const parsed=JSON.parse(raw);
+    // Supabase browser storage is normally the direct session object.
+    const s=parsed?.currentSession || parsed?.session || parsed;
+    if(s?.access_token && s?.refresh_token && s?.user)return s;
+  }catch(err){console.warn("Could not parse stored auth session",err)}
+  return null;
+}
+
 async function recoverImplicitCallbackIfNeeded(){
   // Supabase normally handles this automatically. This fallback explicitly adopts
   // tokens from a magic-link callback if the SDK did not persist them itself.
@@ -218,11 +239,22 @@ async function initCloud(){
     }}
   );
 
-  let {data:{session},error}=await supabaseClient.auth.getSession();
-  if(error)console.warn("getSession error",error);
+  // Never let auth bootstrap freeze the whole app.
+  let session=null;
+  try{
+    const result=await withTimeout(supabaseClient.auth.getSession(),4500,"getSession");
+    session=result?.data?.session||null;
+    if(result?.error)console.warn("getSession error",result.error);
+  }catch(err){
+    console.warn("Auth bootstrap did not resolve in time",err);
+    session=readStoredSession();
+    if(session)setCloudStatus("Session hittad lokalt · auth-validering fortsätter i bakgrunden","pending");
+  }
 
   if(!session && location.hash.includes("access_token=")){
-    session=await recoverImplicitCallbackIfNeeded();
+    try{
+      session=await withTimeout(recoverImplicitCallbackIfNeeded(),4500,"magic-link callback");
+    }catch(err){console.warn("Callback recovery timed out",err)}
   }
 
   await handleSession(session);
@@ -435,6 +467,45 @@ function startLoginCooldown(seconds=60){
     }else btn.textContent=`Ny länk om ${left}s`;
   },1000);
 }
+
+async function requestMagicLinkDirect(email){
+  const redirectTo=location.origin+location.pathname;
+  const endpoint=CLOUD_CONFIG.supabaseUrl.replace(/\/$/,"")+"/auth/v1/otp?redirect_to="+encodeURIComponent(redirectTo);
+
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),12000);
+  try{
+    const res=await fetch(endpoint,{
+      method:"POST",
+      signal:controller.signal,
+      headers:{
+        "apikey":CLOUD_CONFIG.supabasePublishableKey,
+        "Authorization":"Bearer "+CLOUD_CONFIG.supabasePublishableKey,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        email,
+        create_user:true,
+        data:{},
+        gotrue_meta_security:{}
+      })
+    });
+
+    let body=null;
+    try{body=await res.json()}catch(_){}
+
+    if(!res.ok){
+      const detail=body?.msg || body?.message || body?.error_description || body?.error || ("HTTP "+res.status);
+      const err=new Error(detail);
+      err.status=res.status;
+      throw err;
+    }
+    return body||{};
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
 $("sendMagicLink").onclick=async()=>{
   if(!CLOUD_CONFIGURED){
     alert("Cloud-konfigurationen är inte laddad. Ladda om sidan och försök igen.");
@@ -442,20 +513,32 @@ $("sendMagicLink").onclick=async()=>{
   }
   const email=$("authEmail").value.trim();
   if(!email){alert("Skriv in din e-postadress först.");return}
+
+  const btn=$("sendMagicLink");
+  btn.disabled=true;
+  btn.textContent="Skickar…";
+  setCloudStatus("Begär inloggningslänk från Supabase…","pending");
+
   try{
-    const redirectTo=location.origin+location.pathname;
-    const {error}=await supabaseClient.auth.signInWithOtp({
-      email,
-      options:{emailRedirectTo:redirectTo}
-    });
-    if(error)throw error;
+    await requestMagicLinkDirect(email);
     startLoginCooldown(60);
-    setCloudStatus("Inloggningslänk skickad · öppna länken på enheten du vill logga in på","pending");
+    setCloudStatus("✓ Supabase accepterade loginförfrågan · kolla mejlen","online");
   }catch(err){
-    console.error(err);
-    const msg=err?.message||String(err);
-    setCloudStatus("Kunde inte skicka länk: "+msg,"offline");
-    alert("Kunde inte skicka inloggningslänk: "+msg);
+    console.error("Magic-link request failed",err);
+    btn.disabled=false;
+    btn.textContent="Skicka inloggningslänk";
+
+    const status=err?.status;
+    if(status===429){
+      setCloudStatus("Rate limit från Supabase · vänta innan du begär nytt auth-mail","offline");
+      alert("Supabase svarade 429 (rate limit). På standard-mailern kan projektet bara skicka ett mycket begränsat antal auth-mail. Vänta och försök igen senare.");
+    }else if(err?.name==="AbortError"){
+      setCloudStatus("Loginförfrågan timeout · Supabase svarade inte inom 12 sekunder","offline");
+      alert("Supabase-loginförfrågan timeoutade. Försök igen.");
+    }else{
+      setCloudStatus("Loginfel: "+(err?.message||err),"offline");
+      alert("Kunde inte skicka inloggningslänk: "+(err?.message||err));
+    }
   }
 };
 $("signOut").onclick=async()=>{
@@ -469,43 +552,56 @@ window.addEventListener("online",()=>syncCurrentStory());
 window.addEventListener("focus",()=>{if(CLOUD_CONFIGURED&&currentUser)syncCurrentStory()});
 
 // --- PWA shell / installation ---
-let deferredInstallPrompt=null;
-const installBtn=$("installApp"), installHint=$("installHint");
-const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
-const standalone=window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true;
-if(isiOS && !standalone) installHint.hidden=false;
-window.addEventListener("beforeinstallprompt",e=>{
- e.preventDefault();deferredInstallPrompt=e;installBtn.hidden=false;
-});
-installBtn.onclick=async()=>{
- if(!deferredInstallPrompt)return;
- deferredInstallPrompt.prompt();
- try{await deferredInstallPrompt.userChoice}catch(_){ }
- deferredInstallPrompt=null;installBtn.hidden=true;
-};
-window.addEventListener("appinstalled",()=>{installBtn.hidden=true;installHint.hidden=true;$("status").textContent="✓ BG3 Gear Collector installerad som app."});
-async function neutralizeOldPwaCache(){
-  // v7.2 deliberately runs without a service worker while auth persistence is tested.
-  // This eliminates stale app/config caches as a variable.
+
+// ---------- v7.4 NO-PWA CLEANROOM ----------
+// This build deliberately does NOT register a service worker.
+// Old BG3 workers/caches are cleaned in the background and never block collector/auth startup.
+async function cleanupOldBg3Pwa(){
+  const result={registrations:0,unregistered:0,caches:0,deletedCaches:0};
   try{
     if("serviceWorker" in navigator){
       const regs=await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(r=>r.unregister()));
+      result.registrations=regs.length;
+      for(const reg of regs){
+        // Only touch workers whose scope belongs to this BG3 Gear Collector project.
+        if((reg.scope||"").includes("/bg3-gear-collector/")){
+          try{if(await reg.unregister())result.unregistered++}catch(_){}
+        }
+      }
     }
+  }catch(err){console.warn("Service worker cleanup failed",err)}
+
+  try{
     if("caches" in window){
       const names=await caches.keys();
-      await Promise.all(names.filter(n=>n.startsWith("bg3-gear-")).map(n=>caches.delete(n)));
+      const bg3=names.filter(n=>n.startsWith("bg3-gear-"));
+      result.caches=bg3.length;
+      for(const name of bg3){
+        try{if(await caches.delete(name))result.deletedCaches++}catch(_){}
+      }
     }
-  }catch(err){console.warn("Could not fully clear old PWA cache",err)}
+  }catch(err){console.warn("Cache cleanup failed",err)}
+
+  console.log("[BG3 v7.4 cleanroom]",result);
+  return result;
 }
 
-(async()=>{
-  await neutralizeOldPwaCache();
-  await initCloud().catch(err=>{
-    console.error(err);
-    setCloudStatus("Cloud-init misslyckades: "+(err?.message||err),"offline");
-    ensureLocalStory();renderStorySelect();render();
-  });
-  loadRemote(false);
-})();
+// IMPORTANT: collector and auth start immediately. PWA cleanup is fire-and-forget.
+// This prevents service-worker APIs from ever freezing the app at 0 items / "Startar…".
+cleanupOldBg3Pwa().then(r=>{
+  const el=$("cleanroomStatus");
+  if(el){
+    el.textContent=`NO-PWA aktiv · gamla workers borttagna: ${r.unregistered} · gamla app-cachar borttagna: ${r.deletedCaches}`;
+  }
+}).catch(()=>{});
+
+loadRemote(false).catch?.(()=>{});
+
+initCloud().catch(err=>{
+  console.error(err);
+  setCloudStatus("Cloud-init misslyckades: "+(err?.message||err),"offline");
+  ensureLocalStory();
+  renderStorySelect();
+  render();
+});
 </script></body></html>
