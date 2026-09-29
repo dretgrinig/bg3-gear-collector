@@ -143,7 +143,7 @@ const authStorage={
   removeItem:key=>localStorage.removeItem(key)
 };
 
-let supabaseClient=null,currentUser=null,stories=[],activeStoryId=null,storyRecords={},syncTimer=null,syncBusy=false;
+let supabaseClient=null,currentUser=null,stories=[],activeStoryId=null,storyRecords={},syncTimer=null,syncBusy=false,syncPending=false;
 let explicitSignOut=false;
 const TIERMAP={"Everburn Blade":"A","The Amulet of Lost Voices":"A","Gloves of Power":"A","Shapeshifter's Boon Ring":"A","Amulet of Silvanus":"A","The Whispering Promise":"S","Ring of Protection":"S","Hellrider's Pride":"S","Wapira's Crown":"A","Sorrow":"A","Silver Pendant":"A","Bracers of Defence":"S","Warped Headband of Intellect":"S","Haste Helm":"A","The Speedy Lightfeet":"A","Spiderstep Boots":"B","The Sparkle Hands":"A","Staff of Crones":"B","Sword of Justice":"A","The Spellsparkler":"S","Hamarhraft":"A","Harold":"A","Titanstring Bow":"S","Gloves of Thievery":"S","Crusher's Ring":"S","Returning Pike":"S","Doom Hammer":"A","Gloves of Archery":"A","Amulet of Misty Step":"S","Spidersilk Armour":"A","Boots of Striding":"A","The Watersparkers":"A","Gloves of the Growling Underdog":"S","Faithbreaker":"A","Springstep Boots":"A","Linebreaker Boots":"A","Dragon's Grasp":"B","Spellthief":"A","Ring of Flinging":"S","Rain Dancer":"A","Gloves of Heroism":"A","Club of Hill Giant Strength":"S","Staff of Arcane Blessing":"A","The Sparkswall":"A","Amulet of Restoration":"S","Caustic Band":"S","Gloves of Uninhibited Kushigo":"S","Melf's First Staff":"S","Psychic Spark":"S","Boots of Stormy Clamour":"S","Pearl of Power Amulet":"S","Ring of Salving":"A","Boots of Speed":"S","Luminous Armour":"S","Mourning Frost":"A","Phalar Aluve":"S","Shortsword of First Blood":"A","Intransigent Warhammer":"A","Armour of Uninhibited Kushigo":"A","Sentient Amulet":"S","Adamantine Scale Mail":"S","Adamantine Shield":"S","Adamantine Splint Armour":"S","Grymskull Helm":"A","Disintegrating Night Walkers":"S","Sword of Screams":"A","The Graceful Cloth":"S","Periapt of Wound Closure":"S","Gloves of Cinder and Sizzle":"A","Holy Lance Helm":"S","The Blood of Lathander":"S","Gloves of Belligerent Skies":"S","Necklace of Elemental Augmentation":"S","Diadem of Arcane Synergy":"S","Knife of the Undermountain King":"S","Unseen Menace":"S","Daredevil Gloves":"A","Gloves of Dexterity":"S","Vital Conduit Boots":"A","Soulbreaker Greatsword":"S","Shadow Blade Ring":"A","Ring of Mental Inhibition":"A","Penumbral Armour":"A","Hat of Fire Acuity":"S","Incandescent Staff":"A","Amulet of the Harpers":"A","Cloak of Protection":"S","Gloves of the Balanced Hands":"A","Shadeclinger Armour":"A","Shield of Devotion":"S","The Mighty Cloth":"A","Yuan-Ti Scale Mail":"S","Charge-Bound Warhammer":"A","Darkfire Shortbow":"S","Harmonium Halberd":"A","Flawed Helldusk Armour":"A","Flawed Helldusk Gloves":"A","Flawed Helldusk Helmet":"A","Gloves of the Automaton":"S","Potent Robe":"S","Snowburst Ring":"S","Coruscation Ring":"S","Surgeon's Subjugation Amulet":"S","Helmet of Arcane Acuity":"S","Twist of Fortune":"A","Lightning Jabber":"A","Hr'a'cknir Bracers":"A","Boots of Brilliance":"B","Hellfire Hand Crossbow":"S","Dark Justiciar Gauntlets":"A","Justiciar's Scimitar":"A","Justiciar's Greatshield":"A","Least Expected":"A","Dark Justiciar Half-Plate":"A","Callous Glow Ring":"S","Dark Justiciar Helmet":"A","Killer's Sweetheart":"S","Circle of Bones":"A","Moonlight Glaive":"A","Shar's Spear of Evening":"S","Dark Justiciar Boots":"A","Dark Justiciar Half-Plate (Very Rare)":"S","Boots of Arcane Bolstering":"B","Circlet of Hunting":"A","Hat of Storm Scion's Power":"S","Ring of Free Action":"A","Risky Ring":"S","Absolute's Protector":"A","Slicing Shortsword":"A","Render of Mind and Body":"A","Halberd of Vigilance":"S","Dwarven Splintmail":"A","Fistbreaker Helm":"A","Gloves of The Duellist":"A","Sentinel Shield":"S","Ne'er Misser":"S","Drakethroat Glaive":"S","Armour of Devotion":"A","Ring of Spiteful Thunder":"S","Sharpened Snare Cuirass":"A","Cloak of Elemental Absorption":"A","Spineshudder Amulet":"S","Spellcrux Amulet":"S","Infernal Rapier":"S","Blade of Oppressed Souls":"A","Braindrain Gloves":"A","Ketheric's Shield":"S","Reaper's Embrace":"S","Duke Ravengard's Longsword":"A","Emblazoned Plate of the Marshal":"A","Staff of the Emperor":"S","Boots of Uninhibited Kushigo":"S","Nyrulna":"S","Band of the Mystic Scoundrel":"S","Spellmight Gloves":"S","Dark Displacement Gloves":"A","Seraphic Pugilist Gloves":"A","Cold Snap":"A","Dwarven Thrower":"S","Hellrider Longbow":"S","Robe of Supreme Defences":"S","The Dancing Breeze":"S","Ambusher":"A","Bonespike Garb":"S","Elven Chain":"A","Stalker Gloves":"A","Harmonic Dueller":"A","Cloak of Displacement":"S","Garb of the Land and Sky":"S","Fabricated Arbalest":"S","Gauntlet of the Tyrant":"S","Helldusk Boots":"S","Elegant Studded Leather":"S","Mask of Soul Perception":"S","Caitiff Staff":"A","Cloak of the Weave":"S","Gemini Gloves":"S","Shapeshifter Hat":"S","Spellseeking Gloves":"A","Staff of the Ram":"A","Khalid's Gift":"S","Belm":"S","Wavemother's Robe":"S","Armour of Persistence":"S","Boots of Persistence":"S","Legacy of the Masters":"S","Dolor Amarus":"S","Spaceshunt Boots":"A","Cerebral Citadel Armour":"A","Cerebral Citadel Gloves":"A","Sword of the Emperor":"A","Boots of Psionic Movement":"A","Duellist's Prerogative":"S","Amulet of Windrider":"A","Armour of the Sporekeeper":"S","Crypt Lord Ring":"A","Hood of the Weave":"S","Armour of Landfall":"S","Birthright":"S","Quickspell Gloves":"S","Markoheshkir":"S","Robe of the Weave":"S","Hellfire Engine Crossbow":"S","Gontr Mael":"S","Steel Watcher Helmet":"A","The Dead Shot":"S","Flail of Ages":"S","Armour of Agility":"S","Mantle of the Holy Warrior":"S","The Reviving Hands":"S","Amulet of the Devout":"S","Bonespike Gloves":"S","Armour of Moonbasking":"S","Bonespike Helmet":"S","Bonespike Boots":"S","Crimson Mischief":"S","Bloodthirst":"S","Dolor Amarus (Murder Tribunal)":"S","Bhaalist Armour":"S","Craterflesh Gloves":"S","Sarevok's Horned Helmet":"S","Sword of Chaos":"S","Rhapsody":"S","Woe":"S","Helmet of Grit":"S","Viconia's Walking Fortress":"S","Handmaiden's Mace":"S","Selûne's Spear of Night":"S","Helm of Balduran":"S","Balduran's Giantslayer":"S","Orphic Hammer":"S","Gauntlets of Hill Giant Strength":"S","Amulet of Greater Health":"S","Helldusk Armour":"S","Gloves of Soul Catching":"S","Staff of Spellpower":"S"};
 let ITEMS=[],progress={},act="",embeddedComplete=false;
@@ -187,11 +187,62 @@ function renderStorySelect(){const s=$("storySelect");if(!s)return;s.innerHTML="
 async function activateStory(id,{sync=true}={}){if(!id)return;activeStoryId=id;localStorage.setItem(activeStoryStorageKey(),id);loadStoryRecords(id);renderStorySelect();render();if(sync&&CLOUD_CONFIGURED&&currentUser&&!String(id).startsWith("local-"))await syncCurrentStory()}
 async function createStory(name){name=(name||"").trim();if(!name)return null;if(CLOUD_CONFIGURED&&currentUser){const {data,error}=await supabaseClient.from("stories").insert({user_id:currentUser.id,name}).select().single();if(error)throw error;stories.push(data);renderStorySelect();await activateStory(data.id,{sync:false});setCloudStatus("Ny story skapad och synkad","online");return data}const st={id:localId(),name,local:true,created_at:nowIso()};stories.push(st);saveLocalStories();renderStorySelect();await activateStory(st.id,{sync:false});setCloudStatus("LOCAL DEV – story sparad på den här enheten","offline");return st}
 async function renameActiveStory(name){name=(name||"").trim();if(!name||!activeStoryId)return;if(CLOUD_CONFIGURED&&currentUser&&!String(activeStoryId).startsWith("local-")){const {error}=await supabaseClient.from("stories").update({name}).eq("id",activeStoryId);if(error)throw error}else{const st=stories.find(s=>s.id===activeStoryId);if(st)st.name=name;saveLocalStories()}const st=stories.find(s=>s.id===activeStoryId);if(st)st.name=name;renderStorySelect()}
-function markRecord(itemKey,status){storyRecords[itemKey]={status,client_updated_at:nowIso(),dirty:true};saveStoryRecords();scheduleSync()}
+function localRecord(itemKey,status,timestamp=nowIso()){
+  // Keep later edits newer even within one millisecond or after a clock correction.
+  const previous=Date.parse(storyRecords[itemKey]?.client_updated_at),next=Date.parse(timestamp);
+  return {status,client_updated_at:new Date(Number.isFinite(previous)?Math.max(next,previous+1):next).toISOString(),dirty:true};
+}
+function markRecord(itemKey,status){storyRecords[itemKey]=localRecord(itemKey,status);saveStoryRecords();scheduleSync()}
 function toggleFound(x,checked){markRecord(key(x),checked?"found":"todo");render()}
 function scheduleSync(){if(!(CLOUD_CONFIGURED&&currentUser&&activeStoryId&&!String(activeStoryId).startsWith("local-")))return;setCloudStatus("Ändringar väntar på synk…","pending");clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncCurrentStory().catch(console.error),500)}
 function newer(a,b){return String(a||"")>String(b||"")}
-async function syncCurrentStory(){if(syncBusy||!CLOUD_CONFIGURED||!currentUser||!activeStoryId||String(activeStoryId).startsWith("local-"))return;syncBusy=true;try{setCloudStatus(navigator.onLine?"Synkar…":"Offline – sparar lokalt",navigator.onLine?"pending":"offline");if(!navigator.onLine)return;const {data:remote,error}=await supabaseClient.from("story_progress").select("item_key,status,client_updated_at").eq("story_id",activeStoryId);if(error)throw error;const remoteMap={};for(const r of remote||[])remoteMap[String(r.item_key).toLowerCase()]={status:r.status,client_updated_at:r.client_updated_at,dirty:false};const upserts=[];const all=new Set([...Object.keys(storyRecords),...Object.keys(remoteMap)]);for(const k of all){const l=storyRecords[k],r=remoteMap[k];if(l&&(!r||newer(l.client_updated_at,r.client_updated_at))){upserts.push({story_id:activeStoryId,item_key:k,status:l.status,client_updated_at:l.client_updated_at})}else if(r){storyRecords[k]=r}}if(upserts.length){const {error:e2}=await supabaseClient.from("story_progress").upsert(upserts,{onConflict:"story_id,item_key"});if(e2)throw e2;for(const u of upserts)storyRecords[u.item_key]={status:u.status,client_updated_at:u.client_updated_at,dirty:false}}saveStoryRecords();render();setCloudStatus("Synkad · "+foundCount()+" hittade","online")}catch(err){console.error(err);setCloudStatus("Synkfel – progress ligger kvar lokalt","offline")}finally{syncBusy=false}}
+async function syncCurrentStory(){
+  if(!CLOUD_CONFIGURED||!currentUser||explicitSignOut||!activeStoryId||String(activeStoryId).startsWith("local-"))return;
+  if(syncBusy){syncPending=true;return}
+  syncBusy=true;
+  clearTimeout(syncTimer);syncTimer=null;
+  const storyId=activeStoryId,userId=currentUser.id,records=storyRecords,snapshot={...records};
+  // Record-map identity also rejects an old response after A -> B -> A reloads A.
+  const isCurrent=()=>!explicitSignOut&&currentUser?.id===userId&&activeStoryId===storyId&&storyRecords===records;
+  try{
+    setCloudStatus(navigator.onLine?"Synkar…":"Offline – sparar lokalt",navigator.onLine?"pending":"offline");
+    if(!navigator.onLine)return;
+    const {data:remote,error}=await supabaseClient.from("story_progress").select("item_key,status,client_updated_at").eq("story_id",storyId);
+    if(!isCurrent())return;
+    if(error)throw error;
+    const remoteMap={};
+    for(const r of remote||[])remoteMap[String(r.item_key).toLowerCase()]={status:r.status,client_updated_at:r.client_updated_at,dirty:false};
+    const upserts=[],sentRecords={},all=new Set([...Object.keys(records),...Object.keys(remoteMap)]);
+    for(const k of all){
+      // Checkbox, reset and import edits replace records; never merge over a new one.
+      if(records[k]!==snapshot[k]){syncPending=true;continue}
+      const l=records[k],r=remoteMap[k];
+      if(l&&(!r||newer(l.client_updated_at,r.client_updated_at))){
+        upserts.push({story_id:storyId,item_key:k,status:l.status,client_updated_at:l.client_updated_at});
+        sentRecords[k]=l;
+      }else if(r){records[k]=r}
+    }
+    if(upserts.length){
+      const {error:e2}=await supabaseClient.from("story_progress").upsert(upserts,{onConflict:"story_id,item_key"});
+      if(!isCurrent())return;
+      if(e2)throw e2;
+      for(const u of upserts){
+        if(records[u.item_key]===sentRecords[u.item_key])records[u.item_key]={status:u.status,client_updated_at:u.client_updated_at,dirty:false};
+        else syncPending=true;
+      }
+    }
+    saveStoryRecords();render();
+    if(syncPending||Object.values(records).some(r=>r?.dirty))setCloudStatus("Ändringar väntar på synk…","pending");
+    else setCloudStatus("Synkad · "+foundCount()+" hittade","online");
+  }catch(err){
+    console.error(err);
+    if(isCurrent())setCloudStatus("Synkfel – progress ligger kvar lokalt","offline");
+  }finally{
+    syncBusy=false;
+    // Calls made while busy are retained; failures alone do not trigger a retry loop.
+    if(syncPending){syncPending=false;syncCurrentStory().catch(console.error)}
+  }
+}
 async function loadCloudStories(){if(!currentUser)return;const {data,error}=await supabaseClient.from("stories").select("id,name,created_at,updated_at").order("created_at");if(error)throw error;stories=data||[];if(!stories.length){await createStory("Min story");return}let preferred=localStorage.getItem(activeStoryStorageKey());if(!stories.some(s=>s.id===preferred))preferred=stories[0].id;renderStorySelect();await activateStory(preferred)}
 async function migrateLegacyAuthStorage(){
   try{
@@ -432,7 +483,7 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelect
 $("clear").onclick=()=>{$("q").value="";$("area").value="";$("type").value="";$("rarity").value="";$("tier").value="";$("source").value="";$("state").value="";$("sort").value="area";render()};
 $("onlyS").onclick=()=>{$("tier").value="S";render()};
 $("refresh").onclick=()=>loadRemote(true);
-$("reset").onclick=()=>{if(confirm("Nollställa alla checkboxar i den aktiva Storyn?")){const ts=nowIso();for(const k of Object.keys(storyRecords))storyRecords[k]={status:"todo",client_updated_at:ts,dirty:true};saveStoryRecords();render();scheduleSync()}};
+$("reset").onclick=()=>{if(confirm("Nollställa alla checkboxar i den aktiva Storyn?")){const ts=nowIso();for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts);saveStoryRecords();render();scheduleSync()}};
 $("export").onclick=()=>{
  const legacy=legacyMap(),st=stories.find(s=>s.id===activeStoryId);
  const payload={format:"bg3-gear-progress",formatVersion:PROGRESS_FORMAT,appVersion:APP_VERSION,story:{id:activeStoryId,name:st?.name||"Story"},exportedAt:new Date().toISOString(),checkedCount:foundCount(),items:progress,progress:legacy};
@@ -453,8 +504,8 @@ $("file").onchange=async e=>{
   const o=JSON.parse(await f.text()),incoming=progressFromPayload(o),incomingFound=foundCount(incoming);
   if(importMode==="replace"&&!confirm(`Ersätta all progress i Storyn “${stories.find(s=>s.id===activeStoryId)?.name||"Story"}” med ${incomingFound} hittade items?`)){e.target.value="";return}
   const ts=nowIso();
-  if(importMode==="replace"){for(const k of Object.keys(storyRecords))storyRecords[k]={status:"todo",client_updated_at:ts,dirty:true}}
-  for(const [k,status] of Object.entries(incoming))storyRecords[k]={status,client_updated_at:ts,dirty:true};
+  if(importMode==="replace"){for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts)}
+  for(const [k,status] of Object.entries(incoming))storyRecords[k]=localRecord(k,status,ts);
   saveStoryRecords();render();scheduleSync();
   const matched=matchedCount(progress),total=foundCount();let matchText="";
   if(matched!==null&&matched<total)matchText=` ${matched}/${total} finns i katalogen som är laddad just nu; övriga nycklar sparas ändå.`;else if(matched!==null)matchText=` Alla ${total} finns i den laddade katalogen.`;
