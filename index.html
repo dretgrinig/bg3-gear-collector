@@ -13,6 +13,8 @@
 <style>
 :root{--bg:#0d0f11;--panel:#181b1f;--panel2:#21252a;--line:#343a40;--text:#f1f3f5;--muted:#abb2ba;--gold:#d4af37;--green:#37b24d;--red:#e8590c;--blue:#4dabf7}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b0d0f,#15181b);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+body.dev-preview{background:linear-gradient(#07172f,#164583);min-height:100vh}
+body.dev-preview .dev-preview-badge{display:table;margin-bottom:8px;padding:4px 8px;border:1px solid #ffd43b;border-radius:6px;background:#ffd43b;color:#07172f;font-size:12px;font-weight:800;letter-spacing:.08em;line-height:1.4}
 header{position:sticky;top:0;z-index:20;background:rgba(13,15,17,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .wrap{max-width:1650px;margin:auto;padding:16px 20px}h1{margin:0;font-size:27px}.sub,.status{color:var(--muted);font-size:13px;margin-top:5px}
 .tabs,.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
@@ -51,6 +53,15 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 <body>
 <header><div class=wrap>
 <h1>BG3 – Complete Gear Collector <span class="badge">v7.7 PASSWORD AUTH STABILITY</span></h1>
+<script>
+if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
+  document.body.classList.add("dev-preview");
+  const badge = document.createElement("span");
+  badge.className = "dev-preview-badge";
+  badge.textContent = "DEV PREVIEW";
+  document.querySelector("h1").prepend(badge);
+}
+</script>
 <div class=sub>Act 1 • Act 2 • Act 3 · 556-item catalog · rarity + S/A/B/C tier · Stories · cloud-ready autosync · v5/v6 import · responsive mobile UI</div>
 <div class=storybar id=storyBar>
  <div>
