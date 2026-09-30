@@ -1,111 +1,6 @@
 const assert = require('node:assert/strict');
-const { readFileSync } = require('node:fs');
-const { join } = require('node:path');
 const test = require('node:test');
-const vm = require('node:vm');
-
-const html = readFileSync(join(__dirname, '..', 'index.html'), 'utf8');
-// Execute the actual inline application code, without its network/auth startup.
-const core = html.slice(html.indexOf('const DBKEY='), html.indexOf('async function migrateLegacyAuthStorage()'));
-const reset = html.slice(html.indexOf('$("reset").onclick='), html.indexOf('$("export").onclick='));
-const imports = html.slice(html.indexOf('let importMode="merge";'), html.indexOf('$("saveOffline").onclick='));
-const clone = value => JSON.parse(JSON.stringify(value));
-const tick = () => new Promise(resolve => setImmediate(resolve));
-const record = (status = 'found', timestamp = '2026-09-29T10:00:00.000Z') => ({
-  status, client_updated_at: timestamp, dirty: true
-});
-const row = (item_key, value) => ({ item_key, status: value.status, client_updated_at: value.client_updated_at });
-
-function harness() {
-  const storage = new Map(), timers = new Map(), reads = [], writes = [], renders = [], errors = [];
-  let timerId = 0, clock = Date.parse('2026-09-29T12:00:00.000Z');
-  const elements = new Map();
-  const element = id => {
-    if (!elements.has(id)) elements.set(id, { value: '', innerHTML: '', className: '', add() {}, click() {} });
-    return elements.get(id);
-  };
-  class FakeDate extends Date {
-    constructor(...args) { super(...(args.length ? args : [clock])); }
-    static now() { return clock; }
-  }
-  function request(queue, details) {
-    let resolve;
-    const promise = new Promise(done => { resolve = done; });
-    queue.push({ ...details, resolve });
-    return promise;
-  }
-  const client = {
-    from(table) {
-      assert.equal(table, 'story_progress', 'tests must never access other tables');
-      return {
-        select() {
-          return { eq(column, storyId) {
-            assert.equal(column, 'story_id');
-            return request(reads, { storyId });
-          } };
-        },
-        upsert(items, options) {
-          assert.equal(options.onConflict, 'story_id,item_key');
-          return request(writes, { items: clone(items) });
-        }
-      };
-    }
-  };
-  const context = vm.createContext({
-    window: { BG3_CLOUD_CONFIG: { supabaseUrl: 'mock', supabasePublishableKey: 'mock' }, supabase: {} },
-    navigator: { onLine: true },
-    document: { getElementById: element },
-    Option: function Option(name, id) { this.name = name; this.id = id; },
-    localStorage: {
-      getItem: id => storage.get(id) ?? null,
-      setItem: (id, value) => storage.set(id, String(value)),
-      removeItem: id => storage.delete(id)
-    },
-    Date: FakeDate,
-    setTimeout: callback => { const id = ++timerId; timers.set(id, callback); return id; },
-    clearTimeout: id => timers.delete(id),
-    render: () => renders.push(vm.runInContext('({id:activeStoryId, progress:{...progress}})', context)),
-    confirm: () => true,
-    alert() {},
-    console: { error: error => errors.push(error), warn() {}, log() {} }
-  });
-  vm.runInContext(core + '\n' + reset + '\n' + imports, context);
-  context.mockClient = client;
-  const app = vm.runInContext(`({
-    sync: syncCurrentStory,
-    activate: activateStory,
-    mark: markRecord,
-    payload: progressFromPayload,
-    setUser(id) { currentUser=id?{id}:null; },
-    logoutPending() { explicitSignOut=true; },
-    state() { return {id:activeStoryId, records:storyRecords, progress}; },
-    reset() { $("reset").onclick(); },
-    async import(payload, mode="merge") {
-      importMode=mode;
-      await $("file").onchange({target:{files:[{text:async()=>JSON.stringify(payload)}],value:"file"}});
-    },
-    setup() { supabaseClient=mockClient; currentUser={id:"user-a"}; stories=[{id:"A",name:"A"},{id:"B",name:"B"}]; }
-  })`, context);
-  app.setup();
-  const seed = (id, items) => storage.set('bg3-gear-story-progress-v7:' + id,
-    JSON.stringify({ format: 'bg3-story-progress', formatVersion: 1, storyId: id, items }));
-  const cached = id => JSON.parse(storage.get('bg3-gear-story-progress-v7:' + id)).items;
-  return {
-    app, reads, writes, renders, errors, seed, cached, context,
-    state: () => clone(app.state()),
-    status: () => element('cloudStatus').innerHTML,
-    clock: value => { clock = Date.parse(value); },
-    runTimers: () => { const callbacks = [...timers.values()]; timers.clear(); callbacks.forEach(callback => callback()); }
-  };
-}
-
-async function setup(items = { item: record() }) {
-  const h = harness();
-  h.seed('A', items);
-  h.seed('B', { 'b-only': record('skipped') });
-  await h.app.activate('A', { sync: false });
-  return h;
-}
+const { harness, setup, clone, tick, record, row } = require('./helpers/app-harness.cjs');
 
 test('P0: switching during a read never merges A progress into B and queues B', async () => {
   const h = await setup();
@@ -313,6 +208,7 @@ test('a failed upload preserves dirty data and permits a later explicit retry', 
   await running;
   assert.equal(h.cached('A').item.dirty, true);
   assert.equal(h.reads.length, 1, 'failure alone must not cause a retry loop');
+  await h.readyBackend();
   const retry = h.app.sync();
   assert.equal(h.reads.length, 2);
   h.reads[1].resolve({ data: [], error: null });
@@ -334,7 +230,7 @@ test('local Stories never issue cloud progress requests', async () => {
   assert.equal(h.cached('local-example').item.status, 'todo');
 });
 
-test('a stale Story read error never replaces the new Story sync status', async () => {
+test('a failed old Story read closes the backend gate without changing the new Story records', async () => {
   const h = await setup();
   const running = h.app.sync();
   await h.app.activate('B');
@@ -342,7 +238,10 @@ test('a stale Story read error never replaces the new Story sync status', async 
   await running;
   await tick();
   assert.doesNotMatch(h.status(), /Synkfel/);
-  assert.deepEqual(h.reads.map(read => read.storyId), ['A', 'B']);
+  assert.deepEqual(h.reads.map(read => read.storyId), ['A']);
+  assert.equal(h.app.backend(), 'unavailable');
+  assert.equal(h.app.canWrite('B'), false);
+  assert.equal(h.state().id, 'B');
   assert.equal(h.state().records.item, undefined);
 });
 
@@ -353,6 +252,7 @@ test('an offline exit releases the sync lock for the existing online retry path'
   assert.equal(h.reads.length, 0);
   h.app.mark('item', 'todo');
   h.context.navigator.onLine = true;
+  await h.readyBackend();
   const retry = h.app.sync();
   h.reads[0].resolve({ data: [], error: null });
   await tick();

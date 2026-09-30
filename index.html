@@ -93,6 +93,7 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
  <div id=cloudStatus class="cloudstatus"><span class="syncdot offline"></span>Startar…</div>
 </div>
 
+<div id=backendStateLabel class=authhint role=status>Cloudstatus okänd · molnskrivningar blockerade</div>
 <div class=tabs><button class="tab active" data-act="">Alla Acts</button><button class=tab data-act="ACT 1">Act 1</button><button class=tab data-act="ACT 2">Act 2</button><button class=tab data-act="ACT 3">Act 3</button></div>
 <div class=stats>
 <div class=stat><span class=muted>Databas</span><b id=dbcount>0</b></div>
@@ -141,6 +142,7 @@ const FALLBACK=[{"act":"Act 1","item":"Everburn Blade","type":"Weapon","area":"N
 const REMOTE="https://raw.githubusercontent.com/RobzBE/bg3wikitool/refs/heads/main/Data/items.json";
 const DBKEY="bg3-complete-itemdb-v4",LEGACY_PKEY="bg3-complete-progress-v4",V6_PKEY="bg3-gear-progress-v6",PROGRESS_FORMAT=2,APP_VERSION=7;
 const STORIES_KEY="bg3-gear-stories-v7",ACTIVE_STORY_KEY="bg3-gear-active-story-v7",STORY_PROGRESS_PREFIX="bg3-gear-story-progress-v7:";
+const CLOUD_STORIES_PREFIX="bg3-gear-cloud-stories-v7:",CLOUD_TIMEOUT_MS=8000;
 const CLOUD_CONFIG=window.BG3_CLOUD_CONFIG||{};
 const CLOUD_CONFIGURED=!!(CLOUD_CONFIG.supabaseUrl&&CLOUD_CONFIG.supabasePublishableKey&&window.supabase);
 
@@ -156,6 +158,7 @@ const authStorage={
 
 let supabaseClient=null,currentUser=null,stories=[],activeStoryId=null,storyRecords={},syncTimer=null,syncBusy=false,syncPending=false;
 let explicitSignOut=false;
+let backendState="unknown",backendUserId=null,verifiedStoryIds=new Set(),backendGeneration=0,recoveryRun=null,progressCloudVerified=false,passwordRun=null;
 const TIERMAP={"Everburn Blade":"A","The Amulet of Lost Voices":"A","Gloves of Power":"A","Shapeshifter's Boon Ring":"A","Amulet of Silvanus":"A","The Whispering Promise":"S","Ring of Protection":"S","Hellrider's Pride":"S","Wapira's Crown":"A","Sorrow":"A","Silver Pendant":"A","Bracers of Defence":"S","Warped Headband of Intellect":"S","Haste Helm":"A","The Speedy Lightfeet":"A","Spiderstep Boots":"B","The Sparkle Hands":"A","Staff of Crones":"B","Sword of Justice":"A","The Spellsparkler":"S","Hamarhraft":"A","Harold":"A","Titanstring Bow":"S","Gloves of Thievery":"S","Crusher's Ring":"S","Returning Pike":"S","Doom Hammer":"A","Gloves of Archery":"A","Amulet of Misty Step":"S","Spidersilk Armour":"A","Boots of Striding":"A","The Watersparkers":"A","Gloves of the Growling Underdog":"S","Faithbreaker":"A","Springstep Boots":"A","Linebreaker Boots":"A","Dragon's Grasp":"B","Spellthief":"A","Ring of Flinging":"S","Rain Dancer":"A","Gloves of Heroism":"A","Club of Hill Giant Strength":"S","Staff of Arcane Blessing":"A","The Sparkswall":"A","Amulet of Restoration":"S","Caustic Band":"S","Gloves of Uninhibited Kushigo":"S","Melf's First Staff":"S","Psychic Spark":"S","Boots of Stormy Clamour":"S","Pearl of Power Amulet":"S","Ring of Salving":"A","Boots of Speed":"S","Luminous Armour":"S","Mourning Frost":"A","Phalar Aluve":"S","Shortsword of First Blood":"A","Intransigent Warhammer":"A","Armour of Uninhibited Kushigo":"A","Sentient Amulet":"S","Adamantine Scale Mail":"S","Adamantine Shield":"S","Adamantine Splint Armour":"S","Grymskull Helm":"A","Disintegrating Night Walkers":"S","Sword of Screams":"A","The Graceful Cloth":"S","Periapt of Wound Closure":"S","Gloves of Cinder and Sizzle":"A","Holy Lance Helm":"S","The Blood of Lathander":"S","Gloves of Belligerent Skies":"S","Necklace of Elemental Augmentation":"S","Diadem of Arcane Synergy":"S","Knife of the Undermountain King":"S","Unseen Menace":"S","Daredevil Gloves":"A","Gloves of Dexterity":"S","Vital Conduit Boots":"A","Soulbreaker Greatsword":"S","Shadow Blade Ring":"A","Ring of Mental Inhibition":"A","Penumbral Armour":"A","Hat of Fire Acuity":"S","Incandescent Staff":"A","Amulet of the Harpers":"A","Cloak of Protection":"S","Gloves of the Balanced Hands":"A","Shadeclinger Armour":"A","Shield of Devotion":"S","The Mighty Cloth":"A","Yuan-Ti Scale Mail":"S","Charge-Bound Warhammer":"A","Darkfire Shortbow":"S","Harmonium Halberd":"A","Flawed Helldusk Armour":"A","Flawed Helldusk Gloves":"A","Flawed Helldusk Helmet":"A","Gloves of the Automaton":"S","Potent Robe":"S","Snowburst Ring":"S","Coruscation Ring":"S","Surgeon's Subjugation Amulet":"S","Helmet of Arcane Acuity":"S","Twist of Fortune":"A","Lightning Jabber":"A","Hr'a'cknir Bracers":"A","Boots of Brilliance":"B","Hellfire Hand Crossbow":"S","Dark Justiciar Gauntlets":"A","Justiciar's Scimitar":"A","Justiciar's Greatshield":"A","Least Expected":"A","Dark Justiciar Half-Plate":"A","Callous Glow Ring":"S","Dark Justiciar Helmet":"A","Killer's Sweetheart":"S","Circle of Bones":"A","Moonlight Glaive":"A","Shar's Spear of Evening":"S","Dark Justiciar Boots":"A","Dark Justiciar Half-Plate (Very Rare)":"S","Boots of Arcane Bolstering":"B","Circlet of Hunting":"A","Hat of Storm Scion's Power":"S","Ring of Free Action":"A","Risky Ring":"S","Absolute's Protector":"A","Slicing Shortsword":"A","Render of Mind and Body":"A","Halberd of Vigilance":"S","Dwarven Splintmail":"A","Fistbreaker Helm":"A","Gloves of The Duellist":"A","Sentinel Shield":"S","Ne'er Misser":"S","Drakethroat Glaive":"S","Armour of Devotion":"A","Ring of Spiteful Thunder":"S","Sharpened Snare Cuirass":"A","Cloak of Elemental Absorption":"A","Spineshudder Amulet":"S","Spellcrux Amulet":"S","Infernal Rapier":"S","Blade of Oppressed Souls":"A","Braindrain Gloves":"A","Ketheric's Shield":"S","Reaper's Embrace":"S","Duke Ravengard's Longsword":"A","Emblazoned Plate of the Marshal":"A","Staff of the Emperor":"S","Boots of Uninhibited Kushigo":"S","Nyrulna":"S","Band of the Mystic Scoundrel":"S","Spellmight Gloves":"S","Dark Displacement Gloves":"A","Seraphic Pugilist Gloves":"A","Cold Snap":"A","Dwarven Thrower":"S","Hellrider Longbow":"S","Robe of Supreme Defences":"S","The Dancing Breeze":"S","Ambusher":"A","Bonespike Garb":"S","Elven Chain":"A","Stalker Gloves":"A","Harmonic Dueller":"A","Cloak of Displacement":"S","Garb of the Land and Sky":"S","Fabricated Arbalest":"S","Gauntlet of the Tyrant":"S","Helldusk Boots":"S","Elegant Studded Leather":"S","Mask of Soul Perception":"S","Caitiff Staff":"A","Cloak of the Weave":"S","Gemini Gloves":"S","Shapeshifter Hat":"S","Spellseeking Gloves":"A","Staff of the Ram":"A","Khalid's Gift":"S","Belm":"S","Wavemother's Robe":"S","Armour of Persistence":"S","Boots of Persistence":"S","Legacy of the Masters":"S","Dolor Amarus":"S","Spaceshunt Boots":"A","Cerebral Citadel Armour":"A","Cerebral Citadel Gloves":"A","Sword of the Emperor":"A","Boots of Psionic Movement":"A","Duellist's Prerogative":"S","Amulet of Windrider":"A","Armour of the Sporekeeper":"S","Crypt Lord Ring":"A","Hood of the Weave":"S","Armour of Landfall":"S","Birthright":"S","Quickspell Gloves":"S","Markoheshkir":"S","Robe of the Weave":"S","Hellfire Engine Crossbow":"S","Gontr Mael":"S","Steel Watcher Helmet":"A","The Dead Shot":"S","Flail of Ages":"S","Armour of Agility":"S","Mantle of the Holy Warrior":"S","The Reviving Hands":"S","Amulet of the Devout":"S","Bonespike Gloves":"S","Armour of Moonbasking":"S","Bonespike Helmet":"S","Bonespike Boots":"S","Crimson Mischief":"S","Bloodthirst":"S","Dolor Amarus (Murder Tribunal)":"S","Bhaalist Armour":"S","Craterflesh Gloves":"S","Sarevok's Horned Helmet":"S","Sword of Chaos":"S","Rhapsody":"S","Woe":"S","Helmet of Grit":"S","Viconia's Walking Fortress":"S","Handmaiden's Mace":"S","Selûne's Spear of Night":"S","Helm of Balduran":"S","Balduran's Giantslayer":"S","Orphic Hammer":"S","Gauntlets of Hill Giant Strength":"S","Amulet of Greater Health":"S","Helldusk Armour":"S","Gloves of Soul Catching":"S","Staff of Spellpower":"S"};
 let ITEMS=[],progress={},act="",embeddedComplete=false;
 const $=x=>document.getElementById(x);
@@ -184,7 +187,7 @@ function storyProgressKey(id){return STORY_PROGRESS_PREFIX+id}
 function activeStoryStorageKey(){return ACTIVE_STORY_KEY+":"+(currentUser?.id||"local")}
 function recordsToProgress(records=storyRecords){const out={};for(const [k,r] of Object.entries(records||{}))if(r&&r.status&&r.status!=="todo")out[k]=r.status;return out}
 function saveStoryRecords(){if(!activeStoryId)return;localStorage.setItem(storyProgressKey(activeStoryId),JSON.stringify({format:"bg3-story-progress",formatVersion:1,storyId:activeStoryId,items:storyRecords}));progress=recordsToProgress()}
-function loadStoryRecords(id){storyRecords={};try{const raw=JSON.parse(localStorage.getItem(storyProgressKey(id))||"null");if(raw&&raw.items)storyRecords=raw.items}catch(e){}progress=recordsToProgress()}
+function loadStoryRecords(id){progressCloudVerified=false;storyRecords={};try{const raw=JSON.parse(localStorage.getItem(storyProgressKey(id))||"null");if(raw&&raw.items)storyRecords=raw.items}catch(e){}progress=recordsToProgress()}
 function saveLocalStories(){localStorage.setItem(STORIES_KEY,JSON.stringify(stories.filter(s=>String(s.id).startsWith("local-"))))}
 function loadLocalStories(){try{stories=JSON.parse(localStorage.getItem(STORIES_KEY)||"[]")||[]}catch(e){stories=[]}}
 function ensureLocalStory(){loadLocalStories();if(!stories.length){stories=[{id:localId(),name:"Min story",local:true,created_at:nowIso()}];saveLocalStories()}const ask=activeStoryStorageKey();activeStoryId=localStorage.getItem(ask)||stories[0].id;if(!stories.some(s=>s.id===activeStoryId))activeStoryId=stories[0].id;localStorage.setItem(ask,activeStoryId);loadStoryRecords(activeStoryId)}
@@ -193,34 +196,146 @@ function progressFromPayload(o){if(!o||typeof o!=="object")throw new Error("Ogil
 function foundCount(p=progress){return Object.values(p).filter(v=>v==="found").length}
 function matchedCount(p){if(!ITEMS.length)return null;const valid=new Set(ITEMS.map(key));let n=0;for(const [k,v] of Object.entries(p))if(v==="found"&&valid.has(k))n++;return n}
 function done(x){return progress[key(x)]==="found"}
-function setCloudStatus(text,mode="offline"){const el=$("cloudStatus");if(!el)return;el.innerHTML=`<span class="syncdot ${mode}"></span>${esc(text)}`;el.className="cloudstatus "+(mode==="online"?"goodtxt":mode==="pending"?"warntxt":"")}
-function renderStorySelect(){const s=$("storySelect");if(!s)return;s.innerHTML="";for(const st of stories)s.add(new Option(st.name,st.id));if(activeStoryId&&stories.some(x=>x.id===activeStoryId))s.value=activeStoryId}
-async function activateStory(id,{sync=true}={}){if(!id)return;activeStoryId=id;localStorage.setItem(activeStoryStorageKey(),id);loadStoryRecords(id);renderStorySelect();render();if(sync&&CLOUD_CONFIGURED&&currentUser&&!String(id).startsWith("local-"))await syncCurrentStory()}
-async function createStory(name){name=(name||"").trim();if(!name)return null;if(CLOUD_CONFIGURED&&currentUser){const {data,error}=await supabaseClient.from("stories").insert({user_id:currentUser.id,name}).select().single();if(error)throw error;stories.push(data);renderStorySelect();await activateStory(data.id,{sync:false});setCloudStatus("Ny story skapad och synkad","online");return data}const st={id:localId(),name,local:true,created_at:nowIso()};stories.push(st);saveLocalStories();renderStorySelect();await activateStory(st.id,{sync:false});setCloudStatus("LOCAL DEV – story sparad på den här enheten","offline");return st}
-async function renameActiveStory(name){name=(name||"").trim();if(!name||!activeStoryId)return;if(CLOUD_CONFIGURED&&currentUser&&!String(activeStoryId).startsWith("local-")){const {error}=await supabaseClient.from("stories").update({name}).eq("id",activeStoryId);if(error)throw error}else{const st=stories.find(s=>s.id===activeStoryId);if(st)st.name=name;saveLocalStories()}const st=stories.find(s=>s.id===activeStoryId);if(st)st.name=name;renderStorySelect()}
+function canWriteCloud(storyId=null){
+  return !!(CLOUD_CONFIGURED&&supabaseClient&&currentUser&&!explicitSignOut&&navigator.onLine&&backendState==="ready"&&backendUserId===currentUser.id&&(!storyId||verifiedStoryIds.has(storyId)));
+}
+function requireCloudWrite(storyId=null){
+  if(!canWriteCloud(storyId))throw new Error("Molnskrivning blockerad · session, backend och Story måste verifieras. Prova Synka nu.");
+}
+function renderBackendState(){
+  const label=$("backendStateLabel");
+  if(label){
+    if(!currentUser)label.textContent="Lokalt/offline · ingen verifierad cloud-session";
+    else if(backendState!=="ready")label.textContent=`Cloud ${backendState==="checking"?"kontrolleras":backendState==="unavailable"?"otillgängligt":"okänt"} · lokal cache/offline · molnskrivningar blockerade`;
+    else if(!verifiedStoryIds.size)label.textContent="Verifierat cloud-konto · 0 Stories";
+    else if(!activeStoryId||!verifiedStoryIds.has(activeStoryId))label.textContent="Cloud-listan verifierad · välj en verifierad Story · lokal progress bevarad";
+    else if(!progressCloudVerified)label.textContent="Cloud-listan verifierad · progress visas från lokal cache tills synk lyckas";
+    else label.textContent=Object.values(storyRecords).some(r=>r?.dirty)?"Cloud tillgängligt · osynkade lokala ändringar":"Cloud och progress verifierade";
+  }
+  for(const id of ["newStory","showPasswordPanel","savePassword"]){const el=$(id);if(el)el.disabled=!!currentUser&&!canWriteCloud()||id==="savePassword"&&!!passwordRun}
+  for(const id of ["reset","import","replaceImport","file"]){const el=$(id);if(el)el.disabled=!activeStoryId}
+  const rename=$("renameStory");if(rename)rename.disabled=!activeStoryId||!!currentUser&&!String(activeStoryId).startsWith("local-")&&!canWriteCloud(activeStoryId);
+}
+function setCloudStatus(text,mode="offline"){
+  if(currentUser&&!canWriteCloud()){
+    text+=" · lokal cache/offline (cloud ej verifierad)";
+    mode=backendState==="checking"?"pending":"offline";
+  }
+  const el=$("cloudStatus");if(el){el.innerHTML=`<span class="syncdot ${mode}"></span>${esc(text)}`;el.className="cloudstatus "+(mode==="online"?"goodtxt":mode==="pending"?"warntxt":"")}
+  renderBackendState();
+}
+function invalidateBackend(state="unknown"){
+  backendGeneration++;backendState=state;backendUserId=null;verifiedStoryIds=new Set();recoveryRun=null;progressCloudVerified=false;
+  clearTimeout(syncTimer);syncTimer=null;syncPending=false;
+  renderStorySelect();renderBackendState();
+}
+function backendUnavailable(err){
+  invalidateBackend("unavailable");
+  setCloudStatus("Cloud otillgängligt · ändringar ligger kvar lokalt","offline");
+  if(err)console.warn("Backend unavailable",err);
+}
+function backendContextCurrent(userId,generation){return !explicitSignOut&&currentUser?.id===userId&&backendGeneration===generation}
+async function cloudRequest(request,label){
+  const controller=new AbortController();
+  if(typeof request?.abortSignal==="function")request=request.abortSignal(controller.signal);
+  try{
+    const result=await withTimeout(request,CLOUD_TIMEOUT_MS,label);
+    if(!result||typeof result!=="object"||Array.isArray(result)||!("error" in result))throw new Error(label+" returnerade ett ogiltigt svar");
+    if("status" in result&&(typeof result.status!=="number"||!Number.isInteger(result.status)||result.status<200||result.status>=300))throw new Error(label+" returnerade en ogiltig HTTP-status");
+    if(result.error!==null)throw result.error||new Error(label+" returnerade ett ogiltigt felsvar");
+    return result;
+  }catch(err){controller.abort();throw err}
+}
+function validatedStories(data,userId){
+  if(!Array.isArray(data))throw new Error("Story-listan kunde inte verifieras");
+  const ids=new Set();
+  for(const s of data){
+    if(!s||typeof s.id!=="string"||!s.id||s.id.startsWith("local-")||ids.has(s.id)||s.user_id!==userId||typeof s.name!=="string"||!s.name.trim()||Array.from(s.name).length>80)throw new Error("Ogiltig Story eller ägare i cloud-svaret");
+    ids.add(s.id);
+  }
+  return data.map(s=>({...s}));
+}
+function cacheCloudStories(userId){
+  try{localStorage.setItem(CLOUD_STORIES_PREFIX+userId,JSON.stringify({userId,stories,verifiedAt:nowIso()}))}catch(err){console.warn("Could not cache cloud Stories",err)}
+}
+function restoreCloudStoryCache(userId){
+  try{
+    const cached=JSON.parse(localStorage.getItem(CLOUD_STORIES_PREFIX+userId)||"null");
+    if(!cached||cached.userId!==userId)return false;
+    stories=validatedStories(cached.stories,userId);
+    const preferred=localStorage.getItem(activeStoryStorageKey());
+    activeStoryId=stories.some(s=>s.id===preferred)?preferred:stories[0]?.id||null;
+    if(activeStoryId)loadStoryRecords(activeStoryId);else{storyRecords={};progress={}}
+    renderStorySelect();render();return true;
+  }catch(err){console.warn("Could not read cached cloud Stories",err);return false}
+}
+function renderStorySelect(){
+  const s=$("storySelect");if(!s)return;s.innerHTML="";
+  if(!activeStoryId)s.add(new Option(currentUser?(backendState==="ready"?(stories.length?"Välj verifierad Story":"Inga Stories · verifierat konto"):"Välj Story · cloud ej verifierat"):"Välj lokal Story",""));
+  for(const st of stories){const cached=!String(st.id).startsWith("local-")&&!canWriteCloud(st.id);s.add(new Option(st.name+(cached?" · lokal cache/offline":""),st.id))}
+  s.value=activeStoryId&&stories.some(x=>x.id===activeStoryId)?activeStoryId:"";
+}
+async function activateStory(id,{sync=true}={}){
+  if(!id||(!String(id).startsWith("local-")&&!stories.some(s=>s.id===id)))return;
+  activeStoryId=id;localStorage.setItem(activeStoryStorageKey(),id);loadStoryRecords(id);renderStorySelect();render();renderBackendState();
+  if(sync&&CLOUD_CONFIGURED&&currentUser&&!String(id).startsWith("local-"))await syncCurrentStory();
+}
+async function createStory(name){
+  name=(name||"").trim();if(!name)return null;
+  if(CLOUD_CONFIGURED&&currentUser){
+    requireCloudWrite();
+    const userId=currentUser.id,generation=backendGeneration;
+    try{
+      const {data}=await cloudRequest(supabaseClient.from("stories").insert({user_id:userId,name}).select().single(),"Skapa Story");
+      if(!backendContextCurrent(userId,generation))return null;
+      const st=validatedStories([data],userId)[0];stories.push(st);verifiedStoryIds.add(st.id);cacheCloudStories(userId);
+      await activateStory(st.id,{sync:false});
+      if(backendContextCurrent(userId,generation))setCloudStatus("Ny Story skapad · progress sparas lokalt tills synk","online");
+      return st;
+    }catch(err){if(backendContextCurrent(userId,generation))backendUnavailable(err);throw err}
+  }
+  const st={id:localId(),name,local:true,created_at:nowIso()};stories.push(st);saveLocalStories();await activateStory(st.id,{sync:false});setCloudStatus("LOCAL DEV – story sparad på den här enheten","offline");return st;
+}
+async function renameActiveStory(name){
+  name=(name||"").trim();if(!name||!activeStoryId)return;
+  const storyId=activeStoryId,userId=currentUser?.id,generation=backendGeneration;
+  if(CLOUD_CONFIGURED&&currentUser&&!String(storyId).startsWith("local-")){
+    requireCloudWrite(storyId);
+    try{
+      await cloudRequest(supabaseClient.from("stories").update({name}).eq("id",storyId).eq("user_id",userId),"Byt Story-namn");
+      if(!backendContextCurrent(userId,generation))return;
+    }catch(err){if(backendContextCurrent(userId,generation))backendUnavailable(err);throw err}
+  }
+  const st=stories.find(s=>s.id===storyId);if(st)st.name=name;
+  if(String(storyId).startsWith("local-"))saveLocalStories();else cacheCloudStories(userId);
+  renderStorySelect();
+}
 function localRecord(itemKey,status,timestamp=nowIso()){
   // Keep later edits newer even within one millisecond or after a clock correction.
   const previous=Date.parse(storyRecords[itemKey]?.client_updated_at),next=Date.parse(timestamp);
   return {status,client_updated_at:new Date(Number.isFinite(previous)?Math.max(next,previous+1):next).toISOString(),dirty:true};
 }
-function markRecord(itemKey,status){storyRecords[itemKey]=localRecord(itemKey,status);saveStoryRecords();scheduleSync()}
+function markRecord(itemKey,status){if(!activeStoryId){alert("Välj eller skapa en Story först.");return}storyRecords[itemKey]=localRecord(itemKey,status);saveStoryRecords();scheduleSync()}
 function toggleFound(x,checked){markRecord(key(x),checked?"found":"todo");render()}
-function scheduleSync(){if(!(CLOUD_CONFIGURED&&currentUser&&activeStoryId&&!String(activeStoryId).startsWith("local-")))return;setCloudStatus("Ändringar väntar på synk…","pending");clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncCurrentStory().catch(console.error),500)}
+function scheduleSync(){if(!(CLOUD_CONFIGURED&&currentUser&&activeStoryId&&!String(activeStoryId).startsWith("local-")))return;setCloudStatus("Ändringar väntar på synk…","pending");if(!canWriteCloud(activeStoryId))return;clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncCurrentStory().catch(console.error),500)}
 function newer(a,b){return String(a||"")>String(b||"")}
 async function syncCurrentStory(){
   if(!CLOUD_CONFIGURED||!currentUser||explicitSignOut||!activeStoryId||String(activeStoryId).startsWith("local-"))return;
+  if(!navigator.onLine){backendUnavailable();return}
+  if(!canWriteCloud(activeStoryId)){setCloudStatus("Progress sparad lokalt · Synka nu för att verifiera cloud","offline");return}
   if(syncBusy){syncPending=true;return}
   syncBusy=true;
   clearTimeout(syncTimer);syncTimer=null;
-  const storyId=activeStoryId,userId=currentUser.id,records=storyRecords,snapshot={...records};
+  const storyId=activeStoryId,userId=currentUser.id,generation=backendGeneration,records=storyRecords,snapshot={...records};
   // Record-map identity also rejects an old response after A -> B -> A reloads A.
-  const isCurrent=()=>!explicitSignOut&&currentUser?.id===userId&&activeStoryId===storyId&&storyRecords===records;
+  const isCurrent=()=>backendContextCurrent(userId,generation)&&canWriteCloud(storyId)&&activeStoryId===storyId&&storyRecords===records;
   try{
     setCloudStatus(navigator.onLine?"Synkar…":"Offline – sparar lokalt",navigator.onLine?"pending":"offline");
     if(!navigator.onLine)return;
-    const {data:remote,error}=await supabaseClient.from("story_progress").select("item_key,status,client_updated_at").eq("story_id",storyId);
+    const {data:remote}=await cloudRequest(supabaseClient.from("story_progress").select("item_key,status,client_updated_at").eq("story_id",storyId),"Läs progress");
+    if(!backendContextCurrent(userId,generation))return;
+    if(!Array.isArray(remote)||remote.some(r=>!r||typeof r.item_key!=="string"||!r.item_key||!["found","todo","skipped"].includes(r.status)||typeof r.client_updated_at!=="string"||!Number.isFinite(Date.parse(r.client_updated_at))))throw new Error("Ogiltigt progress-svar");
     if(!isCurrent())return;
-    if(error)throw error;
     const remoteMap={};
     for(const r of remote||[])remoteMap[String(r.item_key).toLowerCase()]={status:r.status,client_updated_at:r.client_updated_at,dirty:false};
     const upserts=[],sentRecords={},all=new Set([...Object.keys(records),...Object.keys(remoteMap)]);
@@ -234,27 +349,66 @@ async function syncCurrentStory(){
       }else if(r){records[k]=r}
     }
     if(upserts.length){
-      const {error:e2}=await supabaseClient.from("story_progress").upsert(upserts,{onConflict:"story_id,item_key"});
+      requireCloudWrite(storyId);
+      await cloudRequest(supabaseClient.from("story_progress").upsert(upserts,{onConflict:"story_id,item_key"}),"Skriv progress");
       if(!isCurrent())return;
-      if(e2)throw e2;
       for(const u of upserts){
         if(records[u.item_key]===sentRecords[u.item_key])records[u.item_key]={status:u.status,client_updated_at:u.client_updated_at,dirty:false};
         else syncPending=true;
       }
     }
-    saveStoryRecords();render();
+    progressCloudVerified=true;saveStoryRecords();render();
     if(syncPending||Object.values(records).some(r=>r?.dirty))setCloudStatus("Ändringar väntar på synk…","pending");
     else setCloudStatus("Synkad · "+foundCount()+" hittade","online");
   }catch(err){
     console.error(err);
-    if(isCurrent())setCloudStatus("Synkfel – progress ligger kvar lokalt","offline");
+    // Availability belongs to the user/backend generation, even after a Story switch.
+    if(backendContextCurrent(userId,generation))backendUnavailable(err);
   }finally{
     syncBusy=false;
     // Calls made while busy are retained; failures alone do not trigger a retry loop.
-    if(syncPending){syncPending=false;syncCurrentStory().catch(console.error)}
+    if(syncPending){syncPending=false;if(canWriteCloud(activeStoryId))syncCurrentStory().catch(console.error)}
   }
 }
-async function loadCloudStories(){if(!currentUser)return;const {data,error}=await supabaseClient.from("stories").select("id,name,created_at,updated_at").order("created_at");if(error)throw error;stories=data||[];if(!stories.length){await createStory("Min story");return}let preferred=localStorage.getItem(activeStoryStorageKey());if(!stories.some(s=>s.id===preferred))preferred=stories[0].id;renderStorySelect();await activateStory(preferred)}
+function recoverBackend({flush=true}={}){
+  if(!CLOUD_CONFIGURED||!supabaseClient||!currentUser||explicitSignOut)return Promise.resolve(false);
+  if(!navigator.onLine){backendUnavailable();return Promise.resolve(false)}
+  const userId=currentUser.id;
+  if(recoveryRun?.userId===userId&&recoveryRun.generation===backendGeneration)return recoveryRun.promise;
+  const generation=++backendGeneration,run={userId,generation,promise:null};
+  recoveryRun=run;backendState="checking";backendUserId=null;verifiedStoryIds=new Set();progressCloudVerified=false;
+  clearTimeout(syncTimer);syncTimer=null;
+  if(!stories.length)restoreCloudStoryCache(userId);
+  renderStorySelect();setCloudStatus("Kontrollerar session och cloud-Stories…","pending");
+  run.promise=(async()=>{
+    try{
+      const auth=await cloudRequest(supabaseClient.auth.getUser(),"Verifiera session");
+      if(!backendContextCurrent(userId,generation))return false;
+      if(auth.data?.user?.id!==userId)throw new Error("Sessionen kunde inte verifieras för detta konto");
+      const {data}=await cloudRequest(supabaseClient.from("stories").select("id,user_id,name,created_at,updated_at").eq("user_id",userId).order("created_at"),"Läs Stories");
+      if(!backendContextCurrent(userId,generation))return false;
+      const live=validatedStories(data,userId),oldId=activeStoryId;
+      stories=live;verifiedStoryIds=new Set(live.map(s=>s.id));cacheCloudStories(userId);
+      if(oldId&&!String(oldId).startsWith("local-")&&!verifiedStoryIds.has(oldId)){
+        // A removed/unowned Story's pending records stay in their original cache.
+        activeStoryId=null;storyRecords={};progress={};render();
+      }else{
+        const preferred=oldId&&verifiedStoryIds.has(oldId)?oldId:localStorage.getItem(activeStoryStorageKey());
+        const selected=verifiedStoryIds.has(preferred)?preferred:live[0]?.id||null;
+        if(selected&&selected!==activeStoryId)await activateStory(selected,{sync:false});
+        else if(!selected){activeStoryId=null;storyRecords={};progress={};render()}
+      }
+      if(!backendContextCurrent(userId,generation))return false;
+      backendUserId=userId;backendState="ready";renderStorySelect();
+      setCloudStatus(live.length?"Session och Story-lista verifierade · lokal progress väntar på synk":"Verifierat konto · 0 Stories","online");
+      if(flush&&activeStoryId&&verifiedStoryIds.has(activeStoryId))await syncCurrentStory();
+      return backendState==="ready"&&backendUserId===userId;
+    }catch(err){if(backendContextCurrent(userId,generation))backendUnavailable(err);return false}
+    finally{if(recoveryRun===run)recoveryRun=null}
+  })();
+  return run.promise;
+}
+async function loadCloudStories(){return recoverBackend()}
 async function migrateLegacyAuthStorage(){
   try{
     if(!localStorage.getItem(AUTH_STORAGE_KEY)){
@@ -354,12 +508,26 @@ async function initCloud(){
     }}
   );
 
+  // Subscribe before recovery: a slow backend must not hide sign-out/account changes.
+  let authEventRevision=0;
+  supabaseClient.auth.onAuthStateChange((event,nextSession)=>{
+    const revision=++authEventRevision;
+    // Close the write gate immediately; SDK calls stay outside the auth callback.
+    if(event==="SIGNED_OUT"||currentUser?.id!==nextSession?.user?.id)invalidateBackend();
+    console.log("[BG3 auth]",event,{
+      hasSession:!!nextSession,
+      persisted:authStoragePresent()
+    });
+    setTimeout(()=>{if(revision===authEventRevision)handleSession(nextSession,event).catch(console.error)},0);
+  });
+  const bootstrapRevision=authEventRevision;
+
   // Never let auth bootstrap freeze the whole app.
   let session=null;
   try{
     const result=await withTimeout(supabaseClient.auth.getSession(),4500,"getSession");
-    session=result?.data?.session||null;
-    if(result?.error)console.warn("getSession error",result.error);
+    if(!result||result.error||!result.data||!("session" in result.data))throw result?.error||new Error("Ogiltigt sessionssvar");
+    session=result.data.session;
   }catch(err){
     console.warn("Auth bootstrap did not resolve in time",err);
     session=readStoredSession();
@@ -372,19 +540,22 @@ async function initCloud(){
     }catch(err){console.warn("Callback recovery timed out",err)}
   }
 
-  await handleSession(session);
-
-  supabaseClient.auth.onAuthStateChange((event,nextSession)=>{
-    console.log("[BG3 auth]",event,{
-      hasSession:!!nextSession,
-      persisted:authStoragePresent()
-    });
-    setTimeout(()=>handleSession(nextSession,event),0);
-  });
+  // A newer auth event owns the UI; never restore a stale bootstrap session.
+  if(authEventRevision===bootstrapRevision)await handleSession(session);
 }
 
 async function handleSession(session,event="INITIAL"){
-  currentUser=session?.user||null;
+  const nextUser=session?.user||null;
+  if(explicitSignOut&&nextUser)return;
+  const changed=currentUser?.id!==nextUser?.id;
+  currentUser=nextUser;
+  if(changed){
+    passwordRun=null;$("savePassword").textContent="Spara lösenord";
+    invalidateBackend();
+    stories=[];activeStoryId=null;storyRecords={};progress={};
+    if(currentUser)restoreCloudStoryCache(currentUser.id);
+    renderStorySelect();render();
+  }
 
   if(currentUser){
     $("authSignedOut").classList.add("hidden");
@@ -401,8 +572,10 @@ async function handleSession(session,event="INITIAL"){
       authStoragePresent()?"online":"pending"
     );
     updateAuthDiag(session,event);
-    await loadCloudStories();
+    // Same-user refreshes preserve verified state or join the current recovery.
+    if(!canWriteCloud())await loadCloudStories();
   }else{
+    if(!changed)invalidateBackend();
     $("authSignedIn").classList.add("hidden");
     $("authSignedOut").classList.remove("hidden");
     ensureLocalStory();importLegacyIntoCurrentOnce();renderStorySelect();
@@ -469,7 +642,7 @@ function render(){
  const list=view(),b=$("body"),cards=$("cards");b.innerHTML="";cards.innerHTML="";$("empty").hidden=!!list.length;
  $("mobileCount").textContent=`Visar ${list.length} item${list.length===1?"":"s"}`;
  for(const x of list){
-  const isDone=done(x),tier=tierOf(x),rc=(x.rarity||"").toLowerCase().replace(/\s+/g,"");
+  const isDone=done(x),editDisabled=activeStoryId?"":"disabled",tier=tierOf(x),rc=(x.rarity||"").toLowerCase().replace(/\s+/g,"");
   const flags=(vendor(x)?'<span class="badge vendor">Vendor</span> ':"")+(quest(x)?'<span class="badge miss">Quest/val</span> ':"");
   const rarityBadge=x.rarity?`<span class="badge ${rc}">${esc(x.rarity)}</span>`:"";
   const tierBadge=tier?`<span class="badge ${tier.toLowerCase()}">${esc(tier)}-tier</span>`:"";
@@ -477,16 +650,17 @@ function render(){
   const actBadge=x.act?`<span class="badge">${esc(x.act)}</span>`:"";
 
   const tr=document.createElement("tr");if(isDone)tr.className="done";
-  tr.innerHTML=`<td class=check><input type=checkbox ${isDone?"checked":""} aria-label="Markera ${esc(x.name)} som hittad"></td><td>${esc(x.act)}</td><td class=item><b>${esc(x.name)}</b></td><td>${rarityBadge}</td><td>${tier?`<span class="badge ${tier.toLowerCase()}">${esc(tier)}</span>`:""}</td><td>${esc(x.type)}</td><td>${esc(x.area)}</td><td>${esc(x.location)}</td><td>${esc(x.properties)}</td><td>${esc(x.description)}</td><td>${flags}</td><td>${x.source?`<a class=wiki href="${esc(x.source)}" target=_blank rel=noopener>bg3.wiki</a>`:""}</td>`;
+  tr.innerHTML=`<td class=check><input type=checkbox ${isDone?"checked":""} ${editDisabled} aria-label="Markera ${esc(x.name)} som hittad"></td><td>${esc(x.act)}</td><td class=item><b>${esc(x.name)}</b></td><td>${rarityBadge}</td><td>${tier?`<span class="badge ${tier.toLowerCase()}">${esc(tier)}</span>`:""}</td><td>${esc(x.type)}</td><td>${esc(x.area)}</td><td>${esc(x.location)}</td><td>${esc(x.properties)}</td><td>${esc(x.description)}</td><td>${flags}</td><td>${x.source?`<a class=wiki href="${esc(x.source)}" target=_blank rel=noopener>bg3.wiki</a>`:""}</td>`;
   tr.querySelector("input").onchange=e=>toggleFound(x,e.target.checked);b.appendChild(tr);
 
   const card=document.createElement("article");card.className="gearcard"+(isDone?" done":"");
   const sourceLink=x.source?`<a class=wiki href="${esc(x.source)}" target=_blank rel=noopener>Öppna källa ↗</a>`:'<span class=muted>Ingen källa angiven</span>';
   const loc=x.location||"Ingen location angiven";
-  card.innerHTML=`<div class=cardtop><div class=cardcheck><input type=checkbox ${isDone?"checked":""} aria-label="Markera ${esc(x.name)} som hittad"></div><div class=cardmain><h3 class=cardname>${esc(x.name)}</h3><div class=cardbadges>${actBadge}${rarityBadge}${tierBadge}${typeBadge}${flags}</div></div></div><div class=cardplace><b>${esc(x.area||"Okänt område")}</b>${loc?` · ${esc(loc)}`:""}</div><details class=carddetails><summary>Visa detaljer</summary><div class=detailgrid><div class=detailrow><span class=label>Location / hur du får den</span>${esc(loc)}</div>${x.properties?`<div class=detailrow><span class=label>Egenskaper</span>${esc(x.properties)}</div>`:""}${x.description?`<div class=detailrow><span class=label>Effekt</span>${esc(x.description)}</div>`:""}<div class=detailrow><span class=label>Källa</span>${sourceLink}</div></div></details>`;
+  card.innerHTML=`<div class=cardtop><div class=cardcheck><input type=checkbox ${isDone?"checked":""} ${editDisabled} aria-label="Markera ${esc(x.name)} som hittad"></div><div class=cardmain><h3 class=cardname>${esc(x.name)}</h3><div class=cardbadges>${actBadge}${rarityBadge}${tierBadge}${typeBadge}${flags}</div></div></div><div class=cardplace><b>${esc(x.area||"Okänt område")}</b>${loc?` · ${esc(loc)}`:""}</div><details class=carddetails><summary>Visa detaljer</summary><div class=detailgrid><div class=detailrow><span class=label>Location / hur du får den</span>${esc(loc)}</div>${x.properties?`<div class=detailrow><span class=label>Egenskaper</span>${esc(x.properties)}</div>`:""}${x.description?`<div class=detailrow><span class=label>Effekt</span>${esc(x.description)}</div>`:""}<div class=detailrow><span class=label>Källa</span>${sourceLink}</div></div></details>`;
   card.querySelector("input").onchange=e=>toggleFound(x,e.target.checked);cards.appendChild(card);
  }
  const scope=ITEMS.filter(x=>!act||x.act===act),total=scope.length,found=scope.filter(done).length,p=total?Math.round(found/total*100):0;
+ renderBackendState();
  $("dbcount").textContent=ITEMS.length;$("total").textContent=total;$("found").textContent=found;$("left").textContent=total-found;$("pct").textContent=p+"%";$("bar").style.width=p+"%";
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");act=b.dataset.act;populate();render()});
@@ -494,7 +668,7 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelect
 $("clear").onclick=()=>{$("q").value="";$("area").value="";$("type").value="";$("rarity").value="";$("tier").value="";$("source").value="";$("state").value="";$("sort").value="area";render()};
 $("onlyS").onclick=()=>{$("tier").value="S";render()};
 $("refresh").onclick=()=>loadRemote(true);
-$("reset").onclick=()=>{if(confirm("Nollställa alla checkboxar i den aktiva Storyn?")){const ts=nowIso();for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts);saveStoryRecords();render();scheduleSync()}};
+$("reset").onclick=()=>{if(!activeStoryId){alert("Välj eller skapa en Story först.");return}if(confirm("Nollställa alla checkboxar i den aktiva Storyn?")){const ts=nowIso();for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts);saveStoryRecords();render();scheduleSync()}};
 $("export").onclick=()=>{
  const legacy=legacyMap(),st=stories.find(s=>s.id===activeStoryId);
  const payload={format:"bg3-gear-progress",formatVersion:PROGRESS_FORMAT,appVersion:APP_VERSION,story:{id:activeStoryId,name:st?.name||"Story"},exportedAt:new Date().toISOString(),checkedCount:foundCount(),items:progress,progress:legacy};
@@ -505,6 +679,7 @@ $("import").onclick=()=>{importMode="merge";$("file").click()};
 $("replaceImport").onclick=()=>{importMode="replace";$("file").click()};
 $("file").onchange=async e=>{
  const f=e.target.files[0];if(!f)return;
+ if(!activeStoryId){alert("Välj eller skapa en Story först.");e.target.value="";return}
  const isAnon=!!(currentUser?.is_anonymous || currentUser?.app_metadata?.provider==="anonymous");
  if(isAnon){
    alert("Import är blockerad i den anonyma testsessionen. Logga in på ditt riktiga konto och välj rätt Story innan du importerar progress.");
@@ -513,6 +688,7 @@ $("file").onchange=async e=>{
  }
  try{
   const o=JSON.parse(await f.text()),incoming=progressFromPayload(o),incomingFound=foundCount(incoming);
+  if(!activeStoryId){alert("Välj eller skapa en Story först.");e.target.value="";return}
   if(importMode==="replace"&&!confirm(`Ersätta all progress i Storyn “${stories.find(s=>s.id===activeStoryId)?.name||"Story"}” med ${incomingFound} hittade items?`)){e.target.value="";return}
   const ts=nowIso();
   if(importMode==="replace"){for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts)}
@@ -672,18 +848,19 @@ $("savePassword").onclick=async()=>{
     return;
   }
 
+  try{requireCloudWrite()}catch(err){alert(err.message);return}
+  const userId=currentUser.id,generation=backendGeneration,run={userId,generation};
+  if(passwordRun)return;
+  passwordRun=run;
   const btn=$("savePassword");
   btn.disabled=true;
   btn.textContent="Sparar…";
   setCloudStatus("Uppdaterar lösenord hos Supabase…","pending");
 
   try{
-    const result=await withTimeout(
-      supabaseClient.auth.updateUser({password:p1}),
-      12000,
-      "updateUser password"
-    );
-    if(result?.error)throw result.error;
+    const result=await cloudRequest(supabaseClient.auth.updateUser({password:p1}),"Uppdatera lösenord");
+    if(!backendContextCurrent(userId,generation))return;
+    if(result.data?.user?.id!==userId)throw new Error("Lösenordssvaret kunde inte verifieras");
 
     // Clear sensitive UI state immediately. Password is never persisted by this app.
     $("newPassword").value="";
@@ -693,13 +870,14 @@ $("savePassword").onclick=async()=>{
     alert("Lösenordet är satt på ditt befintliga Supabase-konto. Siberia och ditt user-ID är oförändrade.");
   }catch(err){
     console.error("Password update failed",err);
+    if(!backendContextCurrent(userId,generation))return;
+    backendUnavailable(err);
     $("newPassword").value="";
     $("confirmPassword").value="";
     setCloudStatus("Kunde inte sätta lösenord","offline");
     alert("Kunde inte sätta lösenord: "+(err?.message||err));
   }finally{
-    btn.disabled=false;
-    btn.textContent="Spara lösenord";
+    if(passwordRun===run){passwordRun=null;btn.textContent="Spara lösenord";renderBackendState()}
   }
 };
 
@@ -740,15 +918,17 @@ $("sendMagicLink").onclick=async()=>{
 };
 $("signOut").onclick=async()=>{
   explicitSignOut=true;
+  invalidateBackend();
   if(supabaseClient)await supabaseClient.auth.signOut();
   try{localStorage.removeItem(AUTH_STORAGE_KEY)}catch(_){}
   currentUser=null;
   updateAuthDiag(null,"SIGNED_OUT");
   explicitSignOut=false;
 };
-$("syncNow").onclick=()=>syncCurrentStory();
-window.addEventListener("online",()=>syncCurrentStory());
-window.addEventListener("focus",()=>{if(CLOUD_CONFIGURED&&currentUser)syncCurrentStory()});
+$("syncNow").onclick=()=>recoverBackend();
+window.addEventListener("offline",()=>{if(currentUser)backendUnavailable()});
+window.addEventListener("online",()=>recoverBackend());
+window.addEventListener("focus",()=>{if(CLOUD_CONFIGURED&&currentUser)recoverBackend()});
 
 // --- PWA shell / installation ---
 
@@ -798,8 +978,8 @@ loadRemote(false).catch?.(()=>{});
 
 initCloud().catch(err=>{
   console.error(err);
-  setCloudStatus("Cloud-init misslyckades: "+(err?.message||err),"offline");
-  ensureLocalStory();
+  if(currentUser)backendUnavailable(err);
+  else{setCloudStatus("Cloud-init misslyckades: "+(err?.message||err),"offline");ensureLocalStory()}
   renderStorySelect();
   render();
 });
