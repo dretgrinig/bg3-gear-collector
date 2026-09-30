@@ -4,20 +4,22 @@ const { join } = require('node:path');
 const vm = require('node:vm');
 
 const html = readFileSync(process.env.BG3_TEST_HTML || join(__dirname, '..', '..', 'index.html'), 'utf8');
-// Execute the real inline implementation; omit network/auth bootstrap.
+// Execute the real inline implementation against isolated DOM/storage/SDK mocks.
 const section = (start, end) => {
   const first = html.indexOf(start), last = html.indexOf(end, first);
   assert.ok(first >= 0 && last > first, `Application section missing: ${start}`);
   return html.slice(first, last);
 };
 const core = section('const DBKEY=', 'async function migrateLegacyAuthStorage()');
-const timeout = section('function withTimeout(', 'function readStoredSession()');
+const authSupport = section('async function migrateLegacyAuthStorage()', 'async function initCloud(');
 const reset = section('$("reset").onclick=', '$("export").onclick=');
 const imports = section('let importMode="merge";', '$("saveOffline").onclick=');
 const triggers = section('$("syncNow").onclick=', '// --- PWA shell');
 const sessions = section('async function handleSession(', '/* v7.6.1: duplicate');
 const bootstrap = section('async function initCloud(', 'async function handleSession(');
 const passwords = section('$("savePassword").onclick=', '$("sendMagicLink").onclick=');
+const login = section('$("signInPassword").onclick=', '$("showPasswordPanel").onclick=');
+const logout = section('$("signOut").onclick=', '$("syncNow").onclick=');
 const clone = value => JSON.parse(JSON.stringify(value));
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const record = (status = 'found', timestamp = '2026-09-29T10:00:00.000Z') => ({
@@ -32,13 +34,14 @@ const ownedStories = (userId = 'user-a') => [
 function harness({ userId = 'user-a', stories = ownedStories(userId) } = {}) {
   const storage = new Map(), timers = new Map(), reads = [], writes = [], renders = [], errors = [];
   const authReads = [], authWrites = [], bootReads = [], authCallbacks = [], storyReads = [], storyWrites = [], calls = [], events = new Map();
+  const signOuts = [], signIns = [], adoptedSessions = [], storageCalls = [], storageFaults = new Map(), alerts = [];
+  const clientOptions = [], activeAuthCallbacks = new Set();
   let timerId = 0, clock = Date.parse('2026-09-29T12:00:00.000Z');
   const elements = new Map();
   const element = id => {
     if (!elements.has(id)) elements.set(id, {
-      value: '', innerHTML: '', className: '', disabled: false, options: [],
-      add(option) { this.options.push(option); }, click() {},
-      classList: { add() {}, remove() {}, contains() { return false; } }
+      value: '', innerHTML: '', className: ['authSignedIn', 'passwordPanel'].includes(id) ? 'hidden' : '', disabled: false, options: [],
+      add(option) { this.options.push(option); }, click() {}, focus() {},
     });
     const value = elements.get(id);
     if (!value._htmlAccessor) {
@@ -48,6 +51,12 @@ function harness({ userId = 'user-a', stories = ownedStories(userId) } = {}) {
         set(content) { html = content; if (content === '') this.options = []; }
       });
       value._htmlAccessor = true;
+      const classes = () => new Set(value.className.split(/\s+/).filter(Boolean));
+      value.classList = {
+        add(...names) { const list = classes(); names.forEach(name => list.add(name)); value.className = [...list].join(' '); },
+        remove(...names) { const list = classes(); names.forEach(name => list.delete(name)); value.className = [...list].join(' '); },
+        contains(name) { return classes().has(name); }
+      };
     }
     return value;
   };
@@ -83,10 +92,15 @@ function harness({ userId = 'user-a', stories = ownedStories(userId) } = {}) {
     auth: {
       getUser() { return request(authReads, { type: 'session' }); },
       getSession() { return request(bootReads, { type: 'bootstrap-session' }); },
+      signOut(options) { return request(signOuts, { type: 'sign-out', options: options ? clone(options) : null }); },
+      signInWithPassword(value) { return request(signIns, { type: 'sign-in', value: clone(value) }); },
+      setSession(value) { return request(adoptedSessions, { type: 'adopt-session', value: clone(value) }); },
       onAuthStateChange(callback) {
         authCallbacks.push(callback);
-        return { data: { subscription: { unsubscribe() {} } } };
+        activeAuthCallbacks.add(callback);
+        return { data: { subscription: { unsubscribe() { activeAuthCallbacks.delete(callback); } } } };
       },
+      stopAutoRefresh() {}, startAutoRefresh() {},
       updateUser(value) { return request(authWrites, { type: 'password', value: clone(value) }); }
     },
     from(table) {
@@ -106,9 +120,21 @@ function harness({ userId = 'user-a', stories = ownedStories(userId) } = {}) {
       };
     }
   };
+  const storageMethod = method => ({ get: 'getItem', set: 'setItem', remove: 'removeItem' }[method] || method);
+  const faultKey = (method, key) => storageMethod(method) + '\0' + key;
+  function storageOperation(method, key, value) {
+    storageCalls.push({ method, key, ...(value === undefined ? {} : { value: String(value) }) });
+    const fault = storageFaults.get(faultKey(method, key)) || storageFaults.get(faultKey(method, '*'));
+    if (fault) throw fault;
+    if (method === 'getItem') return storage.get(key) ?? null;
+    if (method === 'setItem') storage.set(key, String(value));
+    else storage.delete(key);
+  }
   const context = vm.createContext({
     window: {
-      BG3_CLOUD_CONFIG: { supabaseUrl: 'mock', supabasePublishableKey: 'mock' }, supabase: { createClient: () => client },
+      BG3_CLOUD_CONFIG: { supabaseUrl: 'mock', supabasePublishableKey: 'mock' }, supabase: {
+        createClient(url, publishableKey, options) { clientOptions.push(options); return client; }
+      },
       addEventListener(name, callback) {
         if (!events.has(name)) events.set(name, []);
         events.get(name).push(callback);
@@ -116,24 +142,22 @@ function harness({ userId = 'user-a', stories = ownedStories(userId) } = {}) {
     },
     navigator: { onLine: true }, document: { getElementById: element },
     location: { hash: '', pathname: '/', search: '' },
+    history: { replaceState() {} },
     Option: function Option(name, id) { this.name = name; this.text = name; this.id = id; },
     localStorage: {
-      getItem: id => storage.get(id) ?? null,
-      setItem: (id, value) => storage.set(id, String(value)),
-      removeItem: id => storage.delete(id)
+      getItem: id => storageOperation('getItem', id),
+      setItem: (id, value) => storageOperation('setItem', id, value),
+      removeItem: id => storageOperation('removeItem', id)
     }, Date: FakeDate, AbortController,
     setTimeout(callback, delay = 0) {
       const id = ++timerId; timers.set(id, { callback, delay, at: clock + delay }); return id;
     },
     clearTimeout: id => timers.delete(id),
     render: () => renders.push(vm.runInContext('({id:activeStoryId, progress:{...progress}})', context)),
-    confirm: () => true, alert() {},
-    authStoragePresent: () => true, updateAuthDiag() {}, shortId: id => String(id).slice(0, 8),
-    migrateLegacyAuthStorage: async () => {}, readStoredSession: () => null,
-    recoverImplicitCallbackIfNeeded: async () => null,
+    confirm: () => true, alert: message => alerts.push(String(message)), URLSearchParams,
     console: { error: error => errors.push(error), warn() {}, log() {} }
   });
-  vm.runInContext(core + '\n' + timeout + '\n' + reset + '\n' + imports + '\n' + triggers + '\n' + sessions + '\n' + passwords + '\n' + bootstrap, context);
+  vm.runInContext([core, authSupport, reset, imports, triggers, sessions, passwords, bootstrap, login, logout].join('\n'), context);
   context.mockClient = client;
   context.fixtureUserId = userId;
   context.fixtureStories = clone(stories);
@@ -141,6 +165,14 @@ function harness({ userId = 'user-a', stories = ownedStories(userId) } = {}) {
     sync: syncCurrentStory, activate: activateStory, mark: markRecord,
     payload: progressFromPayload, create: createStory, rename: renameActiveStory,
     load: loadCloudStories, session: handleSession, init: initCloud,
+    logout() { return $("signOut").onclick(); },
+    login(email='regression@example.invalid', password='Regression-only-password-123!') {
+      $("authEmail").value=email; $("authPassword").value=password;
+      return $("signInPassword").onclick();
+    },
+    migrate: migrateLegacyAuthStorage, storedSession: readStoredSession,
+    authStore: authStorage, authPresent: authStoragePresent,
+    authKeys() { return { current: AUTH_STORAGE_KEY, legacy: LEGACY_SUPABASE_AUTH_KEY }; },
     user() { return currentUser?.id || null; },
     password(value='Regression-only-password-123!') {
       $("newPassword").value=value; $("confirmPassword").value=value;
@@ -170,13 +202,17 @@ function harness({ userId = 'user-a', stories = ownedStories(userId) } = {}) {
   };
   return {
     app, reads, writes, authReads, authWrites, bootReads, authCallbacks, storyReads, storyWrites, calls, renders, errors,
-    emitAuth: (event, owner) => authCallbacks.forEach(callback => callback(event, owner ? { user: { id: owner } } : null)),
+    signOuts, signIns, adoptedSessions, storageCalls, alerts, clientOptions,
+    failStorage(method, key, error = new Error('Mock storage unavailable')) { storageFaults.set(faultKey(method, key), error); },
+    clearStorageFaults() { storageFaults.clear(); },
+    emitAuth: (event, owner) => activeAuthCallbacks.forEach(callback => callback(event, owner ? { user: { id: owner } } : null)),
     seed, cached, seedCloudStories, storage, context, element,
     readyBackend: values => ready({ app, authReads, storyReads, context }, values || ownedStories(userId)),
     state: () => clone(app.state()), status: () => element('cloudStatus').innerHTML,
     trigger: name => (events.get(name) || []).forEach(callback => callback()),
     manualSync: () => element('syncNow').onclick(),
     clock: value => { clock = Date.parse(value); },
+    timerCount: () => timers.size,
     runTimers: () => {
       const due = [...timers.entries()].filter(([, timer]) => timer.delay <= 500);
       for (const [id, timer] of due) { timers.delete(id); timer.callback(); }

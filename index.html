@@ -150,14 +150,18 @@ const CLOUD_CONFIGURED=!!(CLOUD_CONFIG.supabaseUrl&&CLOUD_CONFIG.supabasePublish
 // of the PWA/service-worker cache.
 const AUTH_STORAGE_KEY="bg3-gear-auth-v1";
 const LEGACY_SUPABASE_AUTH_KEY="sb-xpcnbloizronlbilcbxf-auth-token";
+const AUTH_LOGOUT_KEY="bg3-gear-auth-logout-v1",RECOVERY_COOLDOWN_MS=5000;
 const authStorage={
-  getItem:key=>localStorage.getItem(key),
-  setItem:(key,value)=>localStorage.setItem(key,value),
-  removeItem:key=>localStorage.removeItem(key)
+  getItem:key=>authStorageForGeneration(authGeneration).getItem(key),
+  setItem:(key,value)=>authStorageForGeneration(authGeneration).setItem(key,value),
+  removeItem:key=>authStorageForGeneration(authGeneration).removeItem(key)
 };
 
 let supabaseClient=null,currentUser=null,stories=[],activeStoryId=null,storyRecords={},syncTimer=null,syncBusy=false,syncPending=false;
 let explicitSignOut=false;
+let authGeneration=0,authEventRevision=0,authSubscription=null,authMemory=null,authRestoreBlocked=false,loginRun=null,logoutRun=null;
+let recoveryCooldown=null,activeProgressUnknown=false,localStoriesMemory=null;
+const storageFailures=new Map(),progressMemory=new Map(),cloudStoriesMemory=new Map(),retiredAuthReads=new Map(),localStoryChanges=new Map();
 let backendState="unknown",backendUserId=null,verifiedStoryIds=new Set(),backendGeneration=0,recoveryRun=null,progressCloudVerified=false,passwordRun=null;
 const TIERMAP={"Everburn Blade":"A","The Amulet of Lost Voices":"A","Gloves of Power":"A","Shapeshifter's Boon Ring":"A","Amulet of Silvanus":"A","The Whispering Promise":"S","Ring of Protection":"S","Hellrider's Pride":"S","Wapira's Crown":"A","Sorrow":"A","Silver Pendant":"A","Bracers of Defence":"S","Warped Headband of Intellect":"S","Haste Helm":"A","The Speedy Lightfeet":"A","Spiderstep Boots":"B","The Sparkle Hands":"A","Staff of Crones":"B","Sword of Justice":"A","The Spellsparkler":"S","Hamarhraft":"A","Harold":"A","Titanstring Bow":"S","Gloves of Thievery":"S","Crusher's Ring":"S","Returning Pike":"S","Doom Hammer":"A","Gloves of Archery":"A","Amulet of Misty Step":"S","Spidersilk Armour":"A","Boots of Striding":"A","The Watersparkers":"A","Gloves of the Growling Underdog":"S","Faithbreaker":"A","Springstep Boots":"A","Linebreaker Boots":"A","Dragon's Grasp":"B","Spellthief":"A","Ring of Flinging":"S","Rain Dancer":"A","Gloves of Heroism":"A","Club of Hill Giant Strength":"S","Staff of Arcane Blessing":"A","The Sparkswall":"A","Amulet of Restoration":"S","Caustic Band":"S","Gloves of Uninhibited Kushigo":"S","Melf's First Staff":"S","Psychic Spark":"S","Boots of Stormy Clamour":"S","Pearl of Power Amulet":"S","Ring of Salving":"A","Boots of Speed":"S","Luminous Armour":"S","Mourning Frost":"A","Phalar Aluve":"S","Shortsword of First Blood":"A","Intransigent Warhammer":"A","Armour of Uninhibited Kushigo":"A","Sentient Amulet":"S","Adamantine Scale Mail":"S","Adamantine Shield":"S","Adamantine Splint Armour":"S","Grymskull Helm":"A","Disintegrating Night Walkers":"S","Sword of Screams":"A","The Graceful Cloth":"S","Periapt of Wound Closure":"S","Gloves of Cinder and Sizzle":"A","Holy Lance Helm":"S","The Blood of Lathander":"S","Gloves of Belligerent Skies":"S","Necklace of Elemental Augmentation":"S","Diadem of Arcane Synergy":"S","Knife of the Undermountain King":"S","Unseen Menace":"S","Daredevil Gloves":"A","Gloves of Dexterity":"S","Vital Conduit Boots":"A","Soulbreaker Greatsword":"S","Shadow Blade Ring":"A","Ring of Mental Inhibition":"A","Penumbral Armour":"A","Hat of Fire Acuity":"S","Incandescent Staff":"A","Amulet of the Harpers":"A","Cloak of Protection":"S","Gloves of the Balanced Hands":"A","Shadeclinger Armour":"A","Shield of Devotion":"S","The Mighty Cloth":"A","Yuan-Ti Scale Mail":"S","Charge-Bound Warhammer":"A","Darkfire Shortbow":"S","Harmonium Halberd":"A","Flawed Helldusk Armour":"A","Flawed Helldusk Gloves":"A","Flawed Helldusk Helmet":"A","Gloves of the Automaton":"S","Potent Robe":"S","Snowburst Ring":"S","Coruscation Ring":"S","Surgeon's Subjugation Amulet":"S","Helmet of Arcane Acuity":"S","Twist of Fortune":"A","Lightning Jabber":"A","Hr'a'cknir Bracers":"A","Boots of Brilliance":"B","Hellfire Hand Crossbow":"S","Dark Justiciar Gauntlets":"A","Justiciar's Scimitar":"A","Justiciar's Greatshield":"A","Least Expected":"A","Dark Justiciar Half-Plate":"A","Callous Glow Ring":"S","Dark Justiciar Helmet":"A","Killer's Sweetheart":"S","Circle of Bones":"A","Moonlight Glaive":"A","Shar's Spear of Evening":"S","Dark Justiciar Boots":"A","Dark Justiciar Half-Plate (Very Rare)":"S","Boots of Arcane Bolstering":"B","Circlet of Hunting":"A","Hat of Storm Scion's Power":"S","Ring of Free Action":"A","Risky Ring":"S","Absolute's Protector":"A","Slicing Shortsword":"A","Render of Mind and Body":"A","Halberd of Vigilance":"S","Dwarven Splintmail":"A","Fistbreaker Helm":"A","Gloves of The Duellist":"A","Sentinel Shield":"S","Ne'er Misser":"S","Drakethroat Glaive":"S","Armour of Devotion":"A","Ring of Spiteful Thunder":"S","Sharpened Snare Cuirass":"A","Cloak of Elemental Absorption":"A","Spineshudder Amulet":"S","Spellcrux Amulet":"S","Infernal Rapier":"S","Blade of Oppressed Souls":"A","Braindrain Gloves":"A","Ketheric's Shield":"S","Reaper's Embrace":"S","Duke Ravengard's Longsword":"A","Emblazoned Plate of the Marshal":"A","Staff of the Emperor":"S","Boots of Uninhibited Kushigo":"S","Nyrulna":"S","Band of the Mystic Scoundrel":"S","Spellmight Gloves":"S","Dark Displacement Gloves":"A","Seraphic Pugilist Gloves":"A","Cold Snap":"A","Dwarven Thrower":"S","Hellrider Longbow":"S","Robe of Supreme Defences":"S","The Dancing Breeze":"S","Ambusher":"A","Bonespike Garb":"S","Elven Chain":"A","Stalker Gloves":"A","Harmonic Dueller":"A","Cloak of Displacement":"S","Garb of the Land and Sky":"S","Fabricated Arbalest":"S","Gauntlet of the Tyrant":"S","Helldusk Boots":"S","Elegant Studded Leather":"S","Mask of Soul Perception":"S","Caitiff Staff":"A","Cloak of the Weave":"S","Gemini Gloves":"S","Shapeshifter Hat":"S","Spellseeking Gloves":"A","Staff of the Ram":"A","Khalid's Gift":"S","Belm":"S","Wavemother's Robe":"S","Armour of Persistence":"S","Boots of Persistence":"S","Legacy of the Masters":"S","Dolor Amarus":"S","Spaceshunt Boots":"A","Cerebral Citadel Armour":"A","Cerebral Citadel Gloves":"A","Sword of the Emperor":"A","Boots of Psionic Movement":"A","Duellist's Prerogative":"S","Amulet of Windrider":"A","Armour of the Sporekeeper":"S","Crypt Lord Ring":"A","Hood of the Weave":"S","Armour of Landfall":"S","Birthright":"S","Quickspell Gloves":"S","Markoheshkir":"S","Robe of the Weave":"S","Hellfire Engine Crossbow":"S","Gontr Mael":"S","Steel Watcher Helmet":"A","The Dead Shot":"S","Flail of Ages":"S","Armour of Agility":"S","Mantle of the Holy Warrior":"S","The Reviving Hands":"S","Amulet of the Devout":"S","Bonespike Gloves":"S","Armour of Moonbasking":"S","Bonespike Helmet":"S","Bonespike Boots":"S","Crimson Mischief":"S","Bloodthirst":"S","Dolor Amarus (Murder Tribunal)":"S","Bhaalist Armour":"S","Craterflesh Gloves":"S","Sarevok's Horned Helmet":"S","Sword of Chaos":"S","Rhapsody":"S","Woe":"S","Helmet of Grit":"S","Viconia's Walking Fortress":"S","Handmaiden's Mace":"S","Selûne's Spear of Night":"S","Helm of Balduran":"S","Balduran's Giantslayer":"S","Orphic Hammer":"S","Gauntlets of Hill Giant Strength":"S","Amulet of Greater Health":"S","Helldusk Armour":"S","Gloves of Soul Catching":"S","Staff of Spellpower":"S"};
 let ITEMS=[],progress={},act="",embeddedComplete=false;
@@ -186,11 +190,125 @@ function legacyMap(){const out={};for(const [k,v] of Object.entries(progress))if
 function storyProgressKey(id){return STORY_PROGRESS_PREFIX+id}
 function activeStoryStorageKey(){return ACTIVE_STORY_KEY+":"+(currentUser?.id||"local")}
 function recordsToProgress(records=storyRecords){const out={};for(const [k,r] of Object.entries(records||{}))if(r&&r.status&&r.status!=="todo")out[k]=r.status;return out}
-function saveStoryRecords(){if(!activeStoryId)return;localStorage.setItem(storyProgressKey(activeStoryId),JSON.stringify({format:"bg3-story-progress",formatVersion:1,storyId:activeStoryId,items:storyRecords}));progress=recordsToProgress()}
-function loadStoryRecords(id){progressCloudVerified=false;storyRecords={};try{const raw=JSON.parse(localStorage.getItem(storyProgressKey(id))||"null");if(raw&&raw.items)storyRecords=raw.items}catch(e){}progress=recordsToProgress()}
-function saveLocalStories(){localStorage.setItem(STORIES_KEY,JSON.stringify(stories.filter(s=>String(s.id).startsWith("local-"))))}
-function loadLocalStories(){try{stories=JSON.parse(localStorage.getItem(STORIES_KEY)||"[]")||[]}catch(e){stories=[]}}
-function ensureLocalStory(){loadLocalStories();if(!stories.length){stories=[{id:localId(),name:"Min story",local:true,created_at:nowIso()}];saveLocalStories()}const ask=activeStoryStorageKey();activeStoryId=localStorage.getItem(ask)||stories[0].id;if(!stories.some(s=>s.id===activeStoryId))activeStoryId=stories[0].id;localStorage.setItem(ask,activeStoryId);loadStoryRecords(activeStoryId)}
+function storageResult(key,result,operation="read"){
+  key=operation+":"+key;
+  if(result.state==="ok"||result.state==="missing")storageFailures.delete(key);
+  else storageFailures.set(key,{state:result.state,owner:currentUser?.id||"local"});
+  return result;
+}
+function storageRead(key){
+  try{const value=localStorage.getItem(key);return storageResult(key,{state:value===null?"missing":"ok",value})}
+  catch(error){return storageResult(key,{state:"inaccessible",error})}
+}
+function storageJSON(key,validate){
+  const result=storageRead(key);if(result.state!=="ok")return result;
+  try{const value=JSON.parse(result.value);if(!validate(value))throw new Error("Ogiltig lagrad data");return storageResult(key,{state:"ok",value})}
+  catch(error){return storageResult(key,{state:"corrupt",error})}
+}
+function storageWrite(key,value,{json=false}={}){
+  try{localStorage.setItem(key,json?JSON.stringify(value):String(value));return storageResult(key,{state:"ok"},"write")}
+  catch(error){return storageResult(key,{state:"inaccessible",error},"write")}
+}
+function storageRemove(key){
+  try{localStorage.removeItem(key);return storageResult(key,{state:"ok"},"remove")}
+  catch(error){return storageResult(key,{state:"inaccessible",error},"remove")}
+}
+function objectMap(value){return !!value&&typeof value==="object"&&!Array.isArray(value)}
+function validRecords(items){
+  return objectMap(items)&&Object.entries(items).every(([k,r])=>k&&objectMap(r)&&["found","todo","skipped"].includes(r.status)&&typeof r.client_updated_at==="string"&&Number.isFinite(Date.parse(r.client_updated_at))&&typeof r.dirty==="boolean");
+}
+function validProgressCache(value,id){return objectMap(value)&&value.format==="bg3-story-progress"&&value.formatVersion===1&&value.storyId===id&&validRecords(value.items)}
+function copyRecords(items){return Object.fromEntries(Object.entries(items).map(([k,r])=>[k,{...r}]))}
+function reconcileRecords(memory,stored){
+  const merged=new Map(Object.entries(memory));
+  for(const [k,r] of Object.entries(stored)){
+    const previous=merged.get(k);
+    // Memory wins ties, including a cloud acknowledgement not yet saved to disk.
+    if(!previous||newer(r.client_updated_at,previous.client_updated_at))merged.set(k,{...r});
+  }
+  return Object.fromEntries(merged);
+}
+function sameRecords(left,right){
+  return Object.keys(left).length===Object.keys(right).length&&Object.entries(left).every(([k,r])=>right[k]&&["status","client_updated_at","dirty"].every(field=>r[field]===right[k][field]));
+}
+function reconcileStoredRecords(){
+  const cached=storageJSON(storyProgressKey(activeStoryId),value=>validProgressCache(value,activeStoryId));
+  if(cached.state==="ok")for(const [k,r] of Object.entries(reconcileRecords(storyRecords,cached.value.items))){
+    if(storyRecords[k]===r)continue;
+    // Keep the active map and unchanged item references used by in-flight syncs.
+    Object.defineProperty(storyRecords,k,{value:r,writable:true,enumerable:true,configurable:true});
+    if(syncBusy)syncPending=true;
+  }
+  return cached;
+}
+function progressMemoryKey(id){return JSON.stringify([currentUser?.id||"local",id])}
+function rememberProgress(){
+  if(!activeStoryId||activeProgressUnknown)return;
+  const memoryKey=progressMemoryKey(activeStoryId),previous=progressMemory.get(memoryKey);
+  progressMemory.set(memoryKey,{...previous,items:copyRecords(storyRecords),known:true,durable:previous?.durable??false});
+}
+function canEditProgress(){return !!activeStoryId&&!activeProgressUnknown}
+function storageWarning(){
+  if(activeProgressUnknown)return "Lokal progress okänd · lagringen är skadad eller otillgänglig · redigering blockerad tills progress verifieras";
+  const memory=activeStoryId&&progressMemory.get(progressMemoryKey(activeStoryId));
+  if(memory&&!memory.durable)return Object.values(storyRecords).some(r=>r.dirty)?"Ändringar endast i minnet · inte varaktigt sparade · exportera före omladdning":"Lokal cache kunde inte sparas · progress finns i minnet";
+  const keys=[AUTH_STORAGE_KEY,LEGACY_SUPABASE_AUTH_KEY,AUTH_LOGOUT_KEY,DBKEY,activeStoryStorageKey(),activeStoryId&&storyProgressKey(activeStoryId),currentUser?CLOUD_STORIES_PREFIX+currentUser.id:STORIES_KEY];
+  return keys.some(k=>["read","write","remove"].some(op=>{const issue=storageFailures.get(op+":"+k);return issue&&(issue.owner===(currentUser?.id||"local")||[AUTH_STORAGE_KEY,LEGACY_SUPABASE_AUTH_KEY,AUTH_LOGOUT_KEY,DBKEY].includes(k))}))?"Lokallagring otillgänglig eller skadad · lokal lagring kunde inte verifieras":"";
+}
+function saveStoryRecords(){
+  if(!canEditProgress())return;
+  const cached=reconcileStoredRecords();
+  progress=recordsToProgress();rememberProgress();
+  const memory=progressMemory.get(progressMemoryKey(activeStoryId));
+  // Preserve unreadable raw data; only a valid/missing cache may be replaced.
+  memory.durable=(cached.state==="ok"||cached.state==="missing")&&storageWrite(storyProgressKey(activeStoryId),{format:"bg3-story-progress",formatVersion:1,storyId:activeStoryId,items:storyRecords},{json:true}).state==="ok";
+  renderBackendState();
+}
+function loadStoryRecords(id){
+  progressCloudVerified=false;
+  const memoryKey=progressMemoryKey(id),memory=progressMemory.get(memoryKey);
+  const cached=storageJSON(storyProgressKey(id),value=>validProgressCache(value,id));
+  const failed=cached.state!=="ok"&&cached.state!=="missing";
+  activeProgressUnknown=failed&&!memory?.known;
+  // Always create a fresh map, including when recovering a volatile snapshot.
+  storyRecords=copyRecords(reconcileRecords(memory?.known?memory.items:{},cached.state==="ok"?cached.value.items:{}));
+  if(!activeProgressUnknown)progressMemory.set(memoryKey,{items:copyRecords(storyRecords),known:true,durable:!failed&&(cached.state==="missing"?Object.keys(storyRecords).length===0:sameRecords(storyRecords,cached.value.items))});
+  progress=recordsToProgress();
+}
+function validLocalStories(value){
+  if(!Array.isArray(value))return false;
+  const ids=new Set();return value.every(st=>{if(!objectMap(st)||typeof st.id!=="string"||!st.id.startsWith("local-")||ids.has(st.id)||typeof st.name!=="string"||!st.name.trim())return false;ids.add(st.id);return true});
+}
+function reconcileLocalStories(memory,stored){
+  const merged=new Map((memory||[]).map(st=>[st.id,{...st}]));
+  for(const st of stored)merged.set(st.id,{...merged.get(st.id),...st});
+  // Only our unpersisted create/rename intent overrides a valid stored name.
+  for(const [id,st] of localStoryChanges)merged.set(id,{...merged.get(id),...st});
+  return [...merged.values()];
+}
+function saveLocalStories(){
+  const local=stories.filter(st=>String(st.id).startsWith("local-")),previous=new Map((localStoriesMemory||[]).map(st=>[st.id,st]));
+  for(const st of local)if(!previous.has(st.id)||previous.get(st.id).name!==st.name)localStoryChanges.set(st.id,{...st});
+  const cached=storageJSON(STORIES_KEY,validLocalStories);
+  localStoriesMemory=reconcileLocalStories(local,cached.state==="ok"?cached.value:[]);
+  stories=stories.filter(st=>!String(st.id).startsWith("local-")).concat(localStoriesMemory.map(st=>({...st})));
+  if((cached.state==="ok"||cached.state==="missing")&&storageWrite(STORIES_KEY,localStoriesMemory,{json:true}).state==="ok")localStoryChanges.clear();
+}
+function loadLocalStories(){
+  const cached=storageJSON(STORIES_KEY,validLocalStories);
+  if(cached.state==="ok")localStoriesMemory=reconcileLocalStories(localStoriesMemory,cached.value);
+  if(cached.state==="missing"&&localStoriesMemory?.length&&storageWrite(STORIES_KEY,localStoriesMemory,{json:true}).state==="ok")localStoryChanges.clear();
+  stories=(localStoriesMemory||[]).map(st=>({...st}));
+  return cached.state;
+}
+function ensureLocalStory(){
+  const state=loadLocalStories();
+  if(!stories.length&&(state==="ok"||state==="missing")){stories=[{id:localId(),name:"Min story",local:true,created_at:nowIso()}];saveLocalStories()}
+  const preferred=storageRead(activeStoryStorageKey());
+  activeStoryId=stories.some(st=>st.id===preferred.value)?preferred.value:stories[0]?.id||null;
+  if(activeStoryId){storageWrite(activeStoryStorageKey(),activeStoryId);loadStoryRecords(activeStoryId)}
+  else{storyRecords={};progress={};activeProgressUnknown=false}
+}
 function importLegacyIntoCurrentOnce(){/* v7.6.1: disabled by design. Legacy progress only enters via explicit Import into the selected Story. */}
 function progressFromPayload(o){if(!o||typeof o!=="object")throw new Error("Ogiltig progressfil");return canonicalizeProgress(o.items||o.progress||o)}
 function foundCount(p=progress){return Object.values(p).filter(v=>v==="found").length}
@@ -213,7 +331,8 @@ function renderBackendState(){
     else label.textContent=Object.values(storyRecords).some(r=>r?.dirty)?"Cloud tillgängligt · osynkade lokala ändringar":"Cloud och progress verifierade";
   }
   for(const id of ["newStory","showPasswordPanel","savePassword"]){const el=$(id);if(el)el.disabled=!!currentUser&&!canWriteCloud()||id==="savePassword"&&!!passwordRun}
-  for(const id of ["reset","import","replaceImport","file"]){const el=$(id);if(el)el.disabled=!activeStoryId}
+  if(label&&storageWarning())label.textContent+=" · "+storageWarning();
+  for(const id of ["reset","import","replaceImport","file"]){const el=$(id);if(el)el.disabled=!canEditProgress()}
   const rename=$("renameStory");if(rename)rename.disabled=!activeStoryId||!!currentUser&&!String(activeStoryId).startsWith("local-")&&!canWriteCloud(activeStoryId);
 }
 function setCloudStatus(text,mode="offline"){
@@ -221,6 +340,7 @@ function setCloudStatus(text,mode="offline"){
     text+=" · lokal cache/offline (cloud ej verifierad)";
     mode=backendState==="checking"?"pending":"offline";
   }
+  if(storageWarning())text+=" · "+storageWarning();
   const el=$("cloudStatus");if(el){el.innerHTML=`<span class="syncdot ${mode}"></span>${esc(text)}`;el.className="cloudstatus "+(mode==="online"?"goodtxt":mode==="pending"?"warntxt":"")}
   renderBackendState();
 }
@@ -230,6 +350,7 @@ function invalidateBackend(state="unknown"){
   renderStorySelect();renderBackendState();
 }
 function backendUnavailable(err){
+  recoveryCooldown=currentUser?{userId:currentUser.id,until:Date.now()+RECOVERY_COOLDOWN_MS}:null;
   invalidateBackend("unavailable");
   setCloudStatus("Cloud otillgängligt · ändringar ligger kvar lokalt","offline");
   if(err)console.warn("Backend unavailable",err);
@@ -256,18 +377,18 @@ function validatedStories(data,userId){
   return data.map(s=>({...s}));
 }
 function cacheCloudStories(userId){
-  try{localStorage.setItem(CLOUD_STORIES_PREFIX+userId,JSON.stringify({userId,stories,verifiedAt:nowIso()}))}catch(err){console.warn("Could not cache cloud Stories",err)}
+  const cached={userId,stories:stories.map(st=>({...st})),verifiedAt:nowIso()};
+  cloudStoriesMemory.set(userId,cached);storageWrite(CLOUD_STORIES_PREFIX+userId,cached,{json:true});
 }
 function restoreCloudStoryCache(userId){
-  try{
-    const cached=JSON.parse(localStorage.getItem(CLOUD_STORIES_PREFIX+userId)||"null");
-    if(!cached||cached.userId!==userId)return false;
-    stories=validatedStories(cached.stories,userId);
-    const preferred=localStorage.getItem(activeStoryStorageKey());
-    activeStoryId=stories.some(s=>s.id===preferred)?preferred:stories[0]?.id||null;
-    if(activeStoryId)loadStoryRecords(activeStoryId);else{storyRecords={};progress={}}
-    renderStorySelect();render();return true;
-  }catch(err){console.warn("Could not read cached cloud Stories",err);return false}
+  const cached=storageJSON(CLOUD_STORIES_PREFIX+userId,value=>{try{return objectMap(value)&&value.userId===userId&&Array.isArray(validatedStories(value.stories,userId))}catch(_){return false}});
+  const value=cloudStoriesMemory.get(userId)||(cached.state==="ok"?cached.value:null);
+  if(!value)return false;
+  stories=value.stories.map(st=>({...st}));cloudStoriesMemory.set(userId,value);
+  const preferred=storageRead(activeStoryStorageKey());
+  activeStoryId=stories.some(st=>st.id===preferred.value)?preferred.value:stories[0]?.id||null;
+  if(activeStoryId)loadStoryRecords(activeStoryId);else{storyRecords={};progress={};activeProgressUnknown=false}
+  renderStorySelect();render();return true;
 }
 function renderStorySelect(){
   const s=$("storySelect");if(!s)return;s.innerHTML="";
@@ -277,7 +398,7 @@ function renderStorySelect(){
 }
 async function activateStory(id,{sync=true}={}){
   if(!id||(!String(id).startsWith("local-")&&!stories.some(s=>s.id===id)))return;
-  activeStoryId=id;localStorage.setItem(activeStoryStorageKey(),id);loadStoryRecords(id);renderStorySelect();render();renderBackendState();
+  rememberProgress();activeStoryId=id;storageWrite(activeStoryStorageKey(),id);loadStoryRecords(id);renderStorySelect();render();renderBackendState();
   if(sync&&CLOUD_CONFIGURED&&currentUser&&!String(id).startsWith("local-"))await syncCurrentStory();
 }
 async function createStory(name){
@@ -315,10 +436,10 @@ function localRecord(itemKey,status,timestamp=nowIso()){
   const previous=Date.parse(storyRecords[itemKey]?.client_updated_at),next=Date.parse(timestamp);
   return {status,client_updated_at:new Date(Number.isFinite(previous)?Math.max(next,previous+1):next).toISOString(),dirty:true};
 }
-function markRecord(itemKey,status){if(!activeStoryId){alert("Välj eller skapa en Story först.");return}storyRecords[itemKey]=localRecord(itemKey,status);saveStoryRecords();scheduleSync()}
+function markRecord(itemKey,status){if(!canEditProgress()){alert("Välj en Story med verifierbar progress först.");return}reconcileStoredRecords();storyRecords[itemKey]=localRecord(itemKey,status);saveStoryRecords();scheduleSync()}
 function toggleFound(x,checked){markRecord(key(x),checked?"found":"todo");render()}
 function scheduleSync(){if(!(CLOUD_CONFIGURED&&currentUser&&activeStoryId&&!String(activeStoryId).startsWith("local-")))return;setCloudStatus("Ändringar väntar på synk…","pending");if(!canWriteCloud(activeStoryId))return;clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncCurrentStory().catch(console.error),500)}
-function newer(a,b){return String(a||"")>String(b||"")}
+function newer(a,b){return Date.parse(a)>Date.parse(b)}
 async function syncCurrentStory(){
   if(!CLOUD_CONFIGURED||!currentUser||explicitSignOut||!activeStoryId||String(activeStoryId).startsWith("local-"))return;
   if(!navigator.onLine){backendUnavailable();return}
@@ -357,7 +478,7 @@ async function syncCurrentStory(){
         else syncPending=true;
       }
     }
-    progressCloudVerified=true;saveStoryRecords();render();
+    activeProgressUnknown=false;progressCloudVerified=true;saveStoryRecords();render();
     if(syncPending||Object.values(records).some(r=>r?.dirty))setCloudStatus("Ändringar väntar på synk…","pending");
     else setCloudStatus("Synkad · "+foundCount()+" hittade","online");
   }catch(err){
@@ -370,11 +491,12 @@ async function syncCurrentStory(){
     if(syncPending){syncPending=false;if(canWriteCloud(activeStoryId))syncCurrentStory().catch(console.error)}
   }
 }
-function recoverBackend({flush=true}={}){
+function recoverBackend({flush=true,background=false}={}){
   if(!CLOUD_CONFIGURED||!supabaseClient||!currentUser||explicitSignOut)return Promise.resolve(false);
   if(!navigator.onLine){backendUnavailable();return Promise.resolve(false)}
   const userId=currentUser.id;
   if(recoveryRun?.userId===userId&&recoveryRun.generation===backendGeneration)return recoveryRun.promise;
+  if(background&&recoveryCooldown?.userId===userId&&Date.now()<recoveryCooldown.until)return Promise.resolve(false);
   const generation=++backendGeneration,run={userId,generation,promise:null};
   recoveryRun=run;backendState="checking";backendUserId=null;verifiedStoryIds=new Set();progressCloudVerified=false;
   clearTimeout(syncTimer);syncTimer=null;
@@ -393,13 +515,13 @@ function recoverBackend({flush=true}={}){
         // A removed/unowned Story's pending records stay in their original cache.
         activeStoryId=null;storyRecords={};progress={};render();
       }else{
-        const preferred=oldId&&verifiedStoryIds.has(oldId)?oldId:localStorage.getItem(activeStoryStorageKey());
+        const preferred=oldId&&verifiedStoryIds.has(oldId)?oldId:storageRead(activeStoryStorageKey()).value;
         const selected=verifiedStoryIds.has(preferred)?preferred:live[0]?.id||null;
         if(selected&&selected!==activeStoryId)await activateStory(selected,{sync:false});
         else if(!selected){activeStoryId=null;storyRecords={};progress={};render()}
       }
       if(!backendContextCurrent(userId,generation))return false;
-      backendUserId=userId;backendState="ready";renderStorySelect();
+      recoveryCooldown=null;backendUserId=userId;backendState="ready";renderStorySelect();
       setCloudStatus(live.length?"Session och Story-lista verifierade · lokal progress väntar på synk":"Verifierat konto · 0 Stories","online");
       if(flush&&activeStoryId&&verifiedStoryIds.has(activeStoryId))await syncCurrentStory();
       return backendState==="ready"&&backendUserId===userId;
@@ -408,28 +530,126 @@ function recoverBackend({flush=true}={}){
   })();
   return run.promise;
 }
-async function loadCloudStories(){return recoverBackend()}
-async function migrateLegacyAuthStorage(){
-  try{
-    if(!localStorage.getItem(AUTH_STORAGE_KEY)){
-      const old=localStorage.getItem(LEGACY_SUPABASE_AUTH_KEY);
-      if(old)localStorage.setItem(AUTH_STORAGE_KEY,old);
+async function loadCloudStories(options){return recoverBackend(options)}
+function storedAuthSession(value){
+  const session=value?.currentSession||value?.session||value;
+  return objectMap(session)&&typeof session.access_token==="string"&&!!session.access_token&&typeof session.refresh_token==="string"&&!!session.refresh_token&&objectMap(session.user)&&typeof session.user.id==="string"&&!!session.user.id?session:null;
+}
+function logoutMarkerBlocked(){
+  const marker=storageRead(AUTH_LOGOUT_KEY);
+  return marker.state==="inaccessible"||marker.state==="corrupt"||marker.state==="ok"&&marker.value!=="0";
+}
+function authStorageForGeneration(generation){
+  return {
+    getItem(key){
+      // Only the bounded sign-out request may read its retired token snapshot.
+      // Retired clients can never write/remove tokens or publish auth state.
+      if(generation!==authGeneration)return key===AUTH_STORAGE_KEY?retiredAuthReads.get(generation)||null:null;
+      if(explicitSignOut)return null;
+      if(key===AUTH_STORAGE_KEY&&authMemory)return authMemory;
+      if(authRestoreBlocked||logoutMarkerBlocked())return null;
+      const result=key===AUTH_STORAGE_KEY?storageJSON(key,value=>!!storedAuthSession(value)):storageRead(key);
+      return result.state==="ok"?(key===AUTH_STORAGE_KEY?JSON.stringify(storedAuthSession(result.value)):result.value):null;
+    },
+    setItem(key,value){
+      if(generation!==authGeneration||explicitSignOut)return;
+      if(key===AUTH_STORAGE_KEY){
+        let session;try{session=storedAuthSession(JSON.parse(value))}catch(_){}
+        if(!session){storageResult(key,{state:"corrupt"});return}
+        if(authRestoreBlocked&&!loginRun)return;
+        if(currentUser&&session.user.id!==currentUser.id&&!loginRun)return;
+        authMemory=JSON.stringify(session);
+        if(authRestoreBlocked)return;
+      }
+      storageWrite(key,value);
+    },
+    removeItem(key){
+      if(generation!==authGeneration)return;
+      if(key===AUTH_STORAGE_KEY)authMemory=null;
+      storageRemove(key);
     }
-  }catch(err){console.warn("Auth storage migration failed",err)}
+  };
 }
-
-function authStoragePresent(){
-  try{return !!localStorage.getItem(AUTH_STORAGE_KEY)}catch(_){return false}
+async function migrateLegacyAuthStorage(){
+  if(explicitSignOut||authRestoreBlocked||logoutMarkerBlocked()){authRestoreBlocked=true;return}
+  const current=storageJSON(AUTH_STORAGE_KEY,value=>!!storedAuthSession(value));
+  if(current.state!=="missing")return;
+  const legacy=storageJSON(LEGACY_SUPABASE_AUTH_KEY,value=>!!storedAuthSession(value));
+  if(legacy.state==="ok"&&storageWrite(AUTH_STORAGE_KEY,storedAuthSession(legacy.value),{json:true}).state==="ok")storageRemove(LEGACY_SUPABASE_AUTH_KEY);
 }
-
+function authStoragePresent(){return !explicitSignOut&&!authRestoreBlocked&&!logoutMarkerBlocked()&&storageJSON(AUTH_STORAGE_KEY,value=>!!storedAuthSession(value)).state==="ok"}
+function retireAuthClient(){
+  try{authSubscription?.unsubscribe()}catch(err){console.warn("Could not detach auth listener",err)}
+  authSubscription=null;
+  try{Promise.resolve(supabaseClient?.auth.stopAutoRefresh?.()).catch(console.warn)}catch(err){console.warn("Could not stop auth refresh",err)}
+}
+function createAuthClient(){
+  retireAuthClient();
+  const generation=authGeneration;
+  supabaseClient=window.supabase.createClient(CLOUD_CONFIG.supabaseUrl,CLOUD_CONFIG.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:authStorageForGeneration(generation),storageKey:AUTH_STORAGE_KEY,flowType:"implicit"}});
+  const listener=supabaseClient.auth.onAuthStateChange((event,nextSession)=>{
+    if(generation!==authGeneration||explicitSignOut||authRestoreBlocked&&nextSession?.user)return;
+    if(loginRun&&!nextSession?.user)return;
+    const revision=++authEventRevision;
+    if(event==="SIGNED_OUT"||currentUser?.id!==nextSession?.user?.id)invalidateBackend();
+    setTimeout(()=>{if(generation===authGeneration&&revision===authEventRevision)handleSession(nextSession,event,generation,{background:true}).catch(console.error)},0);
+  });
+  authSubscription=listener?.data?.subscription||null;
+  return supabaseClient;
+}
+function acceptAuthSession(session){
+  authRestoreBlocked=false;
+  const validated=storedAuthSession(session);
+  authMemory=validated?JSON.stringify(validated):null;
+  if(validated){
+    const saved=storageWrite(AUTH_STORAGE_KEY,validated,{json:true});
+    const cleaned=storageRemove(LEGACY_SUPABASE_AUTH_KEY);
+    // A memory-only login must not revive old disk tokens on a later startup.
+    storageWrite(AUTH_LOGOUT_KEY,saved.state==="ok"&&cleaned.state==="ok"?"0":"1");
+  }
+}
+function showSignedOut(){
+  $("authSignedIn").classList.add("hidden");$("authSignedOut").classList.remove("hidden");$("passwordPanel").classList.add("hidden");
+  for(const id of ["authPassword","newPassword","confirmPassword","userEmail"])$(id).value="";
+  $("userEmail").textContent="";$("savePassword").textContent="Spara lösenord";
+  $("signInPassword").disabled=false;$("signInPassword").textContent="Logga in";
+  ensureLocalStory();renderStorySelect();render();
+}
+function logout(){
+  if(logoutRun?.generation===authGeneration)return logoutRun.promise;
+  const oldClient=supabaseClient,oldGeneration=authGeneration;
+  const stored=authMemory||authStorageForGeneration(oldGeneration).getItem(AUTH_STORAGE_KEY);
+  if(stored)retiredAuthReads.set(oldGeneration,stored);
+  rememberProgress();authGeneration++;authEventRevision++;explicitSignOut=true;authRestoreBlocked=true;loginRun=null;passwordRun=null;authMemory=null;recoveryCooldown=null;
+  invalidateBackend();retireAuthClient();supabaseClient=null;
+  storageWrite(AUTH_LOGOUT_KEY,"1");storageRemove(AUTH_STORAGE_KEY);storageRemove(LEGACY_SUPABASE_AUTH_KEY);
+  currentUser=null;stories=[];activeStoryId=null;storyRecords={};progress={};activeProgressUnknown=false;
+  showSignedOut();updateAuthDiag(null,"SIGNED_OUT");setCloudStatus("Utloggad lokalt · molnskrivningar blockerade","offline");
+  const run={generation:authGeneration,promise:null};logoutRun=run;
+  run.promise=(async()=>{
+    let error=null;
+    try{
+      if(oldClient){const result=await withTimeout(oldClient.auth.signOut(),CLOUD_TIMEOUT_MS,"signOut");if(!objectMap(result)||!("error" in result)||result.error!==null)throw result?.error||new Error("Ogiltigt utloggningssvar")}
+    }catch(err){error=err;console.warn("Remote sign-out was not confirmed",err)}
+    finally{
+      retiredAuthReads.delete(oldGeneration);
+      if(run.generation===authGeneration){
+        const current=storageRemove(AUTH_STORAGE_KEY),legacy=storageRemove(LEGACY_SUPABASE_AUTH_KEY);
+        setCloudStatus(error?"Utloggad lokalt · Supabase kunde inte bekräfta utloggningen":current.state!=="ok"||legacy.state!=="ok"?"Utloggad lokalt · auth-rensning kunde inte bekräftas":"Utloggad · auth-rensning klar","offline");
+      }
+    }
+    return {error};
+  })();
+  return run.promise;
+}
 function shortId(id){return id?String(id).slice(0,8):"—"}
 function updateAuthDiag(session=null,label=""){
   const el=$("authDiagStatus");
   if(!el)return;
   let stored=false,bytes=0;
   try{
-    const raw=localStorage.getItem(AUTH_STORAGE_KEY);
-    stored=!!raw;
+    const raw=storageRead(AUTH_STORAGE_KEY).value;
+    stored=authStoragePresent();
     bytes=raw?raw.length:0;
   }catch(_){}
   const user=session?.user||currentUser||null;
@@ -454,25 +674,21 @@ function withTimeout(promise, ms, label="operation"){
 }
 
 function readStoredSession(){
-  try{
-    const raw=localStorage.getItem(AUTH_STORAGE_KEY);
-    if(!raw)return null;
-    const parsed=JSON.parse(raw);
-    // Supabase browser storage is normally the direct session object.
-    const s=parsed?.currentSession || parsed?.session || parsed;
-    if(s?.access_token && s?.refresh_token && s?.user)return s;
-  }catch(err){console.warn("Could not parse stored auth session",err)}
-  return null;
+  if(explicitSignOut||authRestoreBlocked||logoutMarkerBlocked())return null;
+  const result=storageJSON(AUTH_STORAGE_KEY,value=>!!storedAuthSession(value));
+  return result.state==="ok"?storedAuthSession(result.value):null;
 }
 
 async function recoverImplicitCallbackIfNeeded(){
   // Supabase normally handles this automatically. This fallback explicitly adopts
   // tokens from a magic-link callback if the SDK did not persist them itself.
+  const generation=authGeneration,client=supabaseClient;
   try{
     const h=new URLSearchParams(location.hash.startsWith("#")?location.hash.slice(1):location.hash);
     const access_token=h.get("access_token"), refresh_token=h.get("refresh_token");
     if(access_token&&refresh_token){
-      const {data,error}=await supabaseClient.auth.setSession({access_token,refresh_token});
+      const {data,error}=await client.auth.setSession({access_token,refresh_token});
+      if(generation!==authGeneration||explicitSignOut)return null;
       if(error)throw error;
       history.replaceState({},document.title,location.pathname+location.search);
       return data?.session||null;
@@ -493,69 +709,52 @@ async function initCloud(){
     return;
   }
 
+  const generation=authGeneration;
   await migrateLegacyAuthStorage();
-
-  supabaseClient=window.supabase.createClient(
-    CLOUD_CONFIG.supabaseUrl,
-    CLOUD_CONFIG.supabasePublishableKey,
-    {auth:{
-      persistSession:true,
-      autoRefreshToken:true,
-      detectSessionInUrl:true,
-      storage:authStorage,
-      storageKey:AUTH_STORAGE_KEY,
-      flowType:"implicit"
-    }}
-  );
-
-  // Subscribe before recovery: a slow backend must not hide sign-out/account changes.
-  let authEventRevision=0;
-  supabaseClient.auth.onAuthStateChange((event,nextSession)=>{
-    const revision=++authEventRevision;
-    // Close the write gate immediately; SDK calls stay outside the auth callback.
-    if(event==="SIGNED_OUT"||currentUser?.id!==nextSession?.user?.id)invalidateBackend();
-    console.log("[BG3 auth]",event,{
-      hasSession:!!nextSession,
-      persisted:authStoragePresent()
-    });
-    setTimeout(()=>{if(revision===authEventRevision)handleSession(nextSession,event).catch(console.error)},0);
-  });
-  const bootstrapRevision=authEventRevision;
+  if(generation!==authGeneration||explicitSignOut)return;
+  const client=createAuthClient(),bootstrapRevision=authEventRevision;
 
   // Never let auth bootstrap freeze the whole app.
   let session=null;
   try{
-    const result=await withTimeout(supabaseClient.auth.getSession(),4500,"getSession");
+    const result=await withTimeout(client.auth.getSession(),4500,"getSession");
+    if(generation!==authGeneration||explicitSignOut)return;
     if(!result||result.error||!result.data||!("session" in result.data))throw result?.error||new Error("Ogiltigt sessionssvar");
     session=result.data.session;
   }catch(err){
+    if(generation!==authGeneration||explicitSignOut)return;
     console.warn("Auth bootstrap did not resolve in time",err);
     session=readStoredSession();
     if(session)setCloudStatus("Session hittad lokalt · auth-validering fortsätter i bakgrunden","pending");
   }
 
-  if(!session && location.hash.includes("access_token=")){
+  if(!session && generation===authGeneration&&!explicitSignOut&&location.hash.includes("access_token=")){
     try{
       session=await withTimeout(recoverImplicitCallbackIfNeeded(),4500,"magic-link callback");
     }catch(err){console.warn("Callback recovery timed out",err)}
   }
 
   // A newer auth event owns the UI; never restore a stale bootstrap session.
-  if(authEventRevision===bootstrapRevision)await handleSession(session);
+  if(generation===authGeneration&&!explicitSignOut&&authEventRevision===bootstrapRevision){
+    if(session&&location.hash.includes("access_token="))acceptAuthSession(session);
+    await handleSession(session,"INITIAL",generation);
+  }
 }
 
-async function handleSession(session,event="INITIAL"){
+async function handleSession(session,event="INITIAL",generation=authGeneration,{background=false}={}){
+  if(generation!==authGeneration)return;
   const nextUser=session?.user||null;
   if(explicitSignOut&&nextUser)return;
   const changed=currentUser?.id!==nextUser?.id;
-  currentUser=nextUser;
   if(changed){
+    rememberProgress();authGeneration++;authEventRevision++;recoveryCooldown=null;loginRun=null;
     passwordRun=null;$("savePassword").textContent="Spara lösenord";
-    invalidateBackend();
-    stories=[];activeStoryId=null;storyRecords={};progress={};
-    if(currentUser)restoreCloudStoryCache(currentUser.id);
+    retireAuthClient();invalidateBackend();
+    currentUser=nextUser;stories=[];activeStoryId=null;storyRecords={};progress={};activeProgressUnknown=false;
+    if(currentUser){acceptAuthSession(session);createAuthClient();restoreCloudStoryCache(currentUser.id)}
+    else{authMemory=null;supabaseClient=null}
     renderStorySelect();render();
-  }
+  }else currentUser=nextUser;
 
   if(currentUser){
     $("authSignedOut").classList.add("hidden");
@@ -572,13 +771,11 @@ async function handleSession(session,event="INITIAL"){
       authStoragePresent()?"online":"pending"
     );
     updateAuthDiag(session,event);
-    // Same-user refreshes preserve verified state or join the current recovery.
-    if(!canWriteCloud())await loadCloudStories();
+    // Automatic same-user callbacks join recovery and honor its cooldown.
+    if(!canWriteCloud())await loadCloudStories({background:background&&!changed});
   }else{
     if(!changed)invalidateBackend();
-    $("authSignedIn").classList.add("hidden");
-    $("authSignedOut").classList.remove("hidden");
-    ensureLocalStory();importLegacyIntoCurrentOnce();renderStorySelect();
+    showSignedOut();importLegacyIntoCurrentOnce();
 
     const persisted=authStoragePresent();
     if(persisted && !explicitSignOut){
@@ -596,30 +793,28 @@ function done(x){return progress[key(x)]==="found"}
 function setDB(arr,complete=false){ITEMS=arr;embeddedComplete=complete;populate();render();updateNotice()}
 function updateNotice(){
  const n=$("notice");
- if(ITEMS.length>=550){n.className="notice good";n.innerHTML=`<b>✓ Full katalog laddad:</b> ${ITEMS.length} poster. Gloves of Heroism, Spellthief och Dragon's Grasp finns med. Databasen är cachad lokalt.`}
+ if(ITEMS.length>=550){n.className="notice good";n.innerHTML=`<b>✓ Full katalog laddad:</b> ${ITEMS.length} poster. Gloves of Heroism, Spellthief och Dragon's Grasp finns med. ${storageFailures.has("write:"+DBKEY)?"Katalogen finns endast i minnet · lokal cache kunde inte sparas.":"Databasen är cachad lokalt."}`}
  else{n.className="notice warn";n.innerHTML=`<b>Fallback-läge:</b> ${ITEMS.length} poster. Klicka “Hämta/verifiera 556-item katalog” medan du är online för den fulla, korscheckade katalogen.`}
 }
+function validItemCache(value){return Array.isArray(value)&&value.length>=550&&value.every(x=>objectMap(x)&&typeof x.name==="string"&&x.name&&/^ACT [123]$/.test(x.act))}
 async function loadRemote(force=false){
  $("status").textContent="Hämtar komplett itemkatalog…";
+ const cached=storageJSON(DBKEY,validItemCache);
+ if(!force&&cached.state==="ok"){setDB(cached.value,true);$("status").textContent="Komplett katalog laddad från lokal cache.";renderBackendState();return}
  try{
-  if(!force){
-   const cached=JSON.parse(localStorage.getItem(DBKEY)||"null");
-   if(cached && cached.length>=550){setDB(cached,true);$("status").textContent="Komplett katalog laddad från lokal cache.";return}
-  }
   const r=await fetch(REMOTE,{cache:"no-store",mode:"cors"});
   if(!r.ok)throw new Error("HTTP "+r.status);
   const raw=await r.json();
   const full=raw.map(normalizeRemote).filter(x=>x.name && /^ACT [123]$/.test(x.act));
   if(full.length<550)throw new Error("bara "+full.length+" poster");
-  localStorage.setItem(DBKEY,JSON.stringify(full));
-  setDB(full,true);
-  $("status").textContent=`✓ ${full.length} poster verifierade och sparade lokalt.`;
+  const saved=storageWrite(DBKEY,full,{json:true});setDB(full,true);
+  $("status").textContent=saved.state==="ok"?`✓ ${full.length} poster verifierade och sparade lokalt.`:`✓ ${full.length} poster verifierade · katalogen finns endast i minnet.`;
  }catch(err){
   console.error(err);
-  const cached=JSON.parse(localStorage.getItem(DBKEY)||"null");
-  if(cached&&cached.length>=550){setDB(cached,true);$("status").textContent="Nätkontroll misslyckades, men komplett lokal cache används."}
-  else {setDB(FALLBACK.map(normalizeFallback),false);$("status").textContent="Kunde inte nå katalogen. Fallback används; prova knappen igen när internet finns."}
+  if(cached.state==="ok"){setDB(cached.value,true);$("status").textContent="Nätkontroll misslyckades, men komplett lokal cache används."}
+  else{setDB(FALLBACK.map(normalizeFallback),false);$("status").textContent="Kunde inte nå katalogen. Fallback används; prova knappen igen när internet finns."}
  }
+ renderBackendState();
 }
 function uniq(a){return [...new Set(a.filter(Boolean))].sort((a,b)=>a.localeCompare(b))}
 function populate(){
@@ -642,7 +837,7 @@ function render(){
  const list=view(),b=$("body"),cards=$("cards");b.innerHTML="";cards.innerHTML="";$("empty").hidden=!!list.length;
  $("mobileCount").textContent=`Visar ${list.length} item${list.length===1?"":"s"}`;
  for(const x of list){
-  const isDone=done(x),editDisabled=activeStoryId?"":"disabled",tier=tierOf(x),rc=(x.rarity||"").toLowerCase().replace(/\s+/g,"");
+  const isDone=done(x),editDisabled=canEditProgress()?"":"disabled",tier=tierOf(x),rc=(x.rarity||"").toLowerCase().replace(/\s+/g,"");
   const flags=(vendor(x)?'<span class="badge vendor">Vendor</span> ':"")+(quest(x)?'<span class="badge miss">Quest/val</span> ':"");
   const rarityBadge=x.rarity?`<span class="badge ${rc}">${esc(x.rarity)}</span>`:"";
   const tierBadge=tier?`<span class="badge ${tier.toLowerCase()}">${esc(tier)}-tier</span>`:"";
@@ -668,7 +863,7 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelect
 $("clear").onclick=()=>{$("q").value="";$("area").value="";$("type").value="";$("rarity").value="";$("tier").value="";$("source").value="";$("state").value="";$("sort").value="area";render()};
 $("onlyS").onclick=()=>{$("tier").value="S";render()};
 $("refresh").onclick=()=>loadRemote(true);
-$("reset").onclick=()=>{if(!activeStoryId){alert("Välj eller skapa en Story först.");return}if(confirm("Nollställa alla checkboxar i den aktiva Storyn?")){const ts=nowIso();for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts);saveStoryRecords();render();scheduleSync()}};
+$("reset").onclick=()=>{if(!canEditProgress()){alert("Välj eller skapa en Story först.");return}if(confirm("Nollställa alla checkboxar i den aktiva Storyn?")){reconcileStoredRecords();const ts=nowIso();for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts);saveStoryRecords();render();scheduleSync()}};
 $("export").onclick=()=>{
  const legacy=legacyMap(),st=stories.find(s=>s.id===activeStoryId);
  const payload={format:"bg3-gear-progress",formatVersion:PROGRESS_FORMAT,appVersion:APP_VERSION,story:{id:activeStoryId,name:st?.name||"Story"},exportedAt:new Date().toISOString(),checkedCount:foundCount(),items:progress,progress:legacy};
@@ -679,7 +874,7 @@ $("import").onclick=()=>{importMode="merge";$("file").click()};
 $("replaceImport").onclick=()=>{importMode="replace";$("file").click()};
 $("file").onchange=async e=>{
  const f=e.target.files[0];if(!f)return;
- if(!activeStoryId){alert("Välj eller skapa en Story först.");e.target.value="";return}
+ if(!canEditProgress()){alert("Välj en Story med verifierbar progress först.");e.target.value="";return}
  const isAnon=!!(currentUser?.is_anonymous || currentUser?.app_metadata?.provider==="anonymous");
  if(isAnon){
    alert("Import är blockerad i den anonyma testsessionen. Logga in på ditt riktiga konto och välj rätt Story innan du importerar progress.");
@@ -688,8 +883,9 @@ $("file").onchange=async e=>{
  }
  try{
   const o=JSON.parse(await f.text()),incoming=progressFromPayload(o),incomingFound=foundCount(incoming);
-  if(!activeStoryId){alert("Välj eller skapa en Story först.");e.target.value="";return}
+  if(!canEditProgress()){alert("Välj en Story med verifierbar progress först.");e.target.value="";return}
   if(importMode==="replace"&&!confirm(`Ersätta all progress i Storyn “${stories.find(s=>s.id===activeStoryId)?.name||"Story"}” med ${incomingFound} hittade items?`)){e.target.value="";return}
+  reconcileStoredRecords();
   const ts=nowIso();
   if(importMode==="replace"){for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts)}
   for(const [k,status] of Object.entries(incoming))storyRecords[k]=localRecord(k,status,ts);
@@ -772,40 +968,30 @@ async function requestMagicLinkDirect(email){
 
 
 $("signInPassword").onclick=async()=>{
-  if(!CLOUD_CONFIGURED || !supabaseClient){
-    alert("Supabase-klienten är inte redo ännu. Vänta någon sekund och försök igen.");
-    return;
-  }
-
-  const email=$("authEmail").value.trim();
-  const password=$("authPassword").value;
+  if(!CLOUD_CONFIGURED){alert("Supabase-klienten är inte redo ännu.");return}
+  const email=$("authEmail").value.trim(),password=$("authPassword").value;
   if(!email){alert("Skriv in din e-postadress.");return}
   if(!password){alert("Skriv in ditt lösenord.");return}
-
-  const btn=$("signInPassword");
-  btn.disabled=true;
-  btn.textContent="Loggar in…";
-  setCloudStatus("Loggar in med lösenord…","pending");
-
+  if(loginRun)return;
+  const btn=$("signInPassword"),run={generation:++authGeneration};
+  loginRun=run;authEventRevision++;explicitSignOut=false;authRestoreBlocked=true;authMemory=null;recoveryCooldown=null;
+  invalidateBackend();const client=createAuthClient();
+  btn.disabled=true;btn.textContent="Loggar in…";setCloudStatus("Loggar in med lösenord…","pending");
   try{
-    const result=await withTimeout(
-      supabaseClient.auth.signInWithPassword({email,password}),
-      12000,
-      "signInWithPassword"
-    );
+    const result=await withTimeout(client.auth.signInWithPassword({email,password}),12000,"signInWithPassword");
+    if(run.generation!==authGeneration||loginRun!==run)return;
     if(result?.error)throw result.error;
-    const session=result?.data?.session||null;
-    if(!session)throw new Error("Supabase returnerade ingen session.");
-    $("authPassword").value="";
-    await handleSession(session,"PASSWORD_SIGNED_IN");
+    const session=result?.data?.session;
+    if(!storedAuthSession(session))throw new Error("Supabase returnerade ingen giltig session.");
+    acceptAuthSession(session);$("authPassword").value="";
+    await handleSession(session,"PASSWORD_SIGNED_IN",run.generation);
   }catch(err){
-    console.error("Password sign-in failed",err);
-    $("authPassword").value="";
-    setCloudStatus("Kunde inte logga in med lösenord","offline");
-    alert("Inloggningen misslyckades: "+(err?.message||err));
+    if(run.generation!==authGeneration||loginRun!==run)return;
+    console.error("Password sign-in failed",err);$("authPassword").value="";
+    setCloudStatus("Kunde inte logga in med lösenord","offline");alert("Inloggningen misslyckades: "+(err?.message||err));
   }finally{
-    btn.disabled=false;
-    btn.textContent="Logga in";
+    if(loginRun===run){loginRun=null;btn.disabled=false;btn.textContent="Logga in"}
+    else if(currentUser&&!loginRun){btn.disabled=false;btn.textContent="Logga in"}
   }
 };
 
@@ -916,19 +1102,11 @@ $("sendMagicLink").onclick=async()=>{
     }
   }
 };
-$("signOut").onclick=async()=>{
-  explicitSignOut=true;
-  invalidateBackend();
-  if(supabaseClient)await supabaseClient.auth.signOut();
-  try{localStorage.removeItem(AUTH_STORAGE_KEY)}catch(_){}
-  currentUser=null;
-  updateAuthDiag(null,"SIGNED_OUT");
-  explicitSignOut=false;
-};
+$("signOut").onclick=logout;
 $("syncNow").onclick=()=>recoverBackend();
 window.addEventListener("offline",()=>{if(currentUser)backendUnavailable()});
-window.addEventListener("online",()=>recoverBackend());
-window.addEventListener("focus",()=>{if(CLOUD_CONFIGURED&&currentUser)recoverBackend()});
+window.addEventListener("online",()=>recoverBackend({background:true}));
+window.addEventListener("focus",()=>{if(CLOUD_CONFIGURED&&currentUser)recoverBackend({background:true})});
 
 // --- PWA shell / installation ---
 
