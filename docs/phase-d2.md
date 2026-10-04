@@ -112,8 +112,9 @@ an initially unreadable ID preserves volatile edits as untrusted review intent.
 
 ## Deferred and verification limits
 
-D3 replace-import/reset is not implemented. Those actions are disabled for an
-opted-in cloud Story; default-mode and local Story behavior is unchanged.
+D3B adds opt-in client merge-import, replace-import and reset support; see
+[Phase D3B](phase-d3b.md). Atomic bulk actions require the separately reviewed
+D3A RPC in an isolated backend. Nothing activates the deployed versioned flag.
 Production cutover, hosted JWT/PostgREST integration and privileged-writer
 verification still require a separate isolated environment and approval.
 
