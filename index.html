@@ -184,8 +184,25 @@ const vendor=x=>/sold by|merchant/i.test(x.location||"");
 const quest=x=>/quest reward|reward|given by/i.test(x.location||"");
 const rarityRank={"Legendary":5,"Very Rare":4,"Rare":3,"Uncommon":2,"Common":1};
 function tierOf(x){return TIERMAP[x.name]||""}
-function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:x.actArea||"",location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:x.gameIds||[]}}
-function normalizeFallback(x){return {act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:x.area||"",location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]}}
+function normalizeArea(value){return clean(value).normalize("NFC").replace(/[‘’]/g,"'")}
+function acquisitionLocation(value){
+ return /^(?:drop(?:ped|s)?|loot(?:ed)?)\s+(?:from|by|as)\b/i.test(value)
+  || /^(?:sold|purchased|bought|found|obtained|acquired|given|received|stolen|crafted|forged)\s+(?:by|from|in|at|on|as|after|with)\b/i.test(value)
+  || /^(?:(?:optional\s+)?quest\s+reward\b|reward\s+(?:for|from)\b|(?:cast|casting|use|using)\s+)/i.test(value)
+  || /\b(?:spell|cantrip|class feature)[.!]?$/i.test(value);
+}
+// Act 1 uses actArea; Acts 2/3 use geographic location labels, not acquisition text.
+// Check cached areas too: an older catalog may already have inferred a source as an area.
+function catalogArea(x){
+ if(!/^ACT [23]$/.test(x.act))return normalizeArea(x.area||x.actArea);
+ for(const value of [x.area,x.actArea,x.location]){
+  const area=normalizeArea(value);
+  if(area&&!acquisitionLocation(area))return area;
+ }
+ return "";
+}
+function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:catalogArea(x),location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:x.gameIds||[]}}
+function normalizeFallback(x){return {act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:normalizeArea(x.area),location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]}}
 // Imported item keys are data, including names inherited by ordinary objects.
 function itemMap(entries=[]){const out=Object.create(null);for(const [k,v] of entries)out[k]=v;return out}
 function ownItem(items,k){return Object.hasOwn(items,k)?items[k]:undefined}
@@ -1128,7 +1145,7 @@ async function handleSession(session,event="INITIAL",generation=authGeneration,{
 /* v7.6.1: duplicate v6 runtime progress engine removed; Story records are sole runtime source of truth. */
 
 function done(x){return ownItem(progress,key(x))==="found"}
-function setDB(arr,complete=false){ITEMS=arr;embeddedComplete=complete;populate();render();updateNotice()}
+function setDB(arr,complete=false){ITEMS=arr.map(x=>({...x,area:catalogArea(x)}));embeddedComplete=complete;populate();render();updateNotice()}
 function updateNotice(){
  const n=$("notice");
  if(ITEMS.length>=550){n.className="notice good";n.innerHTML=`<b>✓ Full katalog laddad:</b> ${ITEMS.length} poster. Gloves of Heroism, Spellthief och Dragon's Grasp finns med. ${storageFailures.has("write:"+DBKEY)?"Katalogen finns endast i minnet · lokal cache kunde inte sparas.":"Databasen är cachad lokalt."}`}
