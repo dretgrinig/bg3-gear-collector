@@ -95,7 +95,7 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
 
 <div id=backendStateLabel class=authhint role=status>Cloudstatus okänd · molnskrivningar blockerade</div>
 <div id=versionedReview class="authhint hidden" role=status>
-<p id=versionedReviewText></p><div id=versionedReviewItems></div>
+<p id=versionedReviewText></p><p id=versionedBulkReviewText></p><div id=versionedBulkReviewRecords></div><div id=versionedReviewItems></div>
 <button id=versionedKeepLocal>Behåll markerad lokal avsikt</button>
 <button id=versionedUseCloud>Använd cloud för markerade items</button>
 <p>Exportera progress innan du lämnar sidan om ändringar endast finns i minnet.</p>
@@ -155,7 +155,7 @@ const CLOUD_CONFIGURED=!!(CLOUD_CONFIG.supabaseUrl&&CLOUD_CONFIG.supabasePublish
 // Explicit opt-in for mocks/an isolated backend only. The deployed default is unchanged.
 const VERSIONED_PROGRESS_CONFIG=Object.freeze({...window.BG3_PROGRESS_PROTOCOL});
 const versionedContexts=new Map(),versionedIdentities=new Map();
-let versionedReviewDisplay=null;
+let versionedReviewDisplay=null,progressActionSequence=0;
 
 // Auth persistence is explicit in v7.2 so session storage can be tested independently
 // of the PWA/service-worker cache.
@@ -168,14 +168,14 @@ const authStorage={
   removeItem:key=>authStorageForGeneration(authGeneration).removeItem(key)
 };
 
-let supabaseClient=null,currentUser=null,stories=[],activeStoryId=null,storyRecords={},syncTimer=null,syncBusy=false,syncPending=false;
+let supabaseClient=null,currentUser=null,stories=[],activeStoryId=null,storyRecords=itemMap(),syncTimer=null,syncBusy=false,syncPending=false;
 let explicitSignOut=false;
 let authGeneration=0,authEventRevision=0,authSubscription=null,authMemory=null,authRestoreBlocked=false,loginRun=null,logoutRun=null;
 let recoveryCooldown=null,activeProgressUnknown=false,localStoriesMemory=null;
 const storageFailures=new Map(),progressMemory=new Map(),cloudStoriesMemory=new Map(),retiredAuthReads=new Map(),localStoryChanges=new Map();
 let backendState="unknown",backendUserId=null,verifiedStoryIds=new Set(),backendGeneration=0,recoveryRun=null,progressCloudVerified=false,passwordRun=null;
 const TIERMAP={"Everburn Blade":"A","The Amulet of Lost Voices":"A","Gloves of Power":"A","Shapeshifter's Boon Ring":"A","Amulet of Silvanus":"A","The Whispering Promise":"S","Ring of Protection":"S","Hellrider's Pride":"S","Wapira's Crown":"A","Sorrow":"A","Silver Pendant":"A","Bracers of Defence":"S","Warped Headband of Intellect":"S","Haste Helm":"A","The Speedy Lightfeet":"A","Spiderstep Boots":"B","The Sparkle Hands":"A","Staff of Crones":"B","Sword of Justice":"A","The Spellsparkler":"S","Hamarhraft":"A","Harold":"A","Titanstring Bow":"S","Gloves of Thievery":"S","Crusher's Ring":"S","Returning Pike":"S","Doom Hammer":"A","Gloves of Archery":"A","Amulet of Misty Step":"S","Spidersilk Armour":"A","Boots of Striding":"A","The Watersparkers":"A","Gloves of the Growling Underdog":"S","Faithbreaker":"A","Springstep Boots":"A","Linebreaker Boots":"A","Dragon's Grasp":"B","Spellthief":"A","Ring of Flinging":"S","Rain Dancer":"A","Gloves of Heroism":"A","Club of Hill Giant Strength":"S","Staff of Arcane Blessing":"A","The Sparkswall":"A","Amulet of Restoration":"S","Caustic Band":"S","Gloves of Uninhibited Kushigo":"S","Melf's First Staff":"S","Psychic Spark":"S","Boots of Stormy Clamour":"S","Pearl of Power Amulet":"S","Ring of Salving":"A","Boots of Speed":"S","Luminous Armour":"S","Mourning Frost":"A","Phalar Aluve":"S","Shortsword of First Blood":"A","Intransigent Warhammer":"A","Armour of Uninhibited Kushigo":"A","Sentient Amulet":"S","Adamantine Scale Mail":"S","Adamantine Shield":"S","Adamantine Splint Armour":"S","Grymskull Helm":"A","Disintegrating Night Walkers":"S","Sword of Screams":"A","The Graceful Cloth":"S","Periapt of Wound Closure":"S","Gloves of Cinder and Sizzle":"A","Holy Lance Helm":"S","The Blood of Lathander":"S","Gloves of Belligerent Skies":"S","Necklace of Elemental Augmentation":"S","Diadem of Arcane Synergy":"S","Knife of the Undermountain King":"S","Unseen Menace":"S","Daredevil Gloves":"A","Gloves of Dexterity":"S","Vital Conduit Boots":"A","Soulbreaker Greatsword":"S","Shadow Blade Ring":"A","Ring of Mental Inhibition":"A","Penumbral Armour":"A","Hat of Fire Acuity":"S","Incandescent Staff":"A","Amulet of the Harpers":"A","Cloak of Protection":"S","Gloves of the Balanced Hands":"A","Shadeclinger Armour":"A","Shield of Devotion":"S","The Mighty Cloth":"A","Yuan-Ti Scale Mail":"S","Charge-Bound Warhammer":"A","Darkfire Shortbow":"S","Harmonium Halberd":"A","Flawed Helldusk Armour":"A","Flawed Helldusk Gloves":"A","Flawed Helldusk Helmet":"A","Gloves of the Automaton":"S","Potent Robe":"S","Snowburst Ring":"S","Coruscation Ring":"S","Surgeon's Subjugation Amulet":"S","Helmet of Arcane Acuity":"S","Twist of Fortune":"A","Lightning Jabber":"A","Hr'a'cknir Bracers":"A","Boots of Brilliance":"B","Hellfire Hand Crossbow":"S","Dark Justiciar Gauntlets":"A","Justiciar's Scimitar":"A","Justiciar's Greatshield":"A","Least Expected":"A","Dark Justiciar Half-Plate":"A","Callous Glow Ring":"S","Dark Justiciar Helmet":"A","Killer's Sweetheart":"S","Circle of Bones":"A","Moonlight Glaive":"A","Shar's Spear of Evening":"S","Dark Justiciar Boots":"A","Dark Justiciar Half-Plate (Very Rare)":"S","Boots of Arcane Bolstering":"B","Circlet of Hunting":"A","Hat of Storm Scion's Power":"S","Ring of Free Action":"A","Risky Ring":"S","Absolute's Protector":"A","Slicing Shortsword":"A","Render of Mind and Body":"A","Halberd of Vigilance":"S","Dwarven Splintmail":"A","Fistbreaker Helm":"A","Gloves of The Duellist":"A","Sentinel Shield":"S","Ne'er Misser":"S","Drakethroat Glaive":"S","Armour of Devotion":"A","Ring of Spiteful Thunder":"S","Sharpened Snare Cuirass":"A","Cloak of Elemental Absorption":"A","Spineshudder Amulet":"S","Spellcrux Amulet":"S","Infernal Rapier":"S","Blade of Oppressed Souls":"A","Braindrain Gloves":"A","Ketheric's Shield":"S","Reaper's Embrace":"S","Duke Ravengard's Longsword":"A","Emblazoned Plate of the Marshal":"A","Staff of the Emperor":"S","Boots of Uninhibited Kushigo":"S","Nyrulna":"S","Band of the Mystic Scoundrel":"S","Spellmight Gloves":"S","Dark Displacement Gloves":"A","Seraphic Pugilist Gloves":"A","Cold Snap":"A","Dwarven Thrower":"S","Hellrider Longbow":"S","Robe of Supreme Defences":"S","The Dancing Breeze":"S","Ambusher":"A","Bonespike Garb":"S","Elven Chain":"A","Stalker Gloves":"A","Harmonic Dueller":"A","Cloak of Displacement":"S","Garb of the Land and Sky":"S","Fabricated Arbalest":"S","Gauntlet of the Tyrant":"S","Helldusk Boots":"S","Elegant Studded Leather":"S","Mask of Soul Perception":"S","Caitiff Staff":"A","Cloak of the Weave":"S","Gemini Gloves":"S","Shapeshifter Hat":"S","Spellseeking Gloves":"A","Staff of the Ram":"A","Khalid's Gift":"S","Belm":"S","Wavemother's Robe":"S","Armour of Persistence":"S","Boots of Persistence":"S","Legacy of the Masters":"S","Dolor Amarus":"S","Spaceshunt Boots":"A","Cerebral Citadel Armour":"A","Cerebral Citadel Gloves":"A","Sword of the Emperor":"A","Boots of Psionic Movement":"A","Duellist's Prerogative":"S","Amulet of Windrider":"A","Armour of the Sporekeeper":"S","Crypt Lord Ring":"A","Hood of the Weave":"S","Armour of Landfall":"S","Birthright":"S","Quickspell Gloves":"S","Markoheshkir":"S","Robe of the Weave":"S","Hellfire Engine Crossbow":"S","Gontr Mael":"S","Steel Watcher Helmet":"A","The Dead Shot":"S","Flail of Ages":"S","Armour of Agility":"S","Mantle of the Holy Warrior":"S","The Reviving Hands":"S","Amulet of the Devout":"S","Bonespike Gloves":"S","Armour of Moonbasking":"S","Bonespike Helmet":"S","Bonespike Boots":"S","Crimson Mischief":"S","Bloodthirst":"S","Dolor Amarus (Murder Tribunal)":"S","Bhaalist Armour":"S","Craterflesh Gloves":"S","Sarevok's Horned Helmet":"S","Sword of Chaos":"S","Rhapsody":"S","Woe":"S","Helmet of Grit":"S","Viconia's Walking Fortress":"S","Handmaiden's Mace":"S","Selûne's Spear of Night":"S","Helm of Balduran":"S","Balduran's Giantslayer":"S","Orphic Hammer":"S","Gauntlets of Hill Giant Strength":"S","Amulet of Greater Health":"S","Helldusk Armour":"S","Gloves of Soul Catching":"S","Staff of Spellpower":"S"};
-let ITEMS=[],progress={},act="",embeddedComplete=false;
+let ITEMS=[],progress=itemMap(),act="",embeddedComplete=false;
 const $=x=>document.getElementById(x);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
 const key=x=>(x.act+"|"+x.name).toLowerCase();
@@ -186,8 +186,11 @@ const rarityRank={"Legendary":5,"Very Rare":4,"Rare":3,"Uncommon":2,"Common":1};
 function tierOf(x){return TIERMAP[x.name]||""}
 function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:x.actArea||"",location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:x.gameIds||[]}}
 function normalizeFallback(x){return {act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:x.area||"",location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]}}
+// Imported item keys are data, including names inherited by ordinary objects.
+function itemMap(entries=[]){const out=Object.create(null);for(const [k,v] of entries)out[k]=v;return out}
+function ownItem(items,k){return Object.hasOwn(items,k)?items[k]:undefined}
 function canonicalizeProgress(input){
- const out={};
+ const out=itemMap();
  if(!input||typeof input!=="object")return out;
  for(const [k,v] of Object.entries(input)){
   if(v===true||v==="found"||(v&&typeof v==="object"&&(v.state==="found"||v.status==="found")))out[String(k).toLowerCase()]="found";
@@ -197,10 +200,10 @@ function canonicalizeProgress(input){
 }
 function nowIso(){return new Date().toISOString()}
 function localId(){return "local-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
-function legacyMap(){const out={};for(const [k,v] of Object.entries(progress))if(v==="found")out[k]=true;return out}
+function legacyMap(){const out=itemMap();for(const [k,v] of Object.entries(progress))if(v==="found")out[k]=true;return out}
 function storyProgressKey(id){return STORY_PROGRESS_PREFIX+id}
 function activeStoryStorageKey(){return ACTIVE_STORY_KEY+":"+(currentUser?.id||"local")}
-function recordsToProgress(records=storyRecords){const out={};for(const [k,r] of Object.entries(records||{}))if(r&&r.status&&r.status!=="todo")out[k]=r.status;return out}
+function recordsToProgress(records=storyRecords){const out=itemMap();for(const [k,r] of Object.entries(records||itemMap()))if(r&&r.status&&r.status!=="todo")out[k]=r.status;return out}
 function storageResult(key,result,operation="read"){
   key=operation+":"+key;
   if(result.state==="ok"||result.state==="missing")storageFailures.delete(key);
@@ -229,7 +232,7 @@ function validRecords(items){
   return objectMap(items)&&Object.entries(items).every(([k,r])=>k&&objectMap(r)&&["found","todo","skipped"].includes(r.status)&&typeof r.client_updated_at==="string"&&Number.isFinite(Date.parse(r.client_updated_at))&&typeof r.dirty==="boolean");
 }
 function validProgressCache(value,id){return objectMap(value)&&value.format==="bg3-story-progress"&&value.formatVersion===1&&value.storyId===id&&validRecords(value.items)}
-function copyRecords(items){return Object.fromEntries(Object.entries(items).map(([k,r])=>[k,{...r}]))}
+function copyRecords(items){return itemMap(Object.entries(items).map(([k,r])=>[k,{...r}]))}
 function reconcileRecords(memory,stored){
   const merged=new Map(Object.entries(memory));
   for(const [k,r] of Object.entries(stored)){
@@ -237,10 +240,10 @@ function reconcileRecords(memory,stored){
     // Memory wins ties, including a cloud acknowledgement not yet saved to disk.
     if(!previous||newer(r.client_updated_at,previous.client_updated_at))merged.set(k,{...r});
   }
-  return Object.fromEntries(merged);
+  return itemMap(merged);
 }
 function sameRecords(left,right){
-  return Object.keys(left).length===Object.keys(right).length&&Object.entries(left).every(([k,r])=>right[k]&&["status","client_updated_at","dirty"].every(field=>r[field]===right[k][field]));
+  return Object.keys(left).length===Object.keys(right).length&&Object.entries(left).every(([k,r])=>Object.hasOwn(right,k)&&["status","client_updated_at","dirty"].every(field=>r[field]===right[k][field]));
 }
 function reconcileStoredRecords(){
   if(versionedCloudStory()){
@@ -250,7 +253,7 @@ function reconcileStoredRecords(){
   }
   const cached=storageJSON(storyProgressKey(activeStoryId),value=>validProgressCache(value,activeStoryId));
   if(cached.state==="ok")for(const [k,r] of Object.entries(reconcileRecords(storyRecords,cached.value.items))){
-    if(storyRecords[k]===r)continue;
+    if(ownItem(storyRecords,k)===r)continue;
     // Keep the active map and unchanged item references used by in-flight syncs.
     Object.defineProperty(storyRecords,k,{value:r,writable:true,enumerable:true,configurable:true});
     if(syncBusy)syncPending=true;
@@ -293,12 +296,12 @@ function loadStoryRecords(id){
   const failed=cached.state!=="ok"&&cached.state!=="missing";
   activeProgressUnknown=failed&&!memory?.known;
   // Always create a fresh map, including when recovering a volatile snapshot.
-  storyRecords=copyRecords(reconcileRecords(memory?.known?memory.items:{},cached.state==="ok"?cached.value.items:{}));
+  storyRecords=copyRecords(reconcileRecords(memory?.known?memory.items:itemMap(),cached.state==="ok"?cached.value.items:itemMap()));
   if(!activeProgressUnknown)progressMemory.set(memoryKey,{items:copyRecords(storyRecords),known:true,durable:!failed&&(cached.state==="missing"?Object.keys(storyRecords).length===0:sameRecords(storyRecords,cached.value.items))});
   progress=recordsToProgress();
   if(versionedCloudStory()){
     const context=versionedContext();
-    if(context){context.verified=null;reconcileVersionedLegacy(context);storyRecords=context.engine.viewRecords();progress=recordsToProgress()}
+    if(context){context.verified=null;reconcileVersionedLegacy(context);storyRecords=itemMap(Object.entries(context.engine.viewRecords()));progress=recordsToProgress()}
   }
 }
 function versionedMode(){return VERSIONED_PROGRESS_CONFIG.enabled===true}
@@ -365,8 +368,8 @@ function versionedContext(){
   }
   const identity=versionedIdentity();
   if(identity.id!==context.identity.id){
-    if(context.identityEstablished||context.engine.inspect().pending){
-      // Never hide an existing unresolved journal under a replacement ID.
+    if(context.identityEstablished||context.engine.inspect().pending||context.engine.inspect().bulk){
+      // Never hide an unresolved journal or staged whole-Story intent under a replacement ID.
       context.identity={...context.identity,durable:false};context.identityMismatch=true;context.verified=null;return context;
     }
     // A non-durable ID cannot have dispatched an operation. Carry its volatile
@@ -395,8 +398,8 @@ function applyVersionedRecords(context,records=storyRecords){
   const next=context.engine.viewRecords();
   for(const k of Object.keys(records))if(!Object.hasOwn(next,k))delete records[k];
   for(const [k,value] of Object.entries(next)){
-    const old=records[k];
-    if(!old||["status","client_updated_at","dirty","versioned_edit_token"].some(field=>old[field]!==value[field]))Object.defineProperty(records,k,{value,writable:true,enumerable:true,configurable:true});
+    const old=ownItem(records,k);
+    if(!Object.hasOwn(records,k)||!old||["status","client_updated_at","dirty","versioned_edit_token"].some(field=>old[field]!==value[field]))Object.defineProperty(records,k,{value,writable:true,enumerable:true,configurable:true});
   }
   progress=recordsToProgress(records);
 }
@@ -413,9 +416,10 @@ function canWriteVersionedProgress(){
 function renderVersionedProgress(){
   const panel=$("versionedReview"),context=versionedContext(),state=context?.engine.inspect();
   if(!panel)return;
-  panel.classList.toggle?.("hidden",!versionedCloudStory()||!state?.reviewKeys?.length);
+  const bulkReview=!!state?.bulkReview,hasReview=bulkReview||!!state?.reviewKeys?.length;
+  panel.classList.toggle?.("hidden",!versionedCloudStory()||!hasReview);
   // classList.toggle is not required by the isolated test DOM.
-  if(!versionedCloudStory()||!state?.reviewKeys?.length){panel.classList.add("hidden");versionedReviewDisplay=null;return}
+  if(!versionedCloudStory()||!hasReview){panel.classList.add("hidden");versionedReviewDisplay=null;return}
   panel.classList.remove("hidden");
   // Preserve form choices only within the exact displayed item set/revision.
   // The immutable boundary is also passed to review; click-time memory is newer.
@@ -423,25 +427,33 @@ function renderVersionedProgress(){
   const sameContext=previous?.context===context&&previous.engine===context.engine&&previous.auth===authGeneration&&previous.backend===backendGeneration&&previous.records===storyRecords;
   const included=Object.fromEntries(Array.from(document.querySelectorAll?.("#versionedReviewItems input")||[],el=>[el.value,el.checked]));
   const selected=Object.fromEntries(Array.from(document.querySelectorAll?.("#versionedReviewItems select")||[],el=>[el.dataset.item,el.value]));
-  $("versionedReviewText").textContent="Lokala ändringar kräver granskning. De har inte laddats upp. Välj avsikt innan en ny versionerad skrivning skapas.";
-  $("versionedReviewItems").innerHTML=state.reviewKeys.map(k=>{
+  $("versionedReviewText").textContent=bulkReview?"Granska hela Story-operationen. Nollställning eller ersättning gäller även items som bara finns i cloud. Ett val gäller hela operationen; senare checkboxändringar bevaras separat.":"Lokala ändringar kräver granskning. De har inte laddats upp. Välj avsikt innan en ny versionerad skrivning skapas.";
+  $("versionedKeepLocal").textContent=bulkReview?"Behåll hela Story-operationen":"Behåll markerad lokal avsikt";
+  $("versionedUseCloud").textContent=bulkReview?"Släpp hela operationen och använd cloud":"Använd cloud för markerade items";
+  $("versionedBulkReviewText").textContent=bulkReview?`${state.bulk.mode==="reset"?"Nollställning":"Ersättningsimport"} · ${state.bulk.records.length} angivna items`:"";
+  $("versionedBulkReviewRecords").innerHTML=bulkReview?state.bulk.records.map(r=>`<div>${esc(r.item_key)} · ${esc(r.status)}</div>`).join(""):"";
+  const reviewKeys=bulkReview?Object.keys(boundary.candidates):state.reviewKeys;
+  $("versionedReviewItems").innerHTML=reviewKeys.map(k=>{
     const candidates=[state.edits[k],...(Object.hasOwn(state.alternatives,k)?state.alternatives[k]:[])];
-    const unchanged=sameContext&&previous.boundary.revision===boundary.revision&&Object.hasOwn(previous.boundary.candidates,k)&&JSON.stringify(previous.boundary.candidates[k])===JSON.stringify(boundary.candidates[k]);
+    if(bulkReview)return `<div>${esc(k)} · cloud: ${esc(state.snapshot?.records.find(r=>r.item_key===k)?.status||"todo")}${candidates.filter(Boolean).map(edit=>`<div>${esc(edit.record.status)} · ${esc(edit.record.client_updated_at)}</div>`).join("")}</div>`;
+    const unchanged=sameContext&&previous.boundary.revision===boundary.revision&&JSON.stringify(previous.boundary.bulk||null)===JSON.stringify(boundary.bulk||null)&&Object.hasOwn(previous.boundary.candidates,k)&&JSON.stringify(previous.boundary.candidates[k])===JSON.stringify(boundary.candidates[k]);
     const changed=sameContext&&!unchanged;
     const checked=unchanged&&Object.hasOwn(included,k)?included[k]:!changed;
     const token=unchanged&&Object.hasOwn(selected,k)&&(selected[k]===""||boundary.candidates[k].includes(selected[k]))?selected[k]:changed?"":state.edits[k].token;
     return `<div><label style="display:block"><input type="checkbox" ${checked?"checked":""} value="${esc(k)}"> ${esc(k)} · cloud: ${esc(state.snapshot?.records.find(r=>r.item_key===k)?.status||"todo")}</label><select data-item="${esc(k)}" aria-label="Lokal avsikt för ${esc(k)}">${token===""?'<option value="" selected disabled>Välj lokal avsikt igen</option>':""}${candidates.map(edit=>`<option value="${esc(edit.token)}" ${token===edit.token?"selected":""}>${esc(edit.record.status)} · ${esc(edit.record.client_updated_at)}</option>`).join("")}</select></div>`;
   }).join("");
   versionedReviewDisplay=Object.freeze({context,engine:context.engine,auth:authGeneration,backend:backendGeneration,records:storyRecords,boundary});
-  $("versionedKeepLocal").disabled=$("versionedUseCloud").disabled=!canWriteCloud(activeStoryId)||!context.verified||state.needsSnapshot;
+  $("versionedKeepLocal").disabled=$("versionedUseCloud").disabled=!canWriteCloud(activeStoryId)||!context.verified||state.needsSnapshot||!!state.pending;
 }
 async function reviewVersionedProgress(keys,choice,selectedTokens,displayed=versionedReviewDisplay){
   const context=versionedContext();
   if(!context||!canWriteCloud(activeStoryId)||!context.verified||context.verified.auth!==authGeneration||context.verified.backend!==backendGeneration||context.verified.records!==storyRecords||!Array.isArray(keys)||!["keep-local","use-cloud"].includes(choice))return false;
-  if(!keys.length)return false;
+  const bulkReview=!!context.engine.inspect().bulkReview;
+  if(!bulkReview&&!keys.length)return false;
   if(!displayed||displayed.context!==context||displayed.engine!==context.engine||displayed.auth!==authGeneration||displayed.backend!==backendGeneration||displayed.records!==storyRecords){renderVersionedProgress();return false}
-  try{context.engine.review(keys,choice==="keep-local"?"local":"cloud",selectedTokens,displayed.boundary)}
+  try{if(bulkReview)await context.engine.reviewBulk(choice==="keep-local"?"local":"cloud",displayed.boundary);else context.engine.review(keys,choice==="keep-local"?"local":"cloud",selectedTokens,displayed.boundary)}
   catch(error){if(error?.code!=="BG3_REVIEW_STALE")throw error;renderVersionedProgress();setCloudStatus("Granskningen har ändrats · välj items och avsikt igen","pending");return false}
+  if(displayed.context!==versionedContext()||displayed.engine!==context.engine||displayed.auth!==authGeneration||displayed.backend!==backendGeneration||displayed.records!==storyRecords)return false;
   applyVersionedRecords(context);saveStoryRecords();render();renderBackendState();
   await syncCurrentStory();return true;
 }
@@ -489,7 +501,8 @@ async function syncVersionedStory(){
     dispatch=await context.engine.markDispatched(operation);
     if(!currentStory()||!dispatch||!canWriteVersionedProgress())return;
     requireCloudWrite(storyId);
-    const result=await versionedRequest(client.rpc("bg3_mutate_progress_v1",{p_story_id:operation.storyId,p_expected_revision:operation.expectedRevision,p_operation_id:operation.operationId,p_changes:operation.changes}),"Skriv versionerad progress");
+    const args={p_story_id:operation.storyId,p_expected_revision:operation.expectedRevision,p_operation_id:operation.operationId};
+    const result=await versionedRequest(operation.kind==="bulk"?client.rpc("bg3_bulk_progress_v1",{...args,p_mode:operation.mode,p_records:operation.records}):client.rpc("bg3_mutate_progress_v1",{...args,p_changes:operation.changes}),"Skriv versionerad progress");
     if(!currentBackend())return;
     window.BG3VersionedProgress.validateResult(result,operation);
     if(!currentStory())return;
@@ -560,13 +573,69 @@ function ensureLocalStory(){
   const preferred=storageRead(activeStoryStorageKey());
   activeStoryId=stories.some(st=>st.id===preferred.value)?preferred.value:stories[0]?.id||null;
   if(activeStoryId){storageWrite(activeStoryStorageKey(),activeStoryId);loadStoryRecords(activeStoryId)}
-  else{storyRecords={};progress={};activeProgressUnknown=false}
+  else{storyRecords=itemMap();progress=itemMap();activeProgressUnknown=false}
 }
 function importLegacyIntoCurrentOnce(){/* v7.6.1: disabled by design. Legacy progress only enters via explicit Import into the selected Story. */}
-function progressFromPayload(o){if(!o||typeof o!=="object")throw new Error("Ogiltig progressfil");return canonicalizeProgress(o.items||o.progress||o)}
+function progressFromPayload(o){
+ // Imports carry status intent only; revision/journal metadata is never trusted.
+ if(!objectMap(o))throw new Error("Ogiltig progressfil");
+ const wrapped=Object.hasOwn(o,"items")||Object.hasOwn(o,"progress"),input=Object.hasOwn(o,"items")?o.items:Object.hasOwn(o,"progress")?o.progress:o;
+ if(!objectMap(input))throw new Error("Ogiltig progresslista");
+ if(!wrapped&&["format","formatVersion","appVersion","versionedProgress","story","exportedAt","checkedCount"].some(k=>Object.hasOwn(o,k)))throw new Error("Progresslista saknas");
+ const entries=Object.entries(input),out=Object.create(null);
+ if(entries.length>5000)throw new Error("Progresslistan är för stor");
+ for(const [raw,value] of entries){
+  const k=raw.trim().toLowerCase();
+  if(!k||Array.from(k).length>512||k.includes("\0")||Object.hasOwn(out,k))throw new Error("Ogiltig eller duplicerad progressnyckel");
+  let status=value===true?"found":value===false?"todo":value;
+  if(objectMap(value)){
+   const hasState=Object.hasOwn(value,"state"),hasStatus=Object.hasOwn(value,"status");
+   if(!hasState&&!hasStatus||hasState&&hasStatus&&value.state!==value.status)throw new Error("Ogiltig progressstatus");
+   status=hasState?value.state:value.status;
+  }
+  if(!["found","todo","skipped"].includes(status))throw new Error("Ogiltig progressstatus");
+  out[k]=status;
+ }
+ return out;
+}
+function captureProgressAction(mode){
+ // Capture before file I/O or confirmation. A fresh records reference also
+ // invalidates A→B→A Story reloads, even if the Story ID matches again.
+ const versioned=versionedCloudStory(),context=versioned?versionedContext():null;
+ return Object.freeze({attempt:++progressActionSequence,mode,storyId:activeStoryId,records:storyRecords,userId:currentUser?.id||null,auth:authGeneration,backend:backendGeneration,client:supabaseClient,backendUrl:CLOUD_CONFIG.supabaseUrl,signedOut:explicitSignOut,versioned,context,engine:context?.engine,scope:context?JSON.stringify(context.scope):null,observed:context?.engine.captureIntent()});
+}
+function progressActionCurrent(capture,{checkMode=false}={}){
+ if(capture.attempt!==progressActionSequence||capture.storyId!==activeStoryId||capture.records!==storyRecords||capture.userId!==(currentUser?.id||null)||capture.auth!==authGeneration||capture.backend!==backendGeneration||capture.client!==supabaseClient||capture.backendUrl!==CLOUD_CONFIG.supabaseUrl||capture.signedOut!==explicitSignOut||capture.versioned!==versionedCloudStory()||!canEditProgress()||checkMode&&capture.mode!==importMode)return false;
+ if(!capture.versioned)return true;
+ const context=versionedContext();return !!(context&&capture.context===context&&capture.engine===context.engine&&capture.scope===JSON.stringify(context.scope));
+}
+async function establishProgressActionIdentity(capture,isCurrent){
+ if(!isCurrent())return false;
+ if(capture.context.identity.durable||typeof navigator.locks?.request!=="function")return true;
+ // First offline imports need a durable client ID before their checkpoint is
+ // saved. Use the same account lock as sync so simultaneous tabs adopt one ID.
+ const controller=new AbortController();let expired=false;
+ try{
+  const job=navigator.locks.request("bg3-versioned-sync:"+JSON.stringify([capture.context.scope.backend,capture.userId]),{mode:"exclusive",signal:controller.signal},()=>{
+   if(expired||!isCurrent())return false;
+   establishVersionedIdentity();return isCurrent();
+  });
+  return await withTimeout(job,CLOUD_TIMEOUT_MS,"Samordna klientjournal");
+ }catch(error){
+  expired=true;controller.abort();
+  if(!isCurrent())return false;
+  setCloudStatus("Klientjournal kunde inte samordnas · endast minne · exportera före omladdning","pending");
+  // Retain intent for export under the captured volatile ID. Its identity is
+  // still non-durable, so it cannot authorize a cloud mutation.
+  return isCurrent();
+ }
+}
+function importedRecords(incoming,records){
+ const ts=Date.now();return Object.entries(incoming).map(([item_key,status])=>({item_key,status,client_updated_at:new Date(Math.max(ts,(Date.parse(Object.hasOwn(records,item_key)?records[item_key].client_updated_at:"")||0)+1)).toISOString()}));
+}
 function foundCount(p=progress){return Object.values(p).filter(v=>v==="found").length}
 function matchedCount(p){if(!ITEMS.length)return null;const valid=new Set(ITEMS.map(key));let n=0;for(const [k,v] of Object.entries(p))if(v==="found"&&valid.has(k))n++;return n}
-function done(x){return progress[key(x)]==="found"}
+function done(x){return ownItem(progress,key(x))==="found"}
 function canWriteCloud(storyId=null){
   return !!(CLOUD_CONFIGURED&&supabaseClient&&currentUser&&!explicitSignOut&&navigator.onLine&&backendState==="ready"&&backendUserId===currentUser.id&&(!storyId||verifiedStoryIds.has(storyId)));
 }
@@ -585,7 +654,7 @@ function renderBackendState(){
   }
   for(const id of ["newStory","showPasswordPanel","savePassword"]){const el=$(id);if(el)el.disabled=!!currentUser&&!canWriteCloud()||id==="savePassword"&&!!passwordRun}
   if(label&&storageWarning())label.textContent+=" · "+storageWarning();
-  for(const id of ["reset","import","replaceImport","file"]){const el=$(id);if(el)el.disabled=!canEditProgress()||versionedCloudStory()&&["reset","replaceImport"].includes(id)}
+  for(const id of ["reset","import","replaceImport","file"]){const el=$(id);if(el)el.disabled=!canEditProgress()}
   if(label&&versionedCloudStory()){
     const context=versionedContext(),state=context?.engine.inspect();
     label.textContent+=" · versionerad progress: "+(state?.mode||"blockerad");
@@ -652,7 +721,7 @@ function restoreCloudStoryCache(userId){
   stories=value.stories.map(st=>({...st}));cloudStoriesMemory.set(userId,value);
   const preferred=storageRead(activeStoryStorageKey());
   activeStoryId=stories.some(st=>st.id===preferred.value)?preferred.value:stories[0]?.id||null;
-  if(activeStoryId)loadStoryRecords(activeStoryId);else{storyRecords={};progress={};activeProgressUnknown=false}
+  if(activeStoryId)loadStoryRecords(activeStoryId);else{storyRecords=itemMap();progress=itemMap();activeProgressUnknown=false}
   renderStorySelect();render();return true;
 }
 function renderStorySelect(){
@@ -698,13 +767,13 @@ async function renameActiveStory(name){
 }
 function localRecord(itemKey,status,timestamp=nowIso()){
   // Keep later edits newer even within one millisecond or after a clock correction.
-  const previous=Date.parse(storyRecords[itemKey]?.client_updated_at),next=Date.parse(timestamp);
+  const previous=Date.parse(ownItem(storyRecords,itemKey)?.client_updated_at),next=Date.parse(timestamp);
   const record={status,client_updated_at:new Date(Number.isFinite(previous)?Math.max(next,previous+1):next).toISOString(),dirty:true};
   const context=versionedContext();
-  if(context){context.engine.edit(itemKey,record);return context.engine.viewRecords()[itemKey]}
+  if(context){context.engine.edit(itemKey,record);return ownItem(context.engine.viewRecords(),itemKey)}
   return record;
 }
-function markRecord(itemKey,status){if(!canEditProgress()){alert("Välj en Story med verifierbar progress först.");return}reconcileStoredRecords();storyRecords[itemKey]=localRecord(itemKey,status);saveStoryRecords();scheduleSync()}
+function markRecord(itemKey,status){if(!canEditProgress()){alert("Välj en Story med verifierbar progress först.");return}reconcileStoredRecords();Object.defineProperty(storyRecords,itemKey,{value:localRecord(itemKey,status),writable:true,enumerable:true,configurable:true});saveStoryRecords();scheduleSync()}
 function toggleFound(x,checked){markRecord(key(x),checked?"found":"todo");render()}
 function scheduleSync(){if(!(CLOUD_CONFIGURED&&currentUser&&activeStoryId&&!String(activeStoryId).startsWith("local-")))return;setCloudStatus("Ändringar väntar på synk…","pending");if(!canWriteCloud(activeStoryId))return;clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncCurrentStory().catch(console.error),500)}
 function newer(a,b){return Date.parse(a)>Date.parse(b)}
@@ -716,7 +785,7 @@ async function syncCurrentStory(){
   if(syncBusy){syncPending=true;return}
   syncBusy=true;
   clearTimeout(syncTimer);syncTimer=null;
-  const storyId=activeStoryId,userId=currentUser.id,generation=backendGeneration,records=storyRecords,snapshot={...records};
+  const storyId=activeStoryId,userId=currentUser.id,generation=backendGeneration,records=storyRecords,snapshot=itemMap(Object.entries(records));
   // Record-map identity also rejects an old response after A -> B -> A reloads A.
   const isCurrent=()=>backendContextCurrent(userId,generation)&&canWriteCloud(storyId)&&activeStoryId===storyId&&storyRecords===records;
   try{
@@ -726,24 +795,24 @@ async function syncCurrentStory(){
     if(!backendContextCurrent(userId,generation))return;
     if(!Array.isArray(remote)||remote.some(r=>!r||typeof r.item_key!=="string"||!r.item_key||!["found","todo","skipped"].includes(r.status)||typeof r.client_updated_at!=="string"||!Number.isFinite(Date.parse(r.client_updated_at))))throw new Error("Ogiltigt progress-svar");
     if(!isCurrent())return;
-    const remoteMap={};
+    const remoteMap=itemMap();
     for(const r of remote||[])remoteMap[String(r.item_key).toLowerCase()]={status:r.status,client_updated_at:r.client_updated_at,dirty:false};
-    const upserts=[],sentRecords={},all=new Set([...Object.keys(records),...Object.keys(remoteMap)]);
+    const upserts=[],sentRecords=itemMap(),all=new Set([...Object.keys(records),...Object.keys(remoteMap)]);
     for(const k of all){
       // Checkbox, reset and import edits replace records; never merge over a new one.
-      if(records[k]!==snapshot[k]){syncPending=true;continue}
-      const l=records[k],r=remoteMap[k];
+      if(ownItem(records,k)!==ownItem(snapshot,k)){syncPending=true;continue}
+      const l=ownItem(records,k),r=ownItem(remoteMap,k);
       if(l&&(!r||newer(l.client_updated_at,r.client_updated_at))){
         upserts.push({story_id:storyId,item_key:k,status:l.status,client_updated_at:l.client_updated_at});
         sentRecords[k]=l;
-      }else if(r){records[k]=r}
+      }else if(r){Object.defineProperty(records,k,{value:r,writable:true,enumerable:true,configurable:true})}
     }
     if(upserts.length){
       requireCloudWrite(storyId);
       await cloudRequest(supabaseClient.from("story_progress").upsert(upserts,{onConflict:"story_id,item_key"}),"Skriv progress");
       if(!isCurrent())return;
       for(const u of upserts){
-        if(records[u.item_key]===sentRecords[u.item_key])records[u.item_key]={status:u.status,client_updated_at:u.client_updated_at,dirty:false};
+        if(ownItem(records,u.item_key)===ownItem(sentRecords,u.item_key))Object.defineProperty(records,u.item_key,{value:{status:u.status,client_updated_at:u.client_updated_at,dirty:false},writable:true,enumerable:true,configurable:true});
         else syncPending=true;
       }
     }
@@ -782,12 +851,12 @@ function recoverBackend({flush=true,background=false}={}){
       stories=live;verifiedStoryIds=new Set(live.map(s=>s.id));cacheCloudStories(userId);
       if(oldId&&!String(oldId).startsWith("local-")&&!verifiedStoryIds.has(oldId)){
         // A removed/unowned Story's pending records stay in their original cache.
-        activeStoryId=null;storyRecords={};progress={};render();
+        activeStoryId=null;storyRecords=itemMap();progress=itemMap();render();
       }else{
         const preferred=oldId&&verifiedStoryIds.has(oldId)?oldId:storageRead(activeStoryStorageKey()).value;
         const selected=verifiedStoryIds.has(preferred)?preferred:live[0]?.id||null;
         if(selected&&selected!==activeStoryId)await activateStory(selected,{sync:false});
-        else if(!selected){activeStoryId=null;storyRecords={};progress={};render()}
+        else if(!selected){activeStoryId=null;storyRecords=itemMap();progress=itemMap();render()}
       }
       if(!backendContextCurrent(userId,generation))return false;
       recoveryCooldown=null;backendUserId=userId;backendState="ready";renderStorySelect();
@@ -892,7 +961,7 @@ function logout(){
   rememberProgress();authGeneration++;authEventRevision++;explicitSignOut=true;authRestoreBlocked=true;loginRun=null;passwordRun=null;authMemory=null;recoveryCooldown=null;
   invalidateBackend();retireAuthClient();supabaseClient=null;
   storageWrite(AUTH_LOGOUT_KEY,"1");storageRemove(AUTH_STORAGE_KEY);storageRemove(LEGACY_SUPABASE_AUTH_KEY);
-  currentUser=null;stories=[];activeStoryId=null;storyRecords={};progress={};activeProgressUnknown=false;
+  currentUser=null;stories=[];activeStoryId=null;storyRecords=itemMap();progress=itemMap();activeProgressUnknown=false;
   showSignedOut();updateAuthDiag(null,"SIGNED_OUT");setCloudStatus("Utloggad lokalt · molnskrivningar blockerade","offline");
   const run={generation:authGeneration,promise:null};logoutRun=run;
   run.promise=(async()=>{
@@ -1019,7 +1088,7 @@ async function handleSession(session,event="INITIAL",generation=authGeneration,{
     rememberProgress();authGeneration++;authEventRevision++;recoveryCooldown=null;loginRun=null;
     passwordRun=null;$("savePassword").textContent="Spara lösenord";
     retireAuthClient();invalidateBackend();
-    currentUser=nextUser;stories=[];activeStoryId=null;storyRecords={};progress={};activeProgressUnknown=false;
+    currentUser=nextUser;stories=[];activeStoryId=null;storyRecords=itemMap();progress=itemMap();activeProgressUnknown=false;
     if(currentUser){acceptAuthSession(session);createAuthClient();restoreCloudStoryCache(currentUser.id)}
     else{authMemory=null;supabaseClient=null}
     renderStorySelect();render();
@@ -1058,7 +1127,7 @@ async function handleSession(session,event="INITIAL",generation=authGeneration,{
 }
 /* v7.6.1: duplicate v6 runtime progress engine removed; Story records are sole runtime source of truth. */
 
-function done(x){return progress[key(x)]==="found"}
+function done(x){return ownItem(progress,key(x))==="found"}
 function setDB(arr,complete=false){ITEMS=arr;embeddedComplete=complete;populate();render();updateNotice()}
 function updateNotice(){
  const n=$("notice");
@@ -1132,13 +1201,27 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelect
 $("clear").onclick=()=>{$("q").value="";$("area").value="";$("type").value="";$("rarity").value="";$("tier").value="";$("source").value="";$("state").value="";$("sort").value="area";render()};
 $("onlyS").onclick=()=>{$("tier").value="S";render()};
 $("refresh").onclick=()=>loadRemote(true);
-$("reset").onclick=()=>{if(versionedCloudStory()){alert("Versionerad ersättningsimport och nollställning kräver nästa protokollfas.");return}if(!canEditProgress()){alert("Välj eller skapa en Story först.");return}if(confirm("Nollställa alla checkboxar i den aktiva Storyn?")){reconcileStoredRecords();const ts=nowIso();for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts);saveStoryRecords();render();scheduleSync()}};
+$("reset").onclick=async()=>{
+ if(!canEditProgress()){alert("Välj eller skapa en Story först.");return}
+ const captured=captureProgressAction("reset"),isCurrent=()=>progressActionCurrent(captured);
+ if(!confirm(captured.versioned?"Nollställa all progress i den aktiva Storyn, även items som bara finns i cloud?":"Nollställa alla checkboxar i den aktiva Storyn?")||!isCurrent())return;
+ try{
+  if(captured.versioned){
+   if(!captured.engine)throw new Error("Versionerad klient saknas; exportera progress före omladdning");
+   if(!await establishProgressActionIdentity(captured,isCurrent)||!isCurrent())return;
+   const result=await captured.engine.stageBulk("reset",[],{observed:captured.observed,isCurrent});
+   if(!result.staged||!isCurrent())return;
+   applyVersionedRecords(captured.context);
+  }else{reconcileStoredRecords();const ts=nowIso();for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts)}
+  saveStoryRecords();render();scheduleSync();
+ }catch(error){if(!isCurrent())return;console.error(error);alert("Kunde inte nollställa progress: "+(error.message||error))}
+};
 $("export").onclick=()=>{
  const legacy=legacyMap(),st=stories.find(s=>s.id===activeStoryId);
- const payload={format:"bg3-gear-progress",formatVersion:PROGRESS_FORMAT,appVersion:APP_VERSION,story:{id:activeStoryId,name:st?.name||"Story"},exportedAt:new Date().toISOString(),checkedCount:foundCount(),items:versionedCloudStory()?Object.fromEntries(Object.entries(storyRecords).map(([k,r])=>[k,r.status])):progress,progress:legacy};
+ const payload={format:"bg3-gear-progress",formatVersion:PROGRESS_FORMAT,appVersion:APP_VERSION,story:{id:activeStoryId,name:st?.name||"Story"},exportedAt:new Date().toISOString(),checkedCount:foundCount(),items:versionedCloudStory()?itemMap(Object.entries(storyRecords).map(([k,r])=>[k,r.status])):progress,progress:legacy};
  if(versionedCloudStory()){
   const context=versionedContext(),state=context?.engine.inspect();
-  if(state)payload.versionedProgress={scope:context.scope,revision:state.baseRevision,edits:state.edits,alternatives:state.alternatives,pending:state.pending};
+  if(state)payload.versionedProgress={scope:context.scope,revision:state.baseRevision,edits:state.edits,alternatives:state.alternatives,pending:state.pending,bulk:state.bulk};
  }
  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`BG3_${(st?.name||"Story").replace(/[^a-z0-9_-]+/gi,"_")}_Progress_v7.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)
 };
@@ -1146,11 +1229,12 @@ for(const [id,choice] of [["versionedKeepLocal","keep-local"],["versionedUseClou
  $(id).onclick=()=>{const displayed=versionedReviewDisplay,keys=Array.from(document.querySelectorAll("#versionedReviewItems input:checked"),el=>el.value),selectedTokens=Object.fromEntries(Array.from(document.querySelectorAll("#versionedReviewItems select"),el=>[el.dataset.item,el.value]));return reviewVersionedProgress(keys,choice,selectedTokens,displayed).catch(console.error)};
 }
 let importMode="merge";
-$("import").onclick=()=>{importMode="merge";$("file").click()};
-$("replaceImport").onclick=()=>{if(versionedCloudStory())return;importMode="replace";$("file").click()};
+$("import").onclick=()=>{progressActionSequence++;importMode="merge";$("file").click()};
+$("replaceImport").onclick=()=>{progressActionSequence++;importMode="replace";$("file").click()};
 $("file").onchange=async e=>{
  const f=e.target.files[0];if(!f)return;
- if(importMode==="replace"&&versionedCloudStory()){alert("Versionerad ersättningsimport är ännu inte tillgänglig.");e.target.value="";return}
+ const captured=captureProgressAction(importMode),isCurrent=()=>progressActionCurrent(captured,{checkMode:true});
+ let staged=false;
  if(!canEditProgress()){alert("Välj en Story med verifierbar progress först.");e.target.value="";return}
  const isAnon=!!(currentUser?.is_anonymous || currentUser?.app_metadata?.provider==="anonymous");
  if(isAnon){
@@ -1159,19 +1243,29 @@ $("file").onchange=async e=>{
    return;
  }
  try{
-  const o=JSON.parse(await f.text()),incoming=progressFromPayload(o),incomingFound=foundCount(incoming);
-  if(!canEditProgress()){alert("Välj en Story med verifierbar progress först.");e.target.value="";return}
-  if(importMode==="replace"&&!confirm(`Ersätta all progress i Storyn “${stories.find(s=>s.id===activeStoryId)?.name||"Story"}” med ${incomingFound} hittade items?`)){e.target.value="";return}
-  reconcileStoredRecords();
-  const ts=nowIso();
-  if(importMode==="replace"){for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts)}
-  for(const [k,status] of Object.entries(incoming))storyRecords[k]=localRecord(k,status,ts);
+  const text=await f.text();if(!isCurrent())return;
+  const incoming=progressFromPayload(JSON.parse(text)),incomingFound=foundCount(incoming);
+  if(captured.mode==="replace"&&!confirm(`Ersätta all progress i Storyn “${stories.find(s=>s.id===captured.storyId)?.name||"Story"}”${captured.versioned?", även items som bara finns i cloud":""} med ${incomingFound} hittade items (${Object.keys(incoming).length} angivna items)?`))return;
+  if(!isCurrent())return;
+  if(captured.versioned){
+   if(!captured.engine)throw new Error("Versionerad klient saknas; exportera progress före omladdning");
+   if(!await establishProgressActionIdentity(captured,isCurrent)||!isCurrent())return;
+   const records=importedRecords(incoming,captured.records),options={observed:captured.observed,isCurrent};
+   const result=await (captured.mode==="replace"?captured.engine.stageBulk("replace",records,options):captured.engine.stageMerge(records,options));
+   if(!result.staged||!isCurrent())return;
+   applyVersionedRecords(captured.context);
+  }else{
+   reconcileStoredRecords();const ts=nowIso();
+   if(captured.mode==="replace"){for(const k of Object.keys(storyRecords))storyRecords[k]=localRecord(k,"todo",ts)}
+   for(const [k,status] of Object.entries(incoming))Object.defineProperty(storyRecords,k,{value:localRecord(k,status,ts),writable:true,enumerable:true,configurable:true});
+  }
   saveStoryRecords();render();scheduleSync();
+  staged=true;
   const matched=matchedCount(progress),total=foundCount();let matchText="";
   if(matched!==null&&matched<total)matchText=` ${matched}/${total} finns i katalogen som är laddad just nu; övriga nycklar sparas ändå.`;else if(matched!==null)matchText=` Alla ${total} finns i den laddade katalogen.`;
-  alert(`${importMode==="merge"?"Progress sammanslagen":"Progress ersatt"} i aktiv Story. ${total} hittade items totalt.${matchText}`);
- }catch(err){console.error(err);alert("Kunde inte läsa progressfilen.")}
- e.target.value="";
+  alert(`${captured.mode==="merge"?"Progress sammanslagen":"Progress ersatt"} i aktiv Story. ${total} hittade items totalt.${matchText}`);
+ }catch(err){if(isCurrent()){console.error(err);alert("Kunde inte läsa progressfilen: "+(err.message||err))}}
+ finally{if(staged&&isCurrent())e.target.value=""}
 };
 $("saveOffline").onclick=()=>{
  if(ITEMS.length<550){alert("Ladda först den kompletta 556-item katalogen.");return}

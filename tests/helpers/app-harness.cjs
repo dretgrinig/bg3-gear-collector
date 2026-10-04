@@ -210,7 +210,7 @@ function harness({ userId = 'user-a', stories = ownedStories(userId), versioned 
   }
   const client = {
     rpc(name, args) {
-      assert.ok(['bg3_progress_snapshot_v1', 'bg3_mutate_progress_v1'].includes(name), 'unknown RPC in isolated mock');
+      assert.ok(['bg3_progress_snapshot_v1', 'bg3_mutate_progress_v1', 'bg3_bulk_progress_v1'].includes(name), 'unknown RPC in isolated mock');
       const isSnapshot = name === 'bg3_progress_snapshot_v1';
       return request(isSnapshot ? snapshots : mutations, {
         type: isSnapshot ? 'snapshot' : 'mutation', name, args: clone(args), storyId: args.p_story_id,
@@ -298,7 +298,7 @@ function harness({ userId = 'user-a', stories = ownedStories(userId), versioned 
     confirm: () => true, alert: message => alerts.push(String(message)), URLSearchParams, URL: ExportURL, Blob,
     console: { error: error => errors.push(error), warn() {}, log() {} }
   });
-  const enginePath = join(__dirname, '..', '..', 'versioned-progress.js');
+  const enginePath = process.env.BG3_TEST_ENGINE || join(__dirname, '..', '..', 'versioned-progress.js');
   if (existsSync(enginePath)) vm.runInContext(readFileSync(enginePath, 'utf8'), context, { filename: enginePath });
   vm.runInContext([core, authSupport, reset, exporting, imports, triggers, sessions, passwords, bootstrap, login, logout].join('\n'), context);
   context.mockClient = client;
@@ -330,8 +330,13 @@ function harness({ userId = 'user-a', stories = ownedStories(userId), versioned 
     setUser(id) { currentUser=id?{id}:null; },
     logoutPending() { explicitSignOut=true; },
     state() { return {id:activeStoryId, records:storyRecords, progress, stories}; },
-    reset() { $("reset").onclick(); },
+    reset() { return $("reset").onclick(); },
     export() { $("export").onclick(); },
+    setImportMode(mode) { importMode=mode; },
+    readImport(file, mode='merge') {
+      importMode=mode;
+      return $("file").onchange({target:{files:[file],value:'file'}});
+    },
     async import(payload, mode='merge') {
       importMode=mode;
       await $("file").onchange({target:{files:[{text:async()=>JSON.stringify(payload)}],value:'file'}});

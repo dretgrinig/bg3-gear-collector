@@ -8,7 +8,10 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
 const args = process.argv.slice(2);
-if (args.some(arg => arg !== '--baseline')) throw new Error('Only --baseline is supported');
+if (args.length > 1 || args.some(arg => !['--baseline', '--d3', '--d3-baseline'].includes(arg))) {
+  throw new Error('Supported modes: --baseline, --d3, --d3-baseline');
+}
+const mode = args[0] || '';
 const bin = process.env.PG_BIN_DIR;
 if (!bin || !path.isAbsolute(bin)) {
   console.error('Set PG_BIN_DIR to an existing absolute directory containing initdb, pg_ctl and psql. No software is installed by this runner.');
@@ -45,13 +48,31 @@ try {
   const psqlArgs = ['-X', '-v', 'ON_ERROR_STOP=1', '-f'];
   run(psql, [...psqlArgs, path.join(__dirname, 'fixture.sql')]);
   run(psql, [...psqlArgs, path.join(__dirname, '../../supabase-schema.sql')]);
-  const testFile = args.includes('--baseline') ? 'legacy-baseline.test.cjs' : 'progress-protocol.test.cjs';
-  const result = spawnSync(process.execPath, ['--test', path.join(__dirname, testFile)], {
-    env, stdio: 'inherit', timeout: 180000,
-  });
-  if (result.error) throw result.error;
-  status = result.status ?? 1;
+  function runSuite(testFile) {
+    const result = spawnSync(process.execPath, ['--test', path.join(__dirname, testFile)], {
+      env, stdio: 'inherit', timeout: 180000,
+    });
+    if (result.error) throw result.error;
+    return result.status ?? 1;
+  }
+  if (mode === '--d3' || mode === '--d3-baseline') {
+    // D1's lifecycle suite changes global enforcement and tears down its tables.
+    // Never run it concurrently with D3 against this disposable cluster.
+    status = mode === '--d3' ? runSuite('progress-protocol.test.cjs') : 0;
+    if (status === 0) {
+      for (const file of ['001_progress_protocol.sql', '002_enforce_progress_protocol.sql']) {
+        run(psql, [...psqlArgs, path.join(__dirname, '../../database/phase-d1', file)]);
+      }
+      if (mode === '--d3') {
+        run(psql, [...psqlArgs, path.join(__dirname, '../../database/phase-d3/003_bulk_progress_protocol.sql')]);
+      }
+      status = runSuite('bulk-progress-protocol.test.cjs');
+    }
+  } else {
+    status = runSuite(mode === '--baseline' ? 'legacy-baseline.test.cjs' : 'progress-protocol.test.cjs');
+  }
 } catch (error) {
+  status = 1;
   console.error(error.message);
 } finally {
   if (started) {

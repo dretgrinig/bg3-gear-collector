@@ -37,6 +37,13 @@
     return copy(data);
   }
   function validateOperation(op) {
+    const bulkOperation = op?.kind === "bulk";
+    if (bulkOperation) {
+      requireValue(object(op) && typeof op.storyId === "string" && op.storyId && validRevision(op.expectedRevision) && uuidShape(op.operationId) && ["reset", "replace"].includes(op.mode), "Malformed immutable bulk operation");
+      requireValue(Object.keys(op).every(key => ["kind", "storyId", "expectedRevision", "operationId", "mode", "records"].includes(key)), "Unexpected bulk operation fields");
+      validateRows(op.records, op.mode === "reset");
+      return op;
+    }
     requireValue(object(op) && typeof op.storyId === "string" && op.storyId && validRevision(op.expectedRevision) && uuidShape(op.operationId) && Array.isArray(op.changes) && op.changes.length >= 1 && op.changes.length <= 5000, "Malformed immutable progress operation");
     requireValue(Object.keys(op).every(key => ["storyId", "expectedRevision", "operationId", "changes"].includes(key)), "Unexpected operation fields");
     const keys = new Set();
@@ -47,6 +54,16 @@
     const encoded = encodeURIComponent(JSON.stringify(op.changes));
     requireValue(encoded.replace(/%[0-9A-F]{2}/g, "x").length + op.changes.length * 12 <= 1048576, "Progress operation exceeds protocol bounds");
     return op;
+  }
+  function validateRows(rows, reset = false) {
+    requireValue(Array.isArray(rows) && rows.length <= 5000 && (!reset || rows.length === 0), "Invalid or oversized atomic import");
+    const keys = new Set();
+    for (const row of rows) {
+      requireValue(object(row) && itemKey(row.item_key) && validRecord(row) && Object.keys(row).length === 3 && Object.keys(row).every(key => ["item_key", "status", "client_updated_at"].includes(key)) && !keys.has(row.item_key), "Malformed or duplicate import row");
+      keys.add(row.item_key);
+    }
+    const encoded = encodeURIComponent(JSON.stringify(rows));
+    requireValue(encoded.replace(/%[0-9A-F]{2}/g, "x").length + rows.length * 12 <= 1048576, "Atomic import exceeds protocol bounds");
   }
   function validateResult(data, op) {
     validateOperation(op);
@@ -63,15 +80,23 @@
     const prefix = "bg3-versioned-v1:" + encodeURIComponent(JSON.stringify([scope.backend, scope.userId, scope.storyId]));
     const keys = Object.freeze({ checkpoint: prefix + ":client:" + encodeURIComponent(clientId), operation: id => prefix + ":operation:" + id });
     let snapshot = null, edits = map(), alternatives = map(), acceptedDisplay = map(), pending = null, lastAck = null, resolution = null, ambiguous = false;
-    let settledTokens = new Set(), legacySeen = map();
+    let settledTokens = new Set(), legacySeen = map(), bulk = null, bulkResolution = null;
     let verified = false, durable = true, hardIssue = "", softIssue = "", coordinationIssue = "", conflict = false;
     let persistenceTail = Promise.resolve(), persistenceVersion = 0, savedVersion = 0, pendingPersistence = 0, pendingSave = null, persistenceIssue = "";
     function newToken() { const value = uuid(); requireValue(uuidShape(value), "UUID generator unavailable"); return value; }
+    function bulkCovers(key, token) { return !!(bulk && own(bulk.tokens,key) && bulk.tokens[key].includes(token)); }
     function recordView() {
       const result = map();
       if (snapshot) for (const row of snapshot.records) result[row.item_key] = { status: row.status, client_updated_at: row.client_updated_at, dirty: false };
       for (const [key, value] of Object.entries(acceptedDisplay)) result[key] = { ...value, dirty: false };
-      for (const [key, value] of Object.entries(edits)) result[key] = { ...value.record, dirty: true, versioned_edit_token: value.token };
+      if (bulk) {
+        for (const key of Object.keys(result)) result[key] = { ...result[key], status: "todo", dirty: true };
+        for (const row of bulk.records) result[row.item_key] = { status: row.status, client_updated_at: row.client_updated_at, dirty: true };
+      }
+      for (const [key, value] of Object.entries(edits)) {
+        if (bulkCovers(key,value.token)) continue;
+        result[key] = { ...value.record, dirty: true, versioned_edit_token: value.token };
+      }
       return result;
     }
     function validEdit(value) {
@@ -100,7 +125,8 @@
       }
       if (!own(edits, key)) {
         edits[key] = copy(storedEdit);
-        if (verified && !pending && (storedEdit.baseRevision !== snapshot?.revision || storedEdit.dependsOn || storedEdit.awaitingRevision)) {
+        // A later edit from another tab may already follow our exact retained bulk barrier.
+        if (verified && !pending && !(bulk && storedEdit.dependsOn === bulk.intentId && storedEdit.baseRevision === null && storedEdit.awaitingRevision === null) && (storedEdit.baseRevision !== snapshot?.revision || storedEdit.dependsOn || storedEdit.awaitingRevision)) {
           edits[key].review = true; edits[key].baseRevision = null; edits[key].dependsOn = null; edits[key].awaitingRevision = null;
         }
       } else {
@@ -109,10 +135,20 @@
         itemEdits(key).forEach(value => { value.review = true; });
       }
     }
+    function validBulk(value) {
+      try {
+        requireValue(object(value) && uuidShape(value.intentId) && ["reset", "replace"].includes(value.mode) && object(value.tokens) && typeof value.review === "boolean", "Invalid staged bulk intent");
+        validateRows(value.records, value.mode === "reset");
+        if (value.minimumRevision != null && !validRevision(value.minimumRevision)) return false;
+        return value.fingerprint === stable({mode:value.mode, records:value.records}) && (value.baseRevision === null || validRevision(value.baseRevision)) && (value.dependsOn === null || uuidShape(value.dependsOn)) && (value.awaitingRevision === null || validRevision(value.awaitingRevision)) && Object.entries(value.tokens).every(([key,tokens]) => itemKey(key) && Array.isArray(tokens) && tokens.every(uuidShape) && new Set(tokens).size === tokens.length);
+      } catch (_) { return false; }
+    }
     function validCheckpoint(value) {
       try {
         if (!object(value) || value.format !== "bg3-versioned-checkpoint" || value.formatVersion !== 1 || stable(value.scope) !== stable(scope) || value.clientId !== clientId || !object(value.edits) || !object(value.acceptedDisplay)) return false;
         if (value.snapshot !== null) validateSnapshot(value.snapshot, scope.storyId);
+        if (value.bulk != null && !validBulk(value.bulk)) return false;
+        if (value.bulkResolution != null && (!object(value.bulkResolution) || !uuidShape(value.bulkResolution.intentId) || typeof value.bulkResolution.fingerprint !== "string")) return false;
         if (!Object.entries(value.edits).every(([key, value]) => itemKey(key) && validEdit(value))) return false;
         if (own(value, "alternatives")) {
           if (!object(value.alternatives)) return false;
@@ -133,6 +169,7 @@
       try {
         if (!object(value) || value.format !== "bg3-versioned-operation" || value.formatVersion !== 1 || stable(value.scope) !== stable(scope) || value.clientId !== clientId || !object(value.tokens)) return false;
         validateOperation(value.operation);
+        if (value.operation.kind === "bulk") return value.operation.storyId === scope.storyId && value.fingerprint === stable(value.operation) && object(value.bulkTokens) && Object.entries(value.bulkTokens).every(([key,tokens]) => itemKey(key) && Array.isArray(tokens) && tokens.every(uuidShape));
         return value.operation.storyId === scope.storyId && value.fingerprint === stable(value.operation) && Object.keys(value.tokens).length === value.operation.changes.length && value.operation.changes.every(row => uuidShape(value.tokens[row.item_key]));
       } catch (_) { return false; }
     }
@@ -149,7 +186,7 @@
       try { return write(key, copy(value))?.state === "ok"; } catch (_) { return false; }
     }
     function envelope() {
-      return { format: "bg3-versioned-checkpoint", formatVersion: 1, scope, clientId, snapshot, edits, alternatives, acceptedDisplay, head: pending ? { operationId: pending.operation.operationId, fingerprint: pending.fingerprint } : null, lastAck, resolution, ambiguous, conflict, settledTokens: [...settledTokens], legacySeen };
+      return { format: "bg3-versioned-checkpoint", formatVersion: 1, scope, clientId, snapshot, edits, alternatives, acceptedDisplay, bulk, bulkResolution, head: pending ? { operationId: pending.operation.operationId, fingerprint: pending.fingerprint } : null, lastAck, resolution, ambiguous, conflict, settledTokens: [...settledTokens], legacySeen };
     }
     function journalFor(head) {
       const result = get(keys.operation(head.operationId), validJournal);
@@ -167,7 +204,7 @@
         if (record.status !== edit.record.status || record.client_updated_at !== edit.record.client_updated_at) hardIssue = "Stored edit token changed payload";
         return;
       }
-      if (resolution?.outcome === "applied" && resolution.tokens[key] === record.versioned_edit_token) return;
+      if (resolution?.outcome === "applied" && (own(resolution.tokens, key) ? resolution.tokens[key] : undefined) === record.versioned_edit_token) return;
       const cloud = snapshot?.records.find(row => row.item_key === key);
       if (!record.dirty && cloud?.status === record.status && cloud.client_updated_at === record.client_updated_at) return;
       if (current && current.status === record.status && current.client_updated_at === record.client_updated_at) return;
@@ -190,6 +227,14 @@
           }
         }
       }
+      if (value.bulk && bulk?.intentId === value.bulk.intentId && bulk.fingerprint !== value.bulk.fingerprint) hardIssue = "Staged bulk identity changed payload";
+      if (value.bulk && value.bulk.intentId !== bulk?.intentId && value.bulk.intentId !== bulkResolution?.intentId) {
+        if (bulk) coordinationIssue = "Another staged bulk intent requires review or reload";
+        else bulk = copy(value.bulk);
+      }
+      if (bulk && value.bulkResolution?.intentId === bulk.intentId && value.bulkResolution.fingerprint === bulk.fingerprint) {
+        bulkResolution = copy(value.bulkResolution); bulk = null;
+      }
       for (const token of value.settledTokens) settledTokens.add(token);
       pruneSettled();
       for (const [key, fingerprint] of Object.entries(value.legacySeen)) if (!own(legacySeen, key)) legacySeen[key] = fingerprint;
@@ -198,7 +243,8 @@
       }
       for (const [key, entries] of Object.entries(value.alternatives || {})) entries.forEach(edit => retainStoredEdit(key, edit));
       // Cached acknowledgements older than a coherent snapshot are not new intent.
-      if (!snapshot || !value.lastAck || BigInt(snapshot.revision) < BigInt(value.lastAck.revision)) {
+      const knownRevision = [snapshot?.revision, lastAck?.revision].filter(Boolean).reduce((a,b) => BigInt(a) > BigInt(b) ? a : b, "0");
+      if (!value.lastAck || BigInt(knownRevision) < BigInt(value.lastAck.revision)) {
         for (const [key, record] of Object.entries(value.acceptedDisplay)) importRecord(key, record);
       }
     }
@@ -267,6 +313,7 @@
     if (stored.state === "ok") {
       snapshot = copy(stored.value.snapshot); edits = dictionary(stored.value.edits); alternatives = dictionary(stored.value.alternatives || {}); acceptedDisplay = dictionary(stored.value.acceptedDisplay);
       lastAck = copy(stored.value.lastAck); resolution = copy(stored.value.resolution); conflict = stored.value.conflict;
+      bulk = stored.value.bulk ? copy(stored.value.bulk) : null; bulkResolution = stored.value.bulkResolution ? copy(stored.value.bulkResolution) : null;
       settledTokens = new Set(stored.value.settledTokens); legacySeen = dictionary(stored.value.legacySeen);
       pruneSettled();
       if (stored.value.head) { pending = journalFor(stored.value.head); ambiguous = true; }
@@ -280,8 +327,8 @@
         else if (!snapshot && !edits[key]) acceptedDisplay[key] = { status: record.status, client_updated_at: record.client_updated_at, dirty: false };
       }
     }
-    function reviewKeys() { return Object.keys(edits).filter(key => edits[key].review || alternatives[key]?.length); }
-    function needsSnapshot() { return !!lastAck && (!verified || !snapshot || BigInt(snapshot.revision) < BigInt(lastAck.revision)); }
+    function reviewKeys() { return Object.keys(edits).filter(key => (edits[key].review || alternatives[key]?.length) && (!bulk || bulk.review || itemEdits(key).some(value => !bulkCovers(key,value.token)))); }
+    function needsSnapshot() { return !!(bulk?.minimumRevision && (!snapshot || BigInt(snapshot.revision) < BigInt(bulk.minimumRevision)) || lastAck && (!verified || !snapshot || BigInt(snapshot.revision) < BigInt(lastAck.revision))); }
     function mode() {
       if (hardIssue || coordinationIssue) return "blocked";
       if (softIssue === "readonly") return "readonly";
@@ -289,12 +336,15 @@
       if (!snapshot.protocol_enforced || softIssue === "readonly") return "readonly";
       if (softIssue || !durable) return "blocked";
       if (pending) return "pending";
-      if (reviewKeys().length) return conflict ? "conflict" : "review";
+      if (bulk?.review || reviewKeys().length) return conflict ? "conflict" : "review";
       if (needsSnapshot()) return "unknown";
       return "ready";
     }
     function writeAllowed() {
-      return !!(verified && snapshot?.protocol_enforced && !hardIssue && !coordinationIssue && !softIssue && (pending || (!reviewKeys().length && !needsSnapshot())));
+      return !!(verified && snapshot?.protocol_enforced && !hardIssue && !coordinationIssue && !softIssue && (pending || (!bulk?.review && !uncoveredReview() && !needsSnapshot())));
+    }
+    function uncoveredReview() {
+      return Object.keys(edits).some(key => itemEdits(key).some(value => (value.review || alternatives[key]?.length) && (!bulk || !bulkCovers(key,value.token))));
     }
     function canWrite() { return durable && writeAllowed(); }
     function acceptSnapshot(data) {
@@ -305,8 +355,16 @@
         softIssue = "Progress changed without advancing its server revision"; verified = false; throw new Error(softIssue);
       }
       snapshot = next; verified = true; softIssue = "";
+      if (bulk && !pending) {
+        if (bulk.awaitingRevision && bulk.awaitingRevision === next.revision && lastAck?.revision === next.revision && !bulk.review) {
+          bulk.baseRevision = next.revision; bulk.dependsOn = null; bulk.awaitingRevision = null;
+        } else if (bulk.baseRevision !== next.revision || bulk.awaitingRevision || bulk.dependsOn) {
+          bulk.review = true; bulk.baseRevision = null; bulk.dependsOn = null; bulk.awaitingRevision = null;
+        }
+      }
       acceptedDisplay = map();
       if (!pending) for (const edit of allEdits()) {
+        if (bulk && (edit.dependsOn === bulk.intentId || Object.values(bulk.tokens).some(tokens => tokens.includes(edit.token)))) continue;
         if (edit.awaitingRevision && edit.awaitingRevision === next.revision && lastAck?.revision === next.revision && !edit.review) {
           edit.baseRevision = next.revision; edit.dependsOn = null; edit.awaitingRevision = null;
         } else if (edit.baseRevision !== next.revision || edit.awaitingRevision) {
@@ -318,10 +376,10 @@
     }
     function edit(key, record) {
       requireValue(itemKey(key) && validRecord(record), "Invalid local checkbox intent");
-      const previous = edits[key], dependency = pending?.operation.operationId || (needsSnapshot() ? lastAck.operationId : null);
+      const previous = edits[key], dependency = bulk?.intentId || pending?.operation.operationId || (needsSnapshot() ? lastAck.operationId : null);
       if (previous) settledTokens.add(previous.token);
       const reviewed = !!previous?.review || !verified || !snapshot || (!dependency && !snapshot.protocol_enforced);
-      edits[key] = { token: newToken(), record: { status: record.status, client_updated_at: record.client_updated_at, dirty: true }, baseRevision: reviewed || dependency ? null : snapshot.revision, dependsOn: dependency, awaitingRevision: dependency && !pending ? lastAck.revision : null, review: reviewed, source: "local" };
+      edits[key] = { token: newToken(), record: { status: record.status, client_updated_at: record.client_updated_at, dirty: true }, baseRevision: reviewed || dependency ? null : snapshot.revision, dependsOn: dependency, awaitingRevision: dependency && !pending && !bulk ? lastAck.revision : null, review: reviewed, source: "local" };
       persist();
       return copy(recordView()[key]);
     }
@@ -369,6 +427,7 @@
       const finish = (value = null, durable = saved) => ({ value, durable });
       if (!saved || !writeAllowed()) return finish();
       if (!pending) {
+        if (bulk) return prepareBulkLocked(saved);
         const intent = Object.entries(edits);
         if (!intent.length) return finish();
         if (intent.some(([, value]) => value.review || value.baseRevision !== snapshot.revision || value.dependsOn || value.awaitingRevision)) return finish();
@@ -387,6 +446,69 @@
       if (!checkOperation(pending.operation)) return finish(null, false);
       return finish(freeze(copy(pending.operation)), true);
     }
+    function prepareBulkLocked(saved) {
+      const finish = (value = null, durable = saved) => ({value,durable});
+      if (bulk.review || bulk.baseRevision !== snapshot.revision || bulk.dependsOn || bulk.awaitingRevision || uncoveredReview()) return finish();
+      if (BigInt(snapshot.revision) === MAX_REVISION) { softIssue = "Progress revision exhausted"; return finish(); }
+      const operation = {kind:"bulk",storyId:scope.storyId,expectedRevision:bulk.baseRevision,operationId:bulk.intentId,mode:bulk.mode,records:copy(bulk.records)};
+      validateOperation(operation);
+      const journal = {format:"bg3-versioned-operation",formatVersion:1,scope,clientId,operation,fingerprint:stable(operation),tokens:map(),bulkTokens:copy(bulk.tokens)};
+      if (get(keys.operation(operation.operationId),validJournal).state !== "missing" || !put(keys.operation(operation.operationId),journal)) { softIssue = "Immutable bulk operation could not be saved"; return finish(null,false); }
+      pending = freeze(copy(journal)); ambiguous = false;
+      if (!persistLocked()) return finish(null,false);
+      return finish(freeze(copy(operation)),true);
+    }
+    function captureIntent() {
+      return freeze(copy({scope,clientId,revision:snapshot?.revision || null,bulk:bulk ? {intentId:bulk.intentId,fingerprint:bulk.fingerprint} : null,candidates:Object.fromEntries(Object.keys(edits).map(key => [key,itemEdits(key).map(value => value.token).sort()]))}));
+    }
+    function stageRows(rows, mode, {observed = captureIntent(), isCurrent = () => true} = {}) {
+      validateRows(rows, mode === "reset");
+      requireValue(["merge","replace","reset"].includes(mode) && object(observed) && stable(observed.scope) === stable(scope) && observed.clientId === clientId && object(observed.candidates), "Invalid captured import context");
+      const supplied = copy(rows), captured = dictionary(observed.candidates);
+      let staged = false;
+      const change = () => {
+        requireValue(!bulk || mode === "merge", "A bulk intent is already staged; resolve it first");
+        if (mode !== "merge") {
+          const dependency = pending?.operation.operationId || (needsSnapshot() ? lastAck.operationId : null);
+          bulk = {intentId:newToken(),mode,records:supplied,fingerprint:stable({mode,records:supplied}),tokens:captured,baseRevision:dependency ? null : observed.revision,dependsOn:dependency,awaitingRevision:dependency && !pending ? lastAck.revision : null,review:!snapshot || observed.revision !== snapshot.revision || Object.keys(edits).some(key => alternatives[key]?.length || edits[key].review || !captured[key]?.includes(edits[key].token))};
+        } else {
+          // Allocate/validate the complete plan before settling any prior token.
+          // Import is a direct successor only to one observed, trusted primary;
+          // it cannot silently resolve competing or already-untrusted intent.
+          const plans = supplied.map(row => {
+            const key=row.item_key, existing=itemEdits(key);
+            const superseded=existing.length===1 && !existing[0].review && captured[key]?.includes(existing[0].token) ? [existing[0]] : [];
+            const competing=existing.filter(value => !superseded.includes(value));
+            const dependency=bulk?.intentId || pending?.operation.operationId || (needsSnapshot() ? lastAck.operationId : null);
+            return {key,superseded,competing,value:{token:newToken(),record:{status:row.status,client_updated_at:row.client_updated_at,dirty:true},baseRevision:dependency ? null : observed.revision,dependsOn:dependency,awaitingRevision:dependency && !pending && !bulk ? lastAck.revision : null,review:!!competing.length || !snapshot || observed.revision !== snapshot.revision,source:"import"}};
+          });
+          for (const {key,superseded,competing,value} of plans) {
+            superseded.forEach(edit => settledTokens.add(edit.token));
+            edits[key]=value;
+            if (competing.length) {alternatives[key]=competing;competing.forEach(edit => {edit.review=true});}
+            else delete alternatives[key];
+          }
+        }
+        staged = true;
+      };
+      const result = persistenceWork(() => {
+        if (!isCurrent()) return {value:{staged:false,cancelled:true,durable:false},durable:false};
+        const stored = get(keys.checkpoint,validCheckpoint);
+        if (!isCurrent()) return {value:{staged:false,cancelled:true,durable:false},durable:false};
+        if (stored.state === "ok") mergeStored(stored.value);
+        if (!isCurrent()) return {value:{staged:false,cancelled:true,durable:false},durable:false};
+        if (stable(observed.bulk ?? null) !== stable(bulk ? {intentId:bulk.intentId,fingerprint:bulk.fingerprint} : null)) return {value:{staged:false,cancelled:true,durable:false},durable:false};
+        change();
+        const saved = !["corrupt","inaccessible"].includes(stored.state) && persistLocked();
+        return {value:{staged:true,durable:saved},durable:saved};
+      });
+      return Promise.resolve(result).then(value => {
+        if (!staged && !value?.cancelled && isCurrent() && stable(observed.bulk ?? null) === stable(bulk ? {intentId:bulk.intentId,fingerprint:bulk.fingerprint} : null)) { change(); durable=false; return {staged:true,durable:false}; }
+        return value || {staged:false,durable:false};
+      });
+    }
+    function stageMerge(rows, options) { return stageRows(rows,"merge",options); }
+    function stageBulk(mode,rows,options) { requireValue(["reset","replace"].includes(mode),"Invalid bulk mode"); return stageRows(rows,mode,options); }
     function acceptResult(data, op) {
       let result;
       // Storage may become inaccessible after dispatch. Validate against the
@@ -401,6 +523,7 @@
       ambiguous = false;
       if (result.outcome === "conflict") {
         pending = null; conflict = true;
+        if (op.kind === "bulk" && bulk?.intentId === op.operationId) {bulk.review=true;bulk.baseRevision=null;bulk.dependsOn=null;bulk.awaitingRevision=null;bulk.minimumRevision=result.revision;}
         for (const value of allEdits()) { value.review = true; value.baseRevision = null; value.dependsOn = null; value.awaitingRevision = null; }
         const persisted = persist();
         return { accepted: true, applied: false, conflict: true, needsSnapshot: true, cacheDurable: persisted };
@@ -408,12 +531,23 @@
       // A receipt is only an acknowledgement. It cannot replace a newer snapshot.
       pending = null; lastAck = { operationId: op.operationId, revision: result.revision }; conflict = false;
       const currentSnapshotIncludesAck = verified && snapshot && BigInt(snapshot.revision) >= BigInt(result.revision);
-      for (const row of completed.operation.changes) settledTokens.add(completed.tokens[row.item_key]);
+      if (op.kind === "bulk") {
+        for (const tokens of Object.values(completed.bulkTokens)) tokens.forEach(token => settledTokens.add(token));
+        if (!currentSnapshotIncludesAck) {
+          for (const key of new Set([...Object.keys(acceptedDisplay),...(snapshot?.records || []).map(row=>row.item_key)])) acceptedDisplay[key] = {status:"todo",client_updated_at:new Date().toISOString(),dirty:false};
+          for (const row of op.records) acceptedDisplay[row.item_key] = {status:row.status,client_updated_at:row.client_updated_at,dirty:false};
+        }
+        if (bulk?.intentId === op.operationId) {bulkResolution={intentId:bulk.intentId,fingerprint:bulk.fingerprint};bulk=null;}
+      } else {
+        for (const row of completed.operation.changes) settledTokens.add(completed.tokens[row.item_key]);
+        if (bulk?.dependsOn === op.operationId) {bulk.dependsOn=null;bulk.awaitingRevision=result.revision;}
+      }
       pruneSettled();
-      for (const row of completed.operation.changes) {
+      for (const row of completed.operation.changes || []) {
         if (!own(edits, row.item_key) && !currentSnapshotIncludesAck) acceptedDisplay[row.item_key] = { status: row.status, client_updated_at: row.client_updated_at, dirty: false };
       }
       for (const value of allEdits()) {
+        if (bulk && (value.dependsOn === bulk.intentId || Object.values(bulk.tokens).some(tokens => tokens.includes(value.token)))) continue;
         if (value.dependsOn === op.operationId) {
           value.dependsOn = null;
           if (verified && snapshot?.revision === result.revision && !value.review) { value.baseRevision = result.revision; value.awaitingRevision = null; }
@@ -429,7 +563,26 @@
       return { accepted: true, applied: true, conflict: false, needsSnapshot: needsSnapshot(), cacheDurable: persisted };
     }
     function captureReview(keys = reviewKeys()) {
-      return freeze(copy({ scope, clientId, revision: snapshot?.revision || null, candidates: Object.fromEntries(keys.map(key => [key, itemEdits(key).map(value => value.token).sort()])) }));
+      return freeze(copy({ scope, clientId, revision: snapshot?.revision || null, bulk: bulk ? {intentId:bulk.intentId,fingerprint:bulk.fingerprint} : null, candidates: Object.fromEntries((bulk?.review ? Object.keys(edits) : keys).map(key => [key, itemEdits(key).map(value => value.token).sort()])) }));
+    }
+    function reviewBulk(choice, displayed) {
+      requireValue(["local","cloud"].includes(choice) && bulk && verified && snapshot && !pending && !needsSnapshot() && !hardIssue && !coordinationIssue,"A verified snapshot and resolved pending RPC are required for bulk review");
+      const current = captureReview();
+      const fail = () => {const error=new Error("Displayed bulk review changed");error.code="BG3_REVIEW_STALE";throw error;};
+      if (!object(displayed) || stable(displayed) !== stable(current)) fail();
+      const previous = bulk;
+      bulkResolution={intentId:previous.intentId,fingerprint:previous.fingerprint};
+      if (choice === "cloud") {
+        bulk=null;
+        for (const edit of allEdits()) if (edit.dependsOn===previous.intentId) {edit.review=true;edit.baseRevision=null;edit.dependsOn=null;edit.awaitingRevision=null;}
+      } else {
+        const tokens = map();
+        for (const [key,values] of Object.entries(previous.tokens)) tokens[key]=values.filter(token => own(displayed.candidates,key) && displayed.candidates[key].includes(token));
+        bulk={...previous,intentId:newToken(),tokens,baseRevision:snapshot.revision,dependsOn:null,awaitingRevision:null,review:false,minimumRevision:null};
+        for (const edit of allEdits()) if (edit.dependsOn===previous.intentId) edit.dependsOn=bulk.intentId;
+        // Unseen/competing independent tokens remain for their own explicit review.
+      }
+      conflict=false;persist();return recordView();
     }
     function review(selectedKeys, choice, selectedTokens = map(), displayed) {
       requireValue(Array.isArray(selectedKeys) && ["local", "cloud"].includes(choice) && verified && snapshot, "A current snapshot and explicit review choice are required");
@@ -440,6 +593,8 @@
       // without a displayed form explicitly observe their selected items now.
       if (displayed === undefined) displayed = captureReview(selectedKeys);
       const stale = () => { const error = new Error("Displayed review changed; review the current candidates again"); error.code = "BG3_REVIEW_STALE"; throw error; };
+      if (bulk?.review) {const error=new Error("Review the staged whole-Story operation first");error.code="BG3_REVIEW_STALE";throw error;}
+      if (stable(displayed?.bulk ?? null) !== stable(bulk ? {intentId:bulk.intentId,fingerprint:bulk.fingerprint} : null)) stale();
       if (!object(displayed) || stable(displayed.scope) !== stable(scope) || displayed.clientId !== clientId || displayed.revision !== snapshot.revision || !object(displayed.candidates)) stale();
       const keys = [...new Set(selectedKeys)];
       for (const key of keys) {
@@ -477,6 +632,7 @@
       // may already have committed, so retain its exact request until resume.
       if (String(code) === "55000" && wasAmbiguous) { softIssue = "readonly"; verified = false; return { retained: true, cacheDurable: persist() }; }
       resolution = { operationId: op.operationId, fingerprint: pending.fingerprint, outcome: "rejected", tokens: copy(pending.tokens) };
+      if (op.kind === "bulk" && bulk?.intentId === op.operationId) {bulk.review=true;bulk.baseRevision=null;bulk.dependsOn=null;bulk.awaitingRevision=null;}
       pending = null; ambiguous = false; conflict = String(code) === "22023";
       for (const value of allEdits()) { value.review = true; value.baseRevision = null; value.dependsOn = null; value.awaitingRevision = null; }
       softIssue = String(code) === "55000" ? "readonly" : "Rejected operation requires explicit review";
@@ -484,9 +640,9 @@
       return { retained: false, cacheDurable: persist() };
     }
     function inspect() {
-      return copy({ mode: mode(), snapshot, baseRevision: snapshot?.revision || null, pending: pending?.operation || null, edits, alternatives, reviewKeys: reviewKeys(), durable, reason: hardIssue || coordinationIssue || softIssue || persistenceIssue || (!durable ? "Edits remain memory-only; storage is not durable" : reviewKeys().length ? "Local intent requires explicit review against the cloud revision" : ""), needsSnapshot: needsSnapshot(), protocolEnforced: verified && snapshot?.protocol_enforced === true, ambiguous });
+      return copy({ mode: mode(), snapshot, baseRevision: snapshot?.revision || null, pending: pending?.operation || null, bulk, bulkReview: !!bulk?.review, edits, alternatives, reviewKeys: reviewKeys(), durable, reason: hardIssue || coordinationIssue || softIssue || persistenceIssue || (!durable ? "Edits remain memory-only; storage is not durable" : bulk?.review || reviewKeys().length ? "Local intent requires explicit review against the cloud revision" : ""), needsSnapshot: needsSnapshot(), protocolEnforced: verified && snapshot?.protocol_enforced === true, ambiguous });
     }
-    return Object.freeze({ get mode() { return mode(); }, get snapshot() { return copy(snapshot); }, keys, viewRecords: () => copy(recordView()), inspect, edit, observeRecords, acceptSnapshot, prepareOperation, acceptResult, captureReview, review, block, rejectOperation, canWrite, checkOperation, markDispatched, refresh, flushPersistence });
+    return Object.freeze({ get mode() { return mode(); }, get snapshot() { return copy(snapshot); }, keys, viewRecords: () => copy(recordView()), inspect, edit, captureIntent, stageMerge, stageBulk, reviewBulk, observeRecords, acceptSnapshot, prepareOperation, acceptResult, captureReview, review, block, rejectOperation, canWrite, checkOperation, markDispatched, refresh, flushPersistence });
   }
-  root.BG3VersionedProgress = Object.freeze({ create, validRevision, validateSnapshot, validateResult });
+  root.BG3VersionedProgress = Object.freeze({ create, validRevision, validateSnapshot, validateResult, validateRows });
 })(typeof window === "object" ? window : globalThis);
