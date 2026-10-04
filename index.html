@@ -9,21 +9,26 @@
 <meta name="apple-mobile-web-app-title" content="BG3 Gear">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
-<title>BG3 – Complete Gear Collector v7.7 PASSWORD AUTH STABILITY</title>
+<title>BG3 Gear Tracker</title>
 <style>
 :root{--bg:#0d0f11;--panel:#181b1f;--panel2:#21252a;--line:#343a40;--text:#f1f3f5;--muted:#abb2ba;--gold:#d4af37;--green:#37b24d;--red:#e8590c;--blue:#4dabf7}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b0d0f,#15181b);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
 body.dev-preview{background:linear-gradient(#07172f,#164583);min-height:100vh}
-body.dev-preview .dev-preview-badge{display:table;margin-bottom:8px;padding:4px 8px;border:1px solid #ffd43b;border-radius:6px;background:#ffd43b;color:#07172f;font-size:12px;font-weight:800;letter-spacing:.08em;line-height:1.4}
-header{position:sticky;top:0;z-index:20;background:rgba(13,15,17,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.wrap{max-width:1650px;margin:auto;padding:16px 20px}h1{margin:0;font-size:27px}.sub,.status{color:var(--muted);font-size:13px;margin-top:5px}
-.tabs,.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+body.dev-preview .dev-preview-badge{display:inline-block;padding:4px 7px;border:1px solid #ffd43b;border-radius:5px;background:#ffd43b;color:#07172f;font-size:10px;font-weight:800;letter-spacing:.08em;line-height:1.4}
+header.top-strip{position:sticky;top:0;z-index:20;background:rgba(13,15,17,.96);border-bottom:1px solid var(--line)}
+.wrap{max-width:1650px;margin:auto;padding:12px 20px}.brand-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px}.brand-strip h1{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;font-size:23px;letter-spacing:-.03em;line-height:1.2}.sub,.status{color:var(--muted);font-size:12px;line-height:1.5}.sub{margin:0}.dashboard{display:grid;gap:12px}
 button,input,select{background:var(--panel);border:1px solid var(--line);border-radius:9px;color:var(--text);padding:9px 10px;font:inherit}
-button{cursor:pointer}.tab.active{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
-button.primary{border-color:#2b8a3e} button.offline{border-color:var(--gold)}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.stat b{display:block;font-size:21px}
-.progress{height:11px;background:#252a2f;border-radius:999px;overflow:hidden;margin-top:9px}.progress div{height:100%;background:linear-gradient(90deg,#2f9e44,#69db7c)}
-.controls{display:grid;grid-template-columns:2fr repeat(7,1fr);gap:8px;margin-top:12px}.actions button{width:auto}
+.dashboard button,.dashboard input:not([type=checkbox]),.dashboard select,.dashboard summary{min-height:44px}
+button{cursor:pointer}button:hover:not(:disabled){border-color:#747d87}button:disabled{cursor:default}button.primary{border-color:#2b8a3e}button.offline{border-color:var(--gold)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.storybar{background:#14181d;border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:8px 20px;align-items:start}.storybar>div{min-width:0}.storylabel,.filter-label{display:block;color:var(--muted);font-size:11px;line-height:1.3;margin-bottom:5px;font-weight:600}.storylabel{letter-spacing:.04em;text-transform:uppercase}.storygroup,.authgroup{display:flex;gap:6px;align-items:center;flex-wrap:wrap;min-width:0}.storygroup select{min-width:0;flex:1;border-color:#817039;font-weight:650;text-overflow:ellipsis;width:100%}.smallbtn{padding:7px 9px;font-size:12px;white-space:nowrap}.storygroup .smallbtn{color:#c4c9cf}
+#authSignedOut{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto auto}#authSignedOut input{width:100%;min-width:0;font-size:13px}.authgroup #userEmail{min-width:0;overflow-wrap:anywhere;font-size:12px;flex:1 1 150px}.cloudstatus{grid-column:1/-1;font-size:12px;color:var(--muted);overflow-wrap:anywhere;line-height:1.5}.cloudstatus.goodtxt{color:#8ce99a}.cloudstatus.warntxt{color:#ffd43b}.syncdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#868e96;margin-right:5px}.syncdot.online{background:#51cf66}.syncdot.pending{background:#ffd43b}.syncdot.offline{background:#ff922b}.hidden{display:none!important}
+.passwordpanel{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.02)}.passwordpanel.hidden{display:none}.passwordpanel input{min-width:0;flex:1 1 160px}.authhint{font-size:12px;line-height:1.5;color:var(--muted);flex-basis:100%;overflow-wrap:anywhere}
+#backendStateLabel:not(:empty){padding:8px 12px;border:1px solid #66562c;border-left:3px solid var(--gold);border-radius:8px;background:#201d16;color:#f5df9b}#versionedReview{padding:12px;border:1px solid var(--gold);border-radius:10px;background:var(--panel)}
+.progress-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.progress-heading{display:flex;flex-direction:column;align-items:flex-start;gap:3px;color:var(--muted);font-size:12px}.progress-heading h2{margin:0;color:var(--text);font-size:13px;font-weight:600}.progress-scope{color:#e1c875}.progress-main{display:flex;align-items:baseline;gap:12px}.progress-main #pct{font-size:30px;line-height:1.15;letter-spacing:-.04em}.progress-fraction{font-size:14px;color:var(--muted)}.progress-fraction b{color:var(--text)}.progress-support{grid-column:1/-1;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:11px}.progress{grid-column:1/-1;height:6px;background:#30363c;border-radius:999px;overflow:hidden}.progress div{height:100%;background:linear-gradient(90deg,#2f9e44,#69db7c)}
+.filter-panel{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1.7fr) minmax(0,1fr) auto;gap:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}.tabs{align-self:end;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:480px}.tab{font-size:13px;padding:8px}.tab.active{border-color:var(--gold);background:#28251b;box-shadow:inset 0 0 0 1px var(--gold)}.controls{display:contents}.filter-field{min-width:0}.filter-field input,.filter-field select{width:100%;min-width:0;font-size:14px}.filter-clear{align-self:end;font-size:12px}
+.filter-disclosure{grid-column:1/-1;border-top:1px solid var(--line)}.filter-disclosure>summary{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:#d7dadd;list-style:none}.filter-disclosure>summary::-webkit-details-marker{display:none}.filter-disclosure>summary::before{content:'＋';color:var(--gold);font-size:16px}.filter-disclosure[open]>summary::before{content:'−'}.filter-count{margin-left:auto;color:var(--muted);font-size:11px}.secondary-controls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) auto;gap:10px}.filter-shortcut{align-self:end;font-size:12px}
+.tools-row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;min-width:0}.tools-row>#export{flex:0 0 auto;font-size:12px}.tools-disclosure{flex:1;min-width:0}.tools-disclosure[open]{flex-basis:100%}.tools-disclosure>summary{display:flex;align-items:center;gap:8px;cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:12px;color:#d7dadd;list-style:none}.tools-disclosure>summary::-webkit-details-marker{display:none}.tools-disclosure>summary::after{content:'＋';margin-left:auto;color:var(--gold)}.tools-disclosure[open]>summary::after{content:'−'}.tools-content{margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{font-size:12px}.actions #replaceImport,.actions #reset{border-color:#78533c;color:#ffc9a3}.technical-details{margin-top:10px;border-top:1px solid var(--line)}.technical-details summary{cursor:pointer;color:var(--muted);font-size:12px;padding:12px 0}.technical-details .status{margin-top:6px;overflow-wrap:anywhere}
 .notice{background:#191d22;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;color:#d7dadd}
 .good{border-left-color:var(--green)}.warn{border-left-color:var(--red)}
 .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:13px;background:var(--panel)}table{width:100%;border-collapse:collapse;min-width:1580px}
@@ -33,26 +38,16 @@ tr:hover{background:#1f2328}tr.done{opacity:.52}tr.done .item{text-decoration:li
 footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 .mobilecards{display:none}.gearcard{background:var(--panel);border:1px solid var(--line);border-radius:13px;margin-bottom:10px;overflow:hidden}.gearcard.done{opacity:.58}.gearcard.done .cardname{text-decoration:line-through}.cardtop{display:flex;gap:12px;align-items:flex-start;padding:13px}.cardcheck{flex:0 0 auto;padding-top:2px}.cardcheck input{width:25px;height:25px}.cardmain{min-width:0;flex:1}.cardname{font-size:16px;line-height:1.25;margin:0 0 7px;overflow-wrap:anywhere}.cardbadges{display:flex;gap:4px;flex-wrap:wrap}.cardplace{padding:0 13px 12px 50px;color:#d7dadd;font-size:13px;line-height:1.4}.cardplace b{color:var(--text)}.carddetails{border-top:1px solid #2b3036}.carddetails summary{cursor:pointer;padding:11px 13px;font-size:13px;color:#d7dadd;user-select:none}.detailgrid{display:grid;gap:10px;padding:2px 13px 14px}.detailrow{font-size:12.5px;line-height:1.45;overflow-wrap:anywhere}.detailrow .label{display:block;color:var(--muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}.mobilecount{display:none;color:var(--muted);font-size:12px;margin:0 0 9px}
 
-.authgroup{flex-wrap:wrap}
-.authgroup input[type=email]{min-width:220px}
-.authgroup input[type=password]{min-width:180px}
-.passwordpanel{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.02)}
-.passwordpanel.hidden{display:none}
-.passwordpanel input{min-width:190px;flex:1}
-.authhint{font-size:11px;color:var(--muted);flex-basis:100%}
-@media(max-width:780px){.passwordpanel{align-items:stretch}.passwordpanel input,.passwordpanel button{width:100%;min-width:0}}
-@media(max-width:1100px){.stats{grid-template-columns:1fr 1fr}.controls{grid-template-columns:1fr 1fr}.controls input[type=search]{grid-column:1/-1}}
+@media(max-width:1100px){#authSignedOut{grid-template-columns:repeat(2,minmax(0,1fr))}.secondary-controls{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:780px){
- .storybar{grid-template-columns:1fr;gap:8px}.cloudstatus{text-align:left}.authgroup input,.storygroup select{min-width:0;flex:1}.storygroup,.authgroup{align-items:stretch}
- header{position:static}.wrap{padding:12px}.wrap h1{font-size:21px;line-height:1.2}.sub{font-size:11.5px}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.tabs button{padding:9px 4px;font-size:12px}.stats{grid-template-columns:repeat(2,1fr);gap:6px}.stat{padding:8px 9px}.stat b{font-size:18px}.stat:last-child{grid-column:1/-1}.progress{margin-top:7px}.controls{grid-template-columns:1fr 1fr;gap:7px}.controls input[type=search]{grid-column:1/-1}.controls select,.controls input{min-width:0;width:100%;padding:10px 8px;font-size:13px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.actions button{width:100%;padding:10px 8px;font-size:12px}.actions #refresh,.actions #saveOffline{grid-column:1/-1}.status{font-size:11.5px}.notice{font-size:12px;padding:9px 10px}.tablewrap{display:none}.mobilecards{display:block}.mobilecount{display:block}.empty{padding:22px 12px}.gearcard .badge{font-size:10px}.wiki{display:inline-block;padding:6px 0}.detailgrid{grid-template-columns:1fr}.carddetails summary{min-height:42px}.cardplace{padding-left:50px}
+ header.top-strip{position:static}.wrap{padding:10px 12px}.brand-strip{min-height:54px}.brand-strip h1{font-size:21px}.brand-strip .sub{display:none}.dashboard{gap:10px}.storybar{grid-template-columns:minmax(0,1fr);gap:10px;padding:10px}.storygroup select{flex:1;min-width:0;width:0}.storygroup .smallbtn{flex:0 0 auto}#authSignedOut{grid-template-columns:repeat(2,minmax(0,1fr))}.authgroup{align-items:stretch}.authgroup #userEmail{flex-basis:100%}.cloudstatus{grid-column:auto}.passwordpanel input{flex-basis:100%}.passwordpanel button{flex:1}.progress-summary{display:block;padding:10px 12px}.progress-heading{flex-direction:row;justify-content:space-between;align-items:center;gap:8px}.progress-main{margin:4px 0 6px}.progress-support{margin-top:6px}.progress-main #pct{font-size:28px}.progress-scope{font-size:11px}.filter-panel{display:block;padding:10px}.tabs{max-width:none}.tabs button{padding:8px 2px;font-size:12px}.controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:10px}.search-field{grid-column:1/-1}.filter-disclosure{margin-top:8px}.secondary-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.filter-shortcut{grid-column:1/-1}.filter-field input,.filter-field select{font-size:13px}.tools-row>#export{padding:9px;font-size:12px}.tools-disclosure>summary{padding:9px;font-size:12px}.actions{display:grid;grid-template-columns:minmax(0,1fr)}.actions button{width:100%}.notice{font-size:12px;padding:9px 10px}
+ .tablewrap{display:none}.mobilecards{display:block}.mobilecount{display:block}.empty{padding:22px 12px}.gearcard .badge{font-size:10px}.wiki{display:inline-block;padding:6px 0}.detailgrid{grid-template-columns:1fr}.carddetails summary{min-height:42px}.cardplace{padding-left:50px}
 }
-@media(max-width:430px){.controls{grid-template-columns:1fr}.controls input[type=search]{grid-column:auto}.actions{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.cardtop{padding:12px}.cardplace{padding:0 12px 11px 49px}.cardname{font-size:15px}}
-
-.storybar{margin-top:12px;background:#14181d;border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:minmax(220px,1.4fr) minmax(260px,2fr) auto;gap:10px;align-items:center}.storygroup,.authgroup{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.storygroup select{min-width:170px}.cloudstatus{font-size:12px;color:var(--muted);text-align:right}.cloudstatus.goodtxt{color:#8ce99a}.cloudstatus.warntxt{color:#ffd43b}.authgroup input{min-width:210px}.smallbtn{padding:7px 9px;font-size:12px}.storylabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.syncdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#868e96;margin-right:5px}.syncdot.online{background:#51cf66}.syncdot.pending{background:#ffd43b}.syncdot.offline{background:#ff922b}.hidden{display:none!important}
+@media(max-width:430px){.brand-strip h1{font-size:20px}.progress-heading{flex-wrap:wrap}.cardtop{padding:12px}.cardplace{padding:0 12px 11px 49px}.cardname{font-size:15px}}
 </style></head>
 <body>
-<header><div class=wrap>
-<h1>BG3 – Complete Gear Collector <span class="badge">v7.7 PASSWORD AUTH STABILITY</span></h1>
+<header class="top-strip"><div class="wrap brand-strip">
+<h1>BG3 Gear Tracker</h1>
 <script>
 if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
   document.body.classList.add("dev-preview");
@@ -62,17 +57,19 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
   document.querySelector("h1").prepend(badge);
 }
 </script>
-<div class=sub>Act 1 • Act 2 • Act 3 · 556-item catalog · rarity + S/A/B/C tier · Stories · cloud-ready autosync · v5/v6 import · responsive mobile UI</div>
+<p class=sub>Din utrustning. Din Story.</p>
+</div></header>
+<section class="wrap dashboard" aria-label="Story, progress och filter">
 <div class=storybar id=storyBar>
  <div>
-  <div class=storylabel>Story / playthrough</div>
+  <label class=storylabel for=storySelect>Aktiv Story</label>
   <div class=storygroup><select id=storySelect aria-label="Aktiv story"></select><button id=newStory class=smallbtn>＋ Ny</button><button id=renameStory class=smallbtn>Byt namn</button></div>
  </div>
  <div>
-  <div class=storylabel>Konto & cloud</div>
+  <div class=storylabel>Konto</div>
   <div id=authSignedOut class=authgroup>
-    <input id=authEmail type=email placeholder="din@email.se" autocomplete=email>
-    <input id=authPassword type=password placeholder="Lösenord" autocomplete=current-password>
+    <input id=authEmail type=email aria-label="E-post" placeholder="din@email.se" autocomplete=email>
+    <input id=authPassword type=password aria-label="Lösenord" placeholder="Lösenord" autocomplete=current-password>
     <button id=signInPassword class="smallbtn primary">Logga in</button>
     <button id=sendMagicLink class=smallbtn title="Fallback under utveckling">Skicka magic link</button>
   </div>
@@ -100,41 +97,61 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
 <button id=versionedUseCloud>Använd cloud för markerade items</button>
 <p>Exportera progress innan du lämnar sidan om ändringar endast finns i minnet.</p>
 </div>
-<div class=tabs><button class="tab active" data-act="">Alla Acts</button><button class=tab data-act="ACT 1">Act 1</button><button class=tab data-act="ACT 2">Act 2</button><button class=tab data-act="ACT 3">Act 3</button></div>
-<div class=stats>
-<div class=stat><span class=muted>Databas</span><b id=dbcount>0</b></div>
-<div class=stat><span class=muted>Items i act</span><b id=total>0</b></div>
-<div class=stat><span class=muted>Hittade</span><b id=found>0</b></div>
-<div class=stat><span class=muted>Kvar</span><b id=left>0</b></div>
-<div class=stat><span class=muted>Completion</span><b id=pct>0%</b></div>
-</div><div class=progress><div id=bar></div></div>
-<div class=controls>
-<input id=q type=search placeholder="Sök item, område, vendor, effekt…">
-<select id=area><option value="">Alla områden</option></select>
-<select id=type><option value="">Alla typer</option></select>
-<select id=rarity><option value="">Alla rarities</option></select><select id=tier><option value="">Alla tiers</option><option>S</option><option>A</option><option>B</option><option>C</option><option value=none>Ej rankad</option></select>
-<select id=source><option value="">Alla källor</option><option value=vendor>Vendor</option><option value=loot>Loot</option><option value=quest>Quest/reward</option></select>
-<select id=state><option value="">Status: alla</option><option value=todo>Inte hittad</option><option value=done>Hittad</option></select>
-<select id=sort><option value=area>Sortera: område</option><option value=name>Namn</option><option value=rarity>Rarity</option><option value=type>Typ</option></select>
+<section class=progress-summary aria-labelledby=progressHeading>
+ <div class=progress-heading><h2 id=progressHeading>Din progress</h2><span class=progress-scope><span id=progressScope>Alla Acts</span> · hela urvalet</span></div>
+ <div class=progress-main><b id=pct>0%</b><span class=progress-fraction><b id=found>0</b> / <b id=total>0</b> hittade</span></div>
+ <div class=progress aria-label="Andel hittade items"><div id=bar></div></div>
+ <div class=progress-support><span><b id=left>0</b> kvar i urvalet</span><span>Katalog: <span id=dbcount>0</span> items</span></div>
+</section>
+<section class=filter-panel aria-label="Filtrera utrustning">
+ <div class=tabs aria-label="Act"><button class="tab active" data-act="">Alla Acts</button><button class=tab data-act="ACT 1">Act 1</button><button class=tab data-act="ACT 2">Act 2</button><button class=tab data-act="ACT 3">Act 3</button></div>
+ <div class=controls>
+  <div class="filter-field search-field"><label class=filter-label for=q>Sök utrustning</label><input id=q type=search placeholder="Item, område, vendor, effekt…"></div>
+  <div class=filter-field><label class=filter-label for=area>Område</label><select id=area><option value="">Alla områden</option></select></div>
+  <button id=clear class=filter-clear>Rensa filter</button>
+ </div>
+ <details id=secondaryFilters class=filter-disclosure open>
+  <summary>Fler filter <span id=secondaryFilterCount class=filter-count>Inga aktiva</span></summary>
+  <div class=secondary-controls>
+   <div class=filter-field><label class=filter-label for=type>Typ</label><select id=type><option value="">Alla typer</option></select></div>
+   <div class=filter-field><label class=filter-label for=rarity>Rarity</label><select id=rarity><option value="">Alla rarities</option></select></div>
+   <div class=filter-field><label class=filter-label for=tier>Tier</label><select id=tier><option value="">Alla tiers</option><option>S</option><option>A</option><option>B</option><option>C</option><option value=none>Ej rankad</option></select></div>
+   <div class=filter-field><label class=filter-label for=source>Källa</label><select id=source><option value="">Alla källor</option><option value=vendor>Vendor</option><option value=loot>Loot</option><option value=quest>Quest/reward</option></select></div>
+   <div class=filter-field><label class=filter-label for=state>Status</label><select id=state><option value="">Status: alla</option><option value=todo>Inte hittad</option><option value=done>Hittad</option></select></div>
+   <div class=filter-field><label class=filter-label for=sort>Sortera</label><select id=sort><option value=area>Sortera: område</option><option value=name>Namn</option><option value=rarity>Rarity</option><option value=type>Typ</option></select></div>
+   <button id=onlyS class=filter-shortcut>★ Visa S-tier</button>
+  </div>
+ </details>
+</section>
+<div class=tools-row>
+ <button id=export>Exportera progress</button>
+ <details class=tools-disclosure>
+  <summary>Progress & katalog</summary>
+  <div class=tools-content>
+   <div class=actions>
+    <button id=import>Importera & slå ihop</button><button id=replaceImport>Ersätt progress</button><button id=reset>Nollställ progress</button>
+    <button id=refresh class=primary>↻ Hämta/verifiera 556-item katalog</button><button id=saveOffline class=offline>⬇ Spara komplett offline-kopia</button>
+    <input id=file type=file accept=.json hidden>
+   </div>
+   <details class=technical-details>
+    <summary>Teknisk status</summary>
+    <div class=status id=status></div>
+    <div class=status id=cleanroomStatus>NO-PWA aktiv · kontrollerar gamla Service Workers/cache i bakgrunden…</div>
+    <div class=status id=authDiagStatus>Auth diagnostic: väntar.</div>
+    <div class=status>Story isolation: ✓ global dual-write av · ✓ auto legacy-import av · ✓ aktiv Story scopen per användare</div>
+    <div class=status>Password-login och magic link använder samma konto. Story-progress är isolerad.</div>
+   </details>
+  </div>
+ </details>
 </div>
-<div class=actions>
-<button id=refresh class=primary>↻ Hämta/verifiera 556-item katalog</button><button id=onlyS>★ Visa S-tier</button>
-<button id=saveOffline class=offline>⬇ Spara komplett offline-kopia</button>
-<button id=clear>Rensa filter</button><button id=export>Exportera progress</button><button id=import>Importera & slå ihop</button><button id=replaceImport>Ersätt progress</button><button id=reset>Nollställ progress</button>
-<input id=file type=file accept=.json hidden>
-</div><div class=status id=status></div>
-<div class=status id=cleanroomStatus>NO-PWA aktiv · kontrollerar gamla Service Workers/cache i bakgrunden…</div>
-<div class=status id=authDiagStatus>Auth diagnostic: väntar.</div>
-<div class=status>Story isolation: ✓ global dual-write av · ✓ auto legacy-import av · ✓ aktiv Story scopen per användare</div>
-<div class=status style="color:#ffd43b"><b>AUTH STABILITY:</b> Password-login används för cross-device-test. Ingen PWA/cache. Story-progress är fortsatt isolerad.</div>
-</div></header>
+</section>
 <main><div class=wrap>
 <div id=notice class="notice warn"><b>Databasstatus:</b> laddar…</div>
 <div class=tablewrap><table><thead><tr>
 <th>✓</th><th>Act</th><th>Item</th><th>Rarity</th><th>Tier</th><th>Typ</th><th>Område</th><th>Location / hur du får den</th><th>Egenskaper</th><th>Effekt</th><th>Flaggor</th><th>Källa</th>
 </tr></thead><tbody id=body></tbody></table></div>
 <div id=mobileCount class=mobilecount></div><div id=cards class=mobilecards></div><div id=empty class=empty hidden>Inga items matchar filtren.</div>
-<footer>v7.7 behåller Story-isoleringen och lägger till password-login på samma Supabase-konto. Magic link är endast fallback under utveckling.</footer>
+<footer>BG3 Gear Tracker · Act 1–3</footer>
 </div></main>
 <script>
 window.BG3_CLOUD_CONFIG = {
@@ -1188,6 +1205,21 @@ function view(){
  return list;
 }
 
+// Presentation only: preserve the existing filter values and progress denominator.
+function renderDashboardShell(){
+ $("progressScope").textContent=act?act.replace("ACT ","Act "):"Alla Acts";
+ const count=["type","rarity","tier","source","state"].filter(id=>!!$(id).value).length+($("sort").value&&$("sort").value!=="area"?1:0);
+ $("secondaryFilterCount").textContent=count?`${count} ${count===1?"aktivt":"aktiva"}`:"Inga aktiva";
+}
+function initDashboardLayout(){
+ if(typeof window==="undefined"||typeof window.matchMedia!=="function")return;
+ const mobile=window.matchMedia("(max-width:780px)"),filters=$("secondaryFilters");
+ const update=()=>{filters.open=!mobile.matches};
+ update();
+ if(typeof mobile.addEventListener==="function")mobile.addEventListener("change",update);
+ else if(typeof mobile.addListener==="function")mobile.addListener(update);
+}
+
 function render(){
  const list=view(),b=$("body"),cards=$("cards");b.innerHTML="";cards.innerHTML="";$("empty").hidden=!!list.length;
  $("mobileCount").textContent=`Visar ${list.length} item${list.length===1?"":"s"}`;
@@ -1212,6 +1244,7 @@ function render(){
  const scope=ITEMS.filter(x=>!act||x.act===act),total=scope.length,found=scope.filter(done).length,p=total?Math.round(found/total*100):0;
  renderBackendState();
  $("dbcount").textContent=ITEMS.length;$("total").textContent=total;$("found").textContent=found;$("left").textContent=total-found;$("pct").textContent=p+"%";$("bar").style.width=p+"%";
+ renderDashboardShell();
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");act=b.dataset.act;populate();render()});
 ["q","area","type","rarity","tier","source","state","sort"].forEach(id=>{$(id).oninput=render;$(id).onchange=render});
@@ -1540,6 +1573,7 @@ cleanupOldBg3Pwa().then(r=>{
   }
 }).catch(()=>{});
 
+initDashboardLayout();
 loadRemote(false).catch?.(()=>{});
 
 initCloud().catch(err=>{
