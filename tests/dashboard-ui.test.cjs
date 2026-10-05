@@ -81,6 +81,7 @@ function harness(width = 390, { listenerAPI = 'event' } = {}) {
   for (const [id, values] of Object.entries({ tier:['', 'S', 'A', 'B', 'C', 'none'], source:['', 'vendor', 'loot', 'quest'], state:['', 'done', 'todo'], sort:['area', 'name', 'rarity', 'type'] })) values.forEach(value => get(id).add(new Option(value, value)));
   const tabs = ['', 'ACT 1', 'ACT 2', 'ACT 3'].map(act => Object.assign(element('tab'), { dataset:{ act } }));
   const context = vm.createContext({
+    spoilerMode:()=>"full", renderSpoilerControl(){},
     document:{ getElementById:get, createElement:tag => element(tag), querySelectorAll:selector => selector === '.tab' ? tabs : [] },
     window:{ matchMedia(query) { assert.equal(query, '(max-width:780px)'); return media; } },
     Option, canEditProgress:() => true, renderBackendState() {}, toggleFound() {}, loadRemote() {}

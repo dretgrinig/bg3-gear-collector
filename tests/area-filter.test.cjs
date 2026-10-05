@@ -78,6 +78,7 @@ function harness({ cached, remote = catalog, fetchError = null } = {}) {
   }
   const tabs = ['', 'ACT 1', 'ACT 2', 'ACT 3'].map(act => Object.assign(element('tab'), { dataset: { act } }));
   const context = vm.createContext({
+    spoilerMode:()=>"full", renderSpoilerControl(){},
     document: { getElementById: get, createElement: tag => element(tag), querySelectorAll: selector => selector === '.tab' ? tabs : [] },
     Option: option, console: { error: error => errors.push(error) }, canEditProgress: () => true, renderBackendState() {}, toggleFound() {},
     storageFailures: new Map(), REMOTE: 'isolated-catalog', DBKEY: 'isolated-cache', FALLBACK: fallbackCatalog,

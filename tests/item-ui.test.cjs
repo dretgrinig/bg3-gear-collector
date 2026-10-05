@@ -86,6 +86,7 @@ function harness(items = [fixture()], statuses = {}, { editable=true } = {}) {
   for (const id of ['q','area','type','rarity','tier','source','state','sort']) get(id).value='';
   get('sort').value='area';
   const context=vm.createContext({
+    spoilerMode:()=>"full", renderSpoilerControl(){},
     document:{getElementById:get, createElement:node, querySelectorAll:selector => selector==='.tab' ? tabs : []},
     Option, canEditProgress:() => editable, renderBackendState() {}, loadRemote() {},
     markRecord(key, status) {

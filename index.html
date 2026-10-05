@@ -54,6 +54,14 @@ body.dev-preview{--app-background-shade-start:rgba(7,23,47,.90);--app-background
 .storylabel[for="storySelect"]::before{content:"";display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:var(--story-accent);box-shadow:0 0 0 3px var(--story-soft);vertical-align:1px}
 .tab.active{border-color:var(--story-accent);background:var(--story-soft);box-shadow:inset 0 0 0 1px var(--story-accent)}
 .progress-summary{border-left:3px solid var(--story-accent)}
+/* Story-specific presentation settings stay separate from gear filters. */
+.spoiler-settings{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:10px;font-size:12px;min-width:0}
+.spoiler-settings label{color:var(--muted)}
+.spoiler-settings select{min-height:44px;max-width:100%;width:auto;flex:0 1 145px}
+.spoiler-settings [role=status]{flex:1 1 150px;overflow-wrap:anywhere}
+.spoiler-settings .settings-warning{color:#f0c574}
+.spoiler-filter-note{font-size:12px;color:var(--muted);margin:8px 0}
+.spoiler-settings select:disabled{opacity:.7}
 </style></head>
 <body>
 <header class="top-strip"><div class="wrap brand-strip">
@@ -74,6 +82,11 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
  <div>
   <label class=storylabel for=storySelect>Aktiv Story</label>
   <div class=storygroup><select id=storySelect aria-label="Aktiv story"></select><button id=newStory class=smallbtn>＋ Ny</button><button id=renameStory class=smallbtn>Byt namn</button></div>
+  <div class=spoiler-settings>
+   <label for=spoilerMode>Spoilers for this Story</label>
+   <select id=spoilerMode disabled><option value=minimal>Minimal</option><option value=light>Light</option><option value=full>Full details</option></select>
+   <span id=spoilerPreferenceNote class=muted role=status>Choose a Story</span>
+  </div>
  </div>
  <div>
   <div class=storylabel>Konto</div>
@@ -120,6 +133,7 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
   <div class=filter-field><label class=filter-label for=area>Område</label><select id=area><option value="">Alla områden</option></select></div>
   <button id=clear class=filter-clear>Rensa filter</button>
  </div>
+ <p id=spoilerFilterNotice class="spoiler-filter-note" role=status hidden></p>
  <details id=secondaryFilters class=filter-disclosure open>
   <summary>Fler filter <span id=secondaryFilterCount class=filter-count>Inga aktiva</span></summary>
   <div class=secondary-controls>
@@ -230,6 +244,33 @@ function catalogArea(x){
 }
 function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:catalogArea(x),location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:x.gameIds||[]}}
 function normalizeFallback(x){return {act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:normalizeArea(x.area),location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]}}
+
+// Reviewed geographic aliases only: never infer geography from acquisition prose.
+// Unknown/sensitive regions remain absent; catalogue values themselves stay intact.
+const BROAD_AREAS=new Map([
+ ["ACT 1",new Map([
+  ...["Wilderness","Emerald Grove","Druid Grove","Blighted Village","Forest","Goblin Camp","Overgrown Ruins","Sunlit Wetlands","The Risen Road","Risen Road","Waukeen's Rest","Riverside Teahouse","Secluded Cove"].map(area=>[area,"Wilderness"]),
+  ...["Underdark","Arcane Tower","Myconid Colony","Selûnite Outpost","The Festering Cove","Grymforge","The Adamantine Forge"].map(area=>[area,"Underdark"]),
+  ["Nautiloid","Nautiloid"],["Mountain Pass","Mountain Pass"],["Campsite","Campsite"]
+ ])],
+ ["ACT 2",new Map(["Shadow-Cursed Lands","Last Light Inn","Moonrise Towers","Reithwin Town","House of Healing","Mason's Guild","Mason's Guild Basement","Reithwin Tollhouse","Sharran Sanctuary","The Waning Moon","Ruined Battlefield","Grand Mausoleum"].map(area=>[area,"Shadow-Cursed Lands"]))],
+ ["ACT 3",new Map([
+  ["Rivington","Rivington"],
+  ...["Wyrm's Crossing","Sharess' Caress","Sharress' Caress"].map(area=>[area,"Wyrm's Crossing"]),
+  ...["Lower City","Devil's Fee","Devil's Free","Cazador's Dungeon","Emperor's Old Hideout","Jaheira's Basement","Knights of the Shield Hideout","Philgrave's Mansion","Sorcerous Sundries","Steel Watch Foundry","Stormshore Armoury","Stormshore Tabernacle","The Counting House","Counting House","Water Queen's House","Ramazith's Tower","The Blushing Mermaid","Blushing Mermaid","House of Grief","Szarr Palace"].map(area=>[area,"Lower City"])
+ ])]
+]);
+// Embedded fallback metadata gives these special destinations a misleading parent.
+// Explicit identity exclusions are conservative; raw location is never inspected.
+const BROAD_AREA_WITHHELD=new Map([
+ ["ACT 1",new Set(["Deathstalker Mantle","The Deathstalker Mantle"])],
+ ["ACT 3",new Set(["Orphic Hammer","Gauntlets of Hill Giant Strength","Amulet of Greater Health","Helldusk Armour","Gloves of Soul Catching","Staff of Spellpower","Selûne's Spear of Night","Shar's Spear of Evening (late route)"])]
+]);
+function broadAreaFor(item){
+ if(BROAD_AREA_WITHHELD.get(item.act)?.has(item.name))return "";
+ return BROAD_AREAS.get(item.act)?.get(normalizeArea(item.area))||"";
+}
+
 // Imported item keys are data, including names inherited by ordinary objects.
 function itemMap(entries=[]){const out=Object.create(null);for(const [k,v] of entries)out[k]=v;return out}
 function ownItem(items,k){return Object.hasOwn(items,k)?items[k]:undefined}
@@ -613,7 +654,7 @@ function loadLocalStories(){
 }
 function ensureLocalStory(){
   const state=loadLocalStories();
-  if(!stories.length&&(state==="ok"||state==="missing")){stories=[{id:localId(),name:"Min story",local:true,created_at:nowIso()}];saveLocalStories()}
+  if(!stories.length&&(state==="ok"||state==="missing")){stories=[{id:localId(),name:"Min story",local:true,created_at:nowIso()}];saveLocalStories();initializeStorySpoilers(stories[0])}
   const preferred=storageRead(activeStoryStorageKey());
   activeStoryId=stories.some(st=>st.id===preferred.value)?preferred.value:stories[0]?.id||null;
   if(activeStoryId){storageWrite(activeStoryStorageKey(),activeStoryId);loadStoryRecords(activeStoryId)}
@@ -768,6 +809,60 @@ function restoreCloudStoryCache(userId){
   if(activeStoryId)loadStoryRecords(activeStoryId);else{storyRecords=itemMap();progress=itemMap();activeProgressUnknown=false}
   renderStorySelect();render();return true;
 }
+
+// Presentation preferences only. Missing existing settings preserve Full behavior;
+// unreadable/invalid settings fail conservatively without touching backend state.
+const SPOILER_MODES=Object.freeze(["minimal","light","full"]),spoilerPreferences=new Map();
+function spoilerScopeFor(story){
+ if(!story||typeof story.id!=="string"||!story.id)return null;
+ if(story.id.startsWith("local-"))return ["local","local",story.id];
+ if(explicitSignOut)return null;
+ return typeof currentUser?.id==="string"&&currentUser.id&&typeof CLOUD_CONFIG.supabaseUrl==="string"&&CLOUD_CONFIG.supabaseUrl&&story.user_id===currentUser.id?[CLOUD_CONFIG.supabaseUrl,currentUser.id,story.id]:null;
+}
+function spoilerScope(){return spoilerScopeFor(stories.find(st=>st.id===activeStoryId))}
+function spoilerPreferenceKey(scope){return "bg3-spoiler-preference-v1:"+JSON.stringify(scope)}
+function readSpoilerPreference(scope,storedResult){
+ const key=spoilerPreferenceKey(scope);
+ if(!spoilerPreferences.has(key)){
+  const stored=storedResult||storageJSON(key,value=>SPOILER_MODES.includes(value));
+  spoilerPreferences.set(key,{mode:stored.state==="ok"?stored.value:stored.state==="missing"?"full":"minimal",note:["corrupt","inaccessible"].includes(stored.state)?"Could not read a valid spoiler setting · using Minimal":"Saved on this device",warning:["corrupt","inaccessible"].includes(stored.state)});
+ }
+ return spoilerPreferences.get(key);
+}
+function spoilerMode(){const scope=spoilerScope();return scope?readSpoilerPreference(scope).mode:"minimal"}
+function initializeStorySpoilers(story){
+ const scope=spoilerScopeFor(story);if(!scope)return;
+ const key=spoilerPreferenceKey(scope),stored=storageJSON(key,value=>SPOILER_MODES.includes(value));
+ if(spoilerPreferences.has(key))return;
+ if(stored.state!=="missing"){readSpoilerPreference(scope,stored);return}
+ const saved=storageWrite(key,"light",{json:true});
+ spoilerPreferences.set(key,{mode:"light",note:saved.state==="ok"?"Saved on this device":"Saved for this session only",warning:saved.state!=="ok"});
+}
+function setSpoilerMode(value,capturedScope=spoilerScope()){
+ const scope=spoilerScope();
+ if(!SPOILER_MODES.includes(value)||!scope||JSON.stringify(scope)!==JSON.stringify(capturedScope))return false;
+ const key=spoilerPreferenceKey(scope),saved=storageWrite(key,value,{json:true});
+ spoilerPreferences.set(key,{mode:value,note:saved.state==="ok"?"Saved on this device":"Saved for this session only",warning:saved.state!=="ok"});
+ renderSpoilerControl();
+ if(typeof populate==="function")populate();
+ render(true); // Do not recreate versioned review controls or update cloud state.
+ return true;
+}
+function renderSpoilerControl(){
+ const control=$("spoilerMode"),note=$("spoilerPreferenceNote");if(!control||!note)return;
+ const scope=spoilerScope();
+ // Warm a collection only on first activation; ordinary Story renders stay read-only.
+ if(scope&&!spoilerPreferences.has(spoilerPreferenceKey(scope)))for(const st of stories){const candidate=spoilerScopeFor(st);if(candidate)readSpoilerPreference(candidate)}
+ const preference=scope?readSpoilerPreference(scope):{mode:"minimal",note:"Choose a Story",warning:false};
+ control.value=preference.mode;control.disabled=!scope;
+ note.textContent=preference.note;note.className="muted"+(preference.warning?" settings-warning":"");
+ const records=storyRecords,auth=authGeneration,backend=backendGeneration;
+ control.onchange=event=>{
+  if(records!==storyRecords||auth!==authGeneration||backend!==backendGeneration||JSON.stringify(scope)!==JSON.stringify(spoilerScope()))return;
+  setSpoilerMode(event.target.value,scope);
+ };
+}
+
 // Presentation only: fixed tuple hashing and cool HSL bounds, no collection or state.
 const STORY_THEME_NEUTRAL=Object.freeze({accent:"#abb2ba",tintRgb:"0,0,0",soft:"rgba(255,255,255,.025)"});
 function storyThemeHash(identity,seed){
@@ -812,7 +907,7 @@ function applyStoryTheme(){
   }
 }
 function renderStorySelect(){
-  applyStoryTheme();
+  applyStoryTheme();renderSpoilerControl();
   const s=$("storySelect");if(!s)return;s.innerHTML="";
   if(!activeStoryId)s.add(new Option(currentUser?(backendState==="ready"?(stories.length?"Välj verifierad Story":"Inga Stories · verifierat konto"):"Välj Story · cloud ej verifierat"):"Välj lokal Story",""));
   for(const st of stories){const cached=!String(st.id).startsWith("local-")&&!canWriteCloud(st.id);s.add(new Option(st.name+(cached?" · lokal cache/offline":""),st.id))}
@@ -831,13 +926,13 @@ async function createStory(name){
     try{
       const {data}=await cloudRequest(supabaseClient.from("stories").insert({user_id:userId,name}).select().single(),"Skapa Story");
       if(!backendContextCurrent(userId,generation))return null;
-      const st=validatedStories([data],userId)[0];stories.push(st);verifiedStoryIds.add(st.id);cacheCloudStories(userId);
+      const st=validatedStories([data],userId)[0];stories.push(st);verifiedStoryIds.add(st.id);cacheCloudStories(userId);initializeStorySpoilers(st);
       await activateStory(st.id,{sync:false});
       if(backendContextCurrent(userId,generation))setCloudStatus("Ny Story skapad · progress sparas lokalt tills synk","online");
       return st;
     }catch(err){if(backendContextCurrent(userId,generation))backendUnavailable(err);throw err}
   }
-  const st={id:localId(),name,local:true,created_at:nowIso()};stories.push(st);saveLocalStories();await activateStory(st.id,{sync:false});setCloudStatus("LOCAL DEV – story sparad på den här enheten","offline");return st;
+  const st={id:localId(),name,local:true,created_at:nowIso()};stories.push(st);saveLocalStories();initializeStorySpoilers(st);await activateStory(st.id,{sync:false});setCloudStatus("LOCAL DEV – story sparad på den här enheten","offline");return st;
 }
 async function renameActiveStory(name){
   name=(name||"").trim();if(!name||!activeStoryId)return;
@@ -1243,26 +1338,59 @@ async function loadRemote(force=false){
  renderBackendState();
 }
 function uniq(a){return [...new Set(a.filter(Boolean))].sort((a,b)=>a.localeCompare(b))}
+// Retain suspended Full selections in memory only, never in protected DOM options.
+let spoilerFilterMode=null,fullSpoilerFilters={area:"",source:"",sort:"area"},lightSpoilerArea="",spoilerSortFallback=false;
+const FULL_SOURCE_OPTIONS='<option value="">Alla källor</option><option value="vendor">Vendor</option><option value="loot">Loot</option><option value="quest">Quest/reward</option>';
+const FULL_SORT_OPTIONS='<option value="area">Sortera: område</option><option value="name">Namn</option><option value="rarity">Rarity</option><option value="type">Typ</option>';
+function spoilerAreaOptions(mode,selected=""){
+ const select=$("area"),scoped=ITEMS.filter(x=>!act||x.act===act);
+ select.innerHTML=`<option value="">${mode==="minimal"?"Area unavailable in Minimal":mode==="light"?"All broad regions":"Alla områden"}</option>`;
+ select.disabled=mode==="minimal";
+ if(mode!=="minimal")uniq(scoped.map(x=>mode==="full"?x.area:broadAreaFor(x))).forEach(value=>select.add(new Option(value,value)));
+ if([...select.options].some(option=>option.value===selected))select.value=selected;
+}
+function syncSpoilerFilters(){
+ const mode=spoilerMode();
+ if(mode!==spoilerFilterMode){
+  if(spoilerFilterMode==="full")fullSpoilerFilters={area:$("area").value,source:$("source").value,sort:$("sort").value};
+  if(spoilerFilterMode==="light")lightSpoilerArea=$("area").value;
+  const priorSort=spoilerSortFallback?"area":$("sort").value||"area";
+  $("source").innerHTML=mode==="full"?FULL_SOURCE_OPTIONS:'<option value="">Source unavailable in this mode</option>';
+  $("source").disabled=mode!=="full";
+  $("sort").innerHTML=mode==="minimal"?'<option value="name">Namn</option><option value="rarity">Rarity</option><option value="type">Typ</option>':mode==="light"?FULL_SORT_OPTIONS.replace("Sortera: område","Broad region"):FULL_SORT_OPTIONS;
+  $("source").value=mode==="full"?fullSpoilerFilters.source:"";
+  spoilerSortFallback=mode==="minimal"&&priorSort==="area";
+  $("sort").value=mode==="full"?fullSpoilerFilters.sort:spoilerSortFallback?"name":priorSort;
+  spoilerAreaOptions(mode,mode==="full"?fullSpoilerFilters.area:mode==="light"?lightSpoilerArea:"");
+  spoilerFilterMode=mode;
+ }
+ $("q").placeholder=mode==="full"?"Item, område, vendor, effekt…":mode==="light"?"Item, type, rarity, tier, Act or broad region…":"Item, type, rarity, tier or Act…";
+ const suspended=mode!=="full"&&(!!fullSpoilerFilters.area||!!fullSpoilerFilters.source||fullSpoilerFilters.sort==="area");
+ $("spoilerFilterNotice").hidden=!suspended;
+ $("spoilerFilterNotice").textContent=suspended?"Precise Area/source selections and geography sorting are suspended · restored in Full details":"";
+ return mode;
+}
 function populate(){
- const A=$("area"),T=$("type"),R=$("rarity"),oa=A.value,ot=T.value,or=R.value;
- A.innerHTML='<option value="">Alla områden</option>';T.innerHTML='<option value="">Alla typer</option>';R.innerHTML='<option value="">Alla rarities</option>';
+ const mode=syncSpoilerFilters(),A=$("area"),T=$("type"),R=$("rarity"),oa=A.value,ot=T.value,or=R.value;
+ spoilerAreaOptions(mode,oa);T.innerHTML='<option value="">Alla typer</option>';R.innerHTML='<option value="">Alla rarities</option>';
  const scoped=ITEMS.filter(x=>!act||x.act===act);
- uniq(scoped.map(x=>x.area)).forEach(v=>A.add(new Option(v,v)));
  uniq(scoped.map(x=>x.type)).forEach(v=>T.add(new Option(v,v)));
  uniq(scoped.map(x=>x.rarity)).sort((a,b)=>(rarityRank[b]||0)-(rarityRank[a]||0)).forEach(v=>R.add(new Option(v,v)));
- if([...A.options].some(o=>o.value===oa))A.value=oa;if([...T.options].some(o=>o.value===ot))T.value=ot;if([...R.options].some(o=>o.value===or))R.value=or;
+ if([...T.options].some(o=>o.value===ot))T.value=ot;if([...R.options].some(o=>o.value===or))R.value=or;
 }
 function view(){
- const q=$("q").value.toLowerCase().trim(),a=$("area").value,t=$("type").value,r=$("rarity").value,ti=$("tier").value,src=$("source").value,s=$("state").value,sort=$("sort").value;
- let list=ITEMS.filter(x=>{if(act&&x.act!==act)return false;const tx=tierOf(x);const blob=[x.name,x.rarity,tx,x.type,x.area,x.location,x.properties,x.description].join(" ").toLowerCase();if(q&&!blob.includes(q))return false;if(a&&x.area!==a)return false;if(t&&x.type!==t)return false;if(r&&x.rarity!==r)return false;if(ti==="none"&&tx)return false;if(ti&&ti!=="none"&&tx!==ti)return false;if(src==="vendor"&&!vendor(x))return false;if(src==="quest"&&!quest(x))return false;if(src==="loot"&&(vendor(x)||quest(x)))return false;if(s==="done"&&!done(x))return false;if(s==="todo"&&done(x))return false;return true});
- list.sort((x,y)=>sort==="name"?x.name.localeCompare(y.name):sort==="rarity"?((rarityRank[y.rarity]||0)-(rarityRank[x.rarity]||0)||x.name.localeCompare(y.name)):sort==="type"?x.type.localeCompare(y.type)||x.name.localeCompare(y.name):x.area.localeCompare(y.area)||x.name.localeCompare(y.name));
+ const mode=syncSpoilerFilters();
+ const q=$("q").value.toLowerCase().trim(),a=$("area").value,t=$("type").value,r=$("rarity").value,ti=$("tier").value,src=mode==="full"?$("source").value:"",s=$("state").value,sort=$("sort").value;
+ const areaFor=x=>mode==="full"?x.area:mode==="light"?broadAreaFor(x):"";
+ let list=ITEMS.filter(x=>{if(act&&x.act!==act)return false;const tx=tierOf(x);const fields=mode==="full"?[x.name,x.rarity,tx,x.type,x.area,x.location,x.properties,x.description]:[x.name,x.rarity,tx,x.type,x.act,mode==="light"?broadAreaFor(x):""];const blob=fields.join(" ").toLowerCase();if(q&&!blob.includes(q))return false;if(a&&areaFor(x)!==a)return false;if(t&&x.type!==t)return false;if(r&&x.rarity!==r)return false;if(ti==="none"&&tx)return false;if(ti&&ti!=="none"&&tx!==ti)return false;if(src==="vendor"&&!vendor(x))return false;if(src==="quest"&&!quest(x))return false;if(src==="loot"&&(vendor(x)||quest(x)))return false;if(s==="done"&&!done(x))return false;if(s==="todo"&&done(x))return false;return true});
+ list.sort((x,y)=>sort==="name"?x.name.localeCompare(y.name):sort==="rarity"?((rarityRank[y.rarity]||0)-(rarityRank[x.rarity]||0)||x.name.localeCompare(y.name)):sort==="type"?x.type.localeCompare(y.type)||x.name.localeCompare(y.name):areaFor(x).localeCompare(areaFor(y))||x.name.localeCompare(y.name));
  return list;
 }
 
 // Presentation only: preserve the existing filter values and progress denominator.
 function renderDashboardShell(){
  $("progressScope").textContent=act?act.replace("ACT ","Act "):"Alla Acts";
- const count=["type","rarity","tier","source","state"].filter(id=>!!$(id).value).length+($("sort").value&&$("sort").value!=="area"?1:0);
+ const count=["type","rarity","tier","source","state"].filter(id=>!!$(id).value).length+($("sort").value&&$("sort").value!=="area"&&!spoilerSortFallback?1:0);
  $("secondaryFilterCount").textContent=count?`${count} ${count===1?"aktivt":"aktiva"}`:"Inga aktiva";
 }
 function initDashboardLayout(){
@@ -1283,7 +1411,8 @@ function initItemPresentation(){
  update();new window.ResizeObserver(update).observe(strip);
 }
 
-function render(){
+function render(presentationOnly=false){
+ const mode=syncSpoilerFilters(),full=mode==="full";
  const list=view(),b=$("body"),cards=$("cards");b.innerHTML="";cards.innerHTML="";$("empty").hidden=!!list.length;
  $("mobileCount").textContent=`Visar ${list.length} item${list.length===1?"":"s"}`;
  for(const x of list){
@@ -1296,26 +1425,34 @@ function render(){
   const metadata=`<div class=item-meta>${x.act?`<span class=item-act>${esc(x.act)}</span>`:""}${x.type?`<span class=item-type>${esc(x.type)}</span>`:""}</div>`;
   const loc=x.location||"Ingen location angiven";
   const duplicateLocation=!!x.area&&!!x.location&&x.area.trim()===x.location.trim();
-  const place=`<div class=item-place-heading><span class=item-area>${esc(x.area||"Område ej angivet")}</span>${flags?`<div class=item-flags>${flags}</div>`:""}</div>${x.location&&!duplicateLocation?`<span class=item-acquisition>${esc(x.location)}</span>`:""}`;
-  const details=`<div class=detailgrid><div class=detailrow><span class=label>Location / hur du får den</span><div class=item-detail-location>${esc(loc)}</div></div>${x.properties?`<div class=detailrow><span class=label>Egenskaper</span>${esc(x.properties)}</div>`:""}${x.description?`<div class=detailrow><span class=label>Effekt</span>${esc(x.description)}</div>`:""}${!x.source?'<div class="detailrow muted">Ingen källa angiven</div>':""}</div>`;
-  const sourceLink=x.source?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener aria-label="Öppna bg3.wiki-referens för ${esc(x.name)}">bg3.wiki ↗</a>`:"";
+  const fullPlace=`<div class=item-place-heading><span class=item-area>${esc(x.area||"Område ej angivet")}</span>${flags?`<div class=item-flags>${flags}</div>`:""}</div>${x.location&&!duplicateLocation?`<span class=item-acquisition>${esc(x.location)}</span>`:""}`;
+  const fullDetails=`<div class=detailgrid><div class=detailrow><span class=label>Location / hur du får den</span><div class=item-detail-location>${esc(loc)}</div></div>${x.properties?`<div class=detailrow><span class=label>Egenskaper</span>${esc(x.properties)}</div>`:""}${x.description?`<div class=detailrow><span class=label>Effekt</span>${esc(x.description)}</div>`:""}${!x.source?'<div class="detailrow muted">Ingen källa angiven</div>':""}</div>`;
+  const fullSourceLink=x.source?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener aria-label="Öppna bg3.wiki-referens för ${esc(x.name)}">bg3.wiki ↗</a>`:"";
+  const sourceLink=full?fullSourceLink:"";
+  const reference=x.source?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener>External reference · may contain spoilers ↗</a>`:"";
+  const broad=mode==="light"?broadAreaFor(x):"";
+  const place=full?fullPlace:broad?`<div class=item-place-heading><span class=item-area>${esc(broad)}</span></div>`:'<span class=muted>Location in details</span>';
+  const details=full?fullDetails:`<div class=detailgrid>${x.area?`<div class=detailrow><span class=label>Original Area</span><div>${esc(x.area)}</div></div>`:""}<div class=detailrow><span class=label>Location / acquisition</span><div class=item-detail-location>${esc(loc)}</div></div>${flags?`<div class=detailrow><span class=label>Acquisition context</span><div>${flags}</div></div>`:""}${x.properties?`<div class=detailrow><span class=label>Egenskaper</span>${esc(x.properties)}</div>`:""}${x.description?`<div class=detailrow><span class=label>Effekt</span>${esc(x.description)}</div>`:""}${reference?`<div class=detailrow>${reference}</div>`:'<div class="detailrow muted">Ingen källa angiven</div>'}</div>`;
+  const detailSummary=full?"Visa detaljer":"Show details · contains spoilers";
 
   const tr=document.createElement("tr");if(isDone)tr.className="done";
-  tr.innerHTML=`<td class=check>${statusControl}</td><td class=item><b class=item-name>${esc(x.name)}</b>${metadata}</td><td><div class=item-rarity-tier>${rarityBadge}${tierBadge}</div></td><td class=item-place>${place}</td><td><div class=item-actions><details class=item-details><summary>Visa detaljer</summary>${details}</details>${sourceLink}</div></td>`;
+  tr.innerHTML=`<td class=check>${statusControl}</td><td class=item><b class=item-name>${esc(x.name)}</b>${metadata}</td><td><div class=item-rarity-tier>${rarityBadge}${tierBadge}</div></td><td class=item-place>${place}</td><td><div class=item-actions><details class=item-details><summary>${detailSummary}</summary>${details}</details>${sourceLink}</div></td>`;
   tr.querySelector("input").onchange=e=>toggleFound(x,e.target.checked);b.appendChild(tr);
 
   const card=document.createElement("article");card.className="gearcard"+(isDone?" done":"");
-  card.innerHTML=`<div class=cardtop><div class=cardcheck>${statusControl}</div><div class=cardmain><h3 class="cardname item-name">${esc(x.name)}</h3><div class=cardmetadata><div class="cardbadges item-rarity-tier">${rarityBadge}${tierBadge}</div>${metadata}</div></div></div><div class="cardplace item-place">${place}</div><div class=cardfooter><details class=carddetails><summary>Visa detaljer</summary>${details}</details>${sourceLink?`<div class=cardreference>${sourceLink}</div>`:""}</div>`;
+  card.innerHTML=`<div class=cardtop><div class=cardcheck>${statusControl}</div><div class=cardmain><h3 class="cardname item-name">${esc(x.name)}</h3><div class=cardmetadata><div class="cardbadges item-rarity-tier">${rarityBadge}${tierBadge}</div>${metadata}</div></div></div><div class="cardplace item-place">${place}</div><div class=cardfooter><details class=carddetails><summary>${detailSummary}</summary>${details}</details>${sourceLink?`<div class=cardreference>${sourceLink}</div>`:""}</div>`;
   card.querySelector("input").onchange=e=>toggleFound(x,e.target.checked);cards.appendChild(card);
  }
  const scope=ITEMS.filter(x=>!act||x.act===act),total=scope.length,found=scope.filter(done).length,p=total?Math.round(found/total*100):0;
+ if(presentationOnly!==true){
  renderBackendState();
  $("dbcount").textContent=ITEMS.length;$("total").textContent=total;$("found").textContent=found;$("left").textContent=total-found;$("pct").textContent=p+"%";$("bar").style.width=p+"%";
+ }
  renderDashboardShell();
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");act=b.dataset.act;populate();render()});
-["q","area","type","rarity","tier","source","state","sort"].forEach(id=>{$(id).oninput=render;$(id).onchange=render});
-$("clear").onclick=()=>{$("q").value="";$("area").value="";$("type").value="";$("rarity").value="";$("tier").value="";$("source").value="";$("state").value="";$("sort").value="area";render()};
+["q","area","type","rarity","tier","source","state","sort"].forEach(id=>{$(id).oninput=$(id).onchange=event=>{if(id==="sort")spoilerSortFallback=false;render()}});
+$("clear").onclick=()=>{fullSpoilerFilters={area:"",source:"",sort:"area"};lightSpoilerArea="";$("q").value="";$("area").value="";$("type").value="";$("rarity").value="";$("tier").value="";$("source").value="";$("state").value="";$("sort").value=spoilerMode()==="minimal"?"name":"area";spoilerSortFallback=spoilerMode()==="minimal";render()};
 $("onlyS").onclick=()=>{$("tier").value="S";render()};
 $("refresh").onclick=()=>loadRemote(true);
 $("reset").onclick=async()=>{
