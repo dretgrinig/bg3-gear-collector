@@ -48,8 +48,8 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
 /* Story identity is decorative; shared semantic colors remain unchanged. */
 :root{--story-accent:#abb2ba;--story-tint-rgb:0,0,0;--story-soft:rgba(255,255,255,.025);--app-background-image:url("assets/bg.jpg");--app-background-shade-start:rgba(9,12,16,.88);--app-background-shade-end:rgba(9,12,16,.96)}
 body{isolation:isolate}
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(135deg,rgba(var(--story-tint-rgb),.045),rgba(var(--story-tint-rgb),.015)),linear-gradient(var(--app-background-shade-start),var(--app-background-shade-end)),var(--app-background-image);background-position:center;background-size:cover;background-repeat:no-repeat}
-body.dev-preview{--app-background-shade-start:rgba(7,23,47,.90);--app-background-shade-end:rgba(22,69,131,.96)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(135deg,rgba(var(--story-tint-rgb),.28),rgba(var(--story-tint-rgb),.22)),linear-gradient(var(--app-background-shade-start),var(--app-background-shade-end)),var(--app-background-image);background-position:center;background-size:cover;background-repeat:no-repeat}
+body.dev-preview{--app-background-shade-start:rgba(7,23,47,.90);--app-background-shade-end:rgba(11,27,52,.96)}
 .storygroup select{border-color:var(--story-accent)}
 .storylabel[for="storySelect"]::before{content:"";display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:var(--story-accent);box-shadow:0 0 0 3px var(--story-soft);vertical-align:1px}
 .tab.active{border-color:var(--story-accent);background:var(--story-soft);box-shadow:inset 0 0 0 1px var(--story-accent)}
@@ -768,20 +768,33 @@ function restoreCloudStoryCache(userId){
   if(activeStoryId)loadStoryRecords(activeStoryId);else{storyRecords=itemMap();progress=itemMap();activeProgressUnknown=false}
   renderStorySelect();render();return true;
 }
-// Presentation only: freeze palette order and FNV-1a identity hashing for stable colors.
+// Presentation only: fixed tuple hashing and cool HSL bounds, no collection or state.
 const STORY_THEME_NEUTRAL=Object.freeze({accent:"#abb2ba",tintRgb:"0,0,0",soft:"rgba(255,255,255,.025)"});
-const STORY_THEME_PALETTE=Object.freeze([
-  Object.freeze({accent:"#93b8cc",tintRgb:"147,184,204",soft:"rgba(147,184,204,.09)"}),
-  Object.freeze({accent:"#b5a3d0",tintRgb:"181,163,208",soft:"rgba(181,163,208,.09)"}),
-  Object.freeze({accent:"#8bbdbb",tintRgb:"139,189,187",soft:"rgba(139,189,187,.09)"}),
-  Object.freeze({accent:"#a3aed2",tintRgb:"163,174,210",soft:"rgba(163,174,210,.09)"}),
-  Object.freeze({accent:"#c5a8c3",tintRgb:"197,168,195",soft:"rgba(197,168,195,.09)"})
-]);
+function storyThemeHash(identity,seed){
+  // FNV-1a plus the fixed Murmur3 finalizer; separate seeds provide independent
+  // hue/saturation/lightness words from the same unambiguous identity tuple.
+  let hash=seed;
+  for(let i=0;i<identity.length;i++)hash=Math.imul(hash^identity.charCodeAt(i),16777619)>>>0;
+  hash^=hash>>>16;hash=Math.imul(hash,0x85ebca6b);
+  hash^=hash>>>13;hash=Math.imul(hash,0xc2b2ae35);
+  return (hash^(hash>>>16))>>>0;
+}
+function storyThemeRgb(hue,saturation,lightness){
+  const chroma=(1-Math.abs(2*lightness-1))*saturation,h=hue/60;
+  const x=chroma*(1-Math.abs(h%2-1)),m=lightness-chroma/2;
+  const rgb=h<1?[chroma,x,0]:h<2?[x,chroma,0]:h<3?[0,chroma,x]:h<4?[0,x,chroma]:h<5?[x,0,chroma]:[chroma,0,x];
+  return rgb.map(value=>Math.round((value+m)*255));
+}
 function resolveStoryTheme(backendNamespace,userNamespace,storyId){
-  const seed=JSON.stringify([backendNamespace,userNamespace,storyId]);
-  let hash=2166136261;
-  for(let i=0;i<seed.length;i++)hash=Math.imul(hash^seed.charCodeAt(i),16777619)>>>0;
-  return STORY_THEME_PALETTE[hash%STORY_THEME_PALETTE.length];
+  const identity=JSON.stringify([backendNamespace,userNamespace,storyId]);
+  const unit=seed=>storyThemeHash(identity,seed)/4294967296;
+  // Cyan leaning blue through violet only. Independent saturation/lightness
+  // add steel/slate variation without entering red, green or warning-yellow hues.
+  // Near colors remain possible; adding/removing Stories never reassigns a theme.
+  const hue=190+90*unit(0x811c9dc5);
+  const tint=storyThemeRgb(hue,.40+.38*unit(0x9e3779b9),.24+.36*unit(0x85ebca6b));
+  const accent=storyThemeRgb(hue,.38,.76);
+  return Object.freeze({accent:"#"+accent.map(value=>value.toString(16).padStart(2,"0")).join(""),tintRgb:tint.join(","),soft:`rgba(${accent.join(",")},.09)`});
 }
 function applyStoryTheme(){
   const style=document.documentElement?.style;
