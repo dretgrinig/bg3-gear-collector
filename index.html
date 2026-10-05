@@ -44,6 +44,16 @@ footer{color:var(--muted);font-size:11px;padding:18px 0 28px}
  .tablewrap{display:none}.mobilecards{display:block}.mobilecount{display:block}.empty{padding:22px 12px}.detailgrid{grid-template-columns:1fr}
 }
 @media(max-width:430px){.brand-strip h1{font-size:20px}.progress-heading{flex-wrap:wrap}.cardname{font-size:15px}}
+
+/* Story identity is decorative; shared semantic colors remain unchanged. */
+:root{--story-accent:#abb2ba;--story-tint-rgb:0,0,0;--story-soft:rgba(255,255,255,.025);--app-background-image:url("assets/bg.jpg");--app-background-shade-start:rgba(9,12,16,.88);--app-background-shade-end:rgba(9,12,16,.96)}
+body{isolation:isolate}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(135deg,rgba(var(--story-tint-rgb),.045),rgba(var(--story-tint-rgb),.015)),linear-gradient(var(--app-background-shade-start),var(--app-background-shade-end)),var(--app-background-image);background-position:center;background-size:cover;background-repeat:no-repeat}
+body.dev-preview{--app-background-shade-start:rgba(7,23,47,.90);--app-background-shade-end:rgba(22,69,131,.96)}
+.storygroup select{border-color:var(--story-accent)}
+.storylabel[for="storySelect"]::before{content:"";display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:var(--story-accent);box-shadow:0 0 0 3px var(--story-soft);vertical-align:1px}
+.tab.active{border-color:var(--story-accent);background:var(--story-soft);box-shadow:inset 0 0 0 1px var(--story-accent)}
+.progress-summary{border-left:3px solid var(--story-accent)}
 </style></head>
 <body>
 <header class="top-strip"><div class="wrap brand-strip">
@@ -758,7 +768,38 @@ function restoreCloudStoryCache(userId){
   if(activeStoryId)loadStoryRecords(activeStoryId);else{storyRecords=itemMap();progress=itemMap();activeProgressUnknown=false}
   renderStorySelect();render();return true;
 }
+// Presentation only: freeze palette order and FNV-1a identity hashing for stable colors.
+const STORY_THEME_NEUTRAL=Object.freeze({accent:"#abb2ba",tintRgb:"0,0,0",soft:"rgba(255,255,255,.025)"});
+const STORY_THEME_PALETTE=Object.freeze([
+  Object.freeze({accent:"#93b8cc",tintRgb:"147,184,204",soft:"rgba(147,184,204,.09)"}),
+  Object.freeze({accent:"#b5a3d0",tintRgb:"181,163,208",soft:"rgba(181,163,208,.09)"}),
+  Object.freeze({accent:"#8bbdbb",tintRgb:"139,189,187",soft:"rgba(139,189,187,.09)"}),
+  Object.freeze({accent:"#a3aed2",tintRgb:"163,174,210",soft:"rgba(163,174,210,.09)"}),
+  Object.freeze({accent:"#c5a8c3",tintRgb:"197,168,195",soft:"rgba(197,168,195,.09)"})
+]);
+function resolveStoryTheme(backendNamespace,userNamespace,storyId){
+  const seed=JSON.stringify([backendNamespace,userNamespace,storyId]);
+  let hash=2166136261;
+  for(let i=0;i<seed.length;i++)hash=Math.imul(hash^seed.charCodeAt(i),16777619)>>>0;
+  return STORY_THEME_PALETTE[hash%STORY_THEME_PALETTE.length];
+}
+function applyStoryTheme(){
+  const style=document.documentElement?.style;
+  if(!style?.setProperty)return;
+  let theme=STORY_THEME_NEUTRAL;
+  const story=stories.find(st=>st.id===activeStoryId);
+  if(!explicitSignOut&&story&&typeof story.id==="string"&&story.id){
+    const local=story.id.startsWith("local-");
+    if(local||currentUser&&story.user_id===currentUser.id){
+      theme=resolveStoryTheme(local?"local":CLOUD_CONFIG.supabaseUrl,local?"local":currentUser.id,story.id);
+    }
+  }
+  for(const [name,value] of [["--story-accent",theme.accent],["--story-tint-rgb",theme.tintRgb],["--story-soft",theme.soft]]){
+    if(style.getPropertyValue?.(name)!==value)style.setProperty(name,value);
+  }
+}
 function renderStorySelect(){
+  applyStoryTheme();
   const s=$("storySelect");if(!s)return;s.innerHTML="";
   if(!activeStoryId)s.add(new Option(currentUser?(backendState==="ready"?(stories.length?"Välj verifierad Story":"Inga Stories · verifierat konto"):"Välj Story · cloud ej verifierat"):"Välj lokal Story",""));
   for(const st of stories){const cached=!String(st.id).startsWith("local-")&&!canWriteCloud(st.id);s.add(new Option(st.name+(cached?" · lokal cache/offline":""),st.id))}
