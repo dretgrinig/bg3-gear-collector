@@ -121,7 +121,7 @@ const required = (surface, selector) => {
   const value=surface.querySelector(selector); assert.ok(value, `Missing ${selector}`); return value;
 };
 
-for (const [status, text, checked] of [['found','Hittad',true],['todo','Inte hittad',false],['skipped','Överhoppad',false]]) {
+for (const [status, text, checked] of [['found','Found',true],['todo','Not found',false],['skipped','Skipped',false]]) {
   test(`${status} renders readable status and preserves native checked semantics on both surfaces`, () => {
     const item=fixture(), h=harness([item], {[itemKey(item)]:status});
     for (const surface of surfaces(h)) {
@@ -136,7 +136,7 @@ for (const [status, text, checked] of [['found','Hittad',true],['todo','Inte hit
 test('missing progress stays unchecked and does not create progress during render', () => {
   const h=harness();
   for (const surface of surfaces(h)) {
-    assert.equal(required(surface,'.status-text').textContent,'Inte hittad');
+    assert.equal(required(surface,'.status-text').textContent,'Not found');
     assert.equal(required(surface,'input').checked,false);
   }
   assert.deepEqual(Object.keys(h.app.progress()),[]); assert.equal(h.marks.length,0);
@@ -163,20 +163,20 @@ test('each native checkbox is associated with its own status label and escaped i
     const label=required(surface,'.item-status-label'), input=required(label,'input');
     assert.equal(label.tagName,'LABEL'); assert.equal(label.querySelectorAll('input').length,1);
     assert.equal(input.parentNode,label);
-    assert.match(input.getAttribute('aria-label'),/^Markera (First & "gear"|Second gear) som hittad$/);
+    assert.match(input.getAttribute('aria-label'),/^Mark (First & "gear"|Second gear) as found$/);
     assert.equal(surface.querySelectorAll('input').length,1);
   }
 });
 
-test('identical Area/location is shown once compactly while full location remains in details', () => {
+test('identical Area/location is shown once compactly without repeating in More info', () => {
   const item=fixture('Same place',{location:'Last Light Inn'}), h=harness([item]);
   for (const surface of surfaces(h)) {
     const place=required(surface,'.item-place');
     assert.equal(required(place,'.item-area').textContent,item.area);
     assert.equal(place.querySelector('.item-acquisition'),null);
-    const location=required(surface,'.item-detail-location'); assert.equal(location.textContent,item.location);
-    let ancestor=location.parentNode; while (ancestor && ancestor.tagName!=='DETAILS') ancestor=ancestor.parentNode;
-    assert.ok(ancestor,'Full location must be inside native details');
+    assert.equal(surface.querySelector('.item-detail-location'),null);
+    assert.equal(surface.textContent.split(item.location).length-1,1);
+    assert.ok(!required(surface,'details').textContent.includes(item.location));
   }
 });
 
@@ -185,7 +185,9 @@ test('different geographic and acquisition values remain distinct and full text 
   for (const surface of surfaces(h)) {
     assert.equal(required(surface,'.item-area').textContent,item.area);
     assert.equal(required(surface,'.item-acquisition').textContent,item.location);
-    assert.equal(required(surface,'.item-detail-location').textContent,item.location);
+    assert.equal(surface.querySelector('.item-detail-location'),null);
+    assert.ok(!required(surface,'details').textContent.includes(item.location));
+    assert.equal(surface.textContent.split(item.location).length-1,1);
     assert.ok(surface.textContent.includes(item.properties)); assert.ok(surface.textContent.includes(item.description));
     assert.ok(surface.textContent.includes(item.type)); assert.ok(surface.textContent.includes(item.act));
     assert.ok(surface.textContent.includes(item.rarity)); assert.match(surface.textContent,/A(?:-tier|\s*-?\s*tier)?/);
@@ -205,27 +207,30 @@ test('long names/acquisition/effects and HTML-sensitive text remain intact witho
   const h=harness([item]);
   for (const surface of surfaces(h)) {
     assert.ok(surface.textContent.includes(item.name)); assert.ok(surface.textContent.includes(item.properties));
-    assert.ok(surface.textContent.includes(item.description)); assert.equal(required(surface,'.item-detail-location').textContent,item.location);
+    assert.ok(surface.textContent.includes(item.description)); assert.equal(required(surface,'.item-acquisition').textContent,item.location);
+    assert.equal(surface.querySelector('.item-detail-location'),null);
     assert.equal(surface.querySelectorAll('script').length,0);
     assert.match(surface.innerHTML,/&lt;script&gt;/); assert.match(surface.innerHTML,/&amp;/);
   }
   assert.deepEqual(h.app.items()[0],item,'Presentation must not rewrite catalogue values');
 });
 
-test('wiki reference remains discoverable outside disclosure with original URL and safe target', () => {
+test('wiki reference remains discoverable inside More info with original URL and safe target', () => {
   const item=fixture(), h=harness([item]);
   for (const surface of surfaces(h)) {
     const link=required(surface,'.item-reference'); assert.equal(link.tagName,'A');
     assert.equal(link.getAttribute('href'),item.source); assert.equal(link.getAttribute('target'),'_blank');
     assert.ok(link.getAttribute('rel').split(/\s+/).includes('noopener')); assert.ok(link.textContent.trim());
-    let ancestor=link.parentNode; while (ancestor) { assert.notEqual(ancestor.tagName,'DETAILS'); ancestor=ancestor.parentNode; }
+    let ancestor=link.parentNode; while (ancestor && ancestor.tagName!=='DETAILS') ancestor=ancestor.parentNode;
+    assert.ok(ancestor,'Full reference belongs inside native details');
+    assert.equal(required(ancestor,'summary').textContent,'More info');
   }
 });
 
 test('unknown/prototype-sensitive own progress keys survive presentation and item toggles', () => {
   const item=fixture('Unknown constructor / __proto__ / prototype'), statuses=JSON.parse('{"__proto__":"skipped","constructor":"todo","prototype":"found"}');
   statuses[itemKey(item)]='skipped'; const h=harness([item],statuses);
-  for (const surface of surfaces(h)) assert.equal(required(surface,'.status-text').textContent,'Överhoppad');
+  for (const surface of surfaces(h)) assert.equal(required(surface,'.status-text').textContent,'Skipped');
   required(h.cards()[0],'input').click();
   for (const key of ['__proto__','constructor','prototype']) { assert.equal(Object.hasOwn(h.app.progress(),key),true); assert.equal(h.app.progress()[key],statuses[key]); }
   assert.equal(h.app.progress()[itemKey(item)],'found'); assert.equal(Object.getPrototypeOf(h.app.progress()),null);
@@ -235,7 +240,7 @@ for (const name of ['__proto__','constructor']) test(`literal ${name} catalogue 
   const item=fixture(name), h=harness([item],{[itemKey(item)]:'found'});
   for (const surface of surfaces(h)) {
     assert.ok(surface.textContent.includes(name)); assert.equal(required(surface,'input').checked,true);
-    assert.equal(required(surface,'.status-text').textContent,'Hittad');
+    assert.equal(required(surface,'.status-text').textContent,'Found');
     assert.ok(!surface.textContent.includes('[object Object]')); assert.ok(!surface.textContent.includes('function Object'));
   }
 });
@@ -260,7 +265,7 @@ test('Act/Area/search/rarity/tier/type/source/status still compose and keep Act-
   assert.deepEqual(h.names(),['Armour of Devotion']); assert.equal(h.rows().length,1); assert.equal(h.cards().length,1);
   assert.equal(h.get('total').textContent,'2'); assert.equal(h.get('found').textContent,'1'); assert.equal(h.get('pct').textContent,'50%');
   h.filter('state','todo'); assert.deepEqual(h.names(),[]); assert.equal(h.get('empty').hidden,false);
-  assert.equal(h.rows().length,0); assert.equal(h.cards().length,0); assert.equal(h.get('mobileCount').textContent,'Visar 0 items');
+  assert.equal(h.rows().length,0); assert.equal(h.cards().length,0); assert.equal(h.get('mobileCount').textContent,'Showing 0 items');
 });
 
 test('skipped remains included in the existing unchecked/todo filter and never counts as found', () => {

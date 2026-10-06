@@ -159,20 +159,24 @@ for (const mode of ['minimal','light','full']) for (const surfaceName of ['rows'
   test(`${mode} ${surfaceName} preserves identity, mechanics, progress and native details`,()=>{
     const row=remoteRow(),h=harness([row],{mode,statuses:{[key(row)]:'found'}}),surface=h[surfaceName]()[0],item=h.app.items()[0];
     const visible=outsideText(surface);
-    for (const value of [row.name,row.act,row.type,row.rarity,'A-tier','Hittad']) assert.ok(visible.includes(value),`${value} missing inline`);
+    for (const value of [row.name,row.act,row.type,row.rarity,'A-tier','Found']) assert.ok(visible.includes(value),`${value} missing inline`);
     const input=required(surface,'input');assert.equal(input.checked,true);assert.equal(input.disabled,false);
     const details=required(surface,'details'),summary=required(details,'summary');assert.equal(details.open,false);
     assert.equal(required(surface,'.item-reference').getAttribute('href'),item.source,'All modes must preserve the exact external URL');
-    for (const value of [item.location,item.properties,item.description]) assert.ok(details.textContent.includes(value),`Original detail missing: ${value}`);
+    for (const value of [item.properties,item.description]) assert.ok(details.textContent.includes(value),`Original detail missing: ${value}`);
     if (mode==='full') {
       assert.equal(required(surface,'.item-area').textContent,item.area);
       assert.equal(required(surface,'.item-acquisition').textContent,item.location);
       assert.ok(surface.querySelectorAll('.vendor').some(element=>!inDetails(element)));
       assert.ok(surface.querySelectorAll('.miss').some(element=>!inDetails(element)));
-      assert.ok(!inDetails(required(surface,'.item-reference')));
+      assert.equal(summary.textContent,'More info');
+      assert.ok(!details.textContent.includes(item.location),'Inline Full acquisition must not repeat in More info');
+      assert.equal(surface.textContent.split(item.location).length-1,1);
+      assert.ok(inDetails(required(surface,'.item-reference')));
     } else {
       assert.match(summary.textContent,/spoiler/i);assertNoSpoilers(surface,item);
       assert.ok(details.textContent.includes(item.area),'Original Area must remain in details');
+      assert.ok(details.textContent.includes(item.location),'Original acquisition must remain in spoiler details');
       const reference=required(details,'.item-reference');assert.equal(reference.getAttribute('href'),item.source);
       assert.match(reference.textContent,/spoiler/i);assert.equal(reference.getAttribute('target'),'_blank');
       assert.ok(reference.getAttribute('rel').split(/\s+/).includes('noopener'));
@@ -223,9 +227,9 @@ for (const mode of ['minimal','light']) test(`${mode} hidden search terms cannot
   const h=harness([remoteRow(),remoteRow('Other gear',{actArea:'House of Healing',location:'Looted from a locked chest',description:'Rare plot secret'})],{mode});
   for (const term of ['Last Light Inn','Talli','hidden courtyard chest','PROPERTY_SENTINEL','DESCRIPTION_SENTINEL','Rare plot secret','House of Healing','locked chest']) {
     h.search(term);assert.deepEqual(h.names(),[],`Hidden search matched ${term}`);assert.equal(h.rows().length,0);assert.equal(h.cards().length,0);
-    assert.equal(h.get('mobileCount').textContent,'Visar 0 items');assert.equal(h.get('empty').hidden,false);
+    assert.equal(h.get('mobileCount').textContent,'Showing 0 items');assert.equal(h.get('empty').hidden,false);
   }
-  h.search('devotion');assert.deepEqual(h.names(),['Armour of Devotion']);assert.equal(h.get('mobileCount').textContent,'Visar 1 item');assert.equal(h.get('empty').hidden,true);
+  h.search('devotion');assert.deepEqual(h.names(),['Armour of Devotion']);assert.equal(h.get('mobileCount').textContent,'Showing 1 item');assert.equal(h.get('empty').hidden,true);
 });
 test('Light search and Area filter use only reviewed broad projection',()=>{
   const h=harness([remoteRow(),remoteRow('Club of Hill Giant Strength',{act:'ACT 1',actArea:'Arcane Tower',location:'Found on the highest floor.'})],{mode:'light'});
@@ -274,7 +278,7 @@ for (const mode of ['minimal','light','full']) test(`${mode} preserves allowed f
 for (const mode of ['minimal','light','full']) test(`${mode} status controls retain exact identity and disabled semantics`,()=>{
   const row=remoteRow('Unknown constructor / __proto__ / prototype'),statuses=JSON.parse('{"__proto__":"skipped","constructor":"todo","prototype":"found"}');statuses[key(row)]='skipped';
   const h=harness([row],{mode,statuses}),map=h.app.progress();
-  for (const surface of allSurfaces(h)) { assert.equal(required(surface,'.status-text').textContent,'Överhoppad');assert.equal(required(surface,'input').checked,false); }
+  for (const surface of allSurfaces(h)) { assert.equal(required(surface,'.status-text').textContent,'Skipped');assert.equal(required(surface,'input').checked,false); }
   required(h.cards()[0],'input').click();assert.deepEqual(h.marks,[{key:key(row),status:'found'}]);assert.equal(h.app.progress(),map);
   for (const property of ['__proto__','constructor','prototype']) assert.equal(map[property],statuses[property]);assert.equal(Object.getPrototypeOf(map),null);
   const disabled=harness([row],{mode,editable:false});for (const surface of allSurfaces(disabled)) { const input=required(surface,'input');assert.equal(input.disabled,true);input.click(); }assert.equal(disabled.marks.length,0);
@@ -366,16 +370,16 @@ for (const protectedMode of ['minimal','light']) test(`Story A Full to Story B $
   h.story('Story B',protectedMode);assert.deepEqual(h.names(),['Armour of Devotion','Other gear']);
   assert.equal(h.get('area').value,'');assert.equal(h.get('source').value,'');assert.equal(h.get('source').disabled,true);
   for (const control of ['area','source','secondaryFilterCount','spoilerFilterNotice','empty']) for (const value of ['Last Light Inn','House of Healing','Talli']) assert.ok(!h.get(control).textContent.includes(value),`${control} exposes Story A protected value`);
-  for (const term of ['Last Light Inn','Talli','Quest reward from a character']) { h.search(term);assert.deepEqual(h.names(),[]);assert.equal(h.get('mobileCount').textContent,'Visar 0 items'); }
+  for (const term of ['Last Light Inn','Talli','Quest reward from a character']) { h.search(term);assert.deepEqual(h.names(),[]);assert.equal(h.get('mobileCount').textContent,'Showing 0 items'); }
   h.search('');for (const surface of [...h.rows(),...h.cards()]) assert.ok(!outsideText(surface).includes('Last Light Inn'));
   h.story('Story A','full');assert.equal(h.get('area').value,'Last Light Inn');assert.equal(h.get('source').value,'vendor');assert.equal(h.get('sort').value,'area');assert.deepEqual(h.names(),['Armour of Devotion']);
 });
 
 test('an explicitly chosen safe sort counts as active after Minimal geography fallback',()=>{
   const h=harness([remoteRow('Alpha gear',{rarity:'Rare'}),remoteRow('Zulu gear',{rarity:'Legendary'})]);
-  h.mode('minimal');assert.equal(h.get('sort').value,'name');assert.equal(h.get('secondaryFilterCount').textContent,'Inga aktiva');
-  h.filter('sort','rarity');assert.deepEqual(h.names(),['Zulu gear','Alpha gear']);assert.equal(h.get('secondaryFilterCount').textContent,'1 aktivt');
-  h.filter('sort','type');assert.equal(h.get('secondaryFilterCount').textContent,'1 aktivt');
+  h.mode('minimal');assert.equal(h.get('sort').value,'name');assert.equal(h.get('secondaryFilterCount').textContent,'None active');
+  h.filter('sort','rarity');assert.deepEqual(h.names(),['Zulu gear','Alpha gear']);assert.equal(h.get('secondaryFilterCount').textContent,'1 active');
+  h.filter('sort','type');assert.equal(h.get('secondaryFilterCount').textContent,'1 active');
 });
 
 test('withheld fallback route geography cannot participate in Light broad-region sorting',()=>{
@@ -387,13 +391,13 @@ test('withheld fallback route geography cannot participate in Light broad-region
 
 test('automatic Minimal name fallback becomes Light broad-region default without an active sort count',()=>{
   const h=harness([remoteRow('Alpha gear',{act:'ACT 1',actArea:'Arcane Tower'}),remoteRow('Zulu gear')]);
-  h.mode('minimal');assert.equal(h.get('sort').value,'name');assert.equal(h.get('secondaryFilterCount').textContent,'Inga aktiva');assert.deepEqual(h.names(),['Alpha gear','Zulu gear']);
-  h.mode('light');assert.equal(h.get('sort').value,'area');assert.equal(h.get('secondaryFilterCount').textContent,'Inga aktiva');assert.deepEqual(h.names(),['Zulu gear','Alpha gear']);
+  h.mode('minimal');assert.equal(h.get('sort').value,'name');assert.equal(h.get('secondaryFilterCount').textContent,'None active');assert.deepEqual(h.names(),['Alpha gear','Zulu gear']);
+  h.mode('light');assert.equal(h.get('sort').value,'area');assert.equal(h.get('secondaryFilterCount').textContent,'None active');assert.deepEqual(h.names(),['Zulu gear','Alpha gear']);
   h.mode('full');assert.equal(h.get('sort').value,'area');assert.deepEqual(h.names(),['Alpha gear','Zulu gear']);
 });
 test('an explicitly chosen Minimal name sort stays active when moving to Light',()=>{
   const h=harness([remoteRow('Alpha gear',{act:'ACT 1',actArea:'Arcane Tower'}),remoteRow('Zulu gear')]);
-  h.mode('minimal');h.filter('sort','rarity');h.filter('sort','name');assert.equal(h.get('secondaryFilterCount').textContent,'1 aktivt');
-  h.mode('light');assert.equal(h.get('sort').value,'name');assert.equal(h.get('secondaryFilterCount').textContent,'1 aktivt');assert.deepEqual(h.names(),['Alpha gear','Zulu gear']);
+  h.mode('minimal');h.filter('sort','rarity');h.filter('sort','name');assert.equal(h.get('secondaryFilterCount').textContent,'1 active');
+  h.mode('light');assert.equal(h.get('sort').value,'name');assert.equal(h.get('secondaryFilterCount').textContent,'1 active');assert.deepEqual(h.names(),['Alpha gear','Zulu gear']);
   h.mode('full');assert.equal(h.get('sort').value,'area');assert.deepEqual(h.names(),['Alpha gear','Zulu gear']);
 });

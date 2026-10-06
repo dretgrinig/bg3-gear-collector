@@ -157,12 +157,12 @@ test('collapsing, resizing and rerendering preserve all filter values and show h
   const h = harness(390); h.app.init(); h.act('ACT 2');
   h.filter('q', 'armour'); h.filter('area', 'Last Light Inn'); h.filter('type', 'Heavy Armour'); h.filter('rarity', 'Rare'); h.filter('tier', 'A'); h.filter('source', 'loot'); h.filter('state', 'todo'); h.filter('sort', 'name');
   const selected = h.values(); h.get('secondaryFilters').open=false; h.app.render();
-  assert.equal(h.get('secondaryFilterCount').textContent, '6 aktiva');
+  assert.equal(h.get('secondaryFilterCount').textContent, '6 active');
   h.resize(1280); h.resize(320); h.app.render();
   assert.deepEqual(h.values(), selected); assert.equal(h.get('secondaryFilters').open, false);
   h.get('clear').click();
   assert.deepEqual(h.values(), { q:'', area:'', type:'', rarity:'', tier:'', source:'', state:'', sort:'area' });
-  assert.equal(h.get('secondaryFilterCount').textContent, 'Inga aktiva');
+  assert.equal(h.get('secondaryFilterCount').textContent, 'None active');
 });
 
 test('progress scope label follows Act while counters retain the existing Act-wide denominator', () => {
@@ -172,7 +172,7 @@ test('progress scope label follows Act while counters retain the existing Act-wi
   assert.equal(h.get('dbcount').textContent, 4); assert.equal(h.get('total').textContent, 2);
   assert.equal(h.get('found').textContent, 1); assert.equal(h.get('left').textContent, 1);
   assert.equal(h.get('pct').textContent, '50%'); assert.equal(h.get('bar').style.width, '50%');
-  h.act(''); assert.equal(h.get('progressScope').textContent, 'Alla Acts'); assert.equal(h.get('total').textContent, 4);
+  h.act(''); assert.equal(h.get('progressScope').textContent, 'All Acts'); assert.equal(h.get('total').textContent, 4);
 });
 
 test('reorganized filters still compose, update Area on Act switch and produce the same empty state', () => {

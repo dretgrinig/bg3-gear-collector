@@ -164,7 +164,7 @@ for (const [label, status] of malformedStatuses) {
     assert.equal(h.state().id, 'A');
     assert.equal(h.storage.get(cloudCacheKey('user-a')), beforeCache);
     assert.deepEqual(h.cached('A'), beforeA);
-    assert.match(h.element('backendStateLabel').textContent, /lokal cache\/offline.*blockerade/i);
+    assert.match(h.element('backendStateLabel').textContent, /local cache\/offline.*blocked/i);
     assert.doesNotMatch(h.element('backendStateLabel').textContent, /0 Stories/);
     assert.equal(h.storyWrites.length, 0);
     assert.equal(h.writes.length, 0);
@@ -185,7 +185,7 @@ test('blocker positive: valid HTTP 200 empty first-time account permits explicit
   assert.deepEqual(h.state().stories, []);
   assert.equal(h.state().id, null);
   assert.equal(h.storyWrites.length, 0, 'valid empty must not auto-create a cloud Story');
-  assert.match(h.element('backendStateLabel').textContent, /Verifierat.*0 Stories/);
+  assert.match(h.element('backendStateLabel').textContent, /Verified.*0 Stories/);
   const created = h.app.create('First explicit Story');
   assert.equal(h.storyWrites.length, 1);
   assert.deepEqual(h.storyWrites[0].value, { user_id: 'new-user', name: 'First explicit Story' });

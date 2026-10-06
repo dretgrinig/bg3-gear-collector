@@ -64,10 +64,10 @@ for (const response of [
     assert.equal(h.writes.length, 0);
     assert.match(h.status(), /cache|offline/i, 'cached Story list must be labeled');
     assert.equal(h.app.canWrite('A'), false);
-    assert.match(h.element('backendStateLabel').textContent, /lokal cache\/offline.*blockerade/i);
+    assert.match(h.element('backendStateLabel').textContent, /local cache\/offline.*blocked/i);
     const options = h.element('storySelect').options.filter(option => option.id);
     assert.deepEqual(options.map(option => option.id), ['A', 'B']);
-    for (const option of options) assert.match(option.text, /lokal cache\/offline/i);
+    for (const option of options) assert.match(option.text, /local cache\/offline/i);
     for (const id of ['newStory', 'renameStory', 'savePassword']) assert.equal(h.element(id).disabled, true);
     for (const id of ['reset', 'import', 'replaceImport', 'file']) assert.equal(h.element(id).disabled, false, 'cached selected Story remains editable');
   });
