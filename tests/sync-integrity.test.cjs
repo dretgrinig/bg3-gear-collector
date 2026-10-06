@@ -237,7 +237,7 @@ test('a failed old Story read closes the backend gate without changing the new S
   h.reads[0].resolve({ error: new Error('old A request failed') });
   await running;
   await tick();
-  assert.doesNotMatch(h.status(), /Synkfel/);
+  assert.doesNotMatch(h.status(), /Sync error/);
   assert.deepEqual(h.reads.map(read => read.storyId), ['A']);
   assert.equal(h.app.backend(), 'unavailable');
   assert.equal(h.app.canWrite('B'), false);

@@ -11,7 +11,7 @@ const failure = name => Object.assign(new Error('Storage unavailable in regressi
 const wrapper = items => JSON.stringify({ format: 'bg3-story-progress', formatVersion: 1, storyId: 'A', items });
 const assertStorageWarning = h => assert.match(
   h.status() + ' ' + (h.element('backendStateLabel').textContent || ''),
-  /minne|memory|osparad|inte sparad|lagring|kunde inte (?:spara|läsa)/i,
+  /memory|not durably saved|storage|could not (?:be saved|save|read)/i,
   'storage failure must visibly distinguish memory-only data from a durable cache'
 );
 
@@ -211,7 +211,7 @@ test('storage: successful retry persists retained memory edits and clears the me
   h.app.mark('after-storage-recovery', 'skipped');
   assert.equal(h.cached('A')['pending-durability'].status, 'found');
   assert.equal(h.cached('A')['after-storage-recovery'].status, 'skipped');
-  assert.doesNotMatch(h.status() + ' ' + (h.element('backendStateLabel').textContent || ''), /memory.only|endast i minnet|bara i minnet|inte sparad/i);
+  assert.doesNotMatch(h.status() + ' ' + (h.element('backendStateLabel').textContent || ''), /memory.only|only in memory|not durably saved/i);
   assert.equal(h.app.backend(), 'ready');
 });
 
@@ -267,8 +267,8 @@ test('storage: a verified catalog with failed cache write never claims durable l
   vm.runInContext(html.slice(start, end), h.context);
   h.failStorage('setItem', 'bg3-complete-itemdb-v4', failure('QuotaExceededError'));
   await vm.runInContext('loadRemote(true)', h.context);
-  assert.match(h.element('status').textContent, /minne/i);
-  assert.doesNotMatch(h.element('notice').innerHTML, /cachad lokalt|sparad(?:e)? lokalt/i, 'the catalog notice must not contradict the memory-only status');
+  assert.match(h.element('status').textContent, /memory/i);
+  assert.doesNotMatch(h.element('notice').innerHTML, /cached locally|saved locally/i, 'the catalog notice must not contradict the memory-only status');
   assert.equal(h.storage.has('bg3-complete-itemdb-v4'), false);
   assert.equal(h.app.backend(), 'ready');
 });

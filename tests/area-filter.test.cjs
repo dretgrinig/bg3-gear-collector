@@ -78,6 +78,7 @@ function harness({ cached, remote = catalog, fetchError = null } = {}) {
   }
   const tabs = ['', 'ACT 1', 'ACT 2', 'ACT 3'].map(act => Object.assign(element('tab'), { dataset: { act } }));
   const context = vm.createContext({
+    spoilerMode:()=>"full", renderSpoilerControl(){},
     document: { getElementById: get, createElement: tag => element(tag), querySelectorAll: selector => selector === '.tab' ? tabs : [] },
     Option: option, console: { error: error => errors.push(error) }, canEditProgress: () => true, renderBackendState() {}, toggleFound() {},
     storageFailures: new Map(), REMOTE: 'isolated-catalog', DBKEY: 'isolated-cache', FALLBACK: fallbackCatalog,
@@ -194,7 +195,7 @@ test('Act + Area combine with search, rarity, tier, type, source and status in b
   h.filter('q', 'devotion'); h.filter('rarity', 'Rare'); h.filter('tier', 'A'); h.filter('type', 'Heavy Armour'); h.filter('source', 'vendor'); h.filter('state', 'done');
   assert.deepEqual(h.names(), ['Armour of Devotion']);
   assert.equal(h.get('body').children.length, 1); assert.equal(h.get('cards').children.length, 1);
-  assert.match(h.get('cards').children[0].innerHTML, /Last Light Inn/); assert.equal(h.get('mobileCount').textContent, 'Visar 1 item');
+  assert.match(h.get('cards').children[0].innerHTML, /Last Light Inn/); assert.equal(h.get('mobileCount').textContent, 'Showing 1 item');
   assert.equal(h.get('empty').hidden, true);
   h.filter('state', 'todo'); assert.deepEqual(h.names(), []); assert.equal(h.get('empty').hidden, false);
   h.get('clear').click(); h.filter('area', 'Last Light Inn'); h.filter('source', 'quest'); assert.deepEqual(h.names(), ['Reward']);
@@ -207,7 +208,7 @@ test('Act 3 catalog Area combines with rarity, tier and status; no results clear
   assert.deepEqual(h.names(), ['Bonespike Gloves']); h.filter('q', 'no-such-item');
   assert.deepEqual(h.names(), []); assert.equal(h.get('empty').hidden, false);
   assert.equal(h.get('body').children.length, 0); assert.equal(h.get('cards').children.length, 0);
-  assert.equal(h.get('mobileCount').textContent, 'Visar 0 items');
+  assert.equal(h.get('mobileCount').textContent, 'Showing 0 items');
 });
 
 
