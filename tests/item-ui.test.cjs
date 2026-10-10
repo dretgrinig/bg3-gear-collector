@@ -88,7 +88,7 @@ function harness(items = [fixture()], statuses = {}, { editable=true } = {}) {
   const context=vm.createContext({
     spoilerMode:()=>"full", renderSpoilerControl(){},
     document:{getElementById:get, createElement:node, querySelectorAll:selector => selector==='.tab' ? tabs : []},
-    Option, canEditProgress:() => editable, renderBackendState() {}, loadRemote() {},
+    URL, Option, canEditProgress:() => editable, renderBackendState() {}, loadRemote() {},
     markRecord(key, status) {
       marks.push({key,status}); context.markedKey=key; context.markedStatus=status;
       vm.runInContext('progress[markedKey]=markedStatus', context);
@@ -111,7 +111,7 @@ function harness(items = [fixture()], statuses = {}, { editable=true } = {}) {
     rows:() => get('body').children,
     cards:() => get('cards').children,
     act(value) { tabs.find(tab => tab.dataset.act===value).click(); },
-    filter(id,value) { get(id).value=value; get(id).onchange(); },
+    filter(id,value) { get(id).value=value; (id==='q'?get(id).oninput:get(id).onchange)(); },
     names:() => Array.from(app.view(), item => item.name)
   };
 }

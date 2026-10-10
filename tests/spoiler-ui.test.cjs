@@ -106,7 +106,7 @@ function harness(rows=[remoteRow()], {mode='full',statuses={},editable=true,cach
     document:{getElementById:get,createElement:node,querySelectorAll:selector => {
       if (selector==='.tab') return tabs;
       return [...new Set([...elements.values()].flatMap(element=>[...(matches(element,selector)?[element]:[]),...element.querySelectorAll(selector)]))];
-    }}, Option, canEditProgress:()=>editable, renderBackendState(){}, renderSpoilerControl(){},
+    }}, URL, Option, canEditProgress:()=>editable, renderBackendState(){}, renderSpoilerControl(){},
     loadRemote(){throw new Error('No network is permitted in item UI tests');}, updateNotice(){},
     markRecord(itemKey,status) { marks.push({key:itemKey,status}); context.markedKey=itemKey;context.markedStatus=status;vm.runInContext('progress[markedKey]=markedStatus',context); }
   });
@@ -132,7 +132,7 @@ function harness(rows=[remoteRow()], {mode='full',statuses={},editable=true,cach
     modeWithoutRender(next) { context.nextMode=next;vm.runInContext('requestedMode=nextMode',context); },
     mode(next) { context.nextMode=next;vm.runInContext('requestedMode=nextMode;populate();render()',context); },
     act(next) { tabs.find(tab=>tab.dataset.act===next).click(); },
-    filter(id,next) { get(id).value=next;assert.equal(get(id).value,next,`Unavailable ${id}: ${next}`);get(id).onchange(); },
+    filter(id,next) { get(id).value=next;assert.equal(get(id).value,next,`Unavailable ${id}: ${next}`);(id==='q'?get(id).oninput:get(id).onchange)(); },
     search(next) { get('q').value=next;get('q').oninput(); },
     names:()=>Array.from(app.view(),item=>item.name),
     areas:()=>get('area').options.map(option=>option.value).filter(Boolean)

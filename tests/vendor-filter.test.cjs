@@ -16,7 +16,7 @@ function boundary(file,marker,extras='') {
   let source=readFileSync(join(__dirname,file),'utf8').split(marker)[0];
   if(extras)source=source.replace('items:()=>ITEMS','items:()=>ITEMS,'+extras);
   const module={exports:{}};
-  vm.runInNewContext(source+'\nmodule.exports=harness;', {require,__dirname,module,process});
+  vm.runInNewContext(source+'\nmodule.exports=harness;', {require,__dirname,module,process,URL});
   return module.exports;
 }
 const itemHarness=boundary('spoiler-ui.test.cjs','const required =','ingest:setDB,normalizeFallback,vendor,quest,key');

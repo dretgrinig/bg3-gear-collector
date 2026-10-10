@@ -1586,9 +1586,9 @@ function syncSpoilerFilters(){
   spoilerFilterMode=mode;
  }
  $("q").placeholder=mode==="full"?"Item, area, vendor, effect…":mode==="light"?"Item, type, rarity, tier, Act or broad region…":"Item, type, rarity, tier or Act…";
- const suspended=mode!=="full"&&(!!fullSpoilerFilters.area||!!fullSpoilerFilters.source||fullSpoilerFilters.sort==="area");
+ const suspended=mode!=="full"&&(!!fullSpoilerFilters.area||!!fullSpoilerFilters.source);
  $("spoilerFilterNotice").hidden=!suspended;
- $("spoilerFilterNotice").textContent=suspended?"Precise Area/source selections and geography sorting are suspended · restored in Full details":"";
+ $("spoilerFilterNotice").textContent=suspended?"Precise Area/source selections are suspended · restored in Full details":"";
  return mode;
 }
 function populate(){
@@ -1632,6 +1632,11 @@ function initItemPresentation(){
  update();new window.ResizeObserver(update).observe(strip);
 }
 
+function validItemReference(source){
+ if(typeof source!=="string"||!source.trim())return false;
+ try{const url=new URL(source);return (url.protocol==="https:"||url.protocol==="http:")&&!!url.hostname}catch{return false}
+}
+
 function render(presentationOnly=false){
  const mode=syncSpoilerFilters(),full=mode==="full";
  const list=view(),b=$("body"),cards=$("cards");b.innerHTML="";cards.innerHTML="";$("empty").hidden=!!list.length;
@@ -1647,15 +1652,16 @@ function render(presentationOnly=false){
   const loc=x.location||"No location specified";
   const duplicateLocation=!!x.area&&!!x.location&&x.area.trim()===x.location.trim();
   const fullPlace=`<div class=item-place-heading><span class=item-area>${esc(x.area||"Area not specified")}</span>${flags?`<div class=item-flags>${flags}</div>`:""}</div>${x.location&&!duplicateLocation?`<span class=item-acquisition>${esc(x.location)}</span>`:""}`;
-  const fullReference=x.source?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener aria-label="Open bg3.wiki reference for ${esc(x.name)}">bg3.wiki ↗</a>`:"";
+  const fullReference=validItemReference(x.source)?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener aria-label="Open bg3.wiki reference for ${esc(x.name)}">bg3.wiki ↗</a>`:"";
   const reference=x.source?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener>External reference · may contain spoilers ↗</a>`:"";
-  const mechanics=`${x.properties?`<div class=detailrow><span class=label>Properties</span>${esc(x.properties)}</div>`:""}${x.description?`<div class=detailrow><span class=label>Effect</span>${esc(x.description)}</div>`:""}`;
+  const hasProperties=!!String(x.properties||"").trim(),hasEffects=!!String(x.description||"").trim();
+  const mechanics=`${hasProperties?`<div class=detailrow><span class=label>Properties</span>${esc(x.properties)}</div>`:""}${hasEffects?`<div class=detailrow><span class=label>Effect</span>${esc(x.description)}</div>`:""}`;
   const fullDetails=`<div class=detailgrid>${mechanics}${fullReference?`<div class=detailrow>${fullReference}</div>`:""}</div>`;
   const broad=mode==="light"?broadAreaFor(x):"";
   const place=full?fullPlace:broad?`<div class=item-place-heading><span class=item-area>${esc(broad)}</span></div>`:'<span class=muted>Location in details</span>';
   const details=full?fullDetails:`<div class=detailgrid>${x.area?`<div class=detailrow><span class=label>Original Area</span><div>${esc(x.area)}</div></div>`:""}<div class=detailrow><span class=label>Location / acquisition</span><div class=item-detail-location>${esc(loc)}</div></div>${flags?`<div class=detailrow><span class=label>Acquisition context</span><div>${flags}</div></div>`:""}${mechanics}${reference?`<div class=detailrow>${reference}</div>`:'<div class="detailrow muted">No source specified</div>'}</div>`;
   const detailSummary=full?"More info":"Show details · contains spoilers";
-  const showDisclosure=!full||!!(x.properties||x.description||x.source);
+  const showDisclosure=!full||hasProperties||hasEffects||!!fullReference;
   const desktopDisclosure=showDisclosure?`<details class=item-details><summary>${detailSummary}</summary>${details}</details>`:"";
   const mobileDisclosure=showDisclosure?`<div class=cardfooter><details class=carddetails><summary>${detailSummary}</summary>${details}</details></div>`:"";
 
@@ -1675,7 +1681,8 @@ function render(presentationOnly=false){
  renderDashboardShell();
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");act=b.dataset.act;populate();render()});
-["q","area","type","rarity","tier","source","state","sort"].forEach(id=>{$(id).oninput=$(id).onchange=event=>{if(id==="sort")spoilerSortFallback=false;render()}});
+$("q").oninput=()=>render();
+["area","type","rarity","tier","source","state","sort"].forEach(id=>{$(id).oninput=$(id).onchange=event=>{if(id==="sort")spoilerSortFallback=false;render()}});
 $("clear").onclick=()=>{fullSpoilerFilters={area:"",source:"",sort:"area"};lightSpoilerArea="";$("q").value="";$("area").value="";$("type").value="";$("rarity").value="";$("tier").value="";$("source").value="";$("state").value="";$("sort").value=spoilerMode()==="minimal"?"name":"area";spoilerSortFallback=spoilerMode()==="minimal";render()};
 $("onlyS").onclick=()=>{$("tier").value="S";render()};
 $("refresh").onclick=()=>loadRemote(true);

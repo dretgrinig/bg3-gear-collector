@@ -84,7 +84,7 @@ function harness(width = 390, { listenerAPI = 'event' } = {}) {
     spoilerMode:()=>"full", renderSpoilerControl(){},
     document:{ getElementById:get, createElement:tag => element(tag), querySelectorAll:selector => selector === '.tab' ? tabs : [] },
     window:{ matchMedia(query) { assert.equal(query, '(max-width:780px)'); return media; } },
-    Option, canEditProgress:() => true, renderBackendState() {}, toggleFound() {}, loadRemote() {}
+    URL, Option, canEditProgress:() => true, renderBackendState() {}, toggleFound() {}, loadRemote() {}
   });
   vm.runInContext(`let ITEMS=[],act='',progress=Object.create(null);
     const $=id=>document.getElementById(id);
@@ -102,7 +102,7 @@ function harness(width = 390, { listenerAPI = 'event' } = {}) {
   return { app, get,
     resize(width) { matches = width <= 780; for (const listener of listeners) listener({ matches }); },
     act(value) { tabs.find(tab => tab.dataset.act === value).click(); },
-    filter(id, value) { get(id).value=value; assert.equal(get(id).value, value, `Unavailable ${id} option`); get(id).onchange(); },
+    filter(id, value) { get(id).value=value; assert.equal(get(id).value, value, `Unavailable ${id} option`); (id==='q'?get(id).oninput:get(id).onchange)(); },
     values() { return Object.fromEntries(filters.map(id => [id, get(id).value])); },
     names() { return Array.from(app.view(), item => item.name); },
     areas() { return get('area').options.map(option => option.value).filter(Boolean); }

@@ -98,7 +98,7 @@ function harness(items=[fixture()], {mode='full',statuses={},editable=true}={}) 
   function Option(text,value=text) { this.text=String(text);this.value=String(value); }
   const context=vm.createContext({
     document:{getElementById:get,createElement:node,querySelectorAll:selector=>selector==='.tab'?tabs:root.querySelectorAll(selector),querySelector:selector=>root.querySelector(selector)},
-    Option,canEditProgress:()=>editable,renderBackendState(){},renderSpoilerControl(){},
+    Option,URL,canEditProgress:()=>editable,renderBackendState(){},renderSpoilerControl(){},
     loadRemote(){throw new Error('Network is forbidden in spoiler polish regressions');},
     markRecord(key,status) { marks.push({key,status});context.changedKey=key;context.changedStatus=status;vm.runInContext('progress[changedKey]=changedStatus',context); }
   });
@@ -311,15 +311,62 @@ test('Swedish Story names survive the actual local rename and fresh storage rest
 // Audit known UI vocabulary, not Swedish-looking letters. The two embedded
 // catalogue declarations contain original item text and must never be audited
 // as interface copy. Runtime user values are likewise not source literals.
-const SWEDISH_UI=/\b(?:Alla Acts|Alla områden|Alla typer|Alla rarities|Alla tiers|Alla källor|Visar|Hittad|hittade|hittad|Överhoppad|Inte hittad|Visa detaljer|Egenskaper|Effekt|Ingen location angiven|Ingen källa angiven|Område ej angivet|Område|Förvärv|Detaljer|Referens|Källa|Namn|Typ|Sortera|Markera|Öppna|Sök utrustning|Rensa filter|Fler filter|Inga aktiva|aktivt|aktiva|Logga|Loggar|Lösenord|lösenord|Lösenordet|Lösenorden|Bekräfta|Avbryt|Startar|Synka|Synkar|Synkad|Ändringar|sparad|sparade|sparar|sparas|sparats|Sparar|Spara|Exportera|Importera|Ersätt|Ersätta|Nollställ|Nollställa|Hämta|Hämtar|Hämta\/verifiera|laddar|laddad|Ladda|Laddar|Kunde inte|Välj|Försök|försök|Kontrollerar|Verifierat|verifierade|okänd|molnskrivningar|Inloggad|Utloggad|utloggningen|Ny länk|Ny Story|Byt namn|Nytt namn|Skicka|Skickar|Begär|vänta|väntar|begränsat|borttagna|användare|används|oförändrade|oförändrad|Databasstatus|Katalogen|katalog|katalogen|poster|cachad|Teknisk status|gamla|aktiverad|aktiv|av|och|är|från|endast|minnet|innan|först|medan|hela urvalet|kvar i urvalet)\b/giu;
+const SWEDISH_UI=/(?<![\p{L}\p{M}\p{N}_])(?:Alla Acts|Alla områden|Alla typer|Alla rarities|Alla tiers|Alla källor|Visar|Hittad|hittade|hittad|Överhoppad|Inte hittad|Visa detaljer|Egenskaper|Effekt|Ingen location angiven|Ingen källa angiven|Område ej angivet|Område|Förvärv|Detaljer|Referens|Källa|Namn|Typ|Sortera|Markera|Öppna|Sök utrustning|Rensa filter|Fler filter|Inga aktiva|aktivt|aktiva|Logga|Loggar|Lösenord|lösenord|Lösenordet|Lösenorden|Bekräfta|Avbryt|Startar|Synka|Synkar|Synkad|Ändringar|sparad|sparade|sparar|sparas|sparats|Sparar|Spara|Exportera|Importera|Ersätt|Ersätta|Nollställ|Nollställa|Hämta|Hämtar|Hämta\/verifiera|laddar|laddad|Ladda|Laddar|Kunde inte|Välj|Försök|försök|Kontrollerar|Verifierat|verifierade|okänd|molnskrivningar|Inloggad|Utloggad|utloggningen|Ny länk|Ny Story|Byt namn|Nytt namn|Skicka|Skickar|Begär|vänta|väntar|begränsat|borttagna|användare|används|oförändrade|oförändrad|Databasstatus|Katalogen|katalog|katalogen|poster|cachad|Teknisk status|gamla|aktiverad|aktiv|av|och|är|från|endast|minnet|innan|först|medan|hela urvalet|kvar i urvalet)(?![\p{L}\p{M}\p{N}_])/giu;
 function assertEnglishUI(source) {
-  const matches=[...String(source).matchAll(SWEDISH_UI)].map(match=>match[0]);
+  const matches=[...String(source).normalize("NFC").matchAll(SWEDISH_UI)].map(match=>match[0]);
   assert.deepEqual([...new Set(matches)],[],`Swedish UI copy remains: ${[...new Set(matches)].join(', ')}`);
 }
 function withoutCatalogData(source) {
   return source.replace(/^const (?:FALLBACK|TIERMAP)=[^\n]*;\r?$/gm,'')
     .replace(/<!--[^]*?-->/g,'').replace(/\/\*[^]*?\*\//g,'').replace(/^\s*\/\/[^\n]*$/gm,'');
 }
+for(const term of ['Överhoppad','Öppna','Ändringar','är'])test(`UI language audit rejects accented Swedish term: ${term}`,()=>{
+  assert.throws(()=>assertEnglishUI(term),/Swedish UI copy remains/);
+});
+test('UI language audit detects accented terms beside punctuation',()=>{
+  for(const term of ['Överhoppad','Öppna','Ändringar','är']) {
+    assert.throws(()=>assertEnglishUI(`(${term}),`),/Swedish UI copy remains/);
+  }
+});
+test('UI language audit detects consecutive accented Swedish terms',()=>{
+  assert.throws(()=>assertEnglishUI('Öppna Ändringar är Överhoppad'),error=>{
+    assert.match(error.message,/Swedish UI copy remains/);
+    for(const term of ['Öppna','Ändringar','är','Överhoppad'])assert.ok(error.message.includes(term));
+    return true;
+  });
+});
+test('UI language audit does not match known terms embedded in Unicode words or identifiers',()=>{
+  assertEnglishUI('föreÖppna efterÄndringar val_Överhoppad förgär 2Öppna Öppna2');
+  assertEnglishUI('x\u0301Öppna Öppna\u0301x');
+});
+test('UI language audit detects decomposed accented Swedish terms without rewriting them',()=>{
+  for(const term of ['Överhoppad','Öppna','Ändringar','är']) {
+    const original=term.normalize('NFD');
+    assert.throws(()=>assertEnglishUI(original),/Swedish UI copy remains/);
+    assert.equal(original,term.normalize('NFD'));
+  }
+});
+test('UI language audit excludes accented Swedish catalogue declarations while auditing app copy',()=>{
+  const catalogueSource='const FALLBACK=[{"item":"Överhoppad svensk hjälm","note":"Öppna kistan"}];\nconst TIERMAP={"Ändringar är tillåtna":"S"};';
+  assertEnglishUI(withoutCatalogData(catalogueSource+'\nbutton.textContent="More info";'));
+  assert.throws(()=>assertEnglishUI(withoutCatalogData(catalogueSource+'\nbutton.textContent="Öppna";')),/Swedish UI copy remains/);
+});
+test('accented Swedish Story and catalogue content remain unchanged outside the UI copy audit',async()=>{
+  const item=fixture('Överhoppad svensk hjälm',{properties:'Ändringar är tillåtna',description:'Öppna kistan för effekt.'}),h=harness([item]);
+  for(const surface of surfaces(h))for(const field of ['name','properties','description'])assert.ok(surface.textContent.includes(item[field]));
+  assertEnglishUI(h.get('progressScope').textContent);
+  const name='Öppna Ändringar är Överhoppad',first=storyHarness({userId:null,stories:[{id:'local-accented',name,local:true}]});
+  await first.app.activate('local-accented',{sync:false});
+  await first.app.rename(name);
+  assert.equal(first.state().stories[0].name,name);
+  assert.ok(first.element('storySelect').options.some(option=>option.text===name));
+  const fresh=storyHarness({userId:null,stories:[],storage:first.storage});
+  vm.runInContext('loadLocalStories();renderStorySelect()',fresh.context);
+  assert.equal(fresh.state().stories.find(story=>story.id==='local-accented').name,name);
+  assert.ok(fresh.element('storySelect').options.some(option=>option.text===name));
+  assert.equal(first.calls.length+fresh.calls.length,0);
+});
+
 test('static and dynamic UI source is English without auditing embedded catalogue text',()=>{
   assert.equal(html.match(/<html\b[^>]*\blang=["']([^"']+)["']/i)?.[1],'en');
   assertEnglishUI(withoutCatalogData(html));
