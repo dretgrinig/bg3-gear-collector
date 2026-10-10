@@ -75,7 +75,7 @@ function node(tag = 'div', attributes = {}) {
 const fixture = (name = 'Armour of Devotion', values = {}) => ({
   act:'ACT 2', name, rarity:'Rare', type:'Heavy Armour', area:'Last Light Inn',
   location:'Sold by a merchant in the courtyard.', properties:'Armour Class 18', description:'An original effect.',
-  source:'https://bg3.wiki/wiki/Example', ...values
+  source:'https://bg3.wiki/wiki/Armour_of_Devotion', ...values
 });
 
 function harness(items = [fixture()], statuses = {}, { editable=true } = {}) {
