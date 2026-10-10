@@ -463,7 +463,7 @@ function catalogArea(x){
  }
  return "";
 }
-function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:catalogArea(x),location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:x.gameIds||[]}}
+function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:catalogArea(x),location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:Object.hasOwn(x,"gameIds")?(x.gameIds===undefined?null:x.gameIds):[]}}
 function normalizeFallback(x){const item={act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:normalizeArea(x.area),location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]};return {...item,acquisition:acquisitionFor(item)}}
 
 // Reviewed geographic aliases only: never infer geography from acquisition prose.
