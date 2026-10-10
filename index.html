@@ -221,8 +221,229 @@ const $=x=>document.getElementById(x);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
 const key=x=>(x.act+"|"+x.name).toLowerCase();
 const clean=s=>String(s??"").replace(/[💰🎁]/g,"").replace(/\s+/g," ").trim();
-const vendor=x=>/sold by|merchant/i.test(x.location||"");
-const quest=x=>/quest reward|reward|given by/i.test(x.location||"");
+// Reviewed acquisition metadata, independent of catalogue geography/effects.
+// Rows: Act, catalogue name, game IDs, item URLs, explicit ID-less aliases.
+// Act 1 is the unchanged 63-item downloaded baseline; see docs/vendor-classification.md.
+const REVIEWED_VENDOR_DATA=Object.freeze([
+ ["ACT 1","Amulet of Restoration",["MAG_Healer_HPRestoration_Amulet"],["https://bg3.wiki/wiki/Amulet_of_Restoration"],[]],
+ ["ACT 1","Blooded Greataxe",["MAG_LowHP_IncreaseDamage_Greataxe"],["https://bg3.wiki/wiki/Blooded_Greataxe"],[]],
+ ["ACT 1","Boots of Aid and Comfort",["MAG_Healer_TempHPOnHeal_Boots"],["https://bg3.wiki/wiki/Boots_of_Aid_and_Comfort"],[]],
+ ["ACT 1","Boots of Elemental Momentum",["MAG_ElementalGish_MomentumOnElementalDamage_Boots"],["https://bg3.wiki/wiki/Boots_of_Elemental_Momentum"],[]],
+ ["ACT 1","Boots of Genial Striding",["MAG_TerrainWalkers_Boots"],["https://bg3.wiki/wiki/Boots_of_Genial_Striding"],[]],
+ ["ACT 1","Boots of Stormy Clamour",["MAG_Thunder_ReverberationOnStatusApply_Boots"],["https://bg3.wiki/wiki/Boots_of_Stormy_Clamour"],[]],
+ ["ACT 1","Bow of Awareness",["MAG_Generic_01_Shortbow_1","MAG_OfAwareness_Bow"],["https://bg3.wiki/wiki/Bow_of_Awareness"],[]],
+ ["ACT 1","Bow of the Banshee",["MAG_BG_OfTheBanshee_Bow"],["https://bg3.wiki/wiki/Bow_of_the_Banshee"],[]],
+ ["ACT 1","Cacophony",["MAG_Thunder_ThunderClap_Quarterstaff"],["https://bg3.wiki/wiki/Cacophony"],[]],
+ ["ACT 1","Caustic Band",["MAG_Acid_AcidDamageOnWeaponAttack_Ring"],["https://bg3.wiki/wiki/Caustic_Band"],[]],
+ ["ACT 1","Cinder Shoes",["MAG_Fire_HeatOnInflictBurning_Boots"],["https://bg3.wiki/wiki/Cinder_Shoes"],[]],
+ ["ACT 1","Circlet of Blasting",["ARM_CircletOfBlasting"],["https://bg3.wiki/wiki/Circlet_of_Blasting"],[]],
+ ["ACT 1","Corellon's Grace",["UNI_RepeatStaff"],["https://bg3.wiki/wiki/Corellon's_Grace"],[]],
+ ["ACT 1","Corrosive Flail",["MAG_Corrosive_Flail"],["https://bg3.wiki/wiki/Corrosive_Flail"],[]],
+ ["ACT 1","Creation's Echo",["UNI_UND_SocietyOfBrilliance_ElementalResonanceStaff","UND_SocietyOfBrilliance_ResonanceStaff"],["https://bg3.wiki/wiki/Creation's_Echo"],[]],
+ ["ACT 1","Daredevil Gloves",["MAG_CQCaster_CloseRangedSpellMastery_Gloves"],["https://bg3.wiki/wiki/Daredevil_Gloves"],[]],
+ ["ACT 1","Defender Flail",["MAG_BG_OfEasthaven_Defender_Flail"],["https://bg3.wiki/wiki/Defender_Flail"],[]],
+ ["ACT 1","Doom Hammer",["UNI_DoomHammer"],["https://bg3.wiki/wiki/Doom_Hammer"],[]],
+ ["ACT 1","Dragon's Grasp",["MAG_Fire_IncreaseSlashingDamageToBurning_Handaxe"],["https://bg3.wiki/wiki/Dragon's_Grasp"],[]],
+ ["ACT 1","Giantbreaker",["MAG_MeleeDebuff_AttackDebuff2_OnDamage_HeavyCrossbow"],["https://bg3.wiki/wiki/Giantbreaker"],[]],
+ ["ACT 1","Gloves of Archery",["UNI_ARM_OfArchery_Gloves"],["https://bg3.wiki/wiki/Gloves_of_Archery"],[]],
+ ["ACT 1","Gloves of Baneful Striking",["MAG_ElementalGish_BaneOnElementalWeaponDamage_Gloves"],["https://bg3.wiki/wiki/Gloves_of_Baneful_Striking"],[]],
+ ["ACT 1","Gloves of Cinder and Sizzle",["MAG_Monk_Fire_Gloves"],["https://bg3.wiki/wiki/Gloves_of_Cinder_and_Sizzle"],[]],
+ ["ACT 1","Gloves of Dexterity",["MAG_BG_OfDexterity_Gloves"],["https://bg3.wiki/wiki/Gloves_of_Dexterity"],[]],
+ ["ACT 1","Gloves of Hail of Thorns",["UNI_PLA_ZhentCave_Gloves","PLA_ZhentCave_Gloves"],["https://bg3.wiki/wiki/Gloves_of_Hail_of_Thorns"],[]],
+ ["ACT 1","Gloves of Missile Snaring",["UNI_ARM_OfMissileSnaring_Gloves"],["https://bg3.wiki/wiki/Gloves_of_Missile_Snaring"],[]],
+ ["ACT 1","Gloves of Thievery",["MAG_PHB_OfThievery_Gloves"],["https://bg3.wiki/wiki/Gloves_of_Thievery"],[]],
+ ["ACT 1","Gold Wyrmling Staff",["MAG_Fire_FireDamage_Quarterstaff"],["https://bg3.wiki/wiki/Gold_Wyrmling_Staff"],[]],
+ ["ACT 1","Hedge Wanderer Armour",["MAG_Druid_Magic_Hide_Armor"],["https://bg3.wiki/wiki/Hedge_Wanderer_Armour"],[]],
+ ["ACT 1","Herbalist's Gloves",["UNI_UND_Myco_Alchemist_HealerGloves","UND_Myco_Alchemist_HealerGloves"],["https://bg3.wiki/wiki/Herbalist's_Gloves"],[]],
+ ["ACT 1","Hoppy",["MAG_Revitalizing_Warpick"],["https://bg3.wiki/wiki/Hoppy"],[]],
+ ["ACT 1","Hunter's Dagger",["MAG_TheHunters_Dagger"],["https://bg3.wiki/wiki/Hunter's_Dagger"],[]],
+ ["ACT 1","Hunting Shortbow",["MAG_Hunting_Shortbow"],["https://bg3.wiki/wiki/Hunting_Shortbow"],[]],
+ ["ACT 1","Knife of the Undermountain King",["MAG_Duergar_Sword_KingsKnife"],["https://bg3.wiki/wiki/Knife_of_the_Undermountain_King"],[]],
+ ["ACT 1","Larethian's Wrath",["MAG_Finesse_Longsword"],["https://bg3.wiki/wiki/Larethian's_Wrath"],[]],
+ ["ACT 1","Melf's First Staff",["MAG_BasicEnchanted_Quarterstaff"],["https://bg3.wiki/wiki/Melf's_First_Staff"],[]],
+ ["ACT 1","Monster Slayer Glaive",["MAG_MonsterSlayer_Glaive"],["https://bg3.wiki/wiki/Monster_Slayer_Glaive"],[]],
+ ["ACT 1","Pearl of Power Amulet",["MAG_PHB_ofPower_Pearl_Amulet"],["https://bg3.wiki/wiki/Pearl_of_Power_Amulet"],[]],
+ ["ACT 1","Periapt of Wound Closure",["MAG_PHB_PeriaptofWoundClosure_Amulet"],["https://bg3.wiki/wiki/Periapt_of_Wound_Closure"],[]],
+ ["ACT 1","Psychic Spark",["UNI_UND_SocietyOfBrilliance_MagicMissileNecklace","UND_SocietyOfBrilliance_MagicMissileNecklace"],["https://bg3.wiki/wiki/Psychic_Spark"],[]],
+ ["ACT 1","Rain Dancer",["UNI_DEN_StaffOfRain","UNI_StaffOfRain"],["https://bg3.wiki/wiki/Rain_Dancer"],[]],
+ ["ACT 1","Returning Pike",["MAG_Throwable_Pike"],["https://bg3.wiki/wiki/Returning_Pike"],[]],
+ ["ACT 1","Ring of Flinging",["MAG_Harpers_RingOfProjection"],["https://bg3.wiki/wiki/Ring_of_Flinging"],[]],
+ ["ACT 1","Ring of Jumping",["MAG_PHB_OfJumping_Ring"],["https://bg3.wiki/wiki/Ring_of_Jumping"],[]],
+ ["ACT 1","Ring of Mind-Shielding",["UNI_UND_SocietyOfBrilliance_RingOfMindShielding","UNI_UND_RingOfMindShielding"],["https://bg3.wiki/wiki/Ring_of_Mind-Shielding"],[]],
+ ["ACT 1","Ring of Restorative Gravity",[],["https://bg3.wiki/wiki/Ring_of_Restorative_Gravity"],[]],
+ ["ACT 1","Ring of Salving",["UND_SocietyOfBrilliance_PullingRing"],["https://bg3.wiki/wiki/Ring_of_Salving"],[]],
+ ["ACT 1","Rupturing Blade",["MAG_OfRupture_Rapier"],["https://bg3.wiki/wiki/Rupturing_Blade"],[]],
+ ["ACT 1","Safeguard Shield",["MAG_Safeguard_Shield"],["https://bg3.wiki/wiki/Safeguard_Shield"],[]],
+ ["ACT 1","Shining Staver-of-Skulls",["MAG_Radiant_Radiating_Hammer"],["https://bg3.wiki/wiki/Shining_Staver-of-Skulls"],[]],
+ ["ACT 1","Spellthief",["UNI_Bow_SpellslotRecharge"],["https://bg3.wiki/wiki/Spellthief"],[]],
+ ["ACT 1","Sunwalker's Gift",["UNI_UND_SocietyOfBrilliance_DarkvisionRing","UND_SocietyOfBrilliance_DarkvisionRing"],["https://bg3.wiki/wiki/Sunwalker's_Gift"],[]],
+ ["ACT 1","Swiresy Shoes",["MAG_Jumping_Shoes"],["https://bg3.wiki/wiki/Swiresy_Shoes"],[]],
+ ["ACT 1","The Baneful",["MAG_Bonded_Baneful_Shortsword"],["https://bg3.wiki/wiki/The_Baneful"],[]],
+ ["ACT 1","The Graceful Cloth (Esther)",["MAG_BarbMonk_Defensive_Cloth"],["https://bg3.wiki/wiki/The_Graceful_Cloth"],["The Graceful Cloth"]],
+ ["ACT 1","The Jolty Vest",["MAG_ChargedLightning_Electrocute_Armor"],["https://bg3.wiki/wiki/The_Jolty_Vest"],[]],
+ ["ACT 1","The Lifebringer",["MAG_ChargedLightning_TempHP_Circlet"],["https://bg3.wiki/wiki/The_Lifebringer"],[]],
+ ["ACT 1","The Shadespell Circlet",["MAG_Shadow_SpellDCBonusWhileObscured_Circlet"],["https://bg3.wiki/wiki/The_Shadespell_Circlet"],[]],
+ ["ACT 1","The Whispering Promise",["UNI_MassHealRing"],["https://bg3.wiki/wiki/The_Whispering_Promise"],[]],
+ ["ACT 1","Titanstring Bow",["MAG_StrongString_Longbow"],["https://bg3.wiki/wiki/Titanstring_Bow"],[]],
+ ["ACT 1","Unseen Menace",["MAG_Invisible_Pike"],["https://bg3.wiki/wiki/Unseen_Menace"],[]],
+ ["ACT 1","Vital Conduit Boots",["MAG_Gish_TempHPWhileConcentrating_Boots"],["https://bg3.wiki/wiki/Vital_Conduit_Boots"],[]],
+ ["ACT 1","Winter's Clutches",["MAG_Frost_GenerateFrostOnDamage_Gloves"],["https://bg3.wiki/wiki/Winter's_Clutches"],[]],
+ ["ACT 1","Witchbreaker",["MAG_Spellbreaker_Battleaxe"],["https://bg3.wiki/wiki/Witchbreaker"],[]],
+ ["ACT 2","Acrobat Shoes",["MAG_Acrobat_Shoes"],["https://bg3.wiki/wiki/Acrobat_Shoes"],[]],
+ ["ACT 2","Amulet of the Harpers",["MAG_Harpers_HarpersAmulet"],["https://bg3.wiki/wiki/Amulet_of_the_Harpers"],[]],
+ ["ACT 2","Armour of Devotion",["MAG_Paladin_RestoreChannelDivinity_Armor"],["https://bg3.wiki/wiki/Armour_of_Devotion"],[]],
+ ["ACT 2","Barkskin Armour",["MAG_Druid_Late_Hide_Armor_1"],["https://bg3.wiki/wiki/Barkskin_Armour"],[]],
+ ["ACT 2","Bigboy's Chew Toy",["MAG_Combat_Quarterstaff"],["https://bg3.wiki/wiki/Bigboy%27s_Chew_Toy","https://bg3.wiki/wiki/Bigboy's_Chew_Toy"],[]],
+ ["ACT 2","Boots of Arcane Bolstering",["MAG_CQCaster_ArcaneChargeAfterDash_Boots"],["https://bg3.wiki/wiki/Boots_of_Arcane_Bolstering"],[]],
+ ["ACT 2","Charge-Bound Warhammer",["MAG_Bonded_Shocking_Warhammer"],["https://bg3.wiki/wiki/Charge-Bound_Warhammer"],[]],
+ ["ACT 2","Cindersnap Gloves",["MAG_FlamingFist_BattleWizardGloves"],["https://bg3.wiki/wiki/Cindersnap_Gloves"],[]],
+ ["ACT 2","Circlet of Hunting",["MAG_BonusAttack_AgainstMarked_Circlet"],["https://bg3.wiki/wiki/Circlet_of_Hunting"],[]],
+ ["ACT 2","Cloak of Cunning Brume",["MAG_Shadow_FogOfCloudDisengage_Cloak"],["https://bg3.wiki/wiki/Cloak_of_Cunning_Brume"],[]],
+ ["ACT 2","Cloak of Protection",["MAG_PHB_CloakOfProtection_Cloak"],["https://bg3.wiki/wiki/Cloak_of_Protection"],[]],
+ ["ACT 2","Darkfire Shortbow",["MAG_BG_Darkfire_Shortbow"],["https://bg3.wiki/wiki/Darkfire_Shortbow"],[]],
+ ["ACT 2","Defender Greataxe",["MAG_PHB_Defender_Greataxe"],["https://bg3.wiki/wiki/Defender_Greataxe"],[]],
+ ["ACT 2","Drakethroat Glaive",["MAG_BG_DragonsBreath_Glaive"],["https://bg3.wiki/wiki/Drakethroat_Glaive"],[]],
+ ["ACT 2","Dwarven Splintmail",["ARM_Splint_Body_Dwarven"],["https://bg3.wiki/wiki/Dwarven_Splintmail"],[]],
+ ["ACT 2","Enraging Heart Garb",["MAG_Barbarian_Magic_Armor_1"],["https://bg3.wiki/wiki/Enraging_Heart_Garb"],[]],
+ ["ACT 2","Evasive Shoes",["MAG_Evasive_Shoes"],["https://bg3.wiki/wiki/Evasive_Shoes"],[]],
+ ["ACT 2","Fistbreaker Helm",["MAG_BarbMonk_Cloth_Hat_A_1_Late"],["https://bg3.wiki/wiki/Fistbreaker_Helm"],[]],
+ ["ACT 2","Gauntlets of Surging Accuracy",["MAG_Fighter_ActionSurge_AttackBonus_Gloves"],["https://bg3.wiki/wiki/Gauntlets_of_Surging_Accuracy"],[]],
+ ["ACT 2","Gloves of Crushing",["MAG_BG_OfCrushing_Gloves"],["https://bg3.wiki/wiki/Gloves_of_Crushing"],[]],
+ ["ACT 2","Gloves of the Automaton",["MAG_OfAutomaton_Gloves"],["https://bg3.wiki/wiki/Gloves_of_the_Automaton"],[]],
+ ["ACT 2","Gloves of the Balanced Hands",["MAG_OfTheBalancedHands_Gloves"],["https://bg3.wiki/wiki/Gloves_of_the_Balanced_Hands"],[]],
+ ["ACT 2","Gloves of The Duellist",["MAG_OfTheDuelist_Gloves"],["https://bg3.wiki/wiki/Gloves_of_The_Duellist"],[]],
+ ["ACT 2","Halberd of Vigilance",["MAG_PoR_OfVigilance_Halberd"],["https://bg3.wiki/wiki/Halberd_of_Vigilance"],[]],
+ ["ACT 2","Harmonium Halberd",["MAG_BG_Harmonium_Halberd"],["https://bg3.wiki/wiki/Harmonium_Halberd"],[]],
+ ["ACT 2","Hat of Storm Scion's Power",["MAG_Thunder_ArcaneAcuityOnThunderDamage_Hat"],["https://bg3.wiki/wiki/Hat_of_Storm_Scion%27s_Power","https://bg3.wiki/wiki/Hat_of_Storm_Scion's_Power"],[]],
+ ["ACT 2","Hat of Uninhibited Kushigo",["MAG_Monk_Magic_Hat"],["https://bg3.wiki/wiki/Hat_of_Uninhibited_Kushigo"],[]],
+ ["ACT 2","Incandescent Staff",["MAG_FlamingFist_StaffOfFire"],["https://bg3.wiki/wiki/Incandescent_Staff"],[]],
+ ["ACT 2","Marksmanship Hat",["MAG_Generic_01_Wizard_Hat_E","MAG_ofMarksmanship_Hat"],["https://bg3.wiki/wiki/Marksmanship_Hat"],[]],
+ ["ACT 2","Ne'er Misser",["MAG_MagicMissile_HandCrossbow"],["https://bg3.wiki/wiki/Ne%27er_Misser","https://bg3.wiki/wiki/Ne'er_Misser"],[]],
+ ["ACT 2","Obsidian Laced Robe",["MAG_Heat_Fire_Robe"],["https://bg3.wiki/wiki/Obsidian_Laced_Robe"],[]],
+ ["ACT 2","Render of Mind and Body",["MAG_Blindside_Shortsword"],["https://bg3.wiki/wiki/Render_of_Mind_and_Body"],[]],
+ ["ACT 2","Ring of Free Action",["MAG_PHB_OfFreeAction_Ring"],["https://bg3.wiki/wiki/Ring_of_Free_Action"],[]],
+ ["ACT 2","Ring of Geniality",["MAG_Harpers_RingOfAttraction"],["https://bg3.wiki/wiki/Ring_of_Geniality"],[]],
+ ["ACT 2","Ring of Spiteful Thunder",["MAG_Thunder_InflictDazeOnThunderDamage_Ring"],["https://bg3.wiki/wiki/Ring_of_Spiteful_Thunder"],[]],
+ ["ACT 2","Risky Ring",["MAG_RiskyAttack_Ring"],["https://bg3.wiki/wiki/Risky_Ring"],[]],
+ ["ACT 2","Robe of Exquisite Focus",["MAG_OfArcanicAssault_Robe"],["https://bg3.wiki/wiki/Robe_of_Exquisite_Focus"],[]],
+ ["ACT 2","Sentinel Shield",["MAG_PHB_Sentinel_Shield"],["https://bg3.wiki/wiki/Sentinel_Shield"],[]],
+ ["ACT 2","Shadeclinger Armour",["MAG_Harpers_ArmorOfShadows"],["https://bg3.wiki/wiki/Shadeclinger_Armour"],[]],
+ ["ACT 2","Sharpened Snare Cuirass",["MAG_Druid_Late_Hide_Armor_2"],["https://bg3.wiki/wiki/Sharpened_Snare_Cuirass"],[]],
+ ["ACT 2","Shield of Devotion",["MAG_BG_OfDevotion_Shield"],["https://bg3.wiki/wiki/Shield_of_Devotion"],[]],
+ ["ACT 2","Slicing Shortsword",["MAG_Slicing_Shortsword"],["https://bg3.wiki/wiki/Slicing_Shortsword"],[]],
+ ["ACT 2","Sword of Clutching Umbra",["MAG_Shadow_Shortsword"],["https://bg3.wiki/wiki/Sword_of_Clutching_Umbra"],[]],
+ ["ACT 2","Sword of Life Stealing",["MAG_PHB_OfLifestealing_Shortsword"],["https://bg3.wiki/wiki/Sword_of_Life_Stealing"],[]],
+ ["ACT 2","Swordmaster Gloves",["MAG_OfSwordmaster_Gloves"],["https://bg3.wiki/wiki/Swordmaster_Gloves"],[]],
+ ["ACT 2","The Mighty Cloth",["MAG_BarbMonk_Offensive_Cloth"],["https://bg3.wiki/wiki/The_Mighty_Cloth"],[]],
+ ["ACT 2","Thermodynamo Axe",["MAG_Fire_HeatOnWeaponDamage_Battleaxe"],["https://bg3.wiki/wiki/Thermodynamo_Axe"],[]],
+ ["ACT 2","Thorn Blade",["MAG_HAV_ThornBlade_Scimitar"],["https://bg3.wiki/wiki/Thorn_Blade"],[]],
+ ["ACT 2","Thunderskin Cloak",["MAG_Thunder_InflictDazeOnReverberatedCreature_Cloak"],["https://bg3.wiki/wiki/Thunderskin_Cloak"],[]],
+ ["ACT 2","Yuan-Ti Scale Mail",["MAG_CKM_SerpenScale_Armor"],["https://bg3.wiki/wiki/Yuan-Ti_Scale_Mail"],[]],
+ ["ACT 3","Ambusher",["MAG_Generic_01_Shortsword_1","MAG_Ambusher_Shortsword"],["https://bg3.wiki/wiki/Ambusher"],[]],
+ ["ACT 3","Amulet of the Drunkard",["MAG_EGW_OfTheDrunkard_Amulet"],["https://bg3.wiki/wiki/Amulet_of_the_Drunkard"],[]],
+ ["ACT 3","Armour of Agility",["MAG_EndGame_HalfPlate"],["https://bg3.wiki/wiki/Armour_of_Agility"],[]],
+ ["ACT 3","Armour of Landfall",["MAG_Druid_Land_Magic_Leather_Armor"],["https://bg3.wiki/wiki/Armour_of_Landfall"],[]],
+ ["ACT 3","Armour of Moonbasking",["MAG_Druid_Moon_Magic_Leather_Armor"],["https://bg3.wiki/wiki/Armour_of_Moonbasking"],[]],
+ ["ACT 3","Armour of Persistence",["MAG_EndGame_Plate_Armor"],["https://bg3.wiki/wiki/Armour_of_Persistence"],[]],
+ ["ACT 3","Armour of the Sporekeeper",["MAG_Druid_Spore_Magic_Leather_Armor"],["https://bg3.wiki/wiki/Armour_of_the_Sporekeeper"],[]],
+ ["ACT 3","Assassin of Bhaal Cowl",["MAG_Bhaalist_Hat"],["https://bg3.wiki/wiki/Assassin_of_Bhaal_Cowl"],[]],
+ ["ACT 3","Bhaalist Armour",["MAG_Bhaalist_Armor"],["https://bg3.wiki/wiki/Bhaalist_Armour"],[]],
+ ["ACT 3","Bhaalist Gloves",["MAG_Bhaalist_Gloves"],["https://bg3.wiki/wiki/Bhaalist_Gloves"],[]],
+ ["ACT 3","Birthright",["MAG_GleamingSorcery_Hat"],["https://bg3.wiki/wiki/Birthright"],[]],
+ ["ACT 3","Blightbringer",["MAG_BG_BlightBringer_Shortbow"],["https://bg3.wiki/wiki/Blightbringer"],[]],
+ ["ACT 3","Bonespike Garb",["MAG_BarbMonk_Cloth_B_1","MAG_Barbarian_BoneSpike_Armor"],["https://bg3.wiki/wiki/Bonespike_Garb"],[]],
+ ["ACT 3","Bonespike Helmet",["MAG_Barbarian_BoneSpike_Helmet"],["https://bg3.wiki/wiki/Bonespike_Helmet"],[]],
+ ["ACT 3","Boots of Persistence",["MAG_EndGame_Metal_Boots"],["https://bg3.wiki/wiki/Boots_of_Persistence"],[]],
+ ["ACT 3","Caitiff Staff",["MAG_PHB_PactKeeper_Quarterstaff"],["https://bg3.wiki/wiki/Caitiff_Staff"],[]],
+ ["ACT 3","Cloak of Displacement",["MAG_PHB_CloakOfDisplacement_Cloak"],["https://bg3.wiki/wiki/Cloak_of_Displacement"],[]],
+ ["ACT 3","Cloak of the Weave",["MAG_EndGameCaster_Cape_A","MAG_EndGameCaster_Cloak"],["https://bg3.wiki/wiki/Cloak_of_the_Weave"],[]],
+ ["ACT 3","Cold Snap",["MAG_Frost_Offhand_Dagger"],["https://bg3.wiki/wiki/Cold_Snap"],[]],
+ ["ACT 3","Corvid Token",["MAG_LuckySeven_Amulet"],["https://bg3.wiki/wiki/Corvid_Token"],[]],
+ ["ACT 3","Craterflesh Gloves",["MAG_Critical_Force_Gloves"],["https://bg3.wiki/wiki/Craterflesh_Gloves"],[]],
+ ["ACT 3","Dark Displacement Gloves",["MAG_Zhentarim_Swap_Gloves"],["https://bg3.wiki/wiki/Dark_Displacement_Gloves"],[]],
+ ["ACT 3","Dolor Amarus",["MAG_Vicious_Dagger"],["https://bg3.wiki/wiki/Dolor_Amarus"],["Dolor Amarus (Murder Tribunal)"]],
+ ["ACT 3","Dostrealt's Piccolo",[],["https://bg3.wiki/wiki/Dostrealt%27s_Piccolo"],[]],
+ ["ACT 3","Dread Iron Dagger",["MAG_Zhentarim_SleeperDagger"],["https://bg3.wiki/wiki/Dread_Iron_Dagger"],[]],
+ ["ACT 3","Drunken Cloth",["MAG_Drunken_Cloth"],["https://bg3.wiki/wiki/Drunken_Cloth"],[]],
+ ["ACT 3","Dwarven Thrower",["MAG_PHB_DwarvenThrower_Warhammer"],["https://bg3.wiki/wiki/Dwarven_Thrower"],[]],
+ ["ACT 3","Elven Chain",["MAG_PHB_ElvenChain_Armor"],["https://bg3.wiki/wiki/Elven_Chain"],[]],
+ ["ACT 3","Falataeric Cli Lyre",[],["https://bg3.wiki/wiki/Falataeric_Cli_Lyre"],[]],
+ ["ACT 3","Flail of Ages",["MAG_BG_OfAges_Flail"],["https://bg3.wiki/wiki/Flail_of_Ages"],[]],
+ ["ACT 3","Fleshrender",["MAG_LC_Fleshrend_Shortsword"],["https://bg3.wiki/wiki/Fleshrender"],[]],
+ ["ACT 3","Garb of the Land and Sky",["MAG_Monk_Magic_Armor_1"],["https://bg3.wiki/wiki/Garb_of_the_Land_and_Sky"],[]],
+ ["ACT 3","Gauntlets of the Warmaster",["MAG_OfWarMaster_Gloves"],["https://bg3.wiki/wiki/Gauntlets_of_the_Warmaster"],[]],
+ ["ACT 3","Gemini Gloves",["MAG_Warlock_Twinned_Gloves"],["https://bg3.wiki/wiki/Gemini_Gloves"],[]],
+ ["ACT 3","Gibus of the Worshipful Servant",["MAG_Hat_Butler"],["https://bg3.wiki/wiki/Gibus_of_the_Worshipful_Servant"],[]],
+ ["ACT 3","Glimmergad's Selgaunt Fiddle",[],["https://bg3.wiki/wiki/Glimmergad%27s_Selgaunt_Fiddle"],[]],
+ ["ACT 3","Harmonic Dueller",["MAG_Harpers_Harmonizing_Rapier"],["https://bg3.wiki/wiki/Harmonic_Dueller"],[]],
+ ["ACT 3","Harper Sacredstriker",["MAG_Harpers_OfWeapons_Quarterstaff"],["https://bg3.wiki/wiki/Harper_Sacredstriker"],[]],
+ ["ACT 3","Hat of the Sharp Caster",["MAG_OfSharpCaster_Hat"],["https://bg3.wiki/wiki/Hat_of_the_Sharp_Caster"],[]],
+ ["ACT 3","Hellbeard Halberd",["MAG_Infernal_Hellbeard_Halberd"],["https://bg3.wiki/wiki/Hellbeard_Halberd"],[]],
+ ["ACT 3","Hellrider Longbow",["MAG_WYR_Hellrider_Longbow"],["https://bg3.wiki/wiki/Hellrider_Longbow"],[]],
+ ["ACT 3","Hood of the Weave",["MAG_EndGameCaster_Hood_A","MAG_EndGameCaster_Hood"],["https://bg3.wiki/wiki/Hood_of_the_Weave"],[]],
+ ["ACT 3","Horns of the Berserker",["MAG_Hat_Barbarian_Hide"],["https://bg3.wiki/wiki/Horns_of_the_Berserker"],[]],
+ ["ACT 3","Kiam Goda's Kilat Drum",[],["https://bg3.wiki/wiki/Kiam_Goda%27s_Kilat_Drum"],[]],
+ ["ACT 3","Legacy of the Masters",["MAG_BG_OfTheMasters_Legacy_Gauntlet"],["https://bg3.wiki/wiki/Legacy_of_the_Masters"],[]],
+ ["ACT 3","Mantle of the Holy Warrior",["MAG_Radiant_CrusaderMantle_Cloak"],["https://bg3.wiki/wiki/Mantle_of_the_Holy_Warrior"],[]],
+ ["ACT 3","Martial Exertion Gloves",["MAG_Martial_Exertion_Gloves"],["https://bg3.wiki/wiki/Martial_Exertion_Gloves"],[]],
+ ["ACT 3","Nimblefinger Gloves",["MAG_BG_Nimblefinger_Gloves"],["https://bg3.wiki/wiki/Nimblefinger_Gloves"],[]],
+ ["ACT 3","Nymph Cloak",["S_LOW_CountingHouse_Vault1_Nymph_Cloak","MAG_LC_Nymph_Cloak"],["https://bg3.wiki/wiki/Nymph_Cloak"],[]],
+ ["ACT 3","Quickspell Gloves",["MAG_Warlock_Quickened_Gloves"],["https://bg3.wiki/wiki/Quickspell_Gloves"],[]],
+ ["ACT 3","Ring Of Regeneration",[],["https://bg3.wiki/wiki/Ring_of_Regeneration","https://bg3.wiki/wiki/Ring_Of_Regeneration"],[]],
+ ["ACT 3","Robe of Supreme Defences",["MAG_OfArcanicDefense_Robe"],["https://bg3.wiki/wiki/Robe_of_Supreme_Defences"],[]],
+ ["ACT 3","Scabby Pugilist Circlet",["MAG_BarbMonk_Leather_Circlet"],["https://bg3.wiki/wiki/Scabby_Pugilist_Circlet"],[]],
+ ["ACT 3","Sethan",["MAG_SpiritualStand_Greataxe"],["https://bg3.wiki/wiki/Sethan"],[]],
+ ["ACT 3","Shade-Slayer Cloak",["MAG_Critical_HidingCritical_Cloak","MAG_Long_Critical_HidingCritical_Cloak"],["https://bg3.wiki/wiki/Shade-Slayer_Cloak"],[]],
+ ["ACT 3","Shapeshifter Hat",[],["https://bg3.wiki/wiki/Shapeshifter_Hat","https://baldursgate3.wiki.fextralife.com/Shapeshifter+Hat"],[]],
+ ["ACT 3","Slinging Shoes",["MAG_Projectile_Shoes"],["https://bg3.wiki/wiki/Slinging_Shoes"],[]],
+ ["ACT 3","Snow-Dusted Monastery Gloves",["MAG_Monk_Cold_Gloves"],["https://bg3.wiki/wiki/Snow-Dusted_Monastery_Gloves"],[]],
+ ["ACT 3","Spellseeking Gloves",["MAG_MM_Sorcery_SeekingSpell_Gloves"],["https://bg3.wiki/wiki/Spellseeking_Gloves"],[]],
+ ["ACT 3","Stalker Gloves",["MAG_Stalker_Gloves"],["https://bg3.wiki/wiki/Stalker_Gloves"],[]],
+ ["ACT 3","Stolyarof's Table Lute",[],["https://bg3.wiki/wiki/Stolyarof%27s_Table_Lute"],[]],
+ ["ACT 3","Swires' Sledboard",["MAG_Steadfast_Shield"],["https://bg3.wiki/wiki/Swires%27_Sledboard","https://bg3.wiki/wiki/Swires'_Sledboard"],[]],
+ ["ACT 3","The Dancing Breeze",["MAG_Finesse_Glaive"],["https://bg3.wiki/wiki/The_Dancing_Breeze"],[]],
+ ["ACT 3","The Dead Shot",["MAG_DeadShot_Longbow"],["https://bg3.wiki/wiki/The_Dead_Shot"],[]],
+ ["ACT 3","The Reviving Hands",["MAG_OfRevivify_Gloves"],["https://bg3.wiki/wiki/The_Reviving_Hands"],[]],
+ ["ACT 3","The Sacred Star",["MAG_RadiantLight_Morningstar"],["https://bg3.wiki/wiki/The_Sacred_Star"],[]],
+ ["ACT 3","Thunderpalm Strikers",["MAG_Monk_Thunder_Gloves"],["https://bg3.wiki/wiki/Thunderpalm_Strikers"],[]],
+ ["ACT 3","Unwanted Masterwork Scalemail",["UNI_ARM_ScaleMail_DevilsBlacksmith","MAG_DevilsBlackmith_ScaleMail"],["https://bg3.wiki/wiki/Unwanted_Masterwork_Scalemail"],[]],
+ ["ACT 3","Veil of the Morning",["MAG_WYRM_UndeadProtector_Robe"],["https://bg3.wiki/wiki/Veil_of_the_Morning"],[]],
+ ["ACT 3","Vest of Soul Rejuvenation",["MAG_BarbMonk_Cloth_A_2_Late","MAG_Monk_SoulRejunevation_Armor"],["https://bg3.wiki/wiki/Vest_of_Soul_Rejuvenation"],[]],
+ ["ACT 3","Vicious Battleaxe",["MAG_Vicious_Battleaxe"],["https://bg3.wiki/wiki/Vicious_Battleaxe"],[]],
+ ["ACT 3","Vicious Shortbow",["MAG_Vicious_Shortbow"],["https://bg3.wiki/wiki/Vicious_Shortbow"],[]]
+].map(row=>Object.freeze(row.map(value=>Array.isArray(value)?Object.freeze(value):value))));
+const reviewedVendorIds=new Set(),reviewedVendorPages=new Set(),reviewedVendorNames=new Set(),reviewedVendorLinks=new Set();
+function vendorItemPage(source){
+ if(source===undefined||source===null||source==='')return '';
+ if(typeof source!=='string')return null;
+ const match=source.trim().match(/^https:\/\/bg3\.wiki\/wiki\/([^?#]+)(?:[?#].*)?$/);
+ if(!match)return null;
+ try{return decodeURIComponent(match[1]).normalize('NFC').replace(/ /g,'_')}catch{return null}
+}
+for(const [act,name,ids,sources,aliases] of REVIEWED_VENDOR_DATA){
+ for(const id of ids)reviewedVendorIds.add(act+'|'+id);
+ for(const source of sources){const page=vendorItemPage(source);if(page)reviewedVendorPages.add(act+'|'+page);else reviewedVendorLinks.add(act+'|'+source)}
+ for(const alias of [name,...aliases])reviewedVendorNames.add(key({act,name:alias}));
+}
+function reviewedVendor(x){
+ if(!/^ACT [123]$/.test(x.act))return false;
+ if(x.gameIds!==undefined&&(!Array.isArray(x.gameIds)||x.gameIds.some(id=>typeof id!=='string'||!id)))return false;
+ // A supplied strong identity is decisive: never downgrade an unknown ID to a name.
+ if(Array.isArray(x.gameIds)&&x.gameIds.length)return x.gameIds.some(id=>typeof id==='string'&&reviewedVendorIds.has(x.act+'|'+id));
+ const page=vendorItemPage(x.source);
+ if(page===null)return typeof x.source==='string'&&reviewedVendorLinks.has(x.act+'|'+x.source);
+ const genericPage='List_of_magic_items_in_Act_'+{'ACT 1':'One','ACT 2':'Two','ACT 3':'Three'}[x.act];
+ if(page&&page!==genericPage)return reviewedVendorPages.has(x.act+'|'+page);
+ // Embedded fallback rows have only Act-list links; aliases are explicitly reviewed.
+ return reviewedVendorNames.has(key(x));
+}
+function acquisitionFor(x){
+ const isVendor=reviewedVendor(x),isQuest=/quest reward|reward|given by/i.test(x.location||'');
+ // These flags remain independent: released behavior allows Vendor + Quest/reward.
+ return Object.freeze({vendor:isVendor,quest:isQuest,loot:!isVendor&&!isQuest});
+}
+const vendor=x=>acquisitionFor(x).vendor;
+const quest=x=>acquisitionFor(x).quest;
 const rarityRank={"Legendary":5,"Very Rare":4,"Rare":3,"Uncommon":2,"Common":1};
 function tierOf(x){return TIERMAP[x.name]||""}
 function normalizeArea(value){return clean(value).normalize("NFC").replace(/[‘’]/g,"'")}
@@ -243,7 +464,7 @@ function catalogArea(x){
  return "";
 }
 function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:catalogArea(x),location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:x.gameIds||[]}}
-function normalizeFallback(x){return {act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:normalizeArea(x.area),location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]}}
+function normalizeFallback(x){const item={act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:normalizeArea(x.area),location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]};return {...item,acquisition:acquisitionFor(item)}}
 
 // Reviewed geographic aliases only: never infer geography from acquisition prose.
 // Unknown/sensitive regions remain absent; catalogue values themselves stay intact.
@@ -1311,7 +1532,7 @@ async function handleSession(session,event="INITIAL",generation=authGeneration,{
 /* v7.6.1: duplicate v6 runtime progress engine removed; Story records are sole runtime source of truth. */
 
 function done(x){return ownItem(progress,key(x))==="found"}
-function setDB(arr,complete=false){ITEMS=arr.map(x=>({...x,area:catalogArea(x)}));embeddedComplete=complete;populate();render();updateNotice()}
+function setDB(arr,complete=false){ITEMS=arr.map(x=>({...x,area:catalogArea(x),acquisition:acquisitionFor(x)}));embeddedComplete=complete;populate();render();updateNotice()}
 function updateNotice(){
  const n=$("notice");
  if(ITEMS.length>=550){n.className="notice good";n.innerHTML=`<b>✓ Full catalog loaded:</b> ${ITEMS.length} entries. Gloves of Heroism, Spellthief and Dragon's Grasp are included. ${storageFailures.has("write:"+DBKEY)?"The catalog exists only in memory · local cache could not be saved.":"The database is cached locally."}`}
@@ -1382,7 +1603,7 @@ function view(){
  const mode=syncSpoilerFilters();
  const q=$("q").value.toLowerCase().trim(),a=$("area").value,t=$("type").value,r=$("rarity").value,ti=$("tier").value,src=mode==="full"?$("source").value:"",s=$("state").value,sort=$("sort").value;
  const areaFor=x=>mode==="full"?x.area:mode==="light"?broadAreaFor(x):"";
- let list=ITEMS.filter(x=>{if(act&&x.act!==act)return false;const tx=tierOf(x);const fields=mode==="full"?[x.name,x.rarity,tx,x.type,x.area,x.location,x.properties,x.description]:[x.name,x.rarity,tx,x.type,x.act,mode==="light"?broadAreaFor(x):""];const blob=fields.join(" ").toLowerCase();if(q&&!blob.includes(q))return false;if(a&&areaFor(x)!==a)return false;if(t&&x.type!==t)return false;if(r&&x.rarity!==r)return false;if(ti==="none"&&tx)return false;if(ti&&ti!=="none"&&tx!==ti)return false;if(src==="vendor"&&!vendor(x))return false;if(src==="quest"&&!quest(x))return false;if(src==="loot"&&(vendor(x)||quest(x)))return false;if(s==="done"&&!done(x))return false;if(s==="todo"&&done(x))return false;return true});
+ let list=ITEMS.filter(x=>{if(act&&x.act!==act)return false;const tx=tierOf(x);const fields=mode==="full"?[x.name,x.rarity,tx,x.type,x.area,x.location,x.properties,x.description]:[x.name,x.rarity,tx,x.type,x.act,mode==="light"?broadAreaFor(x):""];const blob=fields.join(" ").toLowerCase();if(q&&!blob.includes(q))return false;if(a&&areaFor(x)!==a)return false;if(t&&x.type!==t)return false;if(r&&x.rarity!==r)return false;if(ti==="none"&&tx)return false;if(ti&&ti!=="none"&&tx!==ti)return false;if(src==="vendor"&&!vendor(x))return false;if(src==="quest"&&!quest(x))return false;if(src==="loot"&&!acquisitionFor(x).loot)return false;if(s==="done"&&!done(x))return false;if(s==="todo"&&done(x))return false;return true});
  list.sort((x,y)=>sort==="name"?x.name.localeCompare(y.name):sort==="rarity"?((rarityRank[y.rarity]||0)-(rarityRank[x.rarity]||0)||x.name.localeCompare(y.name)):sort==="type"?x.type.localeCompare(y.type)||x.name.localeCompare(y.name):areaFor(x).localeCompare(areaFor(y))||x.name.localeCompare(y.name));
  return list;
 }

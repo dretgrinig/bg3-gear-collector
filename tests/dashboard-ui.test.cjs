@@ -177,7 +177,7 @@ test('progress scope label follows Act while counters retain the existing Act-wi
 
 test('reorganized filters still compose, update Area on Act switch and produce the same empty state', () => {
   const h = harness(); h.app.mark('Armour of Devotion'); h.act('ACT 2');
-  h.filter('area', 'Last Light Inn'); h.filter('q', 'devotion'); h.filter('type', 'Heavy Armour'); h.filter('rarity', 'Rare'); h.filter('tier', 'A'); h.filter('source', 'loot'); h.filter('state', 'done');
+  h.filter('area', 'Last Light Inn'); h.filter('q', 'devotion'); h.filter('type', 'Heavy Armour'); h.filter('rarity', 'Rare'); h.filter('tier', 'A'); h.filter('source', 'vendor'); h.filter('state', 'done');
   assert.deepEqual(h.names(), ['Armour of Devotion']); assert.equal(h.get('body').children.length, 1); assert.equal(h.get('cards').children.length, 1);
   h.filter('q', 'no-such-item'); assert.deepEqual(h.names(), []); assert.equal(h.get('empty').hidden, false);
   assert.equal(h.get('body').children.length, 0); assert.equal(h.get('cards').children.length, 0);

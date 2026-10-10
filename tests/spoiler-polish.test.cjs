@@ -187,7 +187,7 @@ for(const surfaceName of ['rows','cards']) {
     assert.equal(required(surface,'.item-acquisition').textContent,text);
     assert.equal(surface.querySelectorAll('script').length,0);
     assert.equal(occurrences(surface.textContent,text),1);
-    assert.deepEqual(JSON.parse(JSON.stringify(h.app.items()[0])),item);
+    assert.deepEqual(JSON.parse(JSON.stringify(h.app.items()[0])),{...item,acquisition:{vendor:true,quest:false,loot:false}});
   });
 }
 
@@ -255,7 +255,7 @@ test('runtime counts, filter options and labels stay English through mode and Ac
 });
 
 test('Full supplementary layout leaves search, filter, sort and progress denominator unchanged',()=>{
-  const armour=fixture(),pike=fixture('Returning Pike',{act:'ACT 1',area:'Goblin Camp',rarity:'Uncommon',type:'Weapon',location:'Sold by merchant Grat'}),loot=fixture('Alpha gear',{area:'House of Healing',rarity:'Very Rare',type:'Weapon',location:'Looted from a chest'});
+  const armour=fixture(),pike=fixture('Returning Pike',{act:'ACT 1',area:'Goblin Camp',rarity:'Uncommon',type:'Weapon',location:'Sold by merchant Grat',source:'https://bg3.wiki/wiki/Returning_Pike'}),loot=fixture('Alpha gear',{area:'House of Healing',rarity:'Very Rare',type:'Weapon',location:'Looted from a chest',source:'https://bg3.wiki/wiki/Alpha_gear'});
   const h=harness([armour,pike,loot],{statuses:{[itemKey(armour)]:'found',[itemKey(loot)]:'skipped'}});
   assert.deepEqual(h.names(),['Returning Pike','Alpha gear','Armour of Devotion']);
   for(const term of ['Talli','PROPERTY_SENTINEL','EFFECT_SENTINEL','Last Light Inn']){h.search(term);assert.ok(h.names().includes(armour.name));}
@@ -285,8 +285,8 @@ test('Minimal and Light continue withholding exact searches and suspending Full 
 test('English UI does not translate Swedish catalogue or user-supplied content',()=>{
   const item=fixture('Hittad svensk hjälm',{act:'ACT 1',area:'Område från min katalog',location:'Hittad nära köpmannen; välj den blå kistan.',properties:'Egenskaper: styrka +2',description:'Effekt: skyddar bäraren.'}),h=harness([item]);
   for(const surface of surfaces(h))for(const field of ['name','area','location','properties','description'])assert.ok(surface.textContent.includes(item[field]),`${field} data was rewritten`);
-  assert.deepEqual(JSON.parse(JSON.stringify(h.app.items()[0])),item);
-  for(const mode of ['minimal','light','full']){h.mode(mode);assert.deepEqual(JSON.parse(JSON.stringify(h.app.items()[0])),item);}
+  assert.deepEqual(JSON.parse(JSON.stringify(h.app.items()[0])),{...item,acquisition:{vendor:false,quest:false,loot:true}});
+  for(const mode of ['minimal','light','full']){h.mode(mode);assert.deepEqual(JSON.parse(JSON.stringify(h.app.items()[0])),{...item,acquisition:{vendor:false,quest:false,loot:true}});}
   const remote=h.app.normalizeRemote({...item,actArea:item.area,links:{Name:item.source}});
   for(const field of ['name','area','location','properties','description'])assert.equal(remote[field],item[field]);
   const fallback=h.app.normalizeFallback({act:'Act 1',item:item.name,type:item.type,area:item.area,subarea:'Svensk undervåning',where:item.location,note:item.description,source:item.source});

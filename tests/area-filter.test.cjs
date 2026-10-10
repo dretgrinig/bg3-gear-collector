@@ -199,7 +199,8 @@ test('Act + Area combine with search, rarity, tier, type, source and status in b
   assert.equal(h.get('empty').hidden, true);
   h.filter('state', 'todo'); assert.deepEqual(h.names(), []); assert.equal(h.get('empty').hidden, false);
   h.get('clear').click(); h.filter('area', 'Last Light Inn'); h.filter('source', 'quest'); assert.deepEqual(h.names(), ['Reward']);
-  h.filter('source', 'loot'); assert.deepEqual(h.names(), ['Acrobat Shoes', 'Loot']);
+  h.filter('source', 'loot'); assert.deepEqual(h.names(), ['Loot']);
+  h.filter('source', 'vendor'); assert.deepEqual(h.names(), ['Acrobat Shoes', 'Armour of Devotion']);
 });
 
 test('Act 3 catalog Area combines with rarity, tier and status; no results clears both desktop rows and mobile cards', () => {
