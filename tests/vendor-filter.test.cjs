@@ -6,6 +6,10 @@ const vm = require('node:vm');
 const {harness: storyHarness} = require('./helpers/app-harness.cjs');
 const html = readFileSync(process.env.BG3_TEST_HTML || join(__dirname,'..','index.html'),'utf8');
 const catalogue = JSON.parse(readFileSync(join(__dirname,'fixtures','vendor-catalogue.json')));
+// Display expectations exclude only the reviewed encoded-URL Battlemage row.
+// Keep the raw 556-row fixture and every other membership assertion unchanged.
+const duplicateSource = 'https://bg3.wiki/wiki/Gloves_of_Battlemage%27s_Power';
+const uniqueCatalogue = catalogue.filter(row => !(row.act === 'ACT 2' && row.name === "Gloves of Battlemage's Power" && row.links?.Name === duplicateSource));
 const expected = JSON.parse(readFileSync(join(__dirname,'fixtures','vendor-membership.json')));
 const fallback = JSON.parse(html.split('\n').find(line=>line.startsWith('const FALLBACK=')).slice('const FALLBACK='.length,-1));
 
@@ -16,7 +20,7 @@ function boundary(file,marker,extras='') {
   let source=readFileSync(join(__dirname,file),'utf8').split(marker)[0];
   if(extras)source=source.replace('items:()=>ITEMS','items:()=>ITEMS,'+extras);
   const module={exports:{}};
-  vm.runInNewContext(source+'\nmodule.exports=harness;', {require,__dirname,module,process});
+  vm.runInNewContext(source+'\nmodule.exports=harness;', {require,__dirname,module,process,URL});
   return module.exports;
 }
 const itemHarness=boundary('spoiler-ui.test.cjs','const required =','ingest:setDB,normalizeFallback,vendor,quest,key');
@@ -44,14 +48,14 @@ for(const act of ['ACT 1','ACT 2','ACT 3']) {
   test(`real ${act} corrected Vendors leave Loot while genuine Loot/Quest membership is preserved`,()=>{
     const h=itemHarness(catalogue);h.act(act);h.filter('source','loot');
     assert.ok(!h.names().some(name=>expected[act].includes(name)));
-    const normalized=oldCache().filter(x=>x.act===act);
+    const normalized=oldCache().filter(x=>x.act===act&&!(x.name==="Gloves of Battlemage's Power"&&x.source===duplicateSource));
     assert.deepEqual(names(h),normalized.filter(x=>!expected[act].includes(x.name)&&!/quest reward|reward|given by/i.test(x.location)).map(x=>x.name).sort());
     h.filter('source','quest');assert.deepEqual(names(h),normalized.filter(x=>/quest reward|reward|given by/i.test(x.location)).map(x=>x.name).sort());
   });
   for(const mode of ['minimal','light'])test(`real ${act} ${mode} suspends/restores Vendor without disclosure through filter UI or counts`,()=>{
     const h=itemHarness(catalogue);h.act(act);h.filter('source','vendor');h.mode(mode);
     assert.equal(h.get('source').value,'');assert.equal(h.get('source').disabled,true);
-    assert.deepEqual(Array.from(h.get('source').options,x=>x.value),['']);assert.equal(h.names().length,catalogue.filter(x=>x.act===act).length);
+    assert.deepEqual(Array.from(h.get('source').options,x=>x.value),['']);assert.equal(h.names().length,uniqueCatalogue.filter(x=>x.act===act).length);
     assert.equal(h.get('secondaryFilterCount').textContent,'None active');assert.ok(!/vendor|talli|dammon|roah|rolan|ferg/i.test(h.get('spoilerFilterNotice').textContent));
     for(const surface of [...h.rows(),...h.cards()]) {assert.equal(surface.querySelectorAll('.vendor').filter(x=>!inDetails(x)).length,0);assert.ok(!/sold by|purchased from/i.test(inlineText(surface)));}
     h.mode('full');assert.equal(h.get('source').value,'vendor');assert.equal(h.get('source').disabled,false);assert.deepEqual(names(h),expected[act]);
@@ -118,7 +122,9 @@ test('prototype-sensitive item names remain ordinary own progress keys in all so
 test('ingestion preserves catalogue text, key identity, input objects and progress-map references',()=>{
   const input=oldCache(),before=JSON.stringify(input),item=row('ACT 2','Armour of Devotion'),h=itemHarness(input,{cached:true,statuses:{[key(item)]:'found'}}),progress=h.app.progress(),saved=JSON.stringify(progress);
   h.app.ingest(input,true);assert.equal(JSON.stringify(input),before);assert.equal(h.app.progress(),progress);assert.equal(JSON.stringify(progress),saved);
-  for(let i=0;i<input.length;i++) {const value=h.app.items()[i];assert.equal(h.app.key(value),key(input[i]));for(const field of ['name','location','description','properties','source'])assert.equal(value[field],input[i][field]);assert.notEqual(value,input[i]);}
+  const retained=input.filter(x=>!(x.act==='ACT 2'&&x.name==="Gloves of Battlemage's Power"&&x.source===duplicateSource));
+  assert.equal(h.app.items().length,retained.length,'Only the reviewed duplicate display row is removed');
+  for(let i=0;i<retained.length;i++) {const value=h.app.items()[i];assert.equal(h.app.key(value),key(retained[i]));for(const field of ['name','location','description','properties','source'])assert.equal(value[field],retained[i][field]);assert.notEqual(value,retained[i]);}
 });
 test('classification-only ingestion performs no storage/cloud work or Story record-map replacement',()=>{
   const h=storyHarness(),before=h.app.state(),calls=h.storageCalls.length,reads=h.reads.length,writes=h.writes.length;

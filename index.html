@@ -154,7 +154,7 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
   <div class=tools-content>
    <div class=actions>
     <button id=import>Import & merge</button><button id=replaceImport>Replace progress</button><button id=reset>Reset progress</button>
-    <button id=refresh class=primary>↻ Fetch/verify 556-item catalog</button><button id=saveOffline class=offline>⬇ Save complete offline copy</button>
+    <button id=refresh class=primary>↻ Fetch/verify full catalog</button><button id=saveOffline class=offline>⬇ Save complete offline copy</button>
     <input id=file type=file accept=.json hidden>
    </div>
    <details class=technical-details>
@@ -463,8 +463,44 @@ function catalogArea(x){
  }
  return "";
 }
-function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:catalogArea(x),location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:x.gameIds||[]}}
+function normalizeRemote(x){return {act:x.act,name:x.name,rarity:x.rarity||"",type:x.type||"",area:catalogArea(x),location:clean(x.location),properties:x.properties||"",description:x.description||"",source:(x.links&&x.links.Name)||"",gameIds:Object.hasOwn(x,"gameIds")?(x.gameIds===undefined?null:x.gameIds):[]}}
 function normalizeFallback(x){const item={act:(x.act||"").toUpperCase(),name:x.item||"",rarity:"",type:x.type||"",area:normalizeArea(x.area),location:[x.subarea,x.where,x.coords,x.method].filter(Boolean).join(" · "),properties:"",description:x.note||"",source:x.source||"",gameIds:[]};return {...item,acquisition:acquisitionFor(item)}}
+
+// Reviewed display-only duplicate: no name-only, ID-only or free-text merging.
+const BATTLEMAGE_DUPLICATE=Object.freeze({
+ act:"ACT 2",name:"Gloves of Battlemage's Power",id:"MAG_Gish_ArcaneAcuity_Gloves",
+ source:"https://bg3.wiki/wiki/Gloves_of_Battlemage's_Power",
+ descriptions:Object.freeze([
+  "When you inflict a condition with your weapon attacks, gain Arcane Acuity.\nStrength Saving Throws +1",
+  "When you inflict a condition with a weapon attack, gain Arcane Acuity.\nStrength Saving Throws + 1"
+ ])
+});
+function catalogWikiIdentity(source){
+ if(typeof source!=="string"||!/^https:\/\/bg3\.wiki\/wiki\/[^?#\s]+$/.test(source))return null;
+ return source.replace(/%27/gi,"'");
+}
+function catalogDuplicateIdentity(x){
+ const reviewed=BATTLEMAGE_DUPLICATE;
+ if(!x||x.act!==reviewed.act||x.name!==reviewed.name||key(x)!==key(reviewed))return null;
+ if(!Array.isArray(x.gameIds)||x.gameIds.length!==1||x.gameIds[0]!==reviewed.id)return null;
+ if(catalogWikiIdentity(x.source)!==reviewed.source||!reviewed.descriptions.includes(x.description))return null;
+ const fields=[x.name,x.rarity,x.type,catalogArea(x),x.location,x.properties];
+ if(fields.some(value=>typeof value!=="string"))return null;
+ return JSON.stringify([x.act,key(x),reviewed.id,reviewed.source,...fields]);
+}
+function deduplicateCatalog(rows){
+ const result=[],positions=new Map(),reviewed=BATTLEMAGE_DUPLICATE;
+ const rank=x=>(x.source===reviewed.source?0:2)+reviewed.descriptions.indexOf(x.description);
+ for(const row of rows){
+  const identity=catalogDuplicateIdentity(row);
+  if(identity===null){result.push(row);continue}
+  if(!positions.has(identity)){positions.set(identity,result.length);result.push(row);continue}
+  const position=positions.get(identity);
+  // Prefer the literal-apostrophe original regardless of arrival/cache order.
+  if(rank(row)<rank(result[position]))result[position]=row;
+ }
+ return result;
+}
 
 // Reviewed geographic aliases only: never infer geography from acquisition prose.
 // Unknown/sensitive regions remain absent; catalogue values themselves stay intact.
@@ -1532,11 +1568,11 @@ async function handleSession(session,event="INITIAL",generation=authGeneration,{
 /* v7.6.1: duplicate v6 runtime progress engine removed; Story records are sole runtime source of truth. */
 
 function done(x){return ownItem(progress,key(x))==="found"}
-function setDB(arr,complete=false){ITEMS=arr.map(x=>({...x,area:catalogArea(x),acquisition:acquisitionFor(x)}));embeddedComplete=complete;populate();render();updateNotice()}
+function setDB(arr,complete=false){ITEMS=deduplicateCatalog(arr).map(x=>({...x,area:catalogArea(x),acquisition:acquisitionFor(x)}));embeddedComplete=complete;populate();render();updateNotice()}
 function updateNotice(){
  const n=$("notice");
- if(ITEMS.length>=550){n.className="notice good";n.innerHTML=`<b>✓ Full catalog loaded:</b> ${ITEMS.length} entries. Gloves of Heroism, Spellthief and Dragon's Grasp are included. ${storageFailures.has("write:"+DBKEY)?"The catalog exists only in memory · local cache could not be saved.":"The database is cached locally."}`}
- else{n.className="notice warn";n.innerHTML=`<b>Fallback mode:</b> ${ITEMS.length} entries. Click “Fetch/verify 556-item catalog” while online for the full, cross-checked catalog.`}
+ if(ITEMS.length>=550){n.className="notice good";n.innerHTML=`<b>✓ Full catalog loaded:</b> ${ITEMS.length} unique items. Gloves of Heroism, Spellthief and Dragon's Grasp are included. ${storageFailures.has("write:"+DBKEY)?"The catalog exists only in memory · local cache could not be saved.":"The database is cached locally."}`}
+ else{n.className="notice warn";n.innerHTML=`<b>Fallback mode:</b> ${ITEMS.length} items. Click “Fetch/verify full catalog” while online for the full, cross-checked catalog.`}
 }
 function validItemCache(value){return Array.isArray(value)&&value.length>=550&&value.every(x=>objectMap(x)&&typeof x.name==="string"&&x.name&&/^ACT [123]$/.test(x.act))}
 async function loadRemote(force=false){
@@ -1550,7 +1586,7 @@ async function loadRemote(force=false){
   const full=raw.map(normalizeRemote).filter(x=>x.name && /^ACT [123]$/.test(x.act));
   if(full.length<550)throw new Error("only "+full.length+" entries");
   const saved=storageWrite(DBKEY,full,{json:true});setDB(full,true);
-  $("status").textContent=saved.state==="ok"?`✓ ${full.length} entries verified and saved locally.`:`✓ ${full.length} entries verified · catalog exists only in memory.`;
+  $("status").textContent=saved.state==="ok"?`✓ Loaded ${ITEMS.length} unique items from ${full.length} source rows · saved locally.`:`✓ Loaded ${ITEMS.length} unique items from ${full.length} source rows · catalog exists only in memory.`;
  }catch(err){
   console.error(err);
   if(cached.state==="ok"){setDB(cached.value,true);$("status").textContent="Network check failed; complete local cache is being used."}
@@ -1586,9 +1622,9 @@ function syncSpoilerFilters(){
   spoilerFilterMode=mode;
  }
  $("q").placeholder=mode==="full"?"Item, area, vendor, effect…":mode==="light"?"Item, type, rarity, tier, Act or broad region…":"Item, type, rarity, tier or Act…";
- const suspended=mode!=="full"&&(!!fullSpoilerFilters.area||!!fullSpoilerFilters.source||fullSpoilerFilters.sort==="area");
+ const suspended=mode!=="full"&&(!!fullSpoilerFilters.area||!!fullSpoilerFilters.source);
  $("spoilerFilterNotice").hidden=!suspended;
- $("spoilerFilterNotice").textContent=suspended?"Precise Area/source selections and geography sorting are suspended · restored in Full details":"";
+ $("spoilerFilterNotice").textContent=suspended?"Precise Area/source selections are suspended · restored in Full details":"";
  return mode;
 }
 function populate(){
@@ -1632,6 +1668,11 @@ function initItemPresentation(){
  update();new window.ResizeObserver(update).observe(strip);
 }
 
+function validItemReference(source){
+ if(typeof source!=="string"||!source.trim())return false;
+ try{const url=new URL(source);return (url.protocol==="https:"||url.protocol==="http:")&&!!url.hostname}catch{return false}
+}
+
 function render(presentationOnly=false){
  const mode=syncSpoilerFilters(),full=mode==="full";
  const list=view(),b=$("body"),cards=$("cards");b.innerHTML="";cards.innerHTML="";$("empty").hidden=!!list.length;
@@ -1647,15 +1688,16 @@ function render(presentationOnly=false){
   const loc=x.location||"No location specified";
   const duplicateLocation=!!x.area&&!!x.location&&x.area.trim()===x.location.trim();
   const fullPlace=`<div class=item-place-heading><span class=item-area>${esc(x.area||"Area not specified")}</span>${flags?`<div class=item-flags>${flags}</div>`:""}</div>${x.location&&!duplicateLocation?`<span class=item-acquisition>${esc(x.location)}</span>`:""}`;
-  const fullReference=x.source?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener aria-label="Open bg3.wiki reference for ${esc(x.name)}">bg3.wiki ↗</a>`:"";
+  const fullReference=validItemReference(x.source)?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener aria-label="Open bg3.wiki reference for ${esc(x.name)}">bg3.wiki ↗</a>`:"";
   const reference=x.source?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener>External reference · may contain spoilers ↗</a>`:"";
-  const mechanics=`${x.properties?`<div class=detailrow><span class=label>Properties</span>${esc(x.properties)}</div>`:""}${x.description?`<div class=detailrow><span class=label>Effect</span>${esc(x.description)}</div>`:""}`;
+  const hasProperties=!!String(x.properties||"").trim(),hasEffects=!!String(x.description||"").trim();
+  const mechanics=`${hasProperties?`<div class=detailrow><span class=label>Properties</span>${esc(x.properties)}</div>`:""}${hasEffects?`<div class=detailrow><span class=label>Effect</span>${esc(x.description)}</div>`:""}`;
   const fullDetails=`<div class=detailgrid>${mechanics}${fullReference?`<div class=detailrow>${fullReference}</div>`:""}</div>`;
   const broad=mode==="light"?broadAreaFor(x):"";
   const place=full?fullPlace:broad?`<div class=item-place-heading><span class=item-area>${esc(broad)}</span></div>`:'<span class=muted>Location in details</span>';
   const details=full?fullDetails:`<div class=detailgrid>${x.area?`<div class=detailrow><span class=label>Original Area</span><div>${esc(x.area)}</div></div>`:""}<div class=detailrow><span class=label>Location / acquisition</span><div class=item-detail-location>${esc(loc)}</div></div>${flags?`<div class=detailrow><span class=label>Acquisition context</span><div>${flags}</div></div>`:""}${mechanics}${reference?`<div class=detailrow>${reference}</div>`:'<div class="detailrow muted">No source specified</div>'}</div>`;
   const detailSummary=full?"More info":"Show details · contains spoilers";
-  const showDisclosure=!full||!!(x.properties||x.description||x.source);
+  const showDisclosure=!full||hasProperties||hasEffects||!!fullReference;
   const desktopDisclosure=showDisclosure?`<details class=item-details><summary>${detailSummary}</summary>${details}</details>`:"";
   const mobileDisclosure=showDisclosure?`<div class=cardfooter><details class=carddetails><summary>${detailSummary}</summary>${details}</details></div>`:"";
 
@@ -1675,7 +1717,8 @@ function render(presentationOnly=false){
  renderDashboardShell();
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");act=b.dataset.act;populate();render()});
-["q","area","type","rarity","tier","source","state","sort"].forEach(id=>{$(id).oninput=$(id).onchange=event=>{if(id==="sort")spoilerSortFallback=false;render()}});
+$("q").oninput=()=>render();
+["area","type","rarity","tier","source","state","sort"].forEach(id=>{$(id).oninput=$(id).onchange=event=>{if(id==="sort")spoilerSortFallback=false;render()}});
 $("clear").onclick=()=>{fullSpoilerFilters={area:"",source:"",sort:"area"};lightSpoilerArea="";$("q").value="";$("area").value="";$("type").value="";$("rarity").value="";$("tier").value="";$("source").value="";$("state").value="";$("sort").value=spoilerMode()==="minimal"?"name":"area";spoilerSortFallback=spoilerMode()==="minimal";render()};
 $("onlyS").onclick=()=>{$("tier").value="S";render()};
 $("refresh").onclick=()=>loadRemote(true);
@@ -1746,7 +1789,7 @@ $("file").onchange=async e=>{
  finally{if(staged&&isCurrent())e.target.value=""}
 };
 $("saveOffline").onclick=()=>{
- if(ITEMS.length<550){alert("Load the complete 556-item catalog first.");return}
+ if(ITEMS.length<550){alert("Load the complete catalog first.");return}
  const data=JSON.stringify(ITEMS).replace(/</g,"\\u003c");
  let source=document.documentElement.outerHTML;
  source=source.replace(/const FALLBACK=.*?;\nconst REMOTE=/s,`const FALLBACK=${data};\nconst REMOTE=`);

@@ -80,7 +80,7 @@ function harness({ cached, remote = catalog, fetchError = null } = {}) {
   const context = vm.createContext({
     spoilerMode:()=>"full", renderSpoilerControl(){},
     document: { getElementById: get, createElement: tag => element(tag), querySelectorAll: selector => selector === '.tab' ? tabs : [] },
-    Option: option, console: { error: error => errors.push(error) }, canEditProgress: () => true, renderBackendState() {}, toggleFound() {},
+    URL, Option: option, console: { error: error => errors.push(error) }, canEditProgress: () => true, renderBackendState() {}, toggleFound() {},
     storageFailures: new Map(), REMOTE: 'isolated-catalog', DBKEY: 'isolated-cache', FALLBACK: fallbackCatalog,
     fetch: async (url, options) => {
       fetches.push({ url, options });
@@ -117,7 +117,7 @@ function harness({ cached, remote = catalog, fetchError = null } = {}) {
   return {
     app, get, tabs, fetches, cacheReads, cacheWrites, errors,
     act(value) { tabs.find(tab => tab.dataset.act === value).click(); },
-    filter(id, value) { get(id).value = value; assert.equal(get(id).value, value, `Unavailable ${id} option: ${value}`); get(id).onchange(); },
+    filter(id, value) { get(id).value = value; assert.equal(get(id).value, value, `Unavailable ${id} option: ${value}`); (id==='q'?get(id).oninput:get(id).onchange)(); },
     areas() { return get('area').options.map(o => o.value).filter(Boolean); },
     names() { return Array.from(app.view(), x => x.name); }
   };
