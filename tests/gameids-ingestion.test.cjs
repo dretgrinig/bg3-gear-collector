@@ -6,6 +6,10 @@ const vm = require('node:vm');
 
 const html = readFileSync(process.env.BG3_TEST_HTML || join(__dirname, '..', 'index.html'), 'utf8');
 const catalogue = JSON.parse(readFileSync(join(__dirname, 'fixtures', 'vendor-catalogue.json')));
+// Display expectations exclude only the reviewed encoded-URL Battlemage row.
+// Keep the raw 556-row fixture and every other membership assertion unchanged.
+const duplicateSource = 'https://bg3.wiki/wiki/Gloves_of_Battlemage%27s_Power';
+const uniqueCatalogue = catalogue.filter(row => !(row.act === 'ACT 2' && row.name === "Gloves of Battlemage's Power" && row.links?.Name === duplicateSource));
 const expectedVendor = JSON.parse(readFileSync(join(__dirname, 'fixtures', 'vendor-membership.json')));
 const fallback = JSON.parse(html.split('\n').find(line => line.startsWith('const FALLBACK=')).slice('const FALLBACK='.length, -1));
 
@@ -87,7 +91,7 @@ for (const [label, identity] of malformedFalsy) {
     const saved = JSON.parse(JSON.stringify(online.cacheWrites[0].value));
     const item = saved.find(row => row.name === vendorRow.name && row.act === vendorRow.act);
     assert.equal(JSON.stringify(item.gameIds), JSON.stringify(identity), 'Cache serialization must retain the supplied invalidity');
-    assert.equal(online.app.items().length, catalogue.length, 'Do not reject the catalogue or drop malformed rows');
+    assert.equal(online.app.items().length, uniqueCatalogue.length, 'Only the reviewed duplicate display row is removed; malformed rows remain');
     const offline = loadHarness({cached:saved, fetchError:Error('Mock offline')});
     await offline.app.load(true);
     assert.equal(offline.fetches.length, 1);
@@ -127,7 +131,7 @@ for (const act of ['ACT 1', 'ACT 2', 'ACT 3']) {
     assert.deepEqual(names(h), expectedVendor[act]);
     assert.equal(names(h).length, {'ACT 1':63, 'ACT 2':50, 'ACT 3':67}[act]);
     const questNames = catalogue.filter(row => row.act === act && /quest reward|reward|given by/i.test(row.location || '')).map(row => row.name).sort();
-    const lootNames = catalogue.filter(row => row.act === act && !expectedVendor[act].includes(row.name) && !/quest reward|reward|given by/i.test(row.location || '')).map(row => row.name).sort();
+    const lootNames = uniqueCatalogue.filter(row => row.act === act && !expectedVendor[act].includes(row.name) && !/quest reward|reward|given by/i.test(row.location || '')).map(row => row.name).sort();
     h.filter('source', 'quest'); assert.deepEqual(names(h), questNames);
     h.filter('source', 'loot'); assert.deepEqual(names(h), lootNames);
     assert.equal(JSON.stringify(catalogue), original);
