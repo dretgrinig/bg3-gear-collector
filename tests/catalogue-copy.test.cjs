@@ -32,7 +32,7 @@ function harness(options = {}, source = html) {
     static revokeObjectURL(url) { h.revoked.push(url); }
   };
   h.context.setTimeout = callback => callback();
-  h.context.document.documentElement = { outerHTML: source };
+  h.context.document.documentElement = { outerHTML: source, cloneNode: () => ({ outerHTML: source, querySelector: () => null }) };
   const start = source.indexOf('$("saveOffline").onclick=()=>{');
   const end = source.indexOf('// --- Stories / auth controls ---', start);
   assert.ok(start >= 0 && end > start, 'The actual offline export handler must exist');

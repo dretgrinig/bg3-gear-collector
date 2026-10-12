@@ -1,6 +1,6 @@
 # Acquisition enrichment — Phase 1
 
-This is an isolated metadata draft for v0.8.7-era catalogue identities. It adds no tracker integration. `index.html` does not load the module or dataset: Full/Light/Minimal, acquisition classifiers, catalogue caching, offline exports and progress remain unchanged.
+Phase 1 introduced an isolated metadata draft for v0.8.7-era catalogue identities. The validator, resolver and pilot data remain independent of tracker state. The separately approved [Phase 2 presentation integration](acquisition-ui.md) now bundles them for Full-mode disclosures; it does not change identity, classifiers, catalogue caches or progress.
 
 ## Files and API
 
@@ -94,6 +94,6 @@ Run the complete app suite with the existing Node runtime:
 node --test tests/*.test.cjs
 ```
 
-The new tests validate synthetic contracts independently of the pilot, match all ten pilot entries through the real current normalizers, preserve all 555 distinct progress keys, and exercise existing v5/v6 import/export handlers and Story isolation using mocks. Expected catalogue remains **556 source rows / 555 unique items**, Vendor **63/50/67**, Loot **131/94/125**, Quest **25/0/0**. Existing tests are not modified.
+The new tests validate synthetic contracts independently of the pilot, match all ten pilot entries through the real current normalizers, preserve all 555 distinct progress keys, and exercise existing v5/v6 import/export handlers and Story isolation using mocks. Expected catalogue remains **556 source rows / 555 unique items**, Vendor **63/50/67**, Loot **131/94/125**, Quest **25/0/0**. Phase 1 left existing tests unchanged; Phase 2 test-boundary adjustments are documented separately.
 
-Future UI integration, disclosure policy, enriched search/filter behavior, runtime bundling/offline packaging and classifier changes require separate approval. Do not infer that raw metadata is secret: any future static asset is inspectable, and spoiler protection is a presentation policy. No storage/database migration or production service access is required for Phase 1. Versioned progress transport and the DEV PREVIEW gate remain untouched.
+The approved Phase 2 disclosure policy and browser/offline packaging are documented in [acquisition-ui.md](acquisition-ui.md). Enriched search/filter behavior, expanded coverage and classifier changes remain deferred. Static metadata is inspectable; spoiler protection is a presentation policy. No storage/database migration or production service access is required. Versioned progress transport and the DEV PREVIEW gate remain untouched.

@@ -594,8 +594,12 @@ function boundary(file, marker, extras = '') {
 const itemHarness = boundary('spoiler-ui.test.cjs', 'const required =', 'key,vendor,quest');
 function pilot() { assert.ok(existsSync(pilotPath), 'Phase 1 pilot dataset is missing'); return JSON.parse(readFileSync(pilotPath, 'utf8')); }
 
-test('Phase 1 adds no acquisition script, fetch, renderer or filter integration to index.html', () => {
-  assert.equal(/acquisition-metadata\.js|acquisition\.v1\.json|reviewedRoutesFor\s*\(/.test(html), false);
+test('acquisition metadata remains isolated from tracker state and discovery after presentation integration', () => {
+  const source = readFileSync(modulePath, 'utf8');
+  assert.doesNotMatch(source, /\b(?:window|document|localStorage|fetch)\b/);
+  const start = html.indexOf('function view(){'), end = html.indexOf('// Presentation only:', start);
+  assert.ok(start >= 0 && end > start);
+  assert.doesNotMatch(html.slice(start, end), /BG3AcquisitionUI|acquisitionDetailsFor|reviewedRoutesFor/);
 });
 
 test('the pilot is a valid schema 1 dataset with exactly ten stable entries', () => {
