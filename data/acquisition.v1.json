@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "datasetVersion": "1.0.0-pilot.1",
+  "datasetVersion": "1.1.0-act1.1a",
   "entries": [
     {
       "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
@@ -918,6 +918,681 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "e1951fdb-1f5d-4d9d-8baa-acd637b2bbee",
+      "bindings": [
+        {
+          "id": "8ee57305-b248-4cba-aee5-c975536e6fa0",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of archery",
+          "gameIds": [
+            "UNI_ARM_OfArchery_Gloves"
+          ],
+          "wikiPage": "Gloves of Archery"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "a9cc463f-f003-4a3f-a6cb-a596d2fd4887",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Grat",
+            "wikiPage": "Grat"
+          },
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Courtyard shop",
+          "coordinates": {
+            "x": -99,
+            "y": 424,
+            "space": "Goblin Camp",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Grat",
+                "value": "Shop remains open"
+              }
+            ],
+            "before": [
+              {
+                "kind": "interaction",
+                "subject": "Goblin Camp courtyard enters high alert",
+                "value": "Courtyard poisoning closes shop access"
+              }
+            ],
+            "after": null,
+            "exclusions": null
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Archery&oldid=418962",
+              "revisionId": 418962,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grat&oldid=414927",
+              "revisionId": 414927,
+              "section": "Involvement / Act One; Store / Stock"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Goblin_Camp&oldid=433423",
+              "revisionId": 433423,
+              "section": "Centre courtyard"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "e1d30097-a7b3-4d7f-9726-eeaee38b403b",
+      "bindings": [
+        {
+          "id": "53a430eb-6b68-4edd-bb67-aadf1d5f62ad",
+          "act": "ACT 1",
+          "progressKey": "act 1|returning pike",
+          "gameIds": [
+            "MAG_Throwable_Pike"
+          ],
+          "wikiPage": "Returning Pike"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "5c010f34-1ffd-4060-98ee-46fb80e4f5fe",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Grat",
+            "wikiPage": "Grat"
+          },
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Courtyard shop",
+          "coordinates": {
+            "x": -99,
+            "y": 424,
+            "space": "Goblin Camp",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Grat",
+                "value": "Shop remains open"
+              }
+            ],
+            "before": [
+              {
+                "kind": "interaction",
+                "subject": "Goblin Camp courtyard enters high alert",
+                "value": "Courtyard poisoning closes shop access"
+              }
+            ],
+            "after": null,
+            "exclusions": null
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Returning_Pike&oldid=422338",
+              "revisionId": 422338,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grat&oldid=414927",
+              "revisionId": 414927,
+              "section": "Involvement / Act One; Store / Stock"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Goblin_Camp&oldid=433423",
+              "revisionId": 433423,
+              "section": "Centre courtyard"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cf24d36b-c3f1-4a30-8422-7a045e4b1596",
+      "bindings": [
+        {
+          "id": "2a16e1a2-fb75-4461-939a-41d4475d0dbb",
+          "act": "ACT 1",
+          "progressKey": "act 1|periapt of wound closure",
+          "gameIds": [
+            "MAG_PHB_PeriaptofWoundClosure_Amulet"
+          ],
+          "wikiPage": "Periapt of Wound Closure"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "f77e74f8-9a65-48f2-b3de-02df71732def",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Lady Esther",
+            "wikiPage": "Esther"
+          },
+          "location": {
+            "name": "Rosymorn Monastery Trail",
+            "wikiPage": "Rosymorn Monastery Trail"
+          },
+          "sublocation": "Camp northeast of Trielta Crags",
+          "coordinates": null,
+          "conditions": null,
+          "notes": [
+            "Accepting or completing the egg mission is not required to trade with Lady Esther."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Periapt_of_Wound_Closure&oldid=421757",
+              "revisionId": 421757,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Esther&oldid=425220",
+              "revisionId": 425220,
+              "section": "Store / Notable items sold"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rosymorn_Monastery_Trail&oldid=426994",
+              "revisionId": 426994,
+              "section": "Lady Esther's camp"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dd58ec01-cc38-485e-9e95-829cc9ca7299",
+      "bindings": [
+        {
+          "id": "3c15c196-3491-4549-9d02-b696b7019f82",
+          "act": "ACT 1",
+          "progressKey": "act 1|haste helm",
+          "gameIds": [
+            "MAG_Mobility_MomentumOnCombatStart_Helmet"
+          ],
+          "wikiPage": "Haste Helm"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "4febc573-f6ea-4c6d-b948-92b6785e01fe",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Blighted Village",
+            "wikiPage": "Blighted Village"
+          },
+          "sublocation": "Moss-Covered Chest near the waypoint and wagon",
+          "coordinates": {
+            "x": 29,
+            "y": 405,
+            "space": "Blighted Village",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Open the locked Moss-Covered Chest"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "The Moss-Covered Key opens this chest, but possessing the key is not a mandatory prerequisite."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Haste_Helm&oldid=419356",
+              "revisionId": 419356,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Moss-Covered_Chest&oldid=421114",
+              "revisionId": 421114,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blighted_Village&oldid=433668",
+              "revisionId": 433668,
+              "section": "Village Center and the Well"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "51a46914-eac6-4b5e-9ca0-794c2da907ed",
+      "bindings": [
+        {
+          "id": "4b5ccea7-dea4-4c75-9041-76f6abf55b13",
+          "act": "ACT 1",
+          "progressKey": "act 1|luminous armour",
+          "gameIds": [
+            "MAG_Radiant_RadiatingOrb_Armor"
+          ],
+          "wikiPage": "Luminous Armour"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "306c63c5-2d36-444f-acf4-d8688aae9617",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Selûnite Outpost",
+            "wikiPage": "Selûnite Outpost"
+          },
+          "sublocation": "Hidden room's locked, trapped opulent chest",
+          "coordinates": {
+            "x": 176,
+            "y": -247,
+            "space": "Selûnite Outpost",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Open the hidden room's opulent chest"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Access alternatives: reveal the movable wall with a DC 15 Perception check OR jump through the wall breach from the adjacent waypoint room."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Luminous_Armour&oldid=420655",
+              "revisionId": 420655,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sel%C3%BBnite_Outpost&oldid=431112",
+              "revisionId": 431112,
+              "section": "Overview / Outpost; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "64cf9246-1d4e-4338-b937-8c4b19e0b032",
+      "bindings": [
+        {
+          "id": "8dde450b-1cbe-4c3c-b291-0238f578ed53",
+          "act": "ACT 1",
+          "progressKey": "act 1|bracers of defence",
+          "gameIds": [
+            "UNI_ARM_OfDefense_Gloves"
+          ],
+          "wikiPage": "Bracers of Defence"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "27a9cbc8-ad13-47e8-8758-14bacf476445",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Apothecary's Cellar",
+            "wikiPage": "Apothecary's Cellar"
+          },
+          "sublocation": "Necromancer's Lab small-library gilded chest",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Reach the hidden laboratory"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Use the hidden lever to reach the antechamber. A Perception check can highlight it, but is not mandatory.",
+            "Access alternatives at the Ornate Mirror: persuade it OR destroy it to enter the hidden laboratory."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bracers_of_Defence&oldid=416721",
+              "revisionId": 416721,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Apothecary%27s_Cellar&oldid=408733",
+              "revisionId": 408733,
+              "section": "Main Cellar; Cavernal Antechamber; Necromancer's Lab"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "0973ed34-77d1-42e2-90e3-69f1c5304106",
+      "bindings": [
+        {
+          "id": "e0f13c63-aac0-4891-a0f6-72be24907067",
+          "act": "ACT 1",
+          "progressKey": "act 1|amulet of silvanus",
+          "gameIds": [
+            "DEN_BearReward_Amulet"
+          ],
+          "wikiPage": "Amulet of Silvanus"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "81880cdb-2ffc-4da4-8ed8-221cad717a17",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Emerald Grove",
+            "wikiPage": "Emerald Grove"
+          },
+          "sublocation": "Flat rock near Ormn",
+          "coordinates": {
+            "x": 262,
+            "y": 481,
+            "space": "Emerald Grove",
+            "subject": "item"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Move the flat rock to expose the amulet"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Amulet_of_Silvanus&oldid=415919",
+              "revisionId": 415919,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Emerald_Grove&oldid=418197",
+              "revisionId": 418197,
+              "section": "Loot; Notes and references"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "4a404f0f-fbe6-4d4c-ba24-586736ca2708",
+      "bindings": [
+        {
+          "id": "43a56161-a0ed-4158-872c-0f71e22bf072",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of power",
+          "gameIds": [
+            "UNI_DEN_RaidingParty_GoblinCaptain_Gloves",
+            "DEN_RaidingParty_GoblinCaptain_Gloves"
+          ],
+          "wikiPage": "Gloves of Power"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "4fb9c98a-5b63-48e7-afa7-18d8697b61df",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Za'krug",
+            "wikiPage": "Za'krug"
+          },
+          "location": {
+            "name": "Emerald Grove entrance",
+            "wikiPage": "Emerald Grove"
+          },
+          "sublocation": "Initial gate encounter",
+          "coordinates": null,
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Power&oldid=418974",
+              "revisionId": 418974,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Za%27krug&oldid=415001",
+              "revisionId": 415001,
+              "section": "Involvement / Act One; Combat / Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "7ed1aebe-9719-4c4f-9131-8161664977b8",
+      "bindings": [
+        {
+          "id": "6b27e4a2-ffff-4f5e-922b-8bb34b6eada0",
+          "act": "ACT 1",
+          "progressKey": "act 1|faithbreaker",
+          "gameIds": [
+            "GOB_GoblinKing_Warhammer"
+          ],
+          "wikiPage": "Faithbreaker"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "dd8a0397-9f0c-441f-b257-767b28f39500",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Dror Ragzlin",
+            "wikiPage": "Dror Ragzlin"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Throne room",
+          "coordinates": null,
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Faithbreaker&oldid=418370",
+              "revisionId": 418370,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dror_Ragzlin&oldid=433795",
+              "revisionId": 433795,
+              "section": "Involvement / Act One / Shattered Sanctum; Combat / Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "1466bc4d-0c0b-4c76-94b6-9d4f2f751ad8",
+      "bindings": [
+        {
+          "id": "5e176d01-5adf-474c-b8bf-83a783bf360c",
+          "act": "ACT 1",
+          "progressKey": "act 1|shortsword of first blood",
+          "gameIds": [
+            "UNI_UND_Duergar_ShortswordOfFirstBlood",
+            "UND_Duergar_ShortswordOfFirstBlood"
+          ],
+          "wikiPage": "Shortsword of First Blood"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "840f2cfc-76e4-4c99-969e-b75ea7b893d3",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Executed deep gnome (corpse)"
+          },
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Decrepit Village entrance",
+          "coordinates": {
+            "x": 73,
+            "y": -187,
+            "space": "Underdark",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Loot the existing deep gnome corpse"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "The deep gnome is already dead.",
+            "Approaching from the Myconid Colony identifies this entrance; that direction is guidance, not a prerequisite."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shortsword_of_First_Blood&oldid=423174",
+              "revisionId": 423174,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Decrepit_Village&oldid=393428",
+              "revisionId": 393428,
+              "section": "Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
           }
         }
       ]
