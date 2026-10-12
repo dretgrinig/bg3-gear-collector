@@ -821,3 +821,168 @@ test('in-place Full arrival adds an absent native disclosure for a reviewed stro
   assert.equal(h.nativeDOM.writes.filter(entry => entry.itemTree).length, 0);
   for (const surface of surfaces(h)) assert.equal(surface.querySelectorAll('details').length, 1);
 });
+
+
+// Density polish: independent alternatives exercise the production renderer and
+// existing application DOM. No presentation labels are stored in metadata.
+function densityRoutes(overrides = {}) {
+  return [1, 2, 3].map(index => route('world', {
+    id: 'density:route:' + index,
+    actor: null,
+    conditions: { prerequisites: [{ kind: 'check', subject: 'DENSITY_CHECK_' + index, value: index }] },
+    notes: ['DENSITY_NOTE_' + index],
+    ...overrides
+  }));
+}
+function densitySurface(routes) {
+  const data = fixture(routes), h = itemHarness([], { bundle: false });
+  assert.equal(metadata.validateDataset(data).ok, true, 'Density fixture must pass the canonical validator');
+  return { data, surface: h.parse(markupFor(createUI(data), normalizedItem())) };
+}
+function evidenceSet(count) {
+  return Array.from({ length: count }, (_, index) => ({
+    url: 'https://bg3.wiki/w/index.php?title=Density_Evidence_' + index + '&oldid=' + (410000 + index),
+    revisionId: 410000 + index, section: 'Reviewed section ' + index
+  }));
+}
+
+test('identical reviewed geography renders once for all routes without merging their conditions or notes', () => {
+  const { data, surface } = densitySurface(densityRoutes());
+  const section = required(surface, '.acquisition-enrichment'), shared = required(section, '.acquisition-shared-location');
+  assert.match(shared.textContent, /all routes/i);
+  const routes = section.querySelectorAll('.acquisition-route'); assert.equal(routes.length, 3);
+  for (const value of ['UI_LOCATION_SENTINEL_world', 'UI_SUBLOCATION_SENTINEL_world', 'UI_COORDINATE_SPACE_SENTINEL_world']) {
+    assert.equal(section.textContent.split(value).length - 1, 1, 'Shared geography must be rendered once: ' + value);
+    assert.ok(shared.textContent.includes(value));
+    assert.ok(routes.every(element => !element.textContent.includes(value)), 'Shared facts must not be repeated inside alternatives');
+  }
+  for (const [index, element] of routes.entries()) {
+    assert.ok(element.textContent.includes('DENSITY_CHECK_' + (index + 1)));
+    assert.ok(element.textContent.includes('DENSITY_NOTE_' + (index + 1)));
+    for (const other of [1, 2, 3].filter(value => value !== index + 1)) {
+      assert.ok(!element.textContent.includes('DENSITY_CHECK_' + other));
+      assert.ok(!element.textContent.includes('DENSITY_NOTE_' + other));
+    }
+  }
+  assert.equal(data.entries[0].routes.length, 3, 'Presentation must not merge canonical facts');
+});
+
+for (const [label, change] of [
+  ['location name', route => { route.location.name += ' alternate'; }],
+  ['location Wiki identity', route => { route.location.wikiPage += ' alternate'; }],
+  ['sublocation', route => { route.sublocation += ' alternate'; }],
+  ['coordinate x', route => { route.coordinates.x += 1; }],
+  ['coordinate y', route => { route.coordinates.y += 1; }],
+  ['coordinate space', route => { route.coordinates.space += ' alternate'; }],
+  ['coordinate subject', route => { route.coordinates.subject = 'entrance'; }],
+  ['missing coordinates', route => { route.coordinates = null; }],
+  ['missing location', route => { route.location = null; }],
+  ['missing sublocation', route => { route.sublocation = null; }],
+  ['historical availability', route => { route.validity = 'historical'; }]
+]) test(`different ${label} keeps route geography separate`, () => {
+  const routes = densityRoutes(); change(routes[1]);
+  const { surface } = densitySurface(routes);
+  assert.equal(surface.querySelector('.acquisition-shared-location'), null);
+  const rendered = surface.querySelectorAll('.acquisition-route'); assert.equal(rendered.length, 3);
+  for (const [index, element] of rendered.entries()) {
+    if (routes[index].location) assert.ok(element.textContent.includes(routes[index].location.name));
+    if (routes[index].sublocation) assert.ok(element.textContent.includes(routes[index].sublocation));
+    if (routes[index].coordinates) assert.ok(element.textContent.includes(routes[index].coordinates.space));
+    assert.equal(element.querySelectorAll('.acquisition-historical').length, index === 1 && label === 'historical availability' ? 1 : 0);
+  }
+});
+
+test('single routes and alternatives with no geography omit an empty shared-location block', () => {
+  for (const routes of [[route()], densityRoutes({ location: null, sublocation: null, coordinates: null })]) {
+    const { surface } = densitySurface(routes);
+    assert.equal(surface.querySelector('.acquisition-shared-location'), null);
+    assert.equal(surface.querySelectorAll('.acquisition-route').length, routes.length);
+  }
+});
+
+test('repeated identical route headings are distinguishable without changing factual route labels', () => {
+  const { surface } = densitySurface(densityRoutes());
+  const headings = surface.querySelectorAll('.acquisition-route-heading').map(element => element.textContent);
+  assert.equal(new Set(headings).size, 3);
+  for (const [index, heading] of headings.entries()) {
+    assert.ok(heading.includes('Found in world')); assert.ok(heading.includes('Route ' + (index + 1)));
+  }
+  const distinct = densityRoutes().map((r, index) => ({ ...r, actor: { name: 'DISTINCT_ACTOR_' + index } }));
+  const different = densitySurface(distinct).surface;
+  assert.equal(different.querySelectorAll('.acquisition-route-number').length, 0, 'Already distinct headings need no numbering');
+});
+
+test('large reference sets preserve every exact pinned source and section behind a native disclosure', () => {
+  const sources = evidenceSet(8), { surface } = densitySurface([route('world', { sources })]);
+  const references = required(surface, '.acquisition-references'), extra = required(references, '.acquisition-more-sources');
+  assert.equal(extra.tagName, 'DETAILS'); assert.equal(extra.open, false);
+  assert.equal(required(extra, 'summary').textContent, 'More sources (5)');
+  assert.equal(references.querySelectorAll('.acquisition-reference').length, 8);
+  assert.equal(extra.querySelectorAll('.acquisition-reference').length, 5);
+  assert.deepEqual(copy(references.querySelectorAll('.acquisition-reference').map(link => link.getAttribute('href'))), sources.map(source => source.url));
+  for (const [index, link] of references.querySelectorAll('.acquisition-reference').entries()) {
+    assert.ok(link.textContent.includes(sources[index].section)); assert.equal(link.getAttribute('target'), '_blank');
+    assert.equal(link.getAttribute('rel'), 'noopener noreferrer');
+    assert.equal(link.getAttribute('tabindex'), null, 'Native links must remain in keyboard order');
+  }
+});
+
+test('short reference sets stay visible and distinct sections or revisions are never merged', () => {
+  const base = evidenceSet(1)[0], sources = [base, { ...base, section: 'Another reviewed section' },
+    { ...base, url: base.url.replace('410000', '410001'), revisionId: 410001 }];
+  const { surface } = densitySurface([route('world', { sources: [...sources, copy(base)] })]);
+  assert.equal(surface.querySelector('.acquisition-more-sources'), null);
+  assert.equal(surface.querySelectorAll('.acquisition-reference').length, 3);
+  assert.deepEqual(copy(surface.querySelectorAll('.acquisition-reference').map(link => link.getAttribute('href'))), sources.map(source => source.url));
+});
+
+for (const surfaceName of ['rows', 'cards']) test(`native More sources is keyboard usable without closing outer More info on ${surfaceName}`, () => {
+  const data = fixture([route('world', { sources: evidenceSet(8) })]), h = itemHarness([realRow], { dataset: data });
+  const surface = h[surfaceName]()[0], outer = required(surface, 'details'), summary = required(outer, 'summary');
+  summary.click(); assert.equal(outer.open, true);
+  const extra = required(surface, '.acquisition-more-sources'), toggle = required(extra, 'summary');
+  toggle.focus(); assert.equal(h.context.document.activeElement, toggle);
+  assert.equal(h.nativeDOM.key(toggle, 'Enter'), true); assert.equal(extra.open, true); assert.equal(outer.open, true);
+  const link = required(extra, 'a'); link.focus(); assert.equal(h.context.document.activeElement, link);
+  toggle.focus(); assert.equal(h.nativeDOM.key(toggle, ' '), true); assert.equal(extra.open, false); assert.equal(outer.open, true);
+});
+
+test('real Phalar and Dolor share one renderer across desktop/mobile with reduced repetition and complete evidence', () => {
+  const data = JSON.parse(readFileSync(join(root, 'data', 'acquisition.v1.json'), 'utf8')), before = JSON.stringify(data);
+  const h = itemHarness(catalogue, { dataset: data });
+  h.search('Phalar Aluve');
+  for (const surface of surfaces(h)) {
+    assert.equal(surface.querySelectorAll('.acquisition-shared-location').length, 1);
+    assert.equal(surface.querySelectorAll('.acquisition-route').length, 3);
+    assert.equal(surface.querySelectorAll('.acquisition-more-sources').length, 0);
+  }
+  assert.equal(enrichment(h.rows()[0]).textContent, enrichment(h.cards()[0]).textContent);
+  h.search('Dolor Amarus');
+  for (const surface of surfaces(h)) {
+    assert.equal(surface.querySelectorAll('.acquisition-shared-location').length, 0);
+    assert.equal(surface.querySelectorAll('.acquisition-route').length, 3);
+    assert.equal(surface.querySelectorAll('.acquisition-reference').length, 8);
+    assert.equal(required(required(surface, '.acquisition-more-sources'), 'summary').textContent, 'More sources (5)');
+  }
+  assert.equal(JSON.stringify(data), before);
+});
+
+test('repeated late hydration retains compact reference disclosure state, focus and all source nodes', () => {
+  const h = hydrationHarness('full', catalogue); h.search('Dolor Amarus'); arriveAtExistingItems(h);
+  const surface = h.rows()[0], outer = required(surface, 'details'); required(outer, 'summary').click();
+  const extra = required(surface, '.acquisition-more-sources'), toggle = required(extra, 'summary'); toggle.click(); toggle.focus();
+  const nodes = nodeSnapshot(surface); h.nativeDOM.reset(); arriveAtExistingItems(h); arriveAtExistingItems(h);
+  assertNodesSurvive(h, nodes, 'rows'); assert.equal(outer.open, true); assert.equal(extra.open, true);
+  assert.equal(h.context.document.activeElement, toggle); assert.equal(surface.querySelectorAll('.acquisition-reference').length, 8);
+  assert.equal(surface.querySelectorAll('.acquisition-more-sources').length, 1); assert.equal(h.nativeDOM.writes.filter(entry => entry.itemTree).length, 0);
+});
+
+
+test('shared zero and negative coordinates compare by values rather than object property insertion order', () => {
+  const routes = densityRoutes();
+  for (const route of routes) route.coordinates = { x: 0, y: -10, space: 'Same reviewed map', subject: 'item' };
+  routes[1].coordinates = { subject: 'item', space: 'Same reviewed map', y: -10, x: 0 };
+  routes[1].location = { wikiPage: routes[0].location.wikiPage, name: routes[0].location.name };
+  const { surface } = densitySurface(routes), shared = required(surface, '.acquisition-shared-location');
+  assert.ok(shared.textContent.includes('X 0, Y -10')); assert.equal(surface.querySelectorAll('.acquisition-route').length, 3);
+});

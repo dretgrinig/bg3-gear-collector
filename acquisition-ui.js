@@ -37,10 +37,7 @@ function conditionText(condition) {
   const hasValue = Object.prototype.hasOwnProperty.call(condition, 'value');
   return condition.subject + (hasValue ? ': ' + String(condition.value) : '');
 }
-function renderRoute(route) {
-  const actor = route.actor ? ' ' + route.actor.name : '';
-  const historical = route.validity === 'historical'
-    ? '<span class="acquisition-historical">Historical</span>' : '';
+function renderLocation(route) {
   let details = '';
   if (route.location) details += line('Location', route.location.name);
   if (route.sublocation) details += line('Sublocation', route.sublocation);
@@ -50,12 +47,39 @@ function renderRoute(route) {
       details += line('Coordinates', `${coordinates.space} · ${COORDINATE_SUBJECTS[coordinates.subject]}: X ${coordinates.x}, Y ${coordinates.y}`);
     }
   }
+  return details;
+}
+function geographyIdentity(route) {
+  // Compare the complete reviewed tuple by values, without normalizing away
+  // distinctions. Different availability/Act contexts keep their own geography.
+  return JSON.stringify([
+    route.location ? [route.location.name, route.location.wikiPage ?? null] : null,
+    route.sublocation ?? null,
+    route.coordinates ? [route.coordinates.x, route.coordinates.y, route.coordinates.space, route.coordinates.subject] : null,
+    route.validity, route.acts ?? null
+  ]);
+}
+function sharedLocationFor(routes) {
+  if (routes.length < 2 || !renderLocation(routes[0])) return '';
+  const identity = geographyIdentity(routes[0]);
+  if (!routes.every(route => geographyIdentity(route) === identity)) return '';
+  return `<div class="acquisition-shared-location"><p class="acquisition-shared-label">Shared location · all routes</p>${renderLocation(routes[0])}</div>`;
+}
+function routeLabel(route) {
+  return ROUTE_LABELS[route.type] + (route.actor ? ' ' + route.actor.name : '');
+}
+function renderRoute(route, sharedLocation, number) {
+  const actor = route.actor ? ' ' + route.actor.name : '';
+  const historical = route.validity === 'historical'
+    ? '<span class="acquisition-historical">Historical</span>' : '';
+  const numbering = number ? `<span class="acquisition-route-number">Route ${number} ·</span>` : '';
+  let details = sharedLocation ? '' : renderLocation(route);
   if (route.conditions) for (const bucket of Object.keys(CONDITION_LABELS)) {
     const conditions = route.conditions[bucket];
     if (conditions && conditions.length) details += line(CONDITION_LABELS[bucket], conditions.map(conditionText).join('; '));
   }
   if (route.notes && route.notes.length) details += line('Notes', route.notes.join(' '));
-  return `<div class="acquisition-route"><div class="acquisition-route-heading"><span>${escapeHTML(ROUTE_LABELS[route.type] + actor)}</span>${historical}</div>${details}</div>`;
+  return `<div class="acquisition-route"><div class="acquisition-route-heading">${numbering}<span>${escapeHTML(ROUTE_LABELS[route.type] + actor)}</span>${historical}</div>${details}</div>`;
 }
 function sourcePage(source) {
   // Validation already pins the source authority and URL forms. Parse only its
@@ -74,8 +98,11 @@ function renderReferences(routes) {
     const label = `BG3 Wiki · ${sourcePage(source)} · ${source.section} ↗`;
     links.push(`<li><a class="wiki acquisition-reference" href="${escapeHTML(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(label)}</a></li>`);
   }
-  return links.length
-    ? `<section class="acquisition-references"><h4>References</h4><ul>${links.join('')}</ul></section>` : '';
+  if (!links.length) return '';
+  const primary = links.slice(0, 3), additional = links.slice(3);
+  const more = additional.length
+    ? `<details class="acquisition-more-sources"><summary>More sources (${additional.length})</summary><ul>${additional.join('')}</ul></details>` : '';
+  return `<section class="acquisition-references"><h4>References</h4><ul>${primary.join('')}</ul>${more}</section>`;
 }
 
 function createAcquisitionUI(metadataModule, dataset) {
@@ -104,8 +131,12 @@ function createAcquisitionUI(metadataModule, dataset) {
     const routes = renderableReviewedRoutesFor(item, mode);
     if (!routes.length) return EMPTY_HTML;
     try {
+      const sharedLocation = sharedLocationFor(routes), labels = new Map();
+      for (const route of routes) {
+        const label = routeLabel(route); labels.set(label, (labels.get(label) || 0) + 1);
+      }
       return Object.freeze({
-        acquisitionHtml: `<section class="acquisition-enrichment"><h4>Acquisition</h4>${routes.map(renderRoute).join('')}</section>`,
+        acquisitionHtml: `<section class="acquisition-enrichment"><h4>Acquisition</h4>${sharedLocation}${routes.map((route, index) => renderRoute(route, !!sharedLocation, labels.get(routeLabel(route)) > 1 ? index + 1 : null)).join('')}</section>`,
         referencesHtml: renderReferences(routes)
       });
     } catch { return EMPTY_HTML; }
