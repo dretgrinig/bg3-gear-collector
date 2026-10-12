@@ -1,0 +1,926 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "1.0.0-pilot.1",
+  "entries": [
+    {
+      "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
+      "bindings": [
+        {
+          "id": "6436148b-ea66-4f4f-9a5c-2e96f6e84fcb",
+          "act": "ACT 2",
+          "progressKey": "act 2|armour of devotion",
+          "gameIds": [
+            "MAG_Paladin_RestoreChannelDivinity_Armor"
+          ],
+          "wikiPage": "Armour of Devotion"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "3d798b19-ad0a-4022-ac44-68713d35e6a4",
+          "type": "purchase",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Moonrise Towers",
+            "wikiPage": "Moonrise Towers"
+          },
+          "sublocation": "Main floor",
+          "coordinates": null,
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Armour_of_Devotion&oldid=426502",
+              "revisionId": 426502,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Moonrise_Towers&oldid=428604",
+              "revisionId": 428604,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "42a2396b-97b5-46b3-886e-2356be94b9dd",
+      "bindings": [
+        {
+          "id": "7723e35c-8367-4893-91a4-635f62dec598",
+          "act": "ACT 3",
+          "progressKey": "act 3|helldusk armour",
+          "gameIds": [
+            "MAG_Infernal_Plate_Armor"
+          ],
+          "wikiPage": "Helldusk Armour"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "d8091eaf-c6ab-4d37-8a16-f89249394b70",
+          "type": "actor_loot",
+          "acts": [
+            3
+          ],
+          "actor": {
+            "name": "Raphael",
+            "wikiPage": "Raphael"
+          },
+          "location": {
+            "name": "House of Hope",
+            "wikiPage": "House of Hope"
+          },
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": null,
+          "notes": [
+            "Raphael carries the armour at the House of Hope.",
+            "The item page states that Raphael carries it throughout the game."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Helldusk_Armour&oldid=419447",
+              "revisionId": 419447,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Helldusk_Armour&oldid=419447",
+              "revisionId": 419447,
+              "section": "Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=House_of_Hope&oldid=428995",
+              "revisionId": 428995,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "2e1e3dbb-0829-4cd1-943b-45e4557fc040",
+      "bindings": [
+        {
+          "id": "6144040d-1c83-4d17-8d14-6a055275797c",
+          "act": "ACT 1",
+          "progressKey": "act 1|blazer of benevolence",
+          "gameIds": [
+            "MAG_Bard_TempHP_Armor"
+          ],
+          "wikiPage": "Blazer of Benevolence"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b0a4d3e1-853b-4fe6-b7cd-a0b9687a6947",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Volo",
+            "wikiPage": "Volo"
+          },
+          "location": {
+            "name": "Campsite (Act One)",
+            "wikiPage": "Campsite (Act One)"
+          },
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Rescue Volo",
+                "value": "Free Volo from the Goblin Camp"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Volo rewards his rescue with the blazer at camp."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blazer_of_Benevolence&oldid=416539",
+              "revisionId": 416539,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rescue_Volo&oldid=422309",
+              "revisionId": 422309,
+              "section": "Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "24cf6b93-62e0-489d-98bd-cc2aebf0f8f9",
+      "bindings": [
+        {
+          "id": "822f82b4-b8d4-47aa-be33-717aa5783eb9",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of heroism",
+          "gameIds": [
+            "MAG_Paladin_LayOnHandsSupport_Gloves"
+          ],
+          "wikiPage": "Gloves of Heroism"
+        },
+        {
+          "id": "33660d7d-4299-47a4-af96-d4e13332a5df",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of heroism",
+          "gameIds": [],
+          "wikiPage": "Gloves of Heroism"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "e5819663-51e2-4cd1-8804-0faa726789de",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "The Risen Road",
+            "wikiPage": "The Risen Road"
+          },
+          "sublocation": "Toll House cellar: hidden room",
+          "coordinates": {
+            "x": -674,
+            "y": -401,
+            "space": "Toll House cellar",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Toll House cellar hidden room",
+                "value": "Open the room by occupying both thrones simultaneously or placing objects on both"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "The gloves are in the wooden chest at the rear of the hidden room."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Heroism&oldid=418972",
+              "revisionId": 418972,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Heroism&oldid=418972",
+              "revisionId": 418972,
+              "section": "Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Risen_Road&oldid=425790",
+              "revisionId": 425790,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "3040cf67-37e1-4261-a6ad-91953a649c73",
+      "bindings": [
+        {
+          "id": "ee8a141a-3200-4dab-9f19-e81cb0c5a94f",
+          "act": "ACT 1",
+          "progressKey": "act 1|phalar aluve",
+          "gameIds": [
+            "S_UND_SwordInStone_SwordReward",
+            "UNI_UND_SwordInStone_SwordReward",
+            "UND_SwordInStone"
+          ],
+          "wikiPage": "Phalar Aluve"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "7cc2e8ab-b779-4c9f-a1e6-dd044980f212",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Rock holding the sword",
+          "coordinates": {
+            "x": 116,
+            "y": -192,
+            "space": "Underdark",
+            "subject": "item"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "check",
+                "subject": "Strength",
+                "value": 15
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "A successful DC 15 Strength check pulls the sword out of the rock."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Phalar_Aluve&oldid=432441",
+              "revisionId": 432441,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Phalar_Aluve&oldid=432441",
+              "revisionId": 432441,
+              "section": "Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Underdark&oldid=424496",
+              "revisionId": 424496,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "09030bdc-2f11-4073-aa9c-0d309ac3c4d5",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Rock holding the sword",
+          "coordinates": {
+            "x": 116,
+            "y": -192,
+            "space": "Underdark",
+            "subject": "item"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "check",
+                "subject": "Religion",
+                "value": 15
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "A successful DC 15 Religion check reveals how to release the magic holding the sword.",
+            "Clerics of Lolth have advantage on this Religion check."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Phalar_Aluve&oldid=432441",
+              "revisionId": 432441,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Phalar_Aluve&oldid=432441",
+              "revisionId": 432441,
+              "section": "Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Underdark&oldid=424496",
+              "revisionId": 424496,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "6e58b34d-cce7-48d8-9c92-3b003f7b8259",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Rock holding the sword",
+          "coordinates": {
+            "x": 116,
+            "y": -192,
+            "space": "Underdark",
+            "subject": "item"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "class",
+                "subject": "Cleric"
+              },
+              {
+                "kind": "faith",
+                "subject": "Eilistraee"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "A cleric of Eilistraee can release the sword without an ability check."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Phalar_Aluve&oldid=432441",
+              "revisionId": 432441,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Phalar_Aluve&oldid=432441",
+              "revisionId": 432441,
+              "section": "Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Underdark&oldid=424496",
+              "revisionId": 424496,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b8cda0b6-5dc6-418e-a0c7-c3f5f3286b33",
+      "bindings": [
+        {
+          "id": "63ed4086-842f-4bad-b00e-8e4f01e427c8",
+          "act": "ACT 3",
+          "progressKey": "act 3|dolor amarus",
+          "gameIds": [
+            "MAG_Vicious_Dagger"
+          ],
+          "wikiPage": "Dolor Amarus"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "2107620a-cb4b-48c7-b27d-f655d3a81119",
+          "type": "drop",
+          "acts": [
+            3
+          ],
+          "actor": {
+            "name": "Dolor",
+            "wikiPage": "Dolor"
+          },
+          "location": {
+            "name": "Highberry's Home",
+            "wikiPage": "Highberry's Home"
+          },
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Dolor",
+                "value": "Killed at Highberry's Home"
+              }
+            ],
+            "before": [
+              {
+                "kind": "npc",
+                "subject": "Dolor",
+                "value": "Escapes Highberry's Home"
+              }
+            ],
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Dolor drops the dagger if killed at the wine festival before escaping."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dolor_Amarus&oldid=417871",
+              "revisionId": 417871,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Highberry%27s_Home&oldid=419527",
+              "revisionId": 419527,
+              "section": "Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Highberry%27s_Home&oldid=419527",
+              "revisionId": 419527,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "6b74de28-b8ee-4b1b-a4b1-12c25e007d76",
+          "type": "drop",
+          "acts": [
+            3
+          ],
+          "actor": {
+            "name": "Dolor",
+            "wikiPage": "Dolor"
+          },
+          "location": {
+            "name": "Facemaker's Boutique",
+            "wikiPage": "Facemaker's Boutique"
+          },
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Dolor",
+                "value": "Survived and escaped the wine festival at Highberry's Home"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "The boutique page lists the dagger among Dolor's drops.",
+            "Quest state affects whether the Dolor encounter is present at the boutique."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dolor_Amarus&oldid=417871",
+              "revisionId": 417871,
+              "section": "Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Facemaker%27s_Boutique&oldid=418355",
+              "revisionId": 418355,
+              "section": "Involvement"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Facemaker%27s_Boutique&oldid=418355",
+              "revisionId": 418355,
+              "section": "Notable Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Facemaker%27s_Boutique&oldid=418355",
+              "revisionId": 418355,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "93d046c6-684b-4ba3-9c3c-8203ffb862fd",
+          "type": "purchase",
+          "acts": [
+            3
+          ],
+          "actor": {
+            "name": "Echo of Abazigal",
+            "wikiPage": "Echo of Abazigal"
+          },
+          "location": {
+            "name": "Murder Tribunal",
+            "wikiPage": "Murder Tribunal"
+          },
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Become an Unholy Assassin of Bhaal",
+                "value": "Accepted"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dolor_Amarus&oldid=417871",
+              "revisionId": 417871,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dolor_Amarus&oldid=417871",
+              "revisionId": 417871,
+              "section": "Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Murder_Tribunal&oldid=428536",
+              "revisionId": 428536,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "c9e45703-35eb-4653-b260-32e0c7bc618b",
+      "bindings": [
+        {
+          "id": "d368d42c-3c28-4026-bdc3-bce0734042ac",
+          "act": "ACT 1",
+          "progressKey": "act 1|adamantine longsword",
+          "gameIds": [
+            "WPN_HUM_Longsword_Adamantine_A",
+            "MAG_MeleeDebuff_AttackDebuff12versatile_OnDamage_Longsword"
+          ],
+          "wikiPage": "Adamantine Longsword"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "1eff73d4-9256-4094-b947-297c4a4fedba",
+          "type": "craft",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Adamantine Forge",
+            "wikiPage": "Adamantine Forge (location)"
+          },
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Longsword Mould"
+              },
+              {
+                "kind": "item",
+                "subject": "Mithral Ore",
+                "value": 1
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Place the ore in the crucible and the longsword mould in the mould chamber.",
+            "Lower the platform with the Forge Lever, open the Lava Valve, then use the Forge Lever to shape the item.",
+            "Retrieve the completed sword from the mould chamber."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Longsword&oldid=415813",
+              "revisionId": 415813,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Forge_(quest)&oldid=415810",
+              "revisionId": 415810,
+              "section": "Forging"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Forge_(quest)&oldid=415810",
+              "revisionId": 415810,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "5735ec15-2523-4917-a84f-c49b36c038ce",
+      "bindings": [
+        {
+          "id": "c30394d2-5921-492b-99b7-5813c9198848",
+          "act": "ACT 3",
+          "progressKey": "act 3|devotee's mace",
+          "gameIds": [
+            "MAG_Cleric_Devotees_Mace"
+          ],
+          "wikiPage": "Devotee's Mace"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "495c5472-e7d1-491b-a986-5988e3266562",
+          "type": "ability",
+          "acts": null,
+          "actor": null,
+          "location": null,
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "class",
+                "subject": "Cleric"
+              },
+              {
+                "kind": "level",
+                "subject": "Cleric class level",
+                "value": 10
+              },
+              {
+                "kind": "ability",
+                "subject": "Divine Intervention: Arm Thy Servant"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": [
+              {
+                "kind": "ability",
+                "subject": "Divine Intervention",
+                "value": "Already used by this caster"
+              }
+            ]
+          },
+          "notes": [
+            "Casting Arm Thy Servant creates the mace and immediately equips it on the caster.",
+            "Each caster can use Divine Intervention once during their adventure."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Devotee%27s_Mace&oldid=417675",
+              "revisionId": 417675,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Divine_Intervention:_Arm_Thy_Servant&oldid=417807",
+              "revisionId": 417807,
+              "section": "How to learn"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Divine_Intervention:_Arm_Thy_Servant&oldid=417807",
+              "revisionId": 417807,
+              "section": "Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Divine_Intervention&oldid=382846",
+              "revisionId": 382846,
+              "section": "Description"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "082188dd-d35c-4b55-b137-82224f9f08ac",
+      "bindings": [
+        {
+          "id": "871a2973-714d-4337-aa90-4b70ecfcd425",
+          "act": "ACT 1",
+          "progressKey": "act 1|the graceful cloth (esther)",
+          "gameIds": [
+            "MAG_BarbMonk_Defensive_Cloth"
+          ],
+          "wikiPage": "The Graceful Cloth"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "3e2b7d66-61b4-44a6-8062-5f377ba2341d",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Lady Esther",
+            "wikiPage": "Lady Esther"
+          },
+          "location": {
+            "name": "Rosymorn Monastery Trail",
+            "wikiPage": "Rosymorn Monastery Trail"
+          },
+          "sublocation": "North-east of the Trielta Crags waypoint",
+          "coordinates": null,
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Graceful_Cloth&oldid=428954",
+              "revisionId": 428954,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rosymorn_Monastery_Trail&oldid=426994",
+              "revisionId": 426994,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "1bb726ef-23b0-4a8c-ab4b-218027842fef",
+      "bindings": [
+        {
+          "id": "f7b06d38-8fb9-45f0-90a9-3fc078b78aee",
+          "act": "ACT 2",
+          "progressKey": "act 2|the graceful cloth (araj)",
+          "gameIds": [
+            "MAG_BarbMonk_Defensive_Cloth"
+          ],
+          "wikiPage": "The Graceful Cloth"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "140dc884-d57d-4593-bf5d-8d9d2c7109fa",
+          "type": "purchase",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Araj Oblodra",
+            "wikiPage": "Araj Oblodra"
+          },
+          "location": {
+            "name": "Moonrise Towers",
+            "wikiPage": "Moonrise Towers"
+          },
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": null,
+          "notes": [
+            "Araj Oblodra sold this version at Moonrise Towers before Patch 4."
+          ],
+          "validity": "historical",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Graceful_Cloth&oldid=428954",
+              "revisionId": 428954,
+              "section": "Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Moonrise_Towers&oldid=428604",
+              "revisionId": 428604,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-12",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    }
+  ]
+}
