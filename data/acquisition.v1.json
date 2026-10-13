@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "datasetVersion": "1.1.0-act1.1a",
+  "datasetVersion": "1.2.0-act1.1b",
   "entries": [
     {
       "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
@@ -1587,6 +1587,883 @@
               "url": "https://bg3.wiki/w/index.php?title=Decrepit_Village&oldid=393428",
               "revisionId": 393428,
               "section": "Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ee08eb7f-1ae2-4aed-b70d-24fffa537ceb",
+      "bindings": [
+        {
+          "id": "d3f2236d-258a-4606-b041-9b16f3064aa8",
+          "act": "ACT 1",
+          "progressKey": "act 1|caustic band",
+          "gameIds": [
+            "MAG_Acid_AcidDamageOnWeaponAttack_Ring"
+          ],
+          "wikiPage": "Caustic Band"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "6c4647e7-5f8f-4b6b-a117-7f908d8d6a03",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Derryth Bonecloak",
+            "wikiPage": "Derryth Bonecloak"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Myconid Colony",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Derryth Bonecloak",
+                "value": "Trade with her in Act 1"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Normal trading is available immediately; rescuing Baelen is not required.",
+            "Later-Act stock has not been verified for this route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Caustic_Band&oldid=416928",
+              "revisionId": 416928,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Derryth_Bonecloak&oldid=433882",
+              "revisionId": 433882,
+              "section": "Involvement / Act One; Store / Notable items sold"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ebonlake_Grotto&oldid=418060",
+              "revisionId": 418060,
+              "section": "Traders and scientists; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "406f25ce-9de6-4fdc-935b-f9ae4cd3995d",
+      "bindings": [
+        {
+          "id": "c943c12c-30f1-49e0-8263-efe14c49c00e",
+          "act": "ACT 1",
+          "progressKey": "act 1|psychic spark",
+          "gameIds": [
+            "UNI_UND_SocietyOfBrilliance_MagicMissileNecklace",
+            "UND_SocietyOfBrilliance_MagicMissileNecklace"
+          ],
+          "wikiPage": "Psychic Spark"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "68cf23e8-db35-4e5a-a4bc-da20a2b2ceef",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Blurg",
+            "wikiPage": "Blurg"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Myconid Colony",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Talk to Blurg",
+                "value": "Complete the introductory dialogue to open trading"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "The Omeluum investigation quest is not a purchase prerequisite.",
+            "Later-Act stock has not been verified for this route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Psychic_Spark&oldid=422030",
+              "revisionId": 422030,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blurg&oldid=434059",
+              "revisionId": 434059,
+              "section": "Involvement / Act One; Shop / Notable items sold"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ebonlake_Grotto&oldid=418060",
+              "revisionId": 418060,
+              "section": "Traders and scientists"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "3d4afe37-1784-443b-ba20-d4905b73982a",
+      "bindings": [
+        {
+          "id": "48958ef2-ec45-4ec1-b881-59c82b3df1a4",
+          "act": "ACT 1",
+          "progressKey": "act 1|knife of the undermountain king",
+          "gameIds": [
+            "MAG_Duergar_Sword_KingsKnife"
+          ],
+          "wikiPage": "Knife of the Undermountain King"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "175739d0-53f0-450e-981e-33f2024fc3f3",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "A'jak'nir Jeera",
+            "wikiPage": "Jeera"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Trading area southeast of the waypoint",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "A'jak'nir Jeera",
+                "value": "Trade with her"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Knife_of_the_Undermountain_King&oldid=420147",
+              "revisionId": 420147,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jeera&oldid=416522",
+              "revisionId": 416522,
+              "section": "Involvement; Shop / Notable items sold"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Cr%C3%A8che_Y%27llek&oldid=417426",
+              "revisionId": 417426,
+              "section": "Main Corridor; Trade Post"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "4bf6dd97-9791-4b26-904a-025fa34a7b1a",
+      "bindings": [
+        {
+          "id": "7d4b36ee-cdf5-41fe-bf18-72f7f0cfde19",
+          "act": "ACT 1",
+          "progressKey": "act 1|adamantine shield",
+          "gameIds": [
+            "WPN_HUM_Shield_Adamantine_A",
+            "MAG_MeleeDebuff_AttackDebuff1_OnDamage_Shield"
+          ],
+          "wikiPage": "Adamantine Shield"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "a7b4d953-988a-4817-9a9b-29da40eb6542",
+          "type": "craft",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Adamantine Forge",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Mithral Ore",
+                "value": 1
+              },
+              {
+                "kind": "item",
+                "subject": "Shield Mould"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Operate the Adamantine Forge",
+                "value": "Load the ore and mould, lower the platform, release lava and use the hammer"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Only two pieces of Mithral Ore are available, shared across all six forge outputs.",
+            "The mould is reusable; each crafted item consumes one ore."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Shield&oldid=415819",
+              "revisionId": 415819,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Forge_%28location%29&oldid=415809",
+              "revisionId": 415809,
+              "section": "Overview; Using the Adamantine Forge; Shields"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grymforge&oldid=433400",
+              "revisionId": 433400,
+              "section": "Abandoned Refuge / Adamantine Forge; Loot / Craftable in the Adamantine Forge"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mithral_Ore&oldid=421041",
+              "revisionId": 421041,
+              "section": "Lead; Usage"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shield_Mould&oldid=423140",
+              "revisionId": 423140,
+              "section": "Lead"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b16f635f-b127-4f73-adc6-4a5a85e8214c",
+      "bindings": [
+        {
+          "id": "4a8aeded-57f0-463d-b139-015bed58a908",
+          "act": "ACT 1",
+          "progressKey": "act 1|sussur greatsword",
+          "gameIds": [
+            "QUEST_FOR_SussurGreatsword",
+            "FOR_IncompleteMasterwork_SussurGreatsword"
+          ],
+          "wikiPage": "Sussur Greatsword"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "d3564134-7cd4-4743-8bfb-d789b5f9d4b7",
+          "type": "craft",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Blighted Village",
+            "wikiPage": "Blighted Village"
+          },
+          "sublocation": "Smithy's cellar furnace",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Sussur Tree Bark"
+              },
+              {
+                "kind": "item",
+                "subject": "Plain Greatsword"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Use the smithy furnace"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "First light the furnace using the bellows, then add Sussur Tree Bark, then add a plain, non-magical Greatsword.",
+            "This is the crafted result of Finish the Masterwork Weapon, not a separate quest reward route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sussur_Greatsword&oldid=423763",
+              "revisionId": 423763,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Finish_the_Masterwork_Weapon&oldid=418506",
+              "revisionId": 418506,
+              "section": "Walkthrough; Quest rewards"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blighted_Village&oldid=433668",
+              "revisionId": 433668,
+              "section": "Blacksmith's house"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sussur_Tree_Bark&oldid=423765",
+              "revisionId": 423765,
+              "section": "Lead; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "052324d4-48c3-4400-b335-b4dcfd9c6689",
+      "bindings": [
+        {
+          "id": "9f12cc7c-33a0-40bb-ae18-c864b6dc10f6",
+          "act": "ACT 1",
+          "progressKey": "act 1|mourning frost",
+          "gameIds": [
+            "MAG_Cold_IncreaseColdDamageOnCast_Staff"
+          ],
+          "wikiPage": "Mourning Frost"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "93a8ed94-4689-4f22-8e8a-3173bdd4a252",
+          "type": "combine",
+          "acts": null,
+          "actor": null,
+          "location": null,
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Icy Crystal"
+              },
+              {
+                "kind": "item",
+                "subject": "Icy Helve"
+              },
+              {
+                "kind": "item",
+                "subject": "Icy Metal"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Combine all three components",
+                "value": "Place them in the same character’s inventory"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Combine Icy Crystal, Icy Helve and Icy Metal in one character’s inventory.",
+            "The component acquisition branches are only partially covered; assembly has no fixed map location or verified Act restriction."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mourning_Frost&oldid=421125",
+              "revisionId": 421125,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Icy_Crystal&oldid=419662",
+              "revisionId": 419662,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Icy_Helve&oldid=419663",
+              "revisionId": 419663,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Icy_Metal&oldid=419664",
+              "revisionId": 419664,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "11709aeb-8258-40b7-82ec-55b125e3bb6f",
+      "bindings": [
+        {
+          "id": "0d4cf2b5-13fd-4654-865d-d4c56b2de635",
+          "act": "ACT 1",
+          "progressKey": "act 1|vision of the absolute",
+          "gameIds": [
+            "FOR_Spear_TrueSoul",
+            "FOR_TrueSoul_Spear"
+          ],
+          "wikiPage": "Vision of the Absolute"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "84a58698-c4b7-4131-9c6f-c4887d605433",
+          "type": "combine",
+          "acts": null,
+          "actor": null,
+          "location": null,
+          "sublocation": null,
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Shaft of a Broken Spear"
+              },
+              {
+                "kind": "item",
+                "subject": "Head of a Broken Spear"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Combine the two components",
+                "value": "Place them in the same character’s inventory"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Combine Shaft of a Broken Spear and Head of a Broken Spear in one character’s inventory.",
+            "The shaft is on Edowin’s corpse in the Forest; the head comes from the Owlbear mother in the Owlbear Nest.",
+            "Obtaining both components does not require the player to kill both owners."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Vision_of_the_Absolute&oldid=424690",
+              "revisionId": 424690,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shaft_of_a_Broken_Spear&oldid=423079",
+              "revisionId": 423079,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Head_of_a_Broken_Spear&oldid=419385",
+              "revisionId": 419385,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Edowin&oldid=425476",
+              "revisionId": 425476,
+              "section": "Involvement / Act One; Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Owlbear_Nest&oldid=431001",
+              "revisionId": 431001,
+              "section": "Overview / Obtaining the Owlbear Cub as a camp follower"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "4a15d374-1ce9-469c-84a7-98d69629ae62",
+      "bindings": [
+        {
+          "id": "e7f67b56-231b-4018-a334-d2b567044924",
+          "act": "ACT 1",
+          "progressKey": "act 1|grymskull helm",
+          "gameIds": [
+            "UNI_UND_KC_AdamantineGolem_Helmet",
+            "MAG_MeleeDebuff_AttackDebuff1_OnDamage_Helmet"
+          ],
+          "wikiPage": "Grymskull Helm"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ea7fdb0f-b8dc-4d0d-8fad-3a3924da3e43",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Grym",
+            "wikiPage": "Grym"
+          },
+          "location": {
+            "name": "Adamantine Forge",
+            "wikiPage": "Adamantine Forge (location)"
+          },
+          "sublocation": "Forge arena",
+          "coordinates": null,
+          "conditions": null,
+          "notes": [
+            "Grym carries the helm; it is actor loot, not an Adamantine Forge crafting output."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grymskull_Helm&oldid=419203",
+              "revisionId": 419203,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grym&oldid=415634",
+              "revisionId": 415634,
+              "section": "Overview; Combat / Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Forge_%28location%29&oldid=415809",
+              "revisionId": 415809,
+              "section": "Overview"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "70688392-db9e-42d2-96b1-5a8a0396051d",
+      "bindings": [
+        {
+          "id": "3ca9a977-e308-42e9-8271-e62283f75ba0",
+          "act": "ACT 1",
+          "progressKey": "act 1|poisoner's robe",
+          "gameIds": [
+            "UNI_FOR_SpiderQueen_Robe",
+            "FOR_SpiderQueen_Robe"
+          ],
+          "wikiPage": "Poisoner's Robe"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "4846e4a3-267b-4e25-a62b-cc3f47ed3713",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Phase Spider Matriarch",
+            "wikiPage": "Phase Spider Matriarch"
+          },
+          "location": {
+            "name": "Whispering Depths",
+            "wikiPage": "Whispering Depths"
+          },
+          "sublocation": "Matriarch's lair",
+          "coordinates": null,
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Poisoner%27s_Robe&oldid=421868",
+              "revisionId": 421868,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Phase_Spider_Matriarch&oldid=414738",
+              "revisionId": 414738,
+              "section": "Combat / Encounter details; Combat / Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Whispering_Depths&oldid=370813",
+              "revisionId": 370813,
+              "section": "Matriarch's den; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        },
+        {
+          "id": "32fb0efc-2544-4476-b1e8-6d6450879a22",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Phase Spider Matriarch",
+            "wikiPage": "Phase Spider Matriarch"
+          },
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Fallen Matriarch corpse",
+          "coordinates": {
+            "x": 140,
+            "y": 151,
+            "space": "Underdark",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Recover and loot the fallen Matriarch corpse"
+              }
+            ],
+            "before": null,
+            "after": [
+              {
+                "kind": "interaction",
+                "subject": "Central-hole fall",
+                "value": "The Matriarch’s corpse has fallen through the central hole into the Underdark"
+              }
+            ],
+            "exclusions": null
+          },
+          "notes": [
+            "The coordinates identify the Matriarch’s corpse, not the party’s landing point.",
+            "The recoverable route uses the central hole, which is not labelled Chasm; side pits labelled Chasm are not equivalent loot destinations.",
+            "Knocking the living Matriarch into these holes is blocked on both Tactician and Honour: she teleports back.",
+            "This restriction describes that living-knock method; other corpse-transfer methods and custom difficulty settings are not reviewed here."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Poisoner%27s_Robe&oldid=421868",
+              "revisionId": 421868,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Phase_Spider_Matriarch&oldid=414738",
+              "revisionId": 414738,
+              "section": "Combat / Encounter details; Combat / Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "309774c4-cc6f-4b2e-9d64-a61f63a4b22e",
+      "bindings": [
+        {
+          "id": "3c7e7f4f-7ea1-4448-aa64-032a79e64e7d",
+          "act": "ACT 1",
+          "progressKey": "act 1|light of creation",
+          "gameIds": [
+            "WPN_Tower_AutomatonHalberd"
+          ],
+          "wikiPage": "Light of Creation"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "3a91e94e-b951-404b-bd11-553ac3eb35bf",
+          "type": "drop",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Bernard",
+            "wikiPage": "Bernard"
+          },
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Roof (fourth floor)",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Bernard",
+                "value": "Defeat him in combat and loot the weapon"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Light_of_Creation&oldid=420481",
+              "revisionId": 420481,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arcane_Tower&oldid=431380",
+              "revisionId": 431380,
+              "section": "The fourth floor (roof); Loot / Fourth floor (roof)"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bernard&oldid=432891",
+              "revisionId": 432891,
+              "section": "Combat / Notable loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        },
+        {
+          "id": "c501e0ea-f869-4dd9-aa75-979ef6d25d50",
+          "type": "disarm",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Bernard",
+            "wikiPage": "Bernard"
+          },
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Roof (fourth floor)",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "ability",
+                "subject": "Command: Drop",
+                "value": "Successfully make Bernard drop the weapon, then collect it"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Command: Drop allows a Wisdom saving throw; disarming is not guaranteed."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Light_of_Creation&oldid=420481",
+              "revisionId": 420481,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arcane_Tower&oldid=431380",
+              "revisionId": 431380,
+              "section": "The fourth floor (roof); Loot / Fourth floor (roof)"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bernard&oldid=432891",
+              "revisionId": 432891,
+              "section": "Combat / Notable loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Command%3A_Drop&oldid=278984",
+              "revisionId": 278984,
+              "section": "Description; Properties"
             }
           ],
           "review": {

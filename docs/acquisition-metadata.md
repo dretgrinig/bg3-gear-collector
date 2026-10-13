@@ -5,7 +5,7 @@ Phase 1 introduced an isolated metadata draft for v0.8.7-era catalogue identitie
 ## Files and API
 
 - `acquisition-metadata.js`: standalone CommonJS validator and deterministic resolver; no file reads, network, DOM, storage or timers.
-- `data/acquisition.v1.json`: schema **1**, dataset **1.1.0-act1.1a**; twenty catalogue entries, twenty-one bindings, twenty-four acquisition routes. The original ten-entry pilot is unchanged; [Checkpoint 1A](acquisition-act1-1a.md) adds ten reviewed Act 1 routes.
+- `data/acquisition.v1.json`: schema **1**, dataset **1.2.0-act1.1b**; thirty catalogue entries, thirty-one bindings, thirty-six acquisition routes. The original ten-entry pilot and [Checkpoint 1A](acquisition-act1-1a.md) remain unchanged; [Checkpoint 1B](acquisition-act1-1b.md) adds ten Act 1 identities and twelve reviewed routes.
 - `tests/acquisition-metadata.test.cjs`: contract tests plus existing application functions exercised through their established mocked boundaries.
 
 ```js

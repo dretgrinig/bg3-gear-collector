@@ -18,6 +18,7 @@ const dataset = () => JSON.parse(readFileSync(join(root, 'data', 'acquisition.v1
 const catalogue = JSON.parse(readFileSync(join(__dirname, 'fixtures', 'vendor-catalogue.json'), 'utf8'));
 const baselineFile = path => execFileSync('git', ['show', baselineCommit + ':' + path], { cwd: root, encoding: 'utf8' });
 const baselinePilot = JSON.parse(baselineFile('data/acquisition.v1.json'));
+const approved1ASnapshot = JSON.parse(execFileSync('git', ['show', 'ff140dc1535bb5bed5ba38af047b9826225ed98e:data/acquisition.v1.json'], { cwd: root, encoding: 'utf8' }));
 
 // Literal IDs were assigned once before implementation. No /tmp dependency or
 // expected value is derived from the new canonical metadata under test.
@@ -299,14 +300,18 @@ for (const [index, spec] of approved.entries()) {
   });
 }
 
-test('1A adds only the approved ten entries: schema 1, version 1.1.0-act1.1a and 20/21/24 counts', () => {
+test('1A retains the approved checkpoint snapshot: schema 1, version 1.1.0-act1.1a and 20/21/24 counts', () => {
   const data = dataset(), result = metadata.validateDataset(data);
   assert.equal(result.ok, true, JSON.stringify(result.issues)); assert.equal(data.schemaVersion, 1);
-  assert.equal(data.datasetVersion, '1.1.0-act1.1a'); assert.equal(data.entries.length, 20);
-  assert.equal(data.entries.flatMap(entry => entry.bindings).length, 21);
-  assert.equal(data.entries.flatMap(entry => entry.routes).length, 24);
+  assert.equal(approved1ASnapshot.datasetVersion, '1.1.0-act1.1a');
+  const retainedIds = new Set(approved1ASnapshot.entries.map(entry => entry.id));
+  const retained = data.entries.filter(entry => retainedIds.has(entry.id));
+  assert.deepEqual(retained, approved1ASnapshot.entries, 'Later checkpoints cannot modify any approved 1A or pilot fact');
+  assert.equal(retained.length, 20);
+  assert.equal(retained.flatMap(entry => entry.bindings).length, 21);
+  assert.equal(retained.flatMap(entry => entry.routes).length, 24);
   const originalIds = new Set(baselinePilot.entries.map(entry => entry.id));
-  const added = data.entries.filter(entry => !originalIds.has(entry.id));
+  const added = retained.filter(entry => !originalIds.has(entry.id));
   assert.deepEqual(added.map(entry => entry.id).sort(), approved.map(spec => spec.entryId).sort());
   assert.deepEqual(added.flatMap(entry => entry.bindings.map(binding => binding.progressKey)).sort(), approved.map(spec => spec.progressKey).sort());
   assert.ok(added.every(entry => entry.bindings.length === 1 && entry.routes.length === 1));
@@ -389,7 +394,7 @@ test('1A deterministic generated bundle embeds canonical metadata exactly before
   assert.equal(first, second); assert.equal(first, readFileSync(join(root, 'assets', 'acquisition-pilot.js'), 'utf8'));
   const embedded = first.match(/  const dataset = (\{[^\n]*\});/); assert.ok(embedded);
   assert.deepEqual(JSON.parse(embedded[1]), data);
-  assert.equal(JSON.parse(embedded[1]).datasetVersion, '1.1.0-act1.1a');
+  assert.equal(JSON.parse(embedded[1]).datasetVersion, data.datasetVersion);
 });
 
 for (const path of ['fresh', 'cached']) test('1A actual ' + path + ' catalogue path hydrates all new items in Full without replacing controls', () => {

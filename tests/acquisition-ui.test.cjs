@@ -346,7 +346,7 @@ test('rendering, mode changes and item progress toggles preserve progress map id
   assert.deepEqual(copy(h.marks), [{ key: 'act 2|armour of devotion', status: 'found' }]);
   assert.equal(progress['act 2|armour of devotion'], 'found'); assert.equal(JSON.stringify(data), before);
 });
-test('expanded acquisition data enriches only its twenty approved item identities and preserves separate Phalar and Dolor alternatives', () => {
+test('expanded acquisition data enriches only its thirty approved item identities and preserves separate Phalar and Dolor alternatives', () => {
   const data = JSON.parse(readFileSync(join(root, 'data', 'acquisition.v1.json'), 'utf8')); createUI(data);
   const h = itemHarness(catalogue, { dataset: data }), matched = new Set();
   for (const [index, item] of Array.from(h.app.view()).entries()) {
@@ -354,7 +354,7 @@ test('expanded acquisition data enriches only its twenty approved item identitie
     assert.equal(!!desktop, !!mobile);
     if (desktop) matched.add(key(item));
   }
-  assert.equal(matched.size, 20);
+  assert.equal(matched.size, 30);
   for (const name of ['Phalar Aluve', 'Dolor Amarus']) {
     h.search(name); assert.equal(h.rows().length, 1);
     for (const surface of surfaces(h)) assert.equal(required(surface, '.acquisition-enrichment').querySelectorAll('.acquisition-route').length, 3);
@@ -478,7 +478,7 @@ async function exportFullSnapshot() {
   createUI(fixture());
   const browser = browserBundle(readFileSync(join(root, 'assets', 'acquisition-pilot.js'), 'utf8'));
   const h = itemHarness(catalogue, { bundle: false }); h.window.BG3AcquisitionUI = browser.ui; h.app.render();
-  assert.equal(surfaces(h).filter(enrichment).length, 40, 'Live Full DOM contains all twenty approved desktop and mobile acquisition entries');
+  assert.equal(surfaces(h).filter(enrichment).length, 60, 'Live Full DOM contains all thirty approved desktop and mobile acquisition entries');
   exportBoundary(h);
   const liveBefore = h.context.document.documentElement.outerHTML;
   assert.ok(bodyContents(liveBefore).includes('acquisition-enrichment'));
@@ -511,7 +511,7 @@ for (const mode of ['minimal', 'light']) test(`actual saved Full snapshot restor
     assert.equal(surface.querySelectorAll('.acquisition-reference').length, 0);
   }
   const before = discovery(h), progress = h.app.progress();
-  h.mode('full'); assert.equal(surfaces(h).filter(enrichment).length, 40);
+  h.mode('full'); assert.equal(surfaces(h).filter(enrichment).length, 60);
   h.mode(mode); assert.deepEqual(copy(discovery(h)), copy(before)); assert.equal(h.app.progress(), progress);
   assert.ok(surfaces(h).every(surface => !enrichment(opened(surface))));
   assert.deepEqual(browser.calls, []);
