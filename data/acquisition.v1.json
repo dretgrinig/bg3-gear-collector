@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "datasetVersion": "1.2.0-act1.1b",
+  "datasetVersion": "1.3.0-act1.1c",
   "entries": [
     {
       "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
@@ -2470,6 +2470,1510 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "13e36e99-e54c-43f5-880d-f5a863a18fb6",
+      "bindings": [
+        {
+          "id": "2b495fca-7ee6-4d41-b52e-d9108a751b28",
+          "act": "ACT 1",
+          "progressKey": "act 1|fetish of callarduran smoothhands",
+          "gameIds": [
+            "S_UND_CallarduranTrinket",
+            "UND_DeadInWater_CallarduranTrinket"
+          ],
+          "wikiPage": "Fetish of Callarduran Smoothhands"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "a91d0d81-612b-4a43-a70f-490b4a421399",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Deep gnome corpse"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Corpse-disposal shore opposite the berth",
+          "coordinates": {
+            "x": -610,
+            "y": 408,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "check",
+                "subject": "Inspect the corpses",
+                "value": "Successful Perception"
+              },
+              {
+                "kind": "check",
+                "subject": "Deception",
+                "value": "Success after inspection; convince Brathwen to leave"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "After inspection and successful Deception, loot the gnome corpses for the ring. Deep gnomes have introductory Deception OR Persuasion alternatives; these are not universal prerequisites."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Fetish_of_Callarduran_Smoothhands&oldid=418432",
+              "revisionId": 418432,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brathwen&oldid=426666",
+              "revisionId": 426666,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grymforge&oldid=433400",
+              "revisionId": 433400,
+              "section": "Brathwen and Viss"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "f198ec10-6aa3-4155-a9c2-1134d95fa4ec",
+          "type": "steal",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Deep gnome corpse"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Corpse-disposal shore opposite the berth",
+          "coordinates": {
+            "x": -610,
+            "y": 408,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "check",
+                "subject": "Inspect the corpses",
+                "value": "Successful Perception"
+              },
+              {
+                "kind": "check",
+                "subject": "Reach for the trinket",
+                "value": "Successful dialogue Sleight of Hand after inspection"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "This dialogue route is an alternative to inspection followed by Deception. The coordinates describe the corpse, not Brathwen."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Fetish_of_Callarduran_Smoothhands&oldid=418432",
+              "revisionId": 418432,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brathwen&oldid=426666",
+              "revisionId": 426666,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grymforge&oldid=433400",
+              "revisionId": 433400,
+              "section": "Brathwen and Viss"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "18143c17-9c84-4f63-b33a-2c9e3a48ba75",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Brathwen",
+            "wikiPage": "Brathwen"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Corpse-disposal shore opposite the berth",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Failed acquisition checks",
+                "value": "Can transfer the ring to Brathwen"
+              },
+              {
+                "kind": "npc",
+                "subject": "Brathwen",
+                "value": "Must hold the transferred ring"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Trading dialogue",
+                "value": "Purchase the ring"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Brathwen offers the ring through trading after receiving it following failed checks."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Fetish_of_Callarduran_Smoothhands&oldid=418432",
+              "revisionId": 418432,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brathwen&oldid=426666",
+              "revisionId": 426666,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grymforge&oldid=433400",
+              "revisionId": 433400,
+              "section": "Brathwen and Viss"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "e0770a8d-6caf-406f-b02f-a21f151bec31",
+          "type": "drop",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Brathwen",
+            "wikiPage": "Brathwen"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Corpse-disposal shore opposite the berth",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Brathwen",
+                "value": "Must hold the ring"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Defeat Brathwen",
+                "value": "Loot his body"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "This route depends on who currently holds the ring. Corpse coordinates are not Brathwen coordinates."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Fetish_of_Callarduran_Smoothhands&oldid=418432",
+              "revisionId": 418432,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brathwen&oldid=426666",
+              "revisionId": 426666,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grymforge&oldid=433400",
+              "revisionId": 433400,
+              "section": "Brathwen and Viss"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ffb4d4e7-1bfb-4f48-a4d2-f7ca114ae733",
+      "bindings": [
+        {
+          "id": "fe5eb5c6-2ef7-4f3f-8e5f-d4f75cfe901d",
+          "act": "ACT 1",
+          "progressKey": "act 1|crusher's ring",
+          "gameIds": [
+            "Quest_GOB_DrunkGoblin_Ring",
+            "ARM_DrunkGoblinRing"
+          ],
+          "wikiPage": "Crusher's Ring"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "05b12c2f-380e-4c96-9987-d34484e54549",
+          "type": "drop",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Crusher",
+            "wikiPage": "Crusher"
+          },
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Eastern courtyard",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Defeat Crusher",
+                "value": "Loot his corpse"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Crusher%27s_Ring&oldid=417417",
+              "revisionId": 417417,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Crusher&oldid=433223",
+              "revisionId": 433223,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Goblin_Camp&oldid=433423",
+              "revisionId": 433423,
+              "section": "Main area of the camp / Eastern courtyard; Items / Looted"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "c7b59b42-f938-4750-a640-b57227d972b5",
+          "type": "steal",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Crusher",
+            "wikiPage": "Crusher"
+          },
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Eastern courtyard",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Kiss Crusher's foot",
+                "value": "Agree during his dialogue"
+              },
+              {
+                "kind": "check",
+                "subject": "Dialogue Sleight of Hand",
+                "value": "DC 10 success"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": [
+              {
+                "kind": "choice",
+                "subject": "Foot-kissing dialogue unavailable",
+                "value": "Drow, drow half-elf, or characters disguised as either"
+              }
+            ]
+          },
+          "notes": [
+            "The ring cannot be obtained by ordinary pickpocketing. A Rogue has an advantaged dialogue option, but that class is not required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Crusher%27s_Ring&oldid=417417",
+              "revisionId": 417417,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Crusher&oldid=433223",
+              "revisionId": 433223,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Goblin_Camp&oldid=433423",
+              "revisionId": 433423,
+              "section": "Main area of the camp / Eastern courtyard; Items / Looted"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fdab6f28-624c-4d83-b229-661fe6a16c59",
+      "bindings": [
+        {
+          "id": "c38e5635-1352-4763-a99f-c1e9dfe1edb0",
+          "act": "ACT 1",
+          "progressKey": "act 1|everburn blade",
+          "gameIds": [
+            "MAG_Fire_AlwaysDippedInFire_Greatsword"
+          ],
+          "wikiPage": "Everburn Blade"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "6dfb04eb-0aa9-491a-acbc-de9472fb0c68",
+          "type": "drop",
+          "acts": [
+            "prologue"
+          ],
+          "actor": {
+            "name": "Commander Zhalk",
+            "wikiPage": "Zhalk"
+          },
+          "location": {
+            "name": "Nautiloid",
+            "wikiPage": "Nautiloid"
+          },
+          "sublocation": "Helm",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Defeat Commander Zhalk",
+                "value": "Loot the blade"
+              }
+            ],
+            "before": [
+              {
+                "kind": "interaction",
+                "subject": "Leave the Nautiloid",
+                "value": "Acquire the blade before using the transponder"
+              }
+            ],
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Acquire the blade during the Prologue before activating the transponder."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Everburn_Blade&oldid=418305",
+              "revisionId": 418305,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zhalk&oldid=414973",
+              "revisionId": 414973,
+              "section": "Involvement / Prologue; Combat / Loot; Combat / Tactics"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Nautiloid&oldid=428850",
+              "revisionId": 428850,
+              "section": "Overview / Helm; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "2f2fd3a4-57a7-4a76-8177-2c80737ca98a",
+          "type": "disarm",
+          "acts": [
+            "prologue"
+          ],
+          "actor": {
+            "name": "Commander Zhalk",
+            "wikiPage": "Zhalk"
+          },
+          "location": {
+            "name": "Nautiloid",
+            "wikiPage": "Nautiloid"
+          },
+          "sublocation": "Helm",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "ability",
+                "subject": "Command: Drop",
+                "value": "Successfully disarm Zhalk, then collect the blade"
+              }
+            ],
+            "before": [
+              {
+                "kind": "interaction",
+                "subject": "Leave the Nautiloid",
+                "value": "Acquire the blade before using the transponder"
+              }
+            ],
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Command: Drop allows a Wisdom saving throw. No particular companion is required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Everburn_Blade&oldid=418305",
+              "revisionId": 418305,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zhalk&oldid=414973",
+              "revisionId": 414973,
+              "section": "Involvement / Prologue; Combat / Loot; Combat / Tactics"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Nautiloid&oldid=428850",
+              "revisionId": 428850,
+              "section": "Overview / Helm; Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Command%3A_Drop&oldid=278984",
+              "revisionId": 278984,
+              "section": "Description; Properties"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fd5c61f0-ff07-433b-817c-bf303badffa6",
+      "bindings": [
+        {
+          "id": "4a47e07e-632c-414f-82bb-cc3f8654b2a8",
+          "act": "ACT 1",
+          "progressKey": "act 1|varsh ko'kuu's boots",
+          "gameIds": [
+            "UNI_CRE_HatcheryBoots",
+            "CRE_Hatchery_AcidPoisonImmunity_Boots"
+          ],
+          "wikiPage": "Varsh Ko'kuu's Boots"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "f1b5dfdf-ae87-4fc3-a4a7-99c40727e8b2",
+          "type": "gift",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Varsh Ko'kuu",
+            "wikiPage": "Ko'kuu"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Hatchery cliff overlooking the egg",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "check",
+                "subject": "Persuasion",
+                "value": "Successfully convince Varsh to entrust the egg to you"
+              },
+              {
+                "kind": "choice",
+                "subject": "Protective answer after Persuasion",
+                "value": "Raise it as your own OR find a more forgiving crèche OR the githyanki-specific pledge to raise a great ghaik-slayer"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Choose a protective answer after the successful persuasion. Omelette or sale answers are not protective and start combat. Delivering the egg to Esther is not required for this gift."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Varsh_Ko%27kuu%27s_Boots&oldid=424593",
+              "revisionId": 424593,
+              "section": "Where to find; Related Quest"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ko%27kuu&oldid=426079",
+              "revisionId": 426079,
+              "section": "Involvement / Act One; Combat / Loot; Notes and references"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Steal_a_Githyanki_Egg&oldid=433666",
+              "revisionId": 433666,
+              "section": "Walkthrough / Acquiring the egg"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Cr%C3%A8che_Y%27llek&oldid=417426",
+              "revisionId": 417426,
+              "section": "Hatchery"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "d285bc4b-ae8e-4844-a925-bab71bc19942",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Varsh Ko'kuu",
+            "wikiPage": "Ko'kuu"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Hatchery cliff overlooking the egg",
+          "coordinates": null,
+          "conditions": null,
+          "notes": [
+            "The boots are listed as carried loot. The separate gift dialogue is not a prerequisite for this route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Varsh_Ko%27kuu%27s_Boots&oldid=424593",
+              "revisionId": 424593,
+              "section": "Where to find; Related Quest"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ko%27kuu&oldid=426079",
+              "revisionId": 426079,
+              "section": "Involvement / Act One; Combat / Loot; Notes and references"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Steal_a_Githyanki_Egg&oldid=433666",
+              "revisionId": 433666,
+              "section": "Walkthrough / Acquiring the egg"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Cr%C3%A8che_Y%27llek&oldid=417426",
+              "revisionId": 417426,
+              "section": "Hatchery"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "7469bbee-d597-4512-ac6c-922465342d59",
+      "bindings": [
+        {
+          "id": "e140cd18-bf8f-4ed5-a0a4-3c9c9b441b96",
+          "act": "ACT 1",
+          "progressKey": "act 1|hamarhraft",
+          "gameIds": [
+            "MAG_Mobility_ExplosionOnJump_Maul"
+          ],
+          "wikiPage": "Hamarhraft"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ecbfa6f2-d7ce-4b93-8336-59686fde24ec",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Waukeen's Rest",
+            "wikiPage": "Waukeen's Rest"
+          },
+          "sublocation": "Upstairs inn room adjacent to Benryn's room",
+          "coordinates": {
+            "x": -85,
+            "y": 631,
+            "space": "Waukeen's Rest",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Gilded chest",
+                "value": "Intact chest state"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "The chest is locked."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hamarhraft&oldid=419287",
+              "revisionId": 419287,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Waukeen%27s_Rest&oldid=424793",
+              "revisionId": 424793,
+              "section": "After the assault; Benryn and Mirileth; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "42a07a88-0293-4f23-9b69-1a6399fa963a",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Waukeen's Rest",
+            "wikiPage": "Waukeen's Rest"
+          },
+          "sublocation": "Upstairs inn room adjacent to Benryn's room",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": null,
+            "before": null,
+            "after": [
+              {
+                "kind": "interaction",
+                "subject": "Fire / long rest",
+                "value": "Chest destroyed; collect the surviving loose weapon"
+              }
+            ],
+            "exclusions": null
+          },
+          "notes": [
+            "The loot remains after the chest is destroyed."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hamarhraft&oldid=419287",
+              "revisionId": 419287,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Waukeen%27s_Rest&oldid=424793",
+              "revisionId": 424793,
+              "section": "After the assault; Benryn and Mirileth; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "706ba397-cf92-4ea4-8a49-90a436076c28",
+      "bindings": [
+        {
+          "id": "5f4ec052-8c5e-4b31-8e3d-89bad5a513b4",
+          "act": "ACT 1",
+          "progressKey": "act 1|ritual dagger",
+          "gameIds": [
+            "WPN_GOB_PainPriest_Dagger",
+            "GOB_PainPriest_Dagger"
+          ],
+          "wikiPage": "Ritual Dagger"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "144e948d-a655-4b94-8b17-c10c45ec0105",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Bloodied Shrine",
+          "coordinates": {
+            "x": 338,
+            "y": -26,
+            "space": "Shattered Sanctum",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "Depending on arrival state, the dagger is on the table or floor near Abdirak."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ritual_Dagger&oldid=422415",
+              "revisionId": 422415,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Abdirak&oldid=430717",
+              "revisionId": 430717,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bloodied_Shrine&oldid=430720",
+              "revisionId": 430720,
+              "section": "Overview; Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shattered_Sanctum&oldid=431013",
+              "revisionId": 431013,
+              "section": "Bloodied shrine"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "406b1f43-1e27-46b2-a3b8-69a0c7229c76",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Abdirak",
+            "wikiPage": "Abdirak"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Bloodied Shrine",
+          "coordinates": null,
+          "conditions": null,
+          "notes": [
+            "In the carried placement state, Abdirak holds the dagger. He takes the shrine weapons when departing. Departure can follow the goblin-leader resolution, but that is not a mandatory kill requirement for acquisition."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ritual_Dagger&oldid=422415",
+              "revisionId": 422415,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Abdirak&oldid=430717",
+              "revisionId": 430717,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bloodied_Shrine&oldid=430720",
+              "revisionId": 430720,
+              "section": "Overview; Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shattered_Sanctum&oldid=431013",
+              "revisionId": 431013,
+              "section": "Bloodied shrine"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ceaf48b5-fc80-4077-ae6b-96240d7bf28d",
+      "bindings": [
+        {
+          "id": "67415fd7-7b89-4919-a638-f95479963171",
+          "act": "ACT 1",
+          "progressKey": "act 1|the spellsparkler",
+          "gameIds": [
+            "MAG_ChargedLightning_Quarterstaff"
+          ],
+          "wikiPage": "The Spellsparkler"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "400f612b-cc48-4844-9f84-a3c2a9f097e2",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Counsellor Florrick",
+            "wikiPage": "Florrick"
+          },
+          "location": {
+            "name": "Waukeen's Rest",
+            "wikiPage": "Waukeen's Rest"
+          },
+          "sublocation": "Post-rescue conversation",
+          "coordinates": {
+            "x": -63,
+            "y": 600,
+            "space": "Waukeen's Rest",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Rescue Counsellor Florrick",
+                "value": "Save her in time and speak outside"
+              },
+              {
+                "kind": "choice",
+                "subject": "One of three mutually exclusive rewards",
+                "value": "Choose The Spellsparkler; The Joltshooter and The Sparky Points are mutually exclusive alternatives"
+              }
+            ],
+            "before": [
+              {
+                "kind": "interaction",
+                "subject": "Fire after entering the inner yard",
+                "value": "Rescue before fast travel, returning to camp, or a long rest advances the fire"
+              }
+            ],
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Only one reward weapon is selected. Agreement to the subsequent Duke rescue request is not required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Spellsparkler&oldid=424114",
+              "revisionId": 424114,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Florrick&oldid=431924",
+              "revisionId": 431924,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Waukeen%27s_Rest&oldid=424793",
+              "revisionId": 424793,
+              "section": "After the assault; Florrick and the Grand Duke; Loot / Quest rewards; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rescue_the_Grand_Duke&oldid=408690",
+              "revisionId": 408690,
+              "section": "Walkthrough / Waukeen's Rest / If Florrick is saved"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "015f7414-0375-490d-8dca-282e397ebdef",
+      "bindings": [
+        {
+          "id": "85ca800f-f60e-4d21-93b2-500e4efcd299",
+          "act": "ACT 1",
+          "progressKey": "act 1|hellrider's pride",
+          "gameIds": [
+            "DEN_HellridersPride"
+          ],
+          "wikiPage": "Hellrider's Pride"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "a367f74b-94e1-4b75-8b58-bce08c7a8fa3",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Zevlor",
+            "wikiPage": "Zevlor"
+          },
+          "location": {
+            "name": "Emerald Grove",
+            "wikiPage": "Emerald Grove"
+          },
+          "sublocation": "Secluded Chamber",
+          "coordinates": {
+            "x": -53,
+            "y": 67,
+            "space": "Secluded Chamber",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Carried loot is a separate acquisition method, without either reward quest as a prerequisite."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hellrider%27s_Pride&oldid=419462",
+              "revisionId": 419462,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zevlor&oldid=414784",
+              "revisionId": 414784,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Hollow&oldid=413130",
+              "revisionId": 413130,
+              "section": "Secluded Chamber"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "7bc7ff25-d716-44c6-b59e-cf1ed7d78fc4",
+          "type": "steal",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Zevlor",
+            "wikiPage": "Zevlor"
+          },
+          "location": {
+            "name": "Emerald Grove",
+            "wikiPage": "Emerald Grove"
+          },
+          "sublocation": "Secluded Chamber",
+          "coordinates": {
+            "x": -53,
+            "y": 67,
+            "space": "Secluded Chamber",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Steal from Zevlor",
+                "value": "Take the carried gloves"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "This is separate from the two quest rewards."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hellrider%27s_Pride&oldid=419462",
+              "revisionId": 419462,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zevlor&oldid=414784",
+              "revisionId": 414784,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Hollow&oldid=413130",
+              "revisionId": 413130,
+              "section": "Secluded Chamber"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "c4e5a02a-db2a-46df-b985-432435025c3b",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Zevlor",
+            "wikiPage": "Zevlor"
+          },
+          "location": {
+            "name": "Emerald Grove",
+            "wikiPage": "Emerald Grove"
+          },
+          "sublocation": "Secluded Chamber",
+          "coordinates": {
+            "x": -53,
+            "y": 67,
+            "space": "Secluded Chamber",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Kill Kagha",
+                "value": "Successfully resolve the Kagha conflict, then return to Zevlor"
+              },
+              {
+                "kind": "npc",
+                "subject": "Zevlor",
+                "value": "Must remain available to give the reward"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Kill Kagha is an alternative to Investigate Kagha, not a joint requirement."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hellrider%27s_Pride&oldid=419462",
+              "revisionId": 419462,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zevlor&oldid=414784",
+              "revisionId": 414784,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Hollow&oldid=413130",
+              "revisionId": 413130,
+              "section": "Secluded Chamber"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Kill_Kagha&oldid=420122",
+              "revisionId": 420122,
+              "section": "Objectives; Walkthrough; Rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "b84514e9-0235-4bec-9aaa-1cd81f6e8480",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Zevlor",
+            "wikiPage": "Zevlor"
+          },
+          "location": {
+            "name": "Emerald Grove",
+            "wikiPage": "Emerald Grove"
+          },
+          "sublocation": "Secluded Chamber",
+          "coordinates": {
+            "x": -53,
+            "y": 67,
+            "space": "Secluded Chamber",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Investigate Kagha",
+                "value": "Stop the ritual through the investigation, then report to Zevlor"
+              }
+            ],
+            "before": [
+              {
+                "kind": "interaction",
+                "subject": "Confront Kagha",
+                "value": "Confront her before killing OR knocking out the goblin leaders"
+              }
+            ],
+            "after": null,
+            "exclusions": [
+              {
+                "kind": "quest",
+                "subject": "Investigation auto-resolves without reward",
+                "value": "Goblin leaders killed OR knocked out before confronting Kagha"
+              }
+            ]
+          },
+          "notes": [
+            "Kagha need not die. This investigation is an alternative to Kill Kagha. The goblin-leader ordering restriction applies only to this reward route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hellrider%27s_Pride&oldid=419462",
+              "revisionId": 419462,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zevlor&oldid=414784",
+              "revisionId": 414784,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Hollow&oldid=413130",
+              "revisionId": 413130,
+              "section": "Secluded Chamber"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Investigate_Kagha&oldid=428719",
+              "revisionId": 428719,
+              "section": "Objectives; Quest rewards; Notes and references, note 4"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b9436347-ed6a-45a3-a20a-1c7cf06b8ac6",
+      "bindings": [
+        {
+          "id": "29e24cd5-864a-4147-9868-bd458fe35e5c",
+          "act": "ACT 1",
+          "progressKey": "act 1|komira's locket",
+          "gameIds": [
+            "UNI_DEN_Arabella_Locket"
+          ],
+          "wikiPage": "Komira's Locket"
+        }
+      ],
+      "coverage": "partial",
+      "routes": [
+        {
+          "id": "f12a5dbe-cc9f-4df2-b004-575e3725ed7e",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Komira / Locke",
+            "wikiPage": "Komira"
+          },
+          "location": {
+            "name": "Emerald Grove",
+            "wikiPage": "Emerald Grove"
+          },
+          "sublocation": "Sacred Pool / return to parents",
+          "coordinates": {
+            "x": 262,
+            "y": 542,
+            "space": "Sacred Pool",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Save Arabella",
+                "value": "Save her, then return to her parents"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "Reward from Arabella's parents after saving her and returning to them."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Komira%27s_Locket&oldid=425303",
+              "revisionId": 425303,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Save_Arabella&oldid=422647",
+              "revisionId": 422647,
+              "section": "Objectives / Return to Arabella's Parents; Quest rewards"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Komira&oldid=414866",
+              "revisionId": 414866,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Locke&oldid=414865",
+              "revisionId": 414865,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sacred_Pool&oldid=422574",
+              "revisionId": 422574,
+              "section": "Access"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        }
+      ]
+    },
+    {
+      "id": "5ada1f1e-ddfb-4190-96ef-5ef23e17a572",
+      "bindings": [
+        {
+          "id": "563845bc-6aa0-4dfd-8faa-098e4db19f05",
+          "act": "ACT 1",
+          "progressKey": "act 1|guiding light",
+          "gameIds": [
+            "UND_Tower_RingLight"
+          ],
+          "wikiPage": "Guiding Light"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "373bc9c9-92b3-4c61-a3a9-2f2dd4b84a11",
+          "type": "gift",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Bernard",
+            "wikiPage": "Bernard"
+          },
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Roof (fourth floor)",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Peaceful verse dialogue",
+                "value": "Choose the ring-giving stanza beginning 'How can I trust?' with Bernard"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": null
+          },
+          "notes": [
+            "The Threadbare Book documents this stanza; Bernard also supports a Bard verse-unlocking alternative. No particular class is required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Guiding_Light&oldid=419215",
+              "revisionId": 419215,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bernard&oldid=432891",
+              "revisionId": 432891,
+              "section": "Involvement / Act One / Commands; Combat / Notable loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arcane_Tower&oldid=431380",
+              "revisionId": 431380,
+              "section": "The fourth floor (roof); Bernard's commands; Loot / Fourth floor (roof)"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
+          }
+        },
+        {
+          "id": "d427d09f-716f-4688-b6c5-64d5b4df1a8e",
+          "type": "drop",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Bernard",
+            "wikiPage": "Bernard"
+          },
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Roof (fourth floor)",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Defeat Bernard",
+                "value": "Loot the ring"
+              }
+            ],
+            "before": null,
+            "after": null,
+            "exclusions": [
+              {
+                "kind": "interaction",
+                "subject": "Already received the ring",
+                "value": "Gifted through conversation"
+              }
+            ]
+          },
+          "notes": [
+            "Loot applies if Bernard has not already given away the ring. Command: Drop belongs to Light of Creation, not this ring."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Guiding_Light&oldid=419215",
+              "revisionId": 419215,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bernard&oldid=432891",
+              "revisionId": 432891,
+              "section": "Involvement / Act One / Commands; Combat / Notable loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arcane_Tower&oldid=431380",
+              "revisionId": 431380,
+              "section": "The fourth floor (roof); Bernard's commands; Loot / Fourth floor (roof)"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-13",
+            "reviewer": "Codex primary-source review"
           }
         }
       ]

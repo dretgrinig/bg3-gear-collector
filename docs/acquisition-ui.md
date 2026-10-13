@@ -1,6 +1,6 @@
 # Acquisition enrichment — Phase 2 pilot UI
 
-Phase 2 introduced the optional presentation layer for the original ten reviewed pilot entries. [Checkpoint 1A](acquisition-act1-1a.md) and [Checkpoint 1B](acquisition-act1-1b.md) extend only canonical data and the generated bundle to thirty entries; this renderer, validator and identity resolver remain unchanged. No discovery fields or progress identities are introduced.
+Phase 2 introduced the optional presentation layer for the original ten reviewed pilot entries. [Checkpoint 1A](acquisition-act1-1a.md), [Checkpoint 1B](acquisition-act1-1b.md) and [Checkpoint 1C](acquisition-act1-1c.md) extend only canonical data and the generated bundle to forty entries; this renderer, validator and identity resolver remain unchanged. No discovery fields or progress identities are introduced.
 
 ## Files and API
 

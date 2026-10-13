@@ -350,8 +350,12 @@ for (const [index, spec] of approved.entries()) {
   });
 }
 
-test('1B adds exactly ten entries and twelve routes: schema 1, dataset 1.2.0-act1.1b, 30/31/36 totals', () => {
-  const data = dataset(), checked = metadata.validateDataset(data); assert.equal(checked.ok, true, JSON.stringify(checked.issues));
+test('1B retained approved snapshot adds exactly ten entries and twelve routes: schema 1, dataset 1.2.0-act1.1b, 30/31/36 totals', () => {
+  const approvedSnapshot = JSON.parse(execFileSync('git', ['show', '9d4cc4aa38c4c2aa45b228e7175b3b66b95fa210:data/acquisition.v1.json'], { cwd: root, encoding: 'utf8' }));
+  const retainedIds = new Set(approvedSnapshot.entries.map(entry => entry.id));
+  const retained = dataset().entries.filter(entry => retainedIds.has(entry.id));
+  assert.deepEqual(retained, approvedSnapshot.entries, 'Every approved 1B snapshot entry survives subsequent data expansion unchanged');
+  const data = { ...approvedSnapshot, entries: retained }, checked = metadata.validateDataset(data); assert.equal(checked.ok, true, JSON.stringify(checked.issues));
   assert.equal(data.schemaVersion, 1); assert.equal(data.datasetVersion, '1.2.0-act1.1b'); assert.equal(data.entries.length, 30);
   assert.equal(data.entries.flatMap(entry => entry.bindings).length, 31); assert.equal(data.entries.flatMap(entry => entry.routes).length, 36);
   const originalIds = new Set(baselineEntries.map(entry => entry.id)), added = data.entries.filter(entry => !originalIds.has(entry.id));
@@ -465,7 +469,7 @@ test('1B generated asset is deterministic, validates canonical source and embeds
   const data = dataset(), first = generateBundle(), second = generateBundle(); assert.equal(metadata.validateDataset(data).ok,true);
   assert.equal(first,second); assert.equal(first,readFileSync(join(root,'assets','acquisition-pilot.js'),'utf8'));
   const embedded = first.match(/  const dataset = (\{[^\n]*\});/); assert.ok(embedded);
-  assert.deepEqual(JSON.parse(embedded[1]),data); assert.equal(JSON.parse(embedded[1]).datasetVersion,'1.2.0-act1.1b');
+  assert.deepEqual(JSON.parse(embedded[1]),data); assert.equal(JSON.parse(embedded[1]).datasetVersion,data.datasetVersion);
 });
 
 for (const path of ['fresh','cached']) test('1B actual ' + path + ' Full hydration renders ten new items/twelve routes without replacing controls', () => {
