@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; worker-src 'self'; connect-src 'none'; img-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>LSV Phase A format workbench</title>
+  <style>
+    :root { color-scheme: light dark; font: 16px/1.5 system-ui, sans-serif; }
+    body { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.65rem; }
+    button, input, select { font: inherit; padding: .45rem; }
+    button { margin: .25rem .4rem .25rem 0; }
+    select { width: min(100%, 650px); }
+    .controls { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin: 1rem 0; }
+    .table-wrap { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #8886; overflow-wrap: anywhere; }
+    th { white-space: nowrap; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: .8rem; border: 1px solid #8886; }
+  </style>
+</head>
+<body>
+  <h1>LSV Phase A format workbench</h1>
+  <p>Research tool for explicitly selected local files. Selecting a file reads its header and manifest. Choose a listed member and press Read to load and decompress that member. Resource output shows structural counters.</p>
+  <p>Limits: 128 MiB file/member; 512 manifest entries; 512 MiB cumulative expansion; 1 MiB strings; depth 64; 30 seconds cumulative active worker execution; 10 MiB report. These limits are provisional.</p>
+  <div class="controls">
+    <label for="file">Select .lsv file</label>
+    <input id="file" type="file" accept=".lsv">
+    <button id="cancel" type="button">Cancel and clear</button>
+  </div>
+  <p id="status" role="status" aria-live="polite">Select one local .lsv file to begin.</p>
+  <pre id="package-summary" hidden></pre>
+  <div class="controls">
+    <label for="members">Member</label>
+    <select id="members" disabled aria-label="Explicitly select a package member"></select>
+    <button id="read" type="button" disabled>Read selected member</button>
+  </div>
+  <pre id="member-summary" hidden></pre>
+  <div class="table-wrap">
+    <table hidden id="manifest">
+      <thead><tr><th>Name</th><th>Kind</th><th>Codec</th><th>Compressed bytes</th><th>Expanded bytes</th><th>Offset</th></tr></thead>
+      <tbody id="entries"></tbody>
+    </table>
+  </div>
+  <script src="./controller.cjs"></script>
+  <script>
+  'use strict';
+  const fileInput = document.getElementById('file');
+  const status = document.getElementById('status');
+  const members = document.getElementById('members');
+  const readButton = document.getElementById('read');
+  const packageSummary = document.getElementById('package-summary');
+  const memberSummary = document.getElementById('member-summary');
+  const manifest = document.getElementById('manifest');
+  const entries = document.getElementById('entries');
+  let viewSerial = 0;
+  const safeText = value => typeof value === 'string' || typeof value === 'number' ? String(value) : 'unknown';
+  const ms = value => Number.isFinite(value) ? value.toFixed(2) : 'unavailable';
+  const controller = BG3LsvController.createController({ onState(state) {
+    const busy = state.status === 'inspecting' || state.status === 'reading';
+    members.disabled = busy || !state.inspection;
+    readButton.disabled = busy || !state.inspection || members.options.length === 0;
+    if (state.status === 'inspecting') status.textContent = 'Inspecting package header and manifest…';
+    else if (state.status === 'reading') status.textContent = 'Reading the explicitly selected member…';
+    else if (state.status === 'ready') status.textContent = 'Worker ready. Member reads require an explicit selection and action.';
+    else if (state.status === 'cancelled') status.textContent = 'Attempt cancelled and cleared.';
+    else if (state.status === 'error') status.textContent = state.error.message + ' [' + state.error.code + ']';
+  } });
+  function clearOutput() {
+    members.replaceChildren(); entries.replaceChildren();
+    members.disabled = true; readButton.disabled = true;
+    manifest.hidden = true; packageSummary.hidden = true; memberSummary.hidden = true;
+    packageSummary.textContent = ''; memberSummary.textContent = '';
+  }
+  fileInput.addEventListener('change', async () => {
+    const serial = ++viewSerial, file = fileInput.files && fileInput.files[0];
+    clearOutput();
+    if (!file) { controller.cancel(); return; }
+    try {
+      const result = await controller.inspect(file);
+      if (serial !== viewSerial) return;
+      packageSummary.textContent = 'Package inspection: succeeded\nLSPK version: ' + safeText(result.version) + '\nManifest members: ' + result.entries.length + '\nManifest parse time: ' + ms(result.metrics.manifestMs) + ' ms';
+      packageSummary.hidden = false;
+      for (const entry of result.entries) {
+        const option = document.createElement('option');
+        option.value = safeText(entry.name); option.textContent = safeText(entry.name); members.append(option);
+        const row = document.createElement('tr');
+        for (const field of ['name', 'kind', 'codec', 'compressedSize', 'expandedSize', 'offset']) {
+          const cell = document.createElement('td'); cell.textContent = safeText(entry[field]); row.append(cell);
+        }
+        entries.append(row);
+      }
+      manifest.hidden = false; members.disabled = result.entries.length === 0; readButton.disabled = result.entries.length === 0;
+    } catch (error) {
+      if (serial !== viewSerial || error.name === 'AbortError') return;
+      status.textContent = error.message + ' [' + error.code + ']';
+    }
+  });
+  readButton.addEventListener('click', async () => {
+    const serial = viewSerial, selectedName = members.value;
+    memberSummary.hidden = true; memberSummary.textContent = '';
+    try {
+      const result = await controller.readMember(selectedName);
+      if (serial !== viewSerial) return;
+      const resource = result.resource;
+      const lines = ['Selected member read: succeeded', 'Expanded bytes: ' + safeText(result.byteLength), 'Codec: ' + safeText(result.codec), 'Read/decompression time: ' + ms(result.metrics.readMs) + ' ms', 'Total selected-member processing: ' + ms(result.metrics.totalMs) + ' ms', 'Cumulative expanded bytes: ' + safeText(result.metrics.cumulativeExpandedBytes), 'Resource decoding: ' + safeText(resource.status)];
+      if (resource.kind === 'json' && resource.status === 'decoded') lines.push('JSON value count: ' + safeText(resource.valueCount), 'JSON maximum depth: ' + safeText(resource.maxDepth));
+      if (resource.kind === 'lsf' && resource.status === 'decoded') lines.push('LSF version: ' + safeText(resource.version), 'Section count: ' + safeText(resource.sectionCount), 'Node count: ' + safeText(resource.structure.nodeCount), 'Attribute count: ' + safeText(resource.structure.attributeCount), 'ECS/LSMF interpretation: opaque');
+      if (resource.code) lines.push('Resource result: ' + safeText(resource.code));
+      memberSummary.textContent = lines.join('\n'); memberSummary.hidden = false;
+    } catch (error) {
+      if (serial !== viewSerial || error.name === 'AbortError') return;
+      status.textContent = error.message + ' [' + error.code + ']';
+    }
+  });
+  document.getElementById('cancel').addEventListener('click', () => { ++viewSerial; controller.cancel(); clearOutput(); fileInput.value = ''; });
+  window.addEventListener('pagehide', () => { ++viewSerial; controller.dispose(); clearOutput(); fileInput.value = ''; });
+  </script>
+</body>
+</html>
