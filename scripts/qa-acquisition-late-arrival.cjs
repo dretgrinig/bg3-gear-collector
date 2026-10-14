@@ -105,7 +105,8 @@ async function snapshot(page) {
   return page.evaluate(() => {
     window.__arrivalObserver?.disconnect();
     const selector = '#body > tr,#cards > article,#body details,#cards details,' +
-      '#body summary,#cards summary,#body input,#cards input,#body a,#cards a';
+      '#body summary,#cards summary,#body input,#cards input,#body a,#cards a,' +
+      '#body .item-effects,#cards .item-effects,#body .item-effects .detailrow,#cards .item-effects .detailrow';
     window.__arrivalNodes = [...document.querySelectorAll(selector)];
     window.__arrivalOpen = [...document.querySelectorAll('#body details,#cards details')]
       .map(details => details.open);
@@ -161,7 +162,7 @@ function checkPreserved(before, after, label) {
 function checkSections(after, mode, label) {
   const expected = mode === 'full' ? 2 : 0; // Both responsive surfaces are constructed.
   check(after.enrichment === expected, label + ': unexpected Acquisition section count');
-  check(after.references === expected, label + ': unexpected References section count');
+  check(after.references === 0, label + ': compact UI exposed an evidence References section');
   if (mode !== 'full') check(after.mutations === 0, label + ': protected item trees mutated');
 }
 
@@ -313,6 +314,54 @@ async function checkOptionalFailure(browser, assetBody, label) {
   } finally { await testCase.context.close(); }
 }
 
+async function checkCompactDetails(browser, width) {
+  const testCase = await createCase(browser, width, 'full');
+  const { page } = testCase;
+  try {
+    testCase.releaseAsset();
+    await page.waitForLoadState('domcontentloaded');
+    for (const [name, routes, points] of [
+      ['Phalar Aluve', 3, 1], ['Dolor Amarus', 3, 3],
+      ['Fetish of Callarduran Smoothhands', 4, 2], ["Hellrider's Pride", 4, 1],
+      ['Light of Creation', 2, 1]
+    ]) {
+      await page.locator('#q').fill(name);
+      const scope = width > 780 ? '#body > tr' : '#cards > article';
+      const surface = page.locator(scope).first();
+      await surface.locator('summary').click();
+      const facts = await surface.evaluate(node => {
+        const effects = node.querySelector('.item-effects'), where = node.querySelector('.acquisition-enrichment');
+        const grid = node.querySelector('.detailgrid');
+        return {
+          effectBeforeWhere: !!effects && !!where && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          effects: effects?.textContent, where: where?.textContent,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          points: where?.querySelectorAll('.acquisition-point').length,
+          coordinates: [...where.querySelectorAll('.acquisition-coordinate')].map(n => n.textContent),
+          links: node.querySelectorAll('.item-reference').length,
+          evidence: node.querySelectorAll('.acquisition-references,.acquisition-reference').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth,
+          checkbox: !!node.querySelector('input[type=checkbox]'),
+          preview: !!document.querySelector('.dev-preview') || document.body.classList.contains('dev-preview')
+        };
+      });
+      const label = `${width}px ${name}`;
+      check(facts.effectBeforeWhere, label + ': Effect must precede Where to find');
+      check(facts.routes === routes && facts.points === points, label + ': route or distinct point lost');
+      check(facts.coordinates.length === points, label + ': destination coordinate missing');
+      check(facts.links === 1 && facts.evidence === 0, label + ': must retain one existing Wiki link only');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.where), label + ': technical/walkthrough content remains');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': horizontal overflow');
+      check(facts.checkbox, label + ': progress control missing');
+      record(label, 'compact Full details', { facts });
+      if ((width === 390 || width === 1280) && ['Phalar Aluve', 'Dolor Amarus'].includes(name)) {
+        await surface.screenshot({ path: path.join(outputDirectory, `compact-${width}-${name.replaceAll(' ', '-').toLowerCase()}.png`) });
+      }
+    }
+    check(testCase.errors.length === 0, width + 'px compact details: uncaught page error');
+  } finally { await testCase.context.close(); }
+}
+
 async function main() {
   fs.mkdirSync(outputDirectory, { recursive: true });
   const browser = await chromium.launch({
@@ -327,6 +376,7 @@ async function main() {
         await checkExistingLinkFocus(browser, width, mode);
       }
     }
+    for (const width of [320, 390, 768, 1280]) await checkCompactDetails(browser, width);
     await checkOptionalFailure(browser, null, 'missing optional asset');
     await checkOptionalFailure(browser,
       'window.BG3AcquisitionUI={render(){throw new Error("broken optional API")}};',

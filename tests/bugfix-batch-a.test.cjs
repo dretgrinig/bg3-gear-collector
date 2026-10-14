@@ -272,7 +272,7 @@ for(const surfaceName of ['rows','cards']) {
   });
   test(`Full ${surfaceName}: a meaningful effect omits blank Properties without trimming its content`,()=>{
     const original="\n  Effect & 'special' <b>literal</b>  ",h=harness([supplementRow({properties:' \n ',description:original,links:{Name:''}})]),surface=h[surfaceName]()[0],details=required(surface,'details');
-    assert.deepEqual(details.querySelectorAll('.label').map(x=>x.textContent),['Effect']);assert.equal(details.querySelectorAll('.detailrow').length,1);
+    assert.deepEqual(details.querySelectorAll('.label').map(x=>x.textContent),[]);assert.equal(required(required(details,'.item-effects'),'h4').textContent,'Effect');assert.equal(details.querySelectorAll('.detailrow').length,1);
     assert.ok(details.textContent.includes(original));assert.equal(h.app.items()[0].description,original);assert.match(surface.innerHTML,/&lt;b&gt;/);
   });
 }

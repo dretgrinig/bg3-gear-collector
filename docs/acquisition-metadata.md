@@ -5,7 +5,7 @@ Phase 1 introduced an isolated metadata draft for v0.8.7-era catalogue identitie
 ## Files and API
 
 - `acquisition-metadata.js`: standalone CommonJS validator and deterministic resolver; no file reads, network, DOM, storage or timers.
-- `data/acquisition.v1.json`: schema **1**, dataset **1.3.0-act1.1c**; forty catalogue entries, forty-one bindings, fifty-eight acquisition routes. The original ten-entry pilot, [Checkpoint 1A](acquisition-act1-1a.md) and [Checkpoint 1B](acquisition-act1-1b.md) remain unchanged; [Checkpoint 1C](acquisition-act1-1c.md) adds ten Act 1 identities and twenty-two reviewed routes.
+- `data/acquisition.v1.json`: schema **2**, dataset **2.0.0-full-details-coordinate-contract**; forty catalogue entries, forty-one bindings, fifty-eight acquisition routes. The pilot and checkpoints 1A/1B/1C retain all entry/binding/route identities and rich facts. The coordinate checkpoint adds review metadata and sourced points; four legacy actor roles now correctly identify corpses. The filename remains stable for bundle tooling.
 - `tests/acquisition-metadata.test.cjs`: contract tests plus existing application functions exercised through their established mocked boundaries.
 
 ```js
@@ -50,6 +50,23 @@ Zero and negative coordinates are valid. Numeric strings, NaN and infinity are i
 
 Plain metadata is not HTML or a ready-made UI string. Future presentation must escape data. Sparse arrays, accessors, cycles, non-JSON values, duplicate entry/binding/route IDs and malformed nested objects are rejected. IDs are explicit and immutable; they are never array indices or generated from current item display names.
 
+## Schema 2 coordinate review
+
+Schema 1 remains accepted under its original closed contract. Schema 2 extends that contract intentionally: every route requires an explicit `coordinates` object or null plus `coordinateReview`. Unknown fields still reject the whole dataset. No Story/progress migration is involved.
+
+`coordinateReview` is `{state, reason?}` with states:
+
+- `exact`: a sourced exact acquisition point; requires coordinates.
+- `reference`: a sourced navigation point; requires coordinates and keeps the point's role visible.
+- `pending`, `conflict`, `not_documented`: require null coordinates; an optional plain reason may be retained.
+- `not_applicable`: requires null coordinates, a nonempty reason and evidence.
+
+Coordinate roles retain schema 1's actor/container/entrance/item/interaction/crafting station roles and add `corpse`, `encounter`, `former_container`, `component`, `location`. No numeric coercion or `(0,0)` fallback is introduced. Review semantics never reuse `coverage`.
+
+Optional nonempty `navigationPoints` contain closed objects with required `label`, finite `coordinates`, `sources`, optional `location`/`sublocation`. Each has its own evidence; inventory assembly can retain a null finished-item point while showing reviewed component or waypoint/entrance navigation. Navigation labels must accurately describe reference points, not imply unsupported exact actor positions.
+
+The current 58 routes have **22 exact points, 31 reference points and 5 not-applicable exceptions**; none are pending/conflict/not-documented. Original 22 X/Y/space values remain unchanged. All 36 former null routes are reviewed. See [backfill evidence and roles](acquisition-coordinate-backfill.md) for the full audit and component reference limitations. This supersedes coordinate omissions in the historical pilot table below while preserving its original route coverage boundaries.
+
 ## Identity and binding
 
 The input shape is the existing normalized item `{act, name, gameIds, source}`. Raw `links.Name`, when supplied, is an additional identity check and must agree with `source`.
@@ -65,7 +82,7 @@ The input shape is the existing normalized item `{act, name, gameIds, source}`. 
 
 Catalogue game IDs are opaque values in their existing namespace. Wiki UIDs, Stats IDs, templates and save IDs are not conflated. The two Graceful Cloth entries deliberately retain different Act/progress identities despite their shared ID and item page. Only Gloves of Heroism has an explicit no-ID fallback binding; generic fallback records stay unmatched.
 
-## Reviewed pilot and evidence
+## Original pilot review and evidence (historical baseline)
 
 All pilot route sources retain permanent Wiki links, revision IDs and section labels in the JSON. Facts are concise paraphrases. Canonical pages were read and their permanent-link revision IDs checked; direct oldid retrieval was unavailable in the browsing tool. Additional actor/location/quest pages are pinned where needed for context.
 

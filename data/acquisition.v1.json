@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "datasetVersion": "1.3.0-act1.1c",
+  "schemaVersion": 2,
+  "datasetVersion": "2.0.0-full-details-coordinate-contract",
   "entries": [
     {
       "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
@@ -32,7 +32,12 @@
             "wikiPage": "Moonrise Towers"
           },
           "sublocation": "Main floor",
-          "coordinates": null,
+          "coordinates": {
+            "x": -174,
+            "y": -179,
+            "space": "Moonrise Towers",
+            "subject": "encounter"
+          },
           "conditions": null,
           "notes": null,
           "validity": "current",
@@ -52,6 +57,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]
@@ -86,7 +95,12 @@
             "wikiPage": "House of Hope"
           },
           "sublocation": null,
-          "coordinates": null,
+          "coordinates": {
+            "x": -6477,
+            "y": 2884,
+            "space": "House of Hope",
+            "subject": "encounter"
+          },
           "conditions": null,
           "notes": [
             "Raphael carries the armour at the House of Hope.",
@@ -114,6 +128,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]
@@ -175,12 +193,21 @@
               "url": "https://bg3.wiki/w/index.php?title=Rescue_Volo&oldid=422309",
               "revisionId": 422309,
               "section": "Quest rewards"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Campsite&oldid=433524",
+              "revisionId": 433524,
+              "section": "Instances"
             }
           ],
           "review": {
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Rewarded at camp; location varies."
           }
         }
       ]
@@ -262,6 +289,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -338,6 +368,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         },
         {
@@ -396,6 +429,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         },
         {
@@ -456,6 +492,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -490,7 +529,12 @@
             "wikiPage": "Highberry's Home"
           },
           "sublocation": null,
-          "coordinates": null,
+          "coordinates": {
+            "x": 20,
+            "y": -34,
+            "space": "Highberry's Home",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -534,6 +578,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         },
         {
@@ -551,7 +599,12 @@
             "wikiPage": "Facemaker's Boutique"
           },
           "sublocation": null,
-          "coordinates": null,
+          "coordinates": {
+            "x": -181,
+            "y": -31,
+            "space": "Lower City",
+            "subject": "entrance"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -589,12 +642,21 @@
               "url": "https://bg3.wiki/w/index.php?title=Facemaker%27s_Boutique&oldid=418355",
               "revisionId": 418355,
               "section": "Lead"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Facemaker's_Boutique&oldid=418355",
+              "revisionId": 418355,
+              "section": "Overview"
             }
           ],
           "review": {
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Building entrance reference; the encounter is inside."
           }
         },
         {
@@ -612,7 +674,12 @@
             "wikiPage": "Murder Tribunal"
           },
           "sublocation": null,
-          "coordinates": null,
+          "coordinates": {
+            "x": -1263,
+            "y": 511,
+            "space": "Murder Tribunal",
+            "subject": "actor"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -648,6 +715,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented purchase reference for this vendor."
           }
         }
       ]
@@ -680,7 +751,12 @@
             "wikiPage": "Adamantine Forge (location)"
           },
           "sublocation": null,
-          "coordinates": null,
+          "coordinates": {
+            "x": -558,
+            "y": 230,
+            "space": "Adamantine Forge",
+            "subject": "location"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -724,6 +800,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented acquisition-area reference; not an exact actor or crafting-station position."
           }
         }
       ]
@@ -808,6 +888,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Created by an ability; no fixed map point."
           }
         }
       ]
@@ -842,7 +926,12 @@
             "wikiPage": "Rosymorn Monastery Trail"
           },
           "sublocation": "North-east of the Trielta Crags waypoint",
-          "coordinates": null,
+          "coordinates": {
+            "x": -43,
+            "y": -129,
+            "space": "Rosymorn Monastery Trail",
+            "subject": "location"
+          },
           "conditions": null,
           "notes": null,
           "validity": "current",
@@ -862,6 +951,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented acquisition-area reference; not an exact actor or crafting-station position."
           }
         }
       ]
@@ -918,6 +1011,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-12",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Historical stock; no longer available."
           }
         }
       ]
@@ -999,6 +1096,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -1080,6 +1180,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -1114,7 +1217,12 @@
             "wikiPage": "Rosymorn Monastery Trail"
           },
           "sublocation": "Camp northeast of Trielta Crags",
-          "coordinates": null,
+          "coordinates": {
+            "x": -43,
+            "y": -129,
+            "space": "Rosymorn Monastery Trail",
+            "subject": "location"
+          },
           "conditions": null,
           "notes": [
             "Accepting or completing the egg mission is not required to trade with Lady Esther."
@@ -1141,6 +1249,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented acquisition-area reference; not an exact actor or crafting-station position."
           }
         }
       ]
@@ -1214,6 +1326,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -1282,6 +1397,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -1313,7 +1431,12 @@
             "wikiPage": "Apothecary's Cellar"
           },
           "sublocation": "Necromancer's Lab small-library gilded chest",
-          "coordinates": null,
+          "coordinates": {
+            "x": -656,
+            "y": -370,
+            "space": "Apothecary's Cellar",
+            "subject": "container"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -1346,6 +1469,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented chest reference from the item page."
           }
         }
       ]
@@ -1412,6 +1539,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -1447,7 +1577,12 @@
             "wikiPage": "Emerald Grove"
           },
           "sublocation": "Initial gate encounter",
-          "coordinates": null,
+          "coordinates": {
+            "x": 208,
+            "y": 427,
+            "space": "Emerald Grove",
+            "subject": "encounter"
+          },
           "conditions": null,
           "notes": null,
           "validity": "current",
@@ -1467,6 +1602,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]
@@ -1501,7 +1640,12 @@
             "wikiPage": "Shattered Sanctum"
           },
           "sublocation": "Throne room",
-          "coordinates": null,
+          "coordinates": {
+            "x": 297,
+            "y": 40,
+            "space": "Shattered Sanctum",
+            "subject": "encounter"
+          },
           "conditions": null,
           "notes": null,
           "validity": "current",
@@ -1521,6 +1665,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]
@@ -1559,7 +1707,7 @@
             "x": 73,
             "y": -187,
             "space": "Underdark",
-            "subject": "actor"
+            "subject": "corpse"
           },
           "conditions": {
             "prerequisites": [
@@ -1593,6 +1741,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -1627,7 +1778,12 @@
             "wikiPage": "Ebonlake Grotto"
           },
           "sublocation": "Myconid Colony",
-          "coordinates": null,
+          "coordinates": {
+            "x": -55,
+            "y": -93,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -1666,6 +1822,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented purchase reference for this vendor."
           }
         }
       ]
@@ -1745,6 +1905,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -1779,7 +1942,12 @@
             "wikiPage": "Crèche Y'llek"
           },
           "sublocation": "Trading area southeast of the waypoint",
-          "coordinates": null,
+          "coordinates": {
+            "x": 1380,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "location"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -1815,6 +1983,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented acquisition-area reference; not an exact actor or crafting-station position."
           }
         }
       ]
@@ -1847,7 +2019,12 @@
             "wikiPage": "Grymforge"
           },
           "sublocation": "Adamantine Forge",
-          "coordinates": null,
+          "coordinates": {
+            "x": -558,
+            "y": 230,
+            "space": "Adamantine Forge",
+            "subject": "location"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -1905,6 +2082,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented acquisition-area reference; not an exact actor or crafting-station position."
           }
         }
       ]
@@ -1937,7 +2118,12 @@
             "wikiPage": "Blighted Village"
           },
           "sublocation": "Smithy's cellar furnace",
-          "coordinates": null,
+          "coordinates": {
+            "x": -477,
+            "y": -378,
+            "space": "Blighted Village",
+            "subject": "location"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -1988,6 +2174,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented acquisition-area reference; not an exact actor or crafting-station position."
           }
         }
       ]
@@ -2070,7 +2260,96 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
-          }
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Assembled in inventory; component locations below."
+          },
+          "navigationPoints": [
+            {
+              "label": "Icy Crystal — Sussur Tree waypoint",
+              "location": {
+                "name": "Dread Hollow",
+                "wikiPage": "Dread Hollow"
+              },
+              "sublocation": "Sussur Tree waypoint",
+              "coordinates": {
+                "x": -50,
+                "y": -138,
+                "space": "Underdark",
+                "subject": "location"
+              },
+              "sources": [
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Icy_Crystal&oldid=419662",
+                  "revisionId": 419662,
+                  "section": "Where to find"
+                },
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Filro&oldid=418404",
+                  "revisionId": 418404,
+                  "section": "Involvement / Act One"
+                },
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Dread_Hollow&oldid=417935",
+                  "revisionId": 417935,
+                  "section": "Waypoints"
+                }
+              ]
+            },
+            {
+              "label": "Icy Helve — Selûnite Outpost waypoint",
+              "location": {
+                "name": "Selûnite Outpost",
+                "wikiPage": "Selûnite Outpost"
+              },
+              "sublocation": "Dhourn is west of the outpost",
+              "coordinates": {
+                "x": 176,
+                "y": -235,
+                "space": "Underdark",
+                "subject": "location"
+              },
+              "sources": [
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Icy_Helve&oldid=419663",
+                  "revisionId": 419663,
+                  "section": "Where to find"
+                },
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Dhourn&oldid=433990",
+                  "revisionId": 433990,
+                  "section": "Involvement / Act One"
+                },
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Sel%C3%BBnite_Outpost&oldid=431112",
+                  "revisionId": 431112,
+                  "section": "Waypoints"
+                }
+              ]
+            },
+            {
+              "label": "Icy Metal",
+              "location": {
+                "name": "Ebonlake Grotto",
+                "wikiPage": "Ebonlake Grotto"
+              },
+              "sublocation": "Pale corpse behind the wall of vines",
+              "coordinates": {
+                "x": 49,
+                "y": -72,
+                "space": "Ebonlake Grotto",
+                "subject": "component"
+              },
+              "sources": [
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Icy_Metal&oldid=419664",
+                  "revisionId": 419664,
+                  "section": "Where to find"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -2155,7 +2434,60 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
-          }
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Assembled in inventory; component locations below."
+          },
+          "navigationPoints": [
+            {
+              "label": "Shaft of a Broken Spear",
+              "location": {
+                "name": "Forest",
+                "wikiPage": "Forest"
+              },
+              "sublocation": "Edowin's corpse",
+              "coordinates": {
+                "x": 136,
+                "y": 446,
+                "space": "Forest",
+                "subject": "component"
+              },
+              "sources": [
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Shaft_of_a_Broken_Spear&oldid=423079",
+                  "revisionId": 423079,
+                  "section": "Where to find"
+                }
+              ]
+            },
+            {
+              "label": "Head of a Broken Spear — Owlbear Nest entrance",
+              "location": {
+                "name": "Owlbear Nest",
+                "wikiPage": "Owlbear Nest"
+              },
+              "sublocation": "Cave entrance",
+              "coordinates": {
+                "x": 82,
+                "y": 450,
+                "space": "Wilderness",
+                "subject": "entrance"
+              },
+              "sources": [
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Head_of_a_Broken_Spear&oldid=419385",
+                  "revisionId": 419385,
+                  "section": "Where to find"
+                },
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Owlbear_Nest&oldid=431001",
+                  "revisionId": 431001,
+                  "section": "Access / Owlbear Den"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -2190,7 +2522,12 @@
             "wikiPage": "Adamantine Forge (location)"
           },
           "sublocation": "Forge arena",
-          "coordinates": null,
+          "coordinates": {
+            "x": -558,
+            "y": 230,
+            "space": "Adamantine Forge",
+            "subject": "encounter"
+          },
           "conditions": null,
           "notes": [
             "Grym carries the helm; it is actor loot, not an Adamantine Forge crafting output."
@@ -2217,6 +2554,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]
@@ -2252,7 +2593,12 @@
             "wikiPage": "Whispering Depths"
           },
           "sublocation": "Matriarch's lair",
-          "coordinates": null,
+          "coordinates": {
+            "x": -569,
+            "y": -359,
+            "space": "Whispering Depths",
+            "subject": "encounter"
+          },
           "conditions": null,
           "notes": null,
           "validity": "current",
@@ -2277,6 +2623,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         },
         {
@@ -2298,7 +2648,7 @@
             "x": 140,
             "y": 151,
             "space": "Underdark",
-            "subject": "actor"
+            "subject": "corpse"
           },
           "conditions": {
             "prerequisites": [
@@ -2340,6 +2690,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -2374,7 +2727,12 @@
             "wikiPage": "Arcane Tower"
           },
           "sublocation": "Roof (fourth floor)",
-          "coordinates": null,
+          "coordinates": {
+            "x": -38,
+            "y": -284,
+            "space": "Arcane Tower",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -2410,6 +2768,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         },
         {
@@ -2427,7 +2789,12 @@
             "wikiPage": "Arcane Tower"
           },
           "sublocation": "Roof (fourth floor)",
-          "coordinates": null,
+          "coordinates": {
+            "x": -38,
+            "y": -284,
+            "space": "Arcane Tower",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -2470,6 +2837,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex BG3 Wiki primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]
@@ -2508,7 +2879,7 @@
             "x": -610,
             "y": 408,
             "space": "Grymforge",
-            "subject": "actor"
+            "subject": "corpse"
           },
           "conditions": {
             "prerequisites": [
@@ -2552,6 +2923,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         },
         {
@@ -2572,7 +2946,7 @@
             "x": -610,
             "y": 408,
             "space": "Grymforge",
-            "subject": "actor"
+            "subject": "corpse"
           },
           "conditions": {
             "prerequisites": [
@@ -2616,6 +2990,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         },
         {
@@ -2633,7 +3010,12 @@
             "wikiPage": "Grymforge"
           },
           "sublocation": "Corpse-disposal shore opposite the berth",
-          "coordinates": null,
+          "coordinates": {
+            "x": -608,
+            "y": 404,
+            "space": "Grymforge",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -2681,6 +3063,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Brathwen encounter reference; separate from the nearby gnome corpse."
           }
         },
         {
@@ -2698,7 +3084,12 @@
             "wikiPage": "Grymforge"
           },
           "sublocation": "Corpse-disposal shore opposite the berth",
-          "coordinates": null,
+          "coordinates": {
+            "x": -608,
+            "y": 404,
+            "space": "Grymforge",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -2741,6 +3132,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Brathwen encounter reference; separate from the nearby gnome corpse."
           }
         }
       ]
@@ -2776,7 +3171,12 @@
             "wikiPage": "Goblin Camp"
           },
           "sublocation": "Eastern courtyard",
-          "coordinates": null,
+          "coordinates": {
+            "x": -70,
+            "y": 439,
+            "space": "Goblin Camp",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -2812,6 +3212,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         },
         {
@@ -2829,7 +3233,12 @@
             "wikiPage": "Goblin Camp"
           },
           "sublocation": "Eastern courtyard",
-          "coordinates": null,
+          "coordinates": {
+            "x": -70,
+            "y": 439,
+            "space": "Goblin Camp",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -2878,6 +3287,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]
@@ -2912,7 +3325,12 @@
             "wikiPage": "Nautiloid"
           },
           "sublocation": "Helm",
-          "coordinates": null,
+          "coordinates": {
+            "x": -53,
+            "y": -391,
+            "space": "Nautiloid",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -2956,6 +3374,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         },
         {
@@ -2973,7 +3395,12 @@
             "wikiPage": "Nautiloid"
           },
           "sublocation": "Helm",
-          "coordinates": null,
+          "coordinates": {
+            "x": -53,
+            "y": -391,
+            "space": "Nautiloid",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -3022,6 +3449,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]
@@ -3057,7 +3488,12 @@
             "wikiPage": "Crèche Y'llek"
           },
           "sublocation": "Hatchery cliff overlooking the egg",
-          "coordinates": null,
+          "coordinates": {
+            "x": 1288,
+            "y": -759,
+            "space": "Crèche Y'llek",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -3105,6 +3541,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         },
         {
@@ -3122,7 +3562,12 @@
             "wikiPage": "Crèche Y'llek"
           },
           "sublocation": "Hatchery cliff overlooking the egg",
-          "coordinates": null,
+          "coordinates": {
+            "x": 1288,
+            "y": -759,
+            "space": "Crèche Y'llek",
+            "subject": "encounter"
+          },
           "conditions": null,
           "notes": [
             "The boots are listed as carried loot. The separate gift dialogue is not a prerequisite for this route."
@@ -3154,6 +3599,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]
@@ -3223,6 +3672,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         },
         {
@@ -3237,7 +3689,12 @@
             "wikiPage": "Waukeen's Rest"
           },
           "sublocation": "Upstairs inn room adjacent to Benryn's room",
-          "coordinates": null,
+          "coordinates": {
+            "x": -85,
+            "y": 631,
+            "space": "Waukeen's Rest",
+            "subject": "former_container"
+          },
           "conditions": {
             "prerequisites": null,
             "before": null,
@@ -3270,6 +3727,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Former chest position; collect the loose weapon after the chest is destroyed."
           }
         }
       ]
@@ -3339,6 +3800,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         },
         {
@@ -3356,7 +3820,12 @@
             "wikiPage": "Shattered Sanctum"
           },
           "sublocation": "Bloodied Shrine",
-          "coordinates": null,
+          "coordinates": {
+            "x": 338,
+            "y": -26,
+            "space": "Shattered Sanctum",
+            "subject": "location"
+          },
           "conditions": null,
           "notes": [
             "In the carried placement state, Abdirak holds the dagger. He takes the shrine weapons when departing. Departure can follow the goblin-leader resolution, but that is not a mandatory kill requirement for acquisition."
@@ -3388,6 +3857,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented acquisition-area reference; not an exact actor or crafting-station position."
           }
         }
       ]
@@ -3481,6 +3954,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -3547,6 +4023,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         },
         {
@@ -3607,6 +4086,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         },
         {
@@ -3677,6 +4159,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         },
         {
@@ -3754,6 +4239,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -3841,6 +4329,9 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]
@@ -3875,7 +4366,12 @@
             "wikiPage": "Arcane Tower"
           },
           "sublocation": "Roof (fourth floor)",
-          "coordinates": null,
+          "coordinates": {
+            "x": -26,
+            "y": -283,
+            "space": "Arcane Tower",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -3913,6 +4409,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         },
         {
@@ -3930,7 +4430,12 @@
             "wikiPage": "Arcane Tower"
           },
           "sublocation": "Roof (fourth floor)",
-          "coordinates": null,
+          "coordinates": {
+            "x": -26,
+            "y": -283,
+            "space": "Arcane Tower",
+            "subject": "encounter"
+          },
           "conditions": {
             "prerequisites": [
               {
@@ -3974,6 +4479,10 @@
             "state": "reviewed",
             "reviewedAt": "2026-10-13",
             "reviewer": "Codex primary-source review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Documented encounter reference; the actor may move within this area."
           }
         }
       ]

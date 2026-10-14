@@ -144,7 +144,8 @@ for(const surfaceName of ['rows','cards']) {
     assert.equal(occurrences(surface.textContent,item.location),1,'Acquisition must not repeat in More info');
     assert.equal(required(details,'summary').textContent,'More info');
     assert.equal(details.querySelector('.item-detail-location'),null);
-    assert.deepEqual(details.querySelectorAll('.label').map(label=>label.textContent),['Properties','Effect']);
+    assert.deepEqual(details.querySelectorAll('.label').map(label=>label.textContent),['Properties']);
+    assert.equal(details.querySelector('.item-effects').querySelector('h4').textContent,'Effect');
     for(const value of [item.properties,item.description])assert.equal(occurrences(details.textContent,value),1);
     assert.equal(details.open,false);required(details,'summary').click();assert.equal(details.open,true);
   });

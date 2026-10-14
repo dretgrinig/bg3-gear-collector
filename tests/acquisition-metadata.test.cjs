@@ -115,7 +115,7 @@ for (const [label, value] of [
 ]) test(`missing or invalid ${label} dataset fails closed without throwing`, () => invalid(value));
 
 for (const [label, mutate] of [
-  ['unsupported schema version', d => { d.schemaVersion = 2; }],
+  ['unsupported schema version', d => { d.schemaVersion = 3; }],
   ['string schema version', d => { d.schemaVersion = '1'; }],
   ['missing schema version', d => { delete d.schemaVersion; }],
   ['empty dataset version', d => { d.datasetVersion = ''; }],
@@ -602,9 +602,9 @@ test('acquisition metadata remains isolated from tracker state and discovery aft
   assert.doesNotMatch(html.slice(start, end), /BG3AcquisitionUI|acquisitionDetailsFor|reviewedRoutesFor/);
 });
 
-test('the expanded acquisition dataset is valid schema 1 with exactly forty stable entries', () => {
+test('the expanded acquisition dataset is valid schema 2 with exactly forty stable entries', () => {
   const input = pilot(), before = copy(input), output = valid(input);
-  assert.equal(output.schemaVersion, 1); assert.equal(output.entries.length, 40);
+  assert.equal(output.schemaVersion, 2); assert.equal(output.entries.length, 40);
   assert.deepEqual(input, before);
   for (const entry of output.entries) assert.ok(entry.bindings.length > 0);
 });
@@ -665,20 +665,26 @@ test('the pilot retains both Dolor drop paths and the conditional purchase path 
   const purchase = entry.routes.find(route => route.type === 'purchase');
   assert.ok(purchase.conditions.prerequisites.some(value => value.kind === 'choice'));
   assert.equal(purchase.actor.name, 'Echo of Abazigal');
-  assert.equal(purchase.coordinates, null, 'A general Murder Tribunal point cannot become an exact actor coordinate');
+  assert.deepEqual({ ...purchase.coordinates }, { x: -1263, y: 511, space: 'Murder Tribunal', subject: 'actor' });
+  assert.equal(purchase.coordinateReview.state, 'reference', 'The Wiki purchase point is reviewed navigation, not an inferred exact actor position');
   assert.ok(entry.routes.filter(route => route.type === 'drop').every(route => route.conditions));
   const highberry = entry.routes.find(route => route.type === 'drop' && route.location.name === "Highberry's Home");
   const boutique = entry.routes.find(route => route.type === 'drop' && route.location.name === "Facemaker's Boutique");
-  assert.ok(highberry && boutique); assert.equal(highberry.coordinates, null, 'A general location point cannot become an actor coordinate');
-  assert.equal(boutique.coordinates, null);
+  assert.ok(highberry && boutique);
+  assert.deepEqual({ ...highberry.coordinates }, { x: 20, y: -34, space: "Highberry's Home", subject: 'encounter' });
+  assert.equal(highberry.coordinateReview.state, 'reference');
+  assert.deepEqual({ ...boutique.coordinates }, { x: -181, y: -31, space: 'Lower City', subject: 'entrance' });
+  assert.equal(boutique.coordinateReview.state, 'reference', 'The building entrance must remain distinct from the actor acquisition point');
   assert.ok(boutique.conditions.prerequisites.some(value => value.kind === 'npc' && value.subject === 'Dolor'));
   assert.equal(boutique.conditions.prerequisites.some(value => value.kind === 'quest'), false, 'Encounter involvement text cannot invent hard requirements to start both quests');
   assert.ok(boutique.notes.some(note => /quest state/i.test(note)), 'Supported quest-state uncertainty stays explicit');
 });
 
-test('the pilot keeps craft ingredients and known forge location while retaining an unverified station coordinate as null', () => {
+test('the pilot keeps craft ingredients and a reviewed forge reference without claiming an exact crafting-station position', () => {
   const route = createResolver(pilot()).reviewedRoutesFor(pilotItem('act 1|adamantine longsword'))[0];
-  assert.equal(route.type, 'craft'); assert.equal(route.coordinates, null, 'A forge area or descending path point cannot become an exact crafting-station coordinate');
+  assert.equal(route.type, 'craft');
+  assert.deepEqual({ ...route.coordinates }, { x: -558, y: 230, space: 'Adamantine Forge', subject: 'location' });
+  assert.equal(route.coordinateReview.state, 'reference', 'The reviewed forge-area point must not become an exact station coordinate');
   assert.equal(route.location.name, 'Adamantine Forge'); assert.equal(route.location.wikiPage, 'Adamantine Forge (location)');
   assert.ok(route.conditions.prerequisites.some(value => value.kind === 'item' && value.subject === 'Longsword Mould'));
   assert.ok(route.conditions.prerequisites.some(value => value.kind === 'item' && value.subject === 'Mithral Ore' && value.value === 1));
@@ -688,6 +694,8 @@ test('the Devotee ability route keeps unknown geography null and availability in
   const incoming = pilotItem("act 3|devotee's mace"), route = createResolver(pilot()).reviewedRoutesFor(incoming)[0];
   assert.equal(route.type, 'ability');
   for (const field of ['acts', 'actor', 'location', 'sublocation', 'coordinates']) assert.equal(route[field], null);
+  assert.equal(route.coordinateReview.state, 'not_applicable');
+  assert.ok(route.coordinateReview.reason.length > 0, 'Ability creation requires an explicit coordinate exception');
   assert.ok(route.conditions.prerequisites.some(value => value.kind === 'level' && value.value === 10));
   assert.ok(route.conditions.exclusions.some(value => value.kind === 'ability' && value.subject === 'Divine Intervention'));
   assert.equal(createResolver(pilot()).resolve({ ...incoming, act: 'ACT 1' }), null, 'A route with unknown Acts cannot invent additional catalogue bindings');

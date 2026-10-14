@@ -39,7 +39,7 @@ const approvedBinding = {
   gameIds: ['MAG_Paladin_RestoreChannelDivinity_Armor'], wikiPage: 'Armour of Devotion'
 };
 const routeTypes = ['purchase', 'drop', 'actor_loot', 'quest_reward', 'gift', 'craft', 'combine', 'container', 'world', 'ability', 'steal', 'disarm'];
-const typeLabels = { purchase: 'Sold by', drop: 'Dropped by', actor_loot: 'Carried by', quest_reward: 'Quest reward', gift: 'Given by', craft: 'Crafted', combine: 'Combined', container: 'Found in container', world: 'Found in world', ability: 'Granted by ability', steal: 'Stolen from', disarm: 'Obtained by disarming' };
+const typeLabels = { purchase: 'Vendor:', drop: 'Loot: Dropped by', actor_loot: 'Loot: Carried by', quest_reward: 'Quest reward:', gift: 'Gift:', craft: 'Craft:', combine: 'Combine:', container: 'Container:', world: 'World:', ability: 'Ability:', steal: 'Steal:', disarm: 'Disarm:' };
 function route(type = 'purchase', overrides = {}) {
   return {
     id: 'ui:route:' + type, type, acts: [2],
@@ -195,23 +195,23 @@ for (const mode of ['minimal', 'light', '', undefined, 'FULL', 'unknown']) test(
   assertEmpty(ui.render(normalizedItem(), mode));
   assert.equal(resolves, 0); assert.equal(reviewed, 0);
 });
-for (const type of routeTypes) test(`Full renders structured ${type} routes, coordinates, conditions and pinned evidence`, () => {
+for (const type of routeTypes) test(`Full renders compact ${type} method and geography without evidence or walkthrough prose`, () => {
   const data = fixture([route(type)]), ui = createUI(data), h = itemHarness([], { bundle: false });
   assert.equal(metadata.validateDataset(data).ok, true, 'Independent fixture must satisfy Phase 1 validation');
   const surface = h.parse(markupFor(ui, normalizedItem()));
   const section = required(surface, '.acquisition-enrichment'), renderedRoute = required(section, '.acquisition-route');
   assert.equal(section.querySelectorAll('.acquisition-route').length, 1);
   assert.ok(renderedRoute.textContent.includes(typeLabels[type]), 'Route type needs its own human label');
-  for (const sentinel of sentinels(data).filter(value => !value.startsWith('UI_SOURCE'))) {
-    assert.ok(renderedRoute.textContent.includes(sentinel) || entireAttributes(renderedRoute).includes(sentinel), 'Missing supported route field: ' + sentinel);
+  assert.equal(required(section, 'h4').textContent, 'Where to find');
+  const geography = required(section, '.acquisition-geography');
+  for (const value of ['UI_LOCATION_SENTINEL_' + type, 'UI_SUBLOCATION_SENTINEL_' + type, 'X: 99101 Y: -88202']) assert.ok(geography.textContent.includes(value), 'Missing destination fact: ' + value);
+  assert.match(renderedRoute.textContent, /Conditional route — see Wiki\./);
+  for (const sentinel of sentinels(data).filter(value => /UI_(?:PREREQUISITE|BEFORE|AFTER|EXCLUSION|NOTE|SOURCE)/.test(value))) {
+    assert.ok(!surface.textContent.includes(sentinel), 'Private evidence/walkthrough text must not render: ' + sentinel);
+    assert.ok(!entireAttributes(surface).includes(sentinel), 'Hidden evidence/walkthrough attributes must not render: ' + sentinel);
   }
-  for (const value of ['99101', '-88202', 'Prerequisites', 'Before', 'After', 'Exclusions']) assert.ok(renderedRoute.textContent.includes(value), 'Missing route value/label: ' + value);
-  assert.match(renderedRoute.textContent, /actor/i, 'Coordinate subject must remain explicit');
-  assert.match(renderedRoute.textContent, /false/i, 'Boolean false condition must not disappear');
-  const source = surface.querySelectorAll('a').find(link => link.getAttribute('href') === data.entries[0].routes[0].sources[0].url);
-  assert.ok(source, 'Pinned source URL must remain exact'); assert.equal(source.getAttribute('target'), '_blank');
-  assert.ok(source.getAttribute('rel').split(/\s+/).includes('noopener'));
-  assert.ok(surface.textContent.includes('UI_SOURCE_SECTION_SENTINEL_' + type), 'Evidence section must remain accessible');
+  assert.equal(renderResult(ui, normalizedItem()).referencesHtml, ''); assert.equal(surface.querySelectorAll('a').length, 0);
+  assert.doesNotMatch(surface.textContent, /Route \d|Shared location|Prerequisites|Exclusions|Notes|References/);
 });
 test('all supported routes remain separate alternatives instead of one flattened instruction', () => {
   const data = fixture(routeTypes.map(type => route(type))), h = itemHarness([], { bundle: false });
@@ -253,6 +253,14 @@ for (const surfaceName of ['rows', 'cards']) test(`Full ${surfaceName} enriches 
   assert.equal(required(details, '.item-reference').getAttribute('href'), item.source);
   assert.ok(!surface.querySelector('.item-place').textContent.includes('UI_ACTOR_SENTINEL'));
 });
+for (const surfaceName of ['rows','cards']) test(`Full ${surfaceName} retains effect and Properties content before Where to find and one original Wiki link`, () => {
+  const h=itemHarness(), item=h.app.items()[0], surface=h[surfaceName]()[0], details=required(surface,'details'), grid=required(details,'.detailgrid'), effects=required(grid,'.item-effects'), where=required(grid,'.acquisition-enrichment');
+  assert.equal(required(effects,'h4').textContent,'Effect');
+  for (const content of [item.properties,item.description].filter(Boolean)) assert.ok(effects.textContent.includes(content),'Existing mechanics content must stay unchanged');
+  assert.ok(grid.children.indexOf(effects)<grid.children.indexOf(where),'Effect must precede Where to find');
+  const links=surface.querySelectorAll('a'); assert.equal(links.length,1); assert.equal(links[0].getAttribute('href'),item.source); assert.equal(links[0].getAttribute('target'),'_blank'); assert.ok(links[0].getAttribute('rel').split(/\s+/).includes('noopener'),'The original Wiki link retains its existing opener protection');
+  assert.equal(surface.querySelectorAll('.acquisition-references,.acquisition-reference,.acquisition-more-sources').length,0);
+});
 test('Full to protected and back rerenders both surfaces without stale enrichment nodes', () => {
   createUI(fixture()); const data = fixture(), h = itemHarness([realRow], { dataset: data });
   assert.ok(surfaces(h).every(enrichment)); opened(h.rows()[0]); opened(h.cards()[0]);
@@ -288,7 +296,7 @@ for (const unsafe of ['javascript:alert(1)', 'https://bg3.wiki.evil.invalid/wiki
   const data = fixture(); data.entries[0].routes[0].sources[0].url = unsafe;
   assertEmpty(createUI(data).render(normalizedItem(), 'full'));
 });
-for (const [label, data] of [['missing', undefined], ['null', null], ['malformed', {}], ['unsupported schema', { schemaVersion: 2, datasetVersion: 'x', entries: [] }]]) test(`${label} optional dataset falls back to baseline item UI`, () => {
+for (const [label, data] of [['missing', undefined], ['null', null], ['malformed', {}], ['unsupported schema', { schemaVersion: 99, datasetVersion: 'x', entries: [] }]]) test(`${label} optional dataset falls back to baseline item UI`, () => {
   createUI(data); const h = itemHarness([realRow], { dataset: data });
   for (const surface of surfaces(h)) {
     assert.equal(enrichment(surface), null); assert.equal(required(surface, '.item-name').textContent, realRow.name);
@@ -363,11 +371,12 @@ test('expanded acquisition data enriches only its forty approved item identities
   for (const surface of surfaces(h)) assert.match(required(surface, '.acquisition-enrichment').textContent, /Historical/);
 });
 
-for (const subject of ['actor', 'container', 'entrance', 'item', 'interaction', 'crafting_station']) test(`coordinate subject ${subject} remains explicit without implying an item coordinate`, () => {
-  const data = fixture([route('world', { coordinates: { x: 99101, y: -88202, space: 'UI_COORDINATE_SPACE_SENTINEL_world', subject } })]);
+for (const subject of ['actor', 'corpse', 'container', 'entrance', 'encounter', 'former_container', 'component', 'location', 'item', 'interaction', 'crafting_station']) test(`reference coordinate role ${subject} remains explicit without implying an exact item point`, () => {
+  const data = fixture([route('world', { coordinates: { x: 99101, y: -88202, space: 'UI_COORDINATE_SPACE_SENTINEL_world', subject }, coordinateReview:{state:'reference',reason:'Reviewed navigation point.'} })]); data.schemaVersion=2;
   const h = itemHarness([], { bundle: false }), section = required(h.parse(markupFor(createUI(data), normalizedItem())), '.acquisition-enrichment');
   assert.ok(section.textContent.toLowerCase().replace(/[\s_-]/g, '').includes(subject.replace(/_/g, '')));
   assert.ok(section.textContent.includes('UI_COORDINATE_SPACE_SENTINEL_world'));
+  assert.ok(!section.textContent.includes('Reviewed navigation point.'), 'Reference role labels should replace technical review prose');
 });
 test('an invalid later route suppresses all enrichment and references, including earlier valid evidence', () => {
   const data = fixture([route('purchase'), route('drop')]); data.entries[0].routes[1].coordinates.x = Infinity;
@@ -708,7 +717,7 @@ for (const mode of ['full', 'minimal', 'light']) for (const surfaceName of ['row
     const writes = h.nativeDOM.writes.filter(entry => entry.itemTree);
     if (mode === 'full') {
       assert.equal(grid.querySelectorAll('.acquisition-enrichment').length, 1);
-      assert.equal(grid.querySelectorAll('.acquisition-references').length, 1);
+      assert.equal(grid.querySelectorAll('.acquisition-references').length, 0);
       assert.ok(writes.length > 0);
       assert.ok(writes.every(entry => entry.element.classList.contains('detailgrid') && entry.operation === 'insertAdjacentHTML'), 'Only native insertion inside existing grids is allowed');
     } else {
@@ -741,7 +750,7 @@ for (const mode of ['full', 'minimal', 'light']) for (const surfaceName of ['row
     assert.equal(h.app.progress()['act 2|armour of devotion'], 'found');
   });
 }
-test('in-place Full arrival inserts Acquisition and References once across repeated actual load callbacks', () => {
+test('in-place Full arrival inserts Where to find once without evidence lists across repeated actual load callbacks', () => {
   const h = hydrationHarness(), snapshots = [nodeSnapshot(h.rows()[0]), nodeSnapshot(h.cards()[0])];
   required(h.rows()[0], 'summary').click(); required(h.cards()[0], 'summary').focus();
   const focus = h.context.document.activeElement, before = hydrationState(h);
@@ -752,7 +761,7 @@ test('in-place Full arrival inserts Acquisition and References once across repea
   assert.equal(h.context.document.activeElement, focus);
   for (const surface of surfaces(h)) {
     assert.equal(surface.querySelectorAll('.acquisition-enrichment').length, 1);
-    assert.equal(surface.querySelectorAll('.acquisition-references').length, 1);
+    assert.equal(surface.querySelectorAll('.acquisition-references').length, 0);
   }
   assert.equal(h.nativeDOM.writes.filter(entry => entry.itemTree).length, 0, 'Repeated hydration must not rewrite item trees or sections');
   assertHydrationState(h, before);
@@ -767,7 +776,7 @@ for (const mode of ['minimal', 'light']) {
     assert.equal(h.nativeDOM.writes.filter(entry => entry.itemTree).length, 0);
     assert.ok(surfaces(h).every(surface => !enrichment(surface)));
     h.mode('full'); for (const surface of surfaces(h)) {
-      assert.equal(surface.querySelectorAll('.acquisition-enrichment').length, 1); assert.equal(surface.querySelectorAll('.acquisition-references').length, 1);
+      assert.equal(surface.querySelectorAll('.acquisition-enrichment').length, 1); assert.equal(surface.querySelectorAll('.acquisition-references').length, 0);
     }
   });
   test(`in-place arrival while already ${mode} makes no item writes and later Full renders available metadata`, () => {
@@ -813,7 +822,7 @@ test('in-place Full arrival adds an absent native disclosure for a reviewed stro
   assertNodesSurvive(h, snapshots[0], 'rows'); assertNodesSurvive(h, snapshots[1], 'cards'); assert.equal(h.context.document.activeElement, focus);
   for (const surface of surfaces(h)) {
     const details = required(surface, 'details'), summary = required(details, 'summary'); assert.equal(summary.textContent, 'More info'); assert.equal(details.open, false);
-    assert.equal(details.querySelectorAll('.acquisition-enrichment').length, 1); assert.equal(details.querySelectorAll('.acquisition-references').length, 1);
+    assert.equal(details.querySelectorAll('.acquisition-enrichment').length, 1); assert.equal(details.querySelectorAll('.acquisition-references').length, 0);
     summary.click(); assert.equal(details.open, true);
   }
   assertHydrationState(h, before);
@@ -837,7 +846,8 @@ function densityRoutes(overrides = {}) {
 function densitySurface(routes) {
   const data = fixture(routes), h = itemHarness([], { bundle: false });
   assert.equal(metadata.validateDataset(data).ok, true, 'Density fixture must pass the canonical validator');
-  return { data, surface: h.parse(markupFor(createUI(data), normalizedItem())) };
+  const before = JSON.stringify(data);
+  return { data, before, surface: h.parse(markupFor(createUI(data), normalizedItem())) };
 }
 function evidenceSet(count) {
   return Array.from({ length: count }, (_, index) => ({
@@ -846,143 +856,69 @@ function evidenceSet(count) {
   }));
 }
 
-test('identical reviewed geography renders once for all routes without merging their conditions or notes', () => {
-  const { data, surface } = densitySurface(densityRoutes());
-  const section = required(surface, '.acquisition-enrichment'), shared = required(section, '.acquisition-shared-location');
-  assert.match(shared.textContent, /all routes/i);
-  const routes = section.querySelectorAll('.acquisition-route'); assert.equal(routes.length, 3);
-  for (const value of ['UI_LOCATION_SENTINEL_world', 'UI_SUBLOCATION_SENTINEL_world', 'UI_COORDINATE_SPACE_SENTINEL_world']) {
-    assert.equal(section.textContent.split(value).length - 1, 1, 'Shared geography must be rendered once: ' + value);
-    assert.ok(shared.textContent.includes(value));
-    assert.ok(routes.every(element => !element.textContent.includes(value)), 'Shared facts must not be repeated inside alternatives');
-  }
-  for (const [index, element] of routes.entries()) {
-    assert.ok(element.textContent.includes('DENSITY_CHECK_' + (index + 1)));
-    assert.ok(element.textContent.includes('DENSITY_NOTE_' + (index + 1)));
-    for (const other of [1, 2, 3].filter(value => value !== index + 1)) {
-      assert.ok(!element.textContent.includes('DENSITY_CHECK_' + other));
-      assert.ok(!element.textContent.includes('DENSITY_NOTE_' + other));
-    }
-  }
-  assert.equal(data.entries[0].routes.length, 3, 'Presentation must not merge canonical facts');
+test('identical geography renders once while retaining separate compact methods and canonical conditions', () => {
+  const {data,surface,before}=densitySurface(densityRoutes());
+  const section=required(surface,'.acquisition-enrichment'), points=section.querySelectorAll('.acquisition-point'); assert.equal(points.length,1);
+  const geography=required(points[0],'.acquisition-geography');
+  for(const value of ['UI_LOCATION_SENTINEL_world','UI_SUBLOCATION_SENTINEL_world','UI_COORDINATE_SPACE_SENTINEL_world']) assert.equal(section.textContent.split(value).length-1,1,'Destination facts render once: '+value);
+  const routes=section.querySelectorAll('.acquisition-route'); assert.equal(routes.length,3); assert.ok(routes.every(element=>element.textContent.includes('World:')));
+  assert.ok(routes.every(element=>element.textContent.includes('Conditional route — see Wiki.')));
+  assert.doesNotMatch(section.textContent,/DENSITY_CHECK_|DENSITY_NOTE_|Shared location|all routes|Route \d|Prerequisites|Notes/);
+  assert.equal(data.entries[0].routes.length,3); assert.equal(JSON.stringify(data),before,'Presentation does not alter canonical route facts'); assert.ok(geography.textContent.includes('X: 99101 Y: -88202'));
 });
-
-for (const [label, change] of [
-  ['location name', route => { route.location.name += ' alternate'; }],
-  ['location Wiki identity', route => { route.location.wikiPage += ' alternate'; }],
-  ['sublocation', route => { route.sublocation += ' alternate'; }],
-  ['coordinate x', route => { route.coordinates.x += 1; }],
-  ['coordinate y', route => { route.coordinates.y += 1; }],
-  ['coordinate space', route => { route.coordinates.space += ' alternate'; }],
-  ['coordinate subject', route => { route.coordinates.subject = 'entrance'; }],
-  ['missing coordinates', route => { route.coordinates = null; }],
-  ['missing location', route => { route.location = null; }],
-  ['missing sublocation', route => { route.sublocation = null; }],
-  ['historical availability', route => { route.validity = 'historical'; }]
-]) test(`different ${label} keeps route geography separate`, () => {
-  const routes = densityRoutes(); change(routes[1]);
-  const { surface } = densitySurface(routes);
-  assert.equal(surface.querySelector('.acquisition-shared-location'), null);
-  const rendered = surface.querySelectorAll('.acquisition-route'); assert.equal(rendered.length, 3);
-  for (const [index, element] of rendered.entries()) {
-    if (routes[index].location) assert.ok(element.textContent.includes(routes[index].location.name));
-    if (routes[index].sublocation) assert.ok(element.textContent.includes(routes[index].sublocation));
-    if (routes[index].coordinates) assert.ok(element.textContent.includes(routes[index].coordinates.space));
-    assert.equal(element.querySelectorAll('.acquisition-historical').length, index === 1 && label === 'historical availability' ? 1 : 0);
-  }
+for(const [label,change] of [
+  ['location name',r=>{r.location.name+=' alternate';}],['location Wiki identity',r=>{r.location.wikiPage+=' alternate';}],['sublocation',r=>{r.sublocation+=' alternate';}],
+  ['coordinate x',r=>{r.coordinates.x+=1;}],['coordinate y',r=>{r.coordinates.y+=1;}],['coordinate space',r=>{r.coordinates.space+=' alternate';}],['coordinate subject',r=>{r.coordinates.subject='entrance';}],
+  ['missing coordinates',r=>{r.coordinates=null;}],['missing location',r=>{r.location=null;}],['missing sublocation',r=>{r.sublocation=null;}],['historical availability',r=>{r.validity='historical';}],['Act context',r=>{r.acts=[2,3];}]
+]) test(`different ${label} keeps its destination separate while identical subsets share geography`,()=>{
+  const routes=densityRoutes();change(routes[1]);const {surface}=densitySurface(routes),points=surface.querySelectorAll('.acquisition-point');assert.equal(points.length,2);assert.equal(surface.querySelectorAll('.acquisition-route').length,3);
+  assert.equal(points[0].querySelectorAll('.acquisition-route').length,2);assert.equal(points[1].querySelectorAll('.acquisition-route').length,1);
+  if(routes[1].location)assert.ok(points[1].textContent.includes(routes[1].location.name));if(routes[1].sublocation)assert.ok(points[1].textContent.includes(routes[1].sublocation));if(routes[1].coordinates)assert.ok(points[1].textContent.includes(routes[1].coordinates.space));
+  assert.equal(points[1].querySelectorAll('.acquisition-historical').length,label==='historical availability'?1:0);
 });
-
-test('single routes and alternatives with no geography omit an empty shared-location block', () => {
-  for (const routes of [[route()], densityRoutes({ location: null, sublocation: null, coordinates: null })]) {
-    const { surface } = densitySurface(routes);
-    assert.equal(surface.querySelector('.acquisition-shared-location'), null);
-    assert.equal(surface.querySelectorAll('.acquisition-route').length, routes.length);
-  }
+test('single routes and unknown v1 geography omit empty destination lines and invented zero coordinates',()=>{
+  for(const routes of [[route()],densityRoutes({location:null,sublocation:null,coordinates:null})]){const {surface}=densitySurface(routes);assert.equal(surface.querySelectorAll('.acquisition-point').length,1);assert.equal(surface.querySelectorAll('.acquisition-route').length,routes.length);assert.doesNotMatch(surface.textContent,/X: 0 Y: 0/);if(!routes[0].coordinates)assert.equal(surface.querySelectorAll('.acquisition-geography').length,0);}
 });
-
-test('repeated identical route headings are distinguishable without changing factual route labels', () => {
-  const { surface } = densitySurface(densityRoutes());
-  const headings = surface.querySelectorAll('.acquisition-route-heading').map(element => element.textContent);
-  assert.equal(new Set(headings).size, 3);
-  for (const [index, heading] of headings.entries()) {
-    assert.ok(heading.includes('Found in world')); assert.ok(heading.includes('Route ' + (index + 1)));
-  }
-  const distinct = densityRoutes().map((r, index) => ({ ...r, actor: { name: 'DISTINCT_ACTOR_' + index } }));
-  const different = densitySurface(distinct).surface;
-  assert.equal(different.querySelectorAll('.acquisition-route-number').length, 0, 'Already distinct headings need no numbering');
+test('repeated method labels remain separate without technical route numbers',()=>{
+  const {surface}=densitySurface(densityRoutes());assert.equal(surface.querySelectorAll('.acquisition-route-heading').length,3);assert.ok(surface.querySelectorAll('.acquisition-route-heading').every(element=>element.textContent==='World: Found here.'));assert.equal(surface.querySelectorAll('.acquisition-route-number').length,0);assert.doesNotMatch(surface.textContent,/Route \d/);
 });
-
-test('large reference sets preserve every exact pinned source and section behind a native disclosure', () => {
-  const sources = evidenceSet(8), { surface } = densitySurface([route('world', { sources })]);
-  const references = required(surface, '.acquisition-references'), extra = required(references, '.acquisition-more-sources');
-  assert.equal(extra.tagName, 'DETAILS'); assert.equal(extra.open, false);
-  assert.equal(required(extra, 'summary').textContent, 'More sources (5)');
-  assert.equal(references.querySelectorAll('.acquisition-reference').length, 8);
-  assert.equal(extra.querySelectorAll('.acquisition-reference').length, 5);
-  assert.deepEqual(copy(references.querySelectorAll('.acquisition-reference').map(link => link.getAttribute('href'))), sources.map(source => source.url));
-  for (const [index, link] of references.querySelectorAll('.acquisition-reference').entries()) {
-    assert.ok(link.textContent.includes(sources[index].section)); assert.equal(link.getAttribute('target'), '_blank');
-    assert.equal(link.getAttribute('rel'), 'noopener noreferrer');
-    assert.equal(link.getAttribute('tabindex'), null, 'Native links must remain in keyboard order');
-  }
+for(const count of [1,3,8]) test(`${count} canonical evidence sources remain unchanged without a visible or hidden source list`,()=>{
+  const sources=evidenceSet(count),{data,surface}=densitySurface([route('world',{sources})]),before=JSON.stringify(sources);
+  assert.equal(surface.querySelectorAll('.acquisition-references,.acquisition-reference,.acquisition-more-sources,a').length,0);assert.doesNotMatch(surface.textContent,/Density_Evidence_|Reviewed section|References|More sources/);assert.doesNotMatch(entireAttributes(surface),/Density_Evidence_|410000/);assert.equal(JSON.stringify(data.entries[0].routes[0].sources),before);
 });
-
-test('short reference sets stay visible and distinct sections or revisions are never merged', () => {
-  const base = evidenceSet(1)[0], sources = [base, { ...base, section: 'Another reviewed section' },
-    { ...base, url: base.url.replace('410000', '410001'), revisionId: 410001 }];
-  const { surface } = densitySurface([route('world', { sources: [...sources, copy(base)] })]);
-  assert.equal(surface.querySelector('.acquisition-more-sources'), null);
-  assert.equal(surface.querySelectorAll('.acquisition-reference').length, 3);
-  assert.deepEqual(copy(surface.querySelectorAll('.acquisition-reference').map(link => link.getAttribute('href'))), sources.map(source => source.url));
+for(const surfaceName of ['rows','cards']) test(`original Wiki link and native More info retain keyboard access on ${surfaceName} without an evidence disclosure`,()=>{
+  const data=fixture([route('world',{sources:evidenceSet(8)})]),h=itemHarness([realRow],{dataset:data}),surface=h[surfaceName]()[0],outer=required(surface,'details'),toggle=required(outer,'summary');
+  toggle.focus();assert.equal(h.nativeDOM.key(toggle,'Enter'),true);assert.equal(outer.open,true);const link=required(surface,'.item-reference');link.focus();assert.equal(h.context.document.activeElement,link);assert.equal(link.getAttribute('href'),realRow.links.Name);assert.equal(link.getAttribute('tabindex'),null);assert.equal(surface.querySelectorAll('a').length,1);toggle.focus();assert.equal(h.nativeDOM.key(toggle,' '),true);assert.equal(outer.open,false);
 });
-
-for (const surfaceName of ['rows', 'cards']) test(`native More sources is keyboard usable without closing outer More info on ${surfaceName}`, () => {
-  const data = fixture([route('world', { sources: evidenceSet(8) })]), h = itemHarness([realRow], { dataset: data });
-  const surface = h[surfaceName]()[0], outer = required(surface, 'details'), summary = required(outer, 'summary');
-  summary.click(); assert.equal(outer.open, true);
-  const extra = required(surface, '.acquisition-more-sources'), toggle = required(extra, 'summary');
-  toggle.focus(); assert.equal(h.context.document.activeElement, toggle);
-  assert.equal(h.nativeDOM.key(toggle, 'Enter'), true); assert.equal(extra.open, true); assert.equal(outer.open, true);
-  const link = required(extra, 'a'); link.focus(); assert.equal(h.context.document.activeElement, link);
-  toggle.focus(); assert.equal(h.nativeDOM.key(toggle, ' '), true); assert.equal(extra.open, false); assert.equal(outer.open, true);
+test('real Phalar and Dolor share compact destinations across desktop/mobile without route merging or evidence UI',()=>{
+  const data=JSON.parse(readFileSync(join(root,'data','acquisition.v1.json'),'utf8')),before=JSON.stringify(data),h=itemHarness(catalogue,{dataset:data});
+  h.search('Phalar Aluve');for(const surface of surfaces(h)){assert.equal(surface.querySelectorAll('.acquisition-point').length,1);assert.equal(surface.querySelectorAll('.acquisition-route').length,3);assert.match(enrichment(surface).textContent,/Strength check \(DC 15\)/);assert.match(enrichment(surface).textContent,/Religion check \(DC 15\)/);assert.equal(surface.querySelectorAll('.acquisition-reference').length,0);}assert.equal(enrichment(h.rows()[0]).textContent,enrichment(h.cards()[0]).textContent);
+  h.search('Dolor Amarus');for(const surface of surfaces(h)){assert.equal(surface.querySelectorAll('.acquisition-point').length,3);assert.equal(surface.querySelectorAll('.acquisition-route').length,3);assert.equal(surface.querySelectorAll('a').length,1);assert.doesNotMatch(enrichment(surface).textContent,/Route \d|Shared location|Prerequisites|Notes|References/);}assert.equal(JSON.stringify(data),before);
 });
-
-test('real Phalar and Dolor share one renderer across desktop/mobile with reduced repetition and complete evidence', () => {
-  const data = JSON.parse(readFileSync(join(root, 'data', 'acquisition.v1.json'), 'utf8')), before = JSON.stringify(data);
-  const h = itemHarness(catalogue, { dataset: data });
-  h.search('Phalar Aluve');
-  for (const surface of surfaces(h)) {
-    assert.equal(surface.querySelectorAll('.acquisition-shared-location').length, 1);
-    assert.equal(surface.querySelectorAll('.acquisition-route').length, 3);
-    assert.equal(surface.querySelectorAll('.acquisition-more-sources').length, 0);
-  }
-  assert.equal(enrichment(h.rows()[0]).textContent, enrichment(h.cards()[0]).textContent);
-  h.search('Dolor Amarus');
-  for (const surface of surfaces(h)) {
-    assert.equal(surface.querySelectorAll('.acquisition-shared-location').length, 0);
-    assert.equal(surface.querySelectorAll('.acquisition-route').length, 3);
-    assert.equal(surface.querySelectorAll('.acquisition-reference').length, 8);
-    assert.equal(required(required(surface, '.acquisition-more-sources'), 'summary').textContent, 'More sources (5)');
-  }
-  assert.equal(JSON.stringify(data), before);
+test('repeated late hydration retains compact destination nodes, original Wiki focus and outer disclosure state',()=>{
+  const h=hydrationHarness('full',catalogue);h.search('Dolor Amarus');arriveAtExistingItems(h);const surface=h.rows()[0],outer=required(surface,'details');required(outer,'summary').click();const link=required(surface,'.item-reference');link.focus();const nodes=nodeSnapshot(surface);h.nativeDOM.reset();arriveAtExistingItems(h);arriveAtExistingItems(h);assertNodesSurvive(h,nodes,'rows');assert.equal(outer.open,true);assert.equal(h.context.document.activeElement,link);assert.equal(surface.querySelectorAll('a').length,1);assert.equal(surface.querySelectorAll('.acquisition-enrichment').length,1);assert.equal(h.nativeDOM.writes.filter(entry=>entry.itemTree).length,0);
 });
-
-test('repeated late hydration retains compact reference disclosure state, focus and all source nodes', () => {
-  const h = hydrationHarness('full', catalogue); h.search('Dolor Amarus'); arriveAtExistingItems(h);
-  const surface = h.rows()[0], outer = required(surface, 'details'); required(outer, 'summary').click();
-  const extra = required(surface, '.acquisition-more-sources'), toggle = required(extra, 'summary'); toggle.click(); toggle.focus();
-  const nodes = nodeSnapshot(surface); h.nativeDOM.reset(); arriveAtExistingItems(h); arriveAtExistingItems(h);
-  assertNodesSurvive(h, nodes, 'rows'); assert.equal(outer.open, true); assert.equal(extra.open, true);
-  assert.equal(h.context.document.activeElement, toggle); assert.equal(surface.querySelectorAll('.acquisition-reference').length, 8);
-  assert.equal(surface.querySelectorAll('.acquisition-more-sources').length, 1); assert.equal(h.nativeDOM.writes.filter(entry => entry.itemTree).length, 0);
+test('shared zero and negative coordinates compare by values rather than object property order',()=>{
+  const routes=densityRoutes();for(const route of routes)route.coordinates={x:0,y:-10,space:'Same reviewed map',subject:'item'};routes[1].coordinates={subject:'item',space:'Same reviewed map',y:-10,x:0};routes[1].location={wikiPage:routes[0].location.wikiPage,name:routes[0].location.name};const {surface}=densitySurface(routes);assert.equal(surface.querySelectorAll('.acquisition-point').length,1);assert.match(required(surface,'.acquisition-geography').textContent,/X: 0 Y: -10/);assert.equal(surface.querySelectorAll('.acquisition-route').length,3);
 });
-
-
-test('shared zero and negative coordinates compare by values rather than object property insertion order', () => {
-  const routes = densityRoutes();
-  for (const route of routes) route.coordinates = { x: 0, y: -10, space: 'Same reviewed map', subject: 'item' };
-  routes[1].coordinates = { subject: 'item', space: 'Same reviewed map', y: -10, x: 0 };
-  routes[1].location = { wikiPage: routes[0].location.wikiPage, name: routes[0].location.name };
-  const { surface } = densitySurface(routes), shared = required(surface, '.acquisition-shared-location');
-  assert.ok(shared.textContent.includes('X 0, Y -10')); assert.equal(surface.querySelectorAll('.acquisition-route').length, 3);
+function reviewedCoordinates(routes){const data=fixture(routes);data.schemaVersion=2;return data;}
+for(const state of ['pending','conflict','not_documented','not_applicable']) test(`Full ${state} coordinates are explicit without invented points and absent from protected modes`,()=>{
+  const reason='No fixed point <3 & "reviewed".';const data=reviewedCoordinates([route('ability',{coordinates:null,coordinateReview:{state,reason},conditions:null,notes:null})]);assert.equal(metadata.validateDataset(data).ok,true);const ui=createUI(data),h=itemHarness([],{bundle:false}),section=required(h.parse(markupFor(ui,normalizedItem())),'.acquisition-enrichment');assert.equal(section.querySelectorAll('.acquisition-coordinate').length,0);assert.ok(section.querySelector('.acquisition-exception'));assert.doesNotMatch(section.textContent,/X:|Y:/);if(state==='not_applicable')assert.ok(section.textContent.includes(reason));assert.equal(section.querySelectorAll('script,img').length,0);for(const mode of ['minimal','light'])assertEmpty(ui.render(normalizedItem(),mode));
+});
+for(const [label,change] of [['review state',r=>{r.coordinateReview.state='reference';}],['review reason',r=>{r.coordinateReview.reason='Different reviewed point.';}]])test(`coordinate ${label} prevents grouping incompatible reviewed destinations`,()=>{
+  const routes=densityRoutes();for(const r of routes)r.coordinateReview={state:'exact',reason:'Reviewed point.'};change(routes[1]);const data=reviewedCoordinates(routes),h=itemHarness([],{bundle:false}),surface=h.parse(markupFor(createUI(data),normalizedItem()));assert.equal(surface.querySelectorAll('.acquisition-point').length,2);assert.equal(surface.querySelectorAll('.acquisition-route').length,3);
+});
+test('component navigation remains distinct from a finished-item acquisition point and escapes labels',()=>{
+  const point={label:'Component <3 & "proof"',location:{name:'Component destination'},sublocation:'Component room',coordinates:{x:10,y:-20,space:'Component map',subject:'component'},sources:evidenceSet(1)};
+  const routes=[route('combine',{actor:null,location:null,sublocation:null,coordinates:null,coordinateReview:{state:'not_applicable',reason:'Assembled in inventory; no fixed finished-item point.'},conditions:null,notes:null,navigationPoints:[point]})],data=reviewedCoordinates(routes),before=JSON.stringify(data),h=itemHarness([],{bundle:false}),surface=h.parse(markupFor(createUI(data),normalizedItem()));
+  const group=required(surface,'.acquisition-point'),navigation=required(group,'.acquisition-navigation-point');assert.ok(navigation.textContent.includes('Component: Component <3 & "proof"'));assert.match(navigation.textContent,/X: 10 Y: -20/);assert.ok(required(group,'.acquisition-exception').textContent.includes('no fixed finished-item point'));assert.equal(group.children.filter(element=>element.classList.contains('acquisition-geography')).length,0,'Only the component owns navigation coordinates');assert.equal(group.querySelectorAll('script,img,a').length,0);assert.equal(JSON.stringify(data),before);
+});
+test('component navigation labels and destinations participate in geography grouping',()=>{
+  const point={label:'Proof component',coordinates:{x:10,y:-20,space:'Proof map',subject:'component'},sources:evidenceSet(1)},routes=densityRoutes({coordinates:null,coordinateReview:{state:'not_applicable',reason:'Assembled in inventory.'},navigationPoints:[point]});routes[1].navigationPoints=[{...point,label:'Other component'}];const data=reviewedCoordinates(routes),h=itemHarness([],{bundle:false}),surface=h.parse(markupFor(createUI(data),normalizedItem()));assert.equal(surface.querySelectorAll('.acquisition-point').length,2);assert.equal(surface.querySelectorAll('.acquisition-route').length,3);assert.equal(surface.querySelectorAll('.acquisition-navigation-point').length,2);
+});
+test('only one reviewed uncomplicated skill check is humanized; branching and free prose use the short Wiki qualification',()=>{
+  const routes=[route('world',{conditions:{prerequisites:[{kind:'check',subject:'Strength',value:15}]},notes:['Long prose must not appear.']}),route('world',{id:'complex:route',conditions:{prerequisites:[{kind:'check',subject:'Strength',value:15}],before:[{kind:'choice',subject:'WALKTHROUGH_SENTINEL',value:'Narrative branch'}]}})],{surface}=densitySurface(routes);const methods=surface.querySelectorAll('.acquisition-route');assert.match(methods[0].textContent,/Strength check \(DC 15\)\./);assert.match(methods[1].textContent,/Conditional route — see Wiki\./);assert.doesNotMatch(surface.textContent,/WALKTHROUGH_SENTINEL|Narrative branch|Long prose/);
+});
+test('quest reward routes retain their distinct reviewed quest identities without dialogue branches',()=>{
+  const routes=['Proof Quest One','Proof Quest Two'].map((name,index)=>route('quest_reward',{id:'quest:route:'+index,conditions:{prerequisites:[{kind:'quest',subject:name,value:'WALKTHROUGH_SENTINEL'}]}})),{surface}=densitySurface(routes);assert.equal(surface.querySelectorAll('.acquisition-point').length,1);const methods=surface.querySelectorAll('.acquisition-route-heading');assert.match(methods[0].textContent,/Quest reward: Reward for Proof Quest One\./);assert.match(methods[1].textContent,/Quest reward: Reward for Proof Quest Two\./);assert.doesNotMatch(surface.textContent,/WALKTHROUGH_SENTINEL/);
 });

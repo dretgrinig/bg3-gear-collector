@@ -1,4 +1,4 @@
-/* Acquisition enrichment schema 1. Deliberately not loaded by the tracker yet. */
+/* Acquisition enrichment schemas 1 and 2. Deterministic validation and identity resolution. */
 'use strict';
 
 const own = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
@@ -6,6 +6,8 @@ const ACTS = new Set(['ACT 1', 'ACT 2', 'ACT 3']);
 const ROUTE_TYPES = new Set(['purchase', 'drop', 'actor_loot', 'quest_reward', 'gift', 'craft', 'combine', 'container', 'world', 'ability', 'steal', 'disarm']);
 const CONDITION_KINDS = new Set(['item', 'ability', 'level', 'quest', 'npc', 'class', 'check', 'interaction', 'choice', 'faith']);
 const SUBJECTS = new Set(['actor', 'container', 'entrance', 'item', 'interaction', 'crafting_station']);
+const SUBJECTS_V2 = new Set([...SUBJECTS, 'corpse', 'encounter', 'former_container', 'component', 'location']);
+const COORDINATE_STATES = new Set(['exact', 'reference', 'pending', 'conflict', 'not_documented', 'not_applicable']);
 const EMPTY = Object.freeze([]);
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const nonempty = value => typeof value === 'string' && value.trim().length > 0;
@@ -152,6 +154,38 @@ function validateDataset(input) {
       else if (identity && identity.revisionId !== null && identity.revisionId !== value.revisionId) issue(`${path}.revisionId`, 'revision', 'Revision must agree with the pinned URL.');
     }
   }
+  function coordinates(value, path) {
+    if (!shape(value, ['x', 'y', 'space', 'subject'], ['x', 'y', 'space', 'subject'], path)) return;
+    for (const axis of ['x', 'y']) if (typeof value[axis] !== 'number' || !Number.isFinite(value[axis])) issue(`${path}.${axis}`, 'coordinate', 'Expected a finite coordinate number.');
+    text(value.space, `${path}.space`, true);
+    enumeration(value.subject, dataset.schemaVersion === 2 ? SUBJECTS_V2 : SUBJECTS, `${path}.subject`);
+  }
+  function coordinateReview(route, path) {
+    const value = route.coordinateReview, p = `${path}.coordinateReview`;
+    if (!shape(value, ['state', 'reason'], ['state'], p)) return;
+    enumeration(value.state, COORDINATE_STATES, `${p}.state`);
+    if (own(value, 'reason')) text(value.reason, `${p}.reason`, true);
+    const pointRequired = value.state === 'exact' || value.state === 'reference';
+    if (pointRequired && !record(route.coordinates)) issue(`${path}.coordinates`, 'coordinate', 'Verified coordinate states require a coordinate point.');
+    if (COORDINATE_STATES.has(value.state) && !pointRequired && route.coordinates !== null) issue(`${path}.coordinates`, 'coordinate', 'This coordinate state requires explicit null coordinates.');
+    if (value.state === 'not_applicable' && !own(value, 'reason')) issue(`${p}.reason`, 'required', 'A coordinate exception requires a plain-text reason.');
+    if ((pointRequired || value.state === 'not_applicable') && (!Array.isArray(route.sources) || !route.sources.length)) issue(`${path}.sources`, 'evidence', 'Verified points and coordinate exceptions require evidence.');
+  }
+  function navigationPoints(value, path) {
+    if (!array(value, path, 1)) return;
+    value.forEach((point, index) => {
+      const p = `${path}[${index}]`;
+      if (!shape(point, ['label', 'location', 'sublocation', 'coordinates', 'sources'], ['label', 'coordinates', 'sources'], p)) return;
+      text(point.label, `${p}.label`, true);
+      if (own(point, 'location')) {
+        if (point.location === null) issue(`${p}.location`, 'object', 'Expected a navigation location object.');
+        else entity(point.location, `${p}.location`);
+      }
+      if (own(point, 'sublocation')) text(point.sublocation, `${p}.sublocation`, true);
+      coordinates(point.coordinates, `${p}.coordinates`);
+      if (array(point.sources, `${p}.sources`, 1)) point.sources.forEach((value, index) => source(value, `${p}.sources[${index}]`));
+    });
+  }
   function conditions(value, path) {
     if (value === null) return;
     if (!shape(value, ['prerequisites', 'before', 'after', 'exclusions'], [], path)) return;
@@ -167,7 +201,7 @@ function validateDataset(input) {
   }
   const entryIDs = new Set(), bindingIDs = new Set(), routeIDs = new Set();
   if (shape(dataset, ['schemaVersion', 'datasetVersion', 'entries'], ['schemaVersion', 'datasetVersion', 'entries'], '$')) {
-    if (dataset.schemaVersion !== 1) issue('$.schemaVersion', 'version', 'Only schema version 1 is supported.');
+    if (![1, 2].includes(dataset.schemaVersion)) issue('$.schemaVersion', 'version', 'Only schema versions 1 and 2 are supported.');
     text(dataset.datasetVersion, '$.datasetVersion');
     if (array(dataset.entries, '$.entries')) dataset.entries.forEach((entry, ei) => {
       const ep = `$.entries[${ei}]`;
@@ -187,7 +221,11 @@ function validateDataset(input) {
       });
       if (array(entry.routes, `${ep}.routes`)) entry.routes.forEach((route, ri) => {
         const rp = `${ep}.routes[${ri}]`;
-        if (!shape(route, ['id', 'type', 'acts', 'actor', 'location', 'sublocation', 'coordinates', 'conditions', 'notes', 'validity', 'sources', 'review'], ['id', 'type', 'validity', 'sources', 'review'], rp)) return;
+        const coordinateContract = dataset.schemaVersion === 2;
+        const fields = ['id', 'type', 'acts', 'actor', 'location', 'sublocation', 'coordinates', 'conditions', 'notes', 'validity', 'sources', 'review'];
+        const required = ['id', 'type', 'validity', 'sources', 'review'];
+        if (coordinateContract) { fields.push('coordinateReview', 'navigationPoints'); required.push('coordinates', 'coordinateReview'); }
+        if (!shape(route, fields, required, rp)) return;
         unique(route.id, routeIDs, `${rp}.id`); enumeration(route.type, ROUTE_TYPES, `${rp}.type`);
         enumeration(route.validity, new Set(['current', 'historical', 'uncertain']), `${rp}.validity`);
         if (own(route, 'acts') && route.acts !== null && array(route.acts, `${rp}.acts`, 1)) {
@@ -199,12 +237,10 @@ function validateDataset(input) {
         }
         for (const key of ['actor', 'location']) if (own(route, key)) entity(route[key], `${rp}.${key}`);
         if (own(route, 'sublocation') && route.sublocation !== null) text(route.sublocation, `${rp}.sublocation`, true);
-        if (own(route, 'coordinates') && route.coordinates !== null) {
-          const c = route.coordinates, cp = `${rp}.coordinates`;
-          if (shape(c, ['x', 'y', 'space', 'subject'], ['x', 'y', 'space', 'subject'], cp)) {
-            for (const axis of ['x', 'y']) if (typeof c[axis] !== 'number' || !Number.isFinite(c[axis])) issue(`${cp}.${axis}`, 'coordinate', 'Expected a finite coordinate number.');
-            text(c.space, `${cp}.space`, true); enumeration(c.subject, SUBJECTS, `${cp}.subject`);
-          }
+        if (own(route, 'coordinates') && route.coordinates !== null) coordinates(route.coordinates, `${rp}.coordinates`);
+        if (coordinateContract) {
+          coordinateReview(route, rp);
+          if (own(route, 'navigationPoints')) navigationPoints(route.navigationPoints, `${rp}.navigationPoints`);
         }
         if (own(route, 'conditions')) conditions(route.conditions, `${rp}.conditions`);
         if (own(route, 'notes') && route.notes !== null && array(route.notes, `${rp}.notes`)) route.notes.forEach((note, ni) => text(note, `${rp}.notes[${ni}]`, true));
