@@ -7,6 +7,8 @@ const {harness:storyHarness,record}=require('./helpers/app-harness.cjs');
 const root=join(__dirname,'..'),base='2087779449092caf968e1a07f11943d480018990';
 const baseline=JSON.parse(execFileSync('git',['show',base+':data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}));
 const data=JSON.parse(readFileSync(join(root,'data/acquisition.v1.json'),'utf8'));
+const batch2Snapshot=JSON.parse(execFileSync('git',['show','5a1edf08a52803a502a13e740f3a9ba8276cd2f6:data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}));
+const batch2IDs=new Set(batch2Snapshot.entries.map(e=>e.id));
 const catalogue=JSON.parse(readFileSync(join(__dirname,'fixtures/vendor-catalogue.json'),'utf8'));
 const clone=x=>JSON.parse(JSON.stringify(x)),key=x=>(x.act+'|'+x.name).toLowerCase();
 // Allocated once and pinned before canonical Batch 2 metadata was added.
@@ -1227,12 +1229,13 @@ for(const spec of approved){
 }
 const byName=name=>approved.find(s=>s.name===name);
 test('Batch 2 adds only fifteen reviewed entries/bindings and sixteen routes without changing the original fifty-five',()=>{
- assert.equal(data.schemaVersion,2);assert.equal(data.datasetVersion,'2.2.0-act1.batch2');assert.equal(metadata.validateDataset(data).ok,true);assert.equal(data.entries.length,70);
- assert.deepEqual(data.entries.slice(0,55),baseline.entries);const additions=data.entries.slice(55);assert.deepEqual(additions.map(e=>e.id),approved.map(s=>s.entryId));assert.deepEqual(additions.flatMap(e=>e.bindings),approved.map(s=>s.binding));assert.deepEqual(additions.flatMap(e=>e.routes),approved.flatMap(s=>s.routes));
- assert.equal(data.entries.flatMap(e=>e.bindings).length,71);assert.equal(data.entries.flatMap(e=>e.routes).length,89);
+ const scoped={...data,datasetVersion:batch2Snapshot.datasetVersion,entries:data.entries.filter(e=>batch2IDs.has(e.id))};assert.deepEqual(scoped,batch2Snapshot);
+ assert.equal(scoped.schemaVersion,2);assert.equal(scoped.datasetVersion,'2.2.0-act1.batch2');assert.equal(metadata.validateDataset(data).ok,true);assert.equal(scoped.entries.length,70);
+ assert.deepEqual(scoped.entries.slice(0,55),baseline.entries);const additions=scoped.entries.slice(55);assert.deepEqual(additions.map(e=>e.id),approved.map(s=>s.entryId));assert.deepEqual(additions.flatMap(e=>e.bindings),approved.map(s=>s.binding));assert.deepEqual(additions.flatMap(e=>e.routes),approved.flatMap(s=>s.routes));
+ assert.equal(scoped.entries.flatMap(e=>e.bindings).length,71);assert.equal(scoped.entries.flatMap(e=>e.routes).length,89);
 });
 test('Batch 2 closes all coordinate states: six exact, ten reference, no new exceptions or unresolved routes',()=>{
- const added=data.entries.slice(55).flatMap(e=>e.routes),all=data.entries.flatMap(e=>e.routes);assert.equal(added.length,16);
+ const scoped=data.entries.filter(e=>batch2IDs.has(e.id));const added=scoped.slice(55).flatMap(e=>e.routes),all=scoped.flatMap(e=>e.routes);assert.equal(added.length,16);
  for(const [state,count] of [['exact',6],['reference',10],['not_applicable',0]])assert.equal(added.filter(r=>r.coordinateReview.state===state).length,count);
  assert.equal(added.filter(r=>r.coordinates===null).length,0);for(const [state,count] of [['exact',34],['reference',50],['not_applicable',5]])assert.equal(all.filter(r=>r.coordinateReview.state===state).length,count);assert.equal(all.filter(r=>['pending','conflict','not_documented'].includes(r.coordinateReview.state)).length,0);
 });
@@ -1272,7 +1275,7 @@ test('Batch 2 actual catalogue preserves all keys, classifier memberships, Grace
  const h=itemHarness(catalogue,{dataset:data}),items=Array.from(h.app.items());assert.equal(catalogue.length,556);assert.equal(items.length,555);assert.deepEqual(items.map(key).sort(),[...new Set(catalogue.map(key))].sort());
  for(const [i,act] of ['ACT 1','ACT 2','ACT 3'].entries()){const a=items.filter(x=>x.act===act);assert.equal(a.filter(h.app.vendor).length,[63,50,67][i]);assert.equal(a.filter(x=>h.app.acquisitionFor(x).loot).length,[131,94,125][i]);assert.equal(a.filter(h.app.quest).length,[25,0,0][i]);}
  const cloth=items.filter(x=>x.name.startsWith('The Graceful Cloth'));assert.equal(cloth.length,2);assert.notEqual(key(cloth[0]),key(cloth[1]));const b=items.filter(x=>x.name==="Gloves of Battlemage's Power");assert.equal(b.length,1);assert.equal(b[0].source,catalogue.find(x=>x.sourceRow===54&&x.name===b[0].name).links.Name);
- const matched=items.filter(i=>resolver.resolve(i));assert.equal(matched.length,70);assert.equal(matched.filter(i=>i.act==='ACT 1').length,65);assert.deepEqual(matched.filter(i=>!metadata.createResolver(baseline).resolve(i)).map(key).sort(),approved.map(s=>s.binding.progressKey).sort());
+ const checkpointResolver=metadata.createResolver(batch2Snapshot),matched=items.filter(i=>checkpointResolver.resolve(i));assert.equal(matched.length,70);assert.equal(matched.filter(i=>i.act==='ACT 1').length,65);assert.deepEqual(matched.filter(i=>!metadata.createResolver(baseline).resolve(i)).map(key).sort(),approved.map(s=>s.binding.progressKey).sort());
 });
 for(const mode of ['full','minimal','light'])test('Batch 2 '+mode+' discovery/filter/sort/count state remains identical to the approved baseline',()=>{
  const before=itemHarness(catalogue,{dataset:baseline,mode}),after=itemHarness(catalogue,{dataset:data,mode});assert.deepEqual(clone(discovery(after)),clone(discovery(before)));assert.deepEqual(clone(after.app.items()),clone(before.app.items()));const progress=after.app.progress();after.search('ring');before.search('ring');assert.deepEqual(clone(discovery(after)),clone(discovery(before)));after.mode('full');after.mode(mode);assert.equal(after.app.progress(),progress);

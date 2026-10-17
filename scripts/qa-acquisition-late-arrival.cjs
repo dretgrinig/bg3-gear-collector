@@ -485,6 +485,76 @@ async function checkAct1Batch2(browser, width) {
   } finally { await testCase.context.close(); }
 }
 
+// Batch 3: literal special-case points plus all fifteen native Full/protected checks.
+async function checkAct1Batch3(browser, width) {
+  const names = ["Boots of Aid and Comfort", "Boots of Genial Striding", "Boots of Elemental Momentum", "Gloves of Dexterity", "Gloves of Missile Snaring", "Hunting Shortbow", "The Speedy Lightfeet", "Helmet of Smiting", "Nature's Snare", "Moondrop Pendant", "Ring of Poison Resistance", "Smuggler's Ring", "Spurred Band", "Staff of Crones", "Skybreaker"];
+  const dataset = JSON.parse(fs.readFileSync(path.join(root, 'data', 'acquisition.v1.json'), 'utf8'));
+  const catalogue = JSON.parse(catalogueFixture);
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  try {
+    testCase.releaseAsset();
+    await page.waitForLoadState('domcontentloaded');
+    for (const name of names) {
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator('#q').fill(name);
+      const raw = catalogue.find(row => row.act === 'ACT 1' && row.name === name);
+      const entry = dataset.entries.find(entry => entry.bindings.some(binding => binding.progressKey === ('act 1|' + name).toLowerCase()));
+      check(!!raw && !!entry && entry.routes.length === 1, `${width}px ${name}: batch identity/route missing`);
+      const route = entry.routes[0], scope = width > 780 ? '#body > tr' : '#cards > article';
+      check(await page.locator(scope).count() === 1, `${width}px ${name}: search identity mismatch`);
+      const surface = page.locator(scope).first();
+      const toggle = surface.locator('summary');
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${name}: first click failed`);
+      const facts = await surface.evaluate((node, expected) => {
+        const effects = node.querySelector('.item-effects'), where = node.querySelector('.acquisition-enrichment'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!effects && !!where && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(expected.description) && (!expected.properties || effects.textContent.includes(expected.properties)),
+          where: where?.textContent,
+          coordinates: where?.querySelector('.acquisition-coordinate')?.textContent,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          links: node.querySelectorAll('a').length,
+          reference: node.querySelector('.item-reference')?.getAttribute('href'),
+          evidence: node.querySelectorAll('.acquisition-references,.acquisition-reference').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth
+        };
+      }, raw);
+      const label = `${width}px ${name}`;
+      check(facts.ordered && facts.mechanics, label + ': mechanics/order changed');
+      check(facts.coordinates === `X: ${route.coordinates.x} Y: ${route.coordinates.y}`, label + ': coordinate mismatch');
+      check(facts.where.includes(route.sublocation), label + ': sublocation missing');
+      check(facts.routes === 1 && facts.sections === 1, label + ': missing/duplicate enrichment');
+      check(facts.links === 1 && facts.reference === raw.links.Name && facts.evidence === 0, label + ': Wiki/evidence mismatch');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.where), label + ': walkthrough/evidence clutter');
+      const literalPoints = {
+        'The Speedy Lightfeet': [-711, -412], 'Gloves of Dexterity': [1380, -798],
+        'Moondrop Pendant': [-321, -135], 'Staff of Crones': [-416, 599]
+      };
+      if (literalPoints[name]) check(facts.coordinates === `X: ${literalPoints[name][0]} Y: ${literalPoints[name][1]}`, label + ': approved point lost');
+      if (name === 'Gloves of Dexterity') check(await surface.locator('.acquisition-coordinate-note').textContent() === 'Location', label + ': shop reference role lost');
+      if (name === 'Moondrop Pendant') check(facts.where.includes('Conditional route — see Wiki.') && !/Perception|Religion|DC [0-9]/.test(facts.where), label + ': shrine turned into walkthrough');
+      if (name === 'Staff of Crones') check(!/kill|defeat|Ethel/i.test(facts.where), label + ': invented kill prerequisite');
+      if (name === 'The Speedy Lightfeet') check(!/Barcus|-11|436/.test(facts.where), label + ': outside hatch or rescue substituted');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': overflow');
+      await toggle.press('Enter');
+      check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+      await toggle.press('Space');
+      check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
+      if (['Moondrop Pendant','Staff of Crones','The Speedy Lightfeet','Gloves of Dexterity'].includes(name)) await surface.screenshot({path:path.join(outputDirectory,`batch3-${width}-${name.replaceAll(' ','-').toLowerCase()}.png`)});
+      for (const mode of ['light','minimal']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation').count() === 0, label + ': enrichment leaked in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('.acquisition-enrichment').count() === 2, label + ': Full restoration failed');
+      record(label, 'Act 1 Batch 3 Full/protected/keyboard', {facts});
+    }
+    check(testCase.errors.length === 0, width + 'px Batch 3: uncaught runtime error');
+  } finally { await testCase.context.close(); }
+}
+
 async function main() {
   fs.mkdirSync(outputDirectory, { recursive: true });
   const browser = await chromium.launch({
@@ -502,6 +572,7 @@ async function main() {
     for (const width of [320, 390, 768, 1280]) await checkCompactDetails(browser, width);
     for (const width of [390, 1280]) await checkAct1Batch1(browser, width);
     for (const width of [390, 1280]) await checkAct1Batch2(browser, width);
+    for (const width of [390, 1280]) await checkAct1Batch3(browser, width);
     await checkOptionalFailure(browser, null, 'missing optional asset');
     await checkOptionalFailure(browser,
       'window.BG3AcquisitionUI={render(){throw new Error("broken optional API")}};',

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "datasetVersion": "2.2.0-act1.batch2",
+  "datasetVersion": "2.3.0-act1.batch3",
   "entries": [
     {
       "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
@@ -6563,6 +6563,1007 @@
           "coordinateReview": {
             "state": "reference",
             "reason": "Reviewed Act One trader encounter reference; Blurg may move."
+          }
+        }
+      ]
+    },
+    {
+      "id": "fa05981a-7a3c-4f69-a715-aca3c71d9075",
+      "bindings": [
+        {
+          "id": "683f9439-072a-46d4-9b4c-a92c8a638858",
+          "act": "ACT 1",
+          "progressKey": "act 1|boots of aid and comfort",
+          "gameIds": [
+            "MAG_Healer_TempHPOnHeal_Boots"
+          ],
+          "wikiPage": "Boots of Aid and Comfort"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "f480fc7a-0f78-43ea-9118-931ebe99d9bf",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Grat",
+            "wikiPage": "Grat"
+          },
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Grat the Trader's shop",
+          "coordinates": {
+            "x": -99,
+            "y": 424,
+            "space": "Goblin Camp",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Purchase while Grat remains available to trade."
+              }
+            ]
+          },
+          "notes": [
+            "No death-drop route or quest prerequisite is inferred from shop availability."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Aid_and_Comfort&oldid=416676",
+              "revisionId": 416676,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grat&oldid=414927",
+              "revisionId": 414927,
+              "section": "Store; Stock"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader reference; Grat may move or become unavailable."
+          }
+        }
+      ]
+    },
+    {
+      "id": "3b00c143-5b09-44b4-aaa3-253555c77bf5",
+      "bindings": [
+        {
+          "id": "246d2fa9-99cc-4aa5-89e4-77d0ebddb056",
+          "act": "ACT 1",
+          "progressKey": "act 1|boots of genial striding",
+          "gameIds": [
+            "MAG_TerrainWalkers_Boots"
+          ],
+          "wikiPage": "Boots of Genial Striding"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "a4e8f99c-e50c-4637-97d9-f4a7c8db6129",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Blurg",
+            "wikiPage": "Blurg"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg's shop",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "No Omeluum investigation prerequisite or later-Act route is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Genial_Striding&oldid=416683",
+              "revisionId": 416683,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blurg&oldid=434059",
+              "revisionId": 434059,
+              "section": "Act One; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader reference; Blurg may move."
+          }
+        }
+      ]
+    },
+    {
+      "id": "2d9a02e6-4f2e-4a1f-8ce9-e02ecd843c30",
+      "bindings": [
+        {
+          "id": "b7700e4f-58fa-4d52-88e9-4643c5b96336",
+          "act": "ACT 1",
+          "progressKey": "act 1|boots of elemental momentum",
+          "gameIds": [
+            "MAG_ElementalGish_MomentumOnElementalDamage_Boots"
+          ],
+          "wikiPage": "Boots of Elemental Momentum"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "3b61581d-949a-4644-9226-b639322526f2",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Lady Esther",
+            "wikiPage": "Esther"
+          },
+          "location": {
+            "name": "Rosymorn Monastery Trail",
+            "wikiPage": "Rosymorn Monastery Trail"
+          },
+          "sublocation": "Camp northeast of the Trielta Crags waypoint",
+          "coordinates": {
+            "x": -43,
+            "y": -129,
+            "space": "Rosymorn Monastery Trail",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Purchase while Lady Esther remains available to trade."
+              }
+            ]
+          },
+          "notes": [
+            "Accepting or completing the egg request is not a purchase prerequisite."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Elemental_Momentum&oldid=416682",
+              "revisionId": 416682,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Esther&oldid=425220",
+              "revisionId": 425220,
+              "section": "Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader reference; Esther may move or become unavailable."
+          }
+        }
+      ]
+    },
+    {
+      "id": "8cde2948-005a-4835-b225-71ad89fcc747",
+      "bindings": [
+        {
+          "id": "ce6c141d-e46b-40ec-bd52-b0a321d283e9",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of dexterity",
+          "gameIds": [
+            "MAG_BG_OfDexterity_Gloves"
+          ],
+          "wikiPage": "Gloves of Dexterity"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "68f43e81-ea43-4924-ab19-a1c149e5fd3b",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "A'jak'nir Jeera",
+            "wikiPage": "Jeera"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "A'jak'nir Jeera's shop",
+          "coordinates": {
+            "x": 1380,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "location"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Purchase while Jeera remains available to trade."
+              }
+            ]
+          },
+          "notes": [
+            "Retain item shop point 1380,-798 and alternate NPC point 1387,-821 without averaging or claiming an exact actor coordinate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Dexterity&oldid=418968",
+              "revisionId": 418968,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jeera&oldid=416522",
+              "revisionId": 416522,
+              "section": "Involvement; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item page gives shop reference 1380,-798; Jeera's page places her at 1387,-821. This is not a guaranteed standing position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "babd48c1-f641-4854-b22c-64b82b61e680",
+      "bindings": [
+        {
+          "id": "deba51b7-88d8-4383-915f-ee0d72c7aea2",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of missile snaring",
+          "gameIds": [
+            "UNI_ARM_OfMissileSnaring_Gloves"
+          ],
+          "wikiPage": "Gloves of Missile Snaring"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "eacef3f5-3d1a-4167-b8c1-50d0eb2a68d0",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Arron",
+            "wikiPage": "Arron"
+          },
+          "location": {
+            "name": "The Hollow",
+            "wikiPage": "The Hollow"
+          },
+          "sublocation": "Shop next to the Silvanus statue",
+          "coordinates": {
+            "x": 205,
+            "y": 516,
+            "space": "The Hollow",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Purchase while Arron remains available to trade."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Missile_Snaring&oldid=418973",
+              "revisionId": 418973,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arron&oldid=414921",
+              "revisionId": 414921,
+              "section": "Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader reference; Arron may move or become unavailable."
+          }
+        }
+      ]
+    },
+    {
+      "id": "62ca4288-e1a3-4a05-bb5f-f0621a561892",
+      "bindings": [
+        {
+          "id": "7ae2bc2b-3412-42dd-8f9d-137546c7b1cd",
+          "act": "ACT 1",
+          "progressKey": "act 1|hunting shortbow",
+          "gameIds": [
+            "MAG_Hunting_Shortbow"
+          ],
+          "wikiPage": "Hunting Shortbow"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "978f9bf5-d3e3-4579-8e5a-19b7cfba8e01",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Dammon",
+            "wikiPage": "Dammon"
+          },
+          "location": {
+            "name": "The Hollow",
+            "wikiPage": "The Hollow"
+          },
+          "sublocation": "Dammon's Act One shop",
+          "coordinates": {
+            "x": 177,
+            "y": 562,
+            "space": "The Hollow",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Purchase in Act One before Dammon leaves with the tiefling refugees."
+              }
+            ]
+          },
+          "notes": [
+            "Dammon becomes unavailable after the refugee departure until Act Two. This route promises no later-Act acquisition. Keep alternate NPC point 180,561."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hunting_Shortbow&oldid=419633",
+              "revisionId": 419633,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dammon&oldid=414844",
+              "revisionId": 414844,
+              "section": "Involvement; Items sold; Act One"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item shop reference is 177,562; Dammon's Act One NPC point is 180,561. A moving trader is not an exact acquisition point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "143d5e41-7a7d-4d56-9fee-3e4e9e70706f",
+      "bindings": [
+        {
+          "id": "19334d35-fcc3-49e0-be0d-eab833e1b12c",
+          "act": "ACT 1",
+          "progressKey": "act 1|the speedy lightfeet",
+          "gameIds": [
+            "MAG_ChargedLightning_Dash_Boots"
+          ],
+          "wikiPage": "The Speedy Lightfeet"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "f98e234d-2800-401d-a33e-6848baf7ab65",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Blighted Village",
+            "wikiPage": "Blighted Village"
+          },
+          "sublocation": "Heavy chest in the windmill cellar",
+          "coordinates": {
+            "x": -711,
+            "y": -412,
+            "space": "Windmill Cellar",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "The cellar chest is at -711,-412. The exterior hatch at -11,436 is a different subject/map space and is not substituted. Rescuing Barcus is not an acquisition prerequisite."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Speedy_Lightfeet&oldid=424113",
+              "revisionId": 424113,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blighted_Village&oldid=433668",
+              "revisionId": 433668,
+              "section": "Windmill"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "6bf2c1b3-7f6d-423b-9657-bb12d932e830",
+      "bindings": [
+        {
+          "id": "8846333b-f1fc-42d8-8f22-92d7c07caa20",
+          "act": "ACT 1",
+          "progressKey": "act 1|helmet of smiting",
+          "gameIds": [
+            "MAG_Paladin_SmiteSpellsSupport_Helmet"
+          ],
+          "wikiPage": "Helmet of Smiting"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "9299369a-ee3c-46aa-90cc-7de4a195b03d",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Selûnite Outpost",
+            "wikiPage": "Selûnite Outpost"
+          },
+          "sublocation": "Locked gilded chest southwest of the waypoint",
+          "coordinates": {
+            "x": 163,
+            "y": -248,
+            "space": "Selûnite Outpost",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate location-article chest point: 163,-244. No averaging or exactness claim."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Helmet_of_Smiting&oldid=419475",
+              "revisionId": 419475,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sel%C3%BBnite_Outpost&oldid=431112",
+              "revisionId": 431112,
+              "section": "Outpost; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item chest point is 163,-248; the Selûnite Outpost article gives 163,-244. Retain the published item point as a navigation reference."
+          }
+        }
+      ]
+    },
+    {
+      "id": "db95448a-64e1-4f92-ab28-7143568144c0",
+      "bindings": [
+        {
+          "id": "bbb0eec4-8d87-4771-9016-e17952f0bb7e",
+          "act": "ACT 1",
+          "progressKey": "act 1|nature's snare",
+          "gameIds": [
+            "DEN_TunnelStaff"
+          ],
+          "wikiPage": "Nature's Snare"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "452274a9-869e-4550-913c-2fce0269242e",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Underground Passage",
+            "wikiPage": "Underground Passage"
+          },
+          "sublocation": "Locked, trapped heavy chest",
+          "coordinates": {
+            "x": -425,
+            "y": -200,
+            "space": "Underground Passage",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Open with the Charred Key OR lockpicking."
+              }
+            ]
+          },
+          "notes": [
+            "The chest is trapped. Noticing or disarming the trap is optional, not a universal acquisition prerequisite. Neither key nor lockpicking is individually mandatory."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Nature%27s_Snare&oldid=438410",
+              "revisionId": 438410,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Underground_Passage&oldid=424498",
+              "revisionId": 424498,
+              "section": "Overview"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "677b65b5-18a8-416e-a587-f2a42eddfd02",
+      "bindings": [
+        {
+          "id": "7b944d6b-a111-4248-a565-3e2688c62fc8",
+          "act": "ACT 1",
+          "progressKey": "act 1|moondrop pendant",
+          "gameIds": [
+            "MAG_LowHP_IgnoreAttackOfOpportunity_Amulet"
+          ],
+          "wikiPage": "Moondrop Pendant"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "30a65b7c-10e3-415f-851a-63979edd9d9b",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Owlbear Nest",
+            "wikiPage": "Owlbear Nest"
+          },
+          "sublocation": "Magically sealed gilded chest at the Selûnite shrine",
+          "coordinates": {
+            "x": -321,
+            "y": -135,
+            "space": "Owlbear Nest",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Open with the Selûnite Prayer Sheet (reader other than Shadowheart), OR Knock, OR a Cleric of Selûne."
+              }
+            ]
+          },
+          "notes": [
+            "These are alternative opening methods, not cumulative prerequisites. Finding/identifying the prayer is not required for the alternative spell/class methods. The item page describes the prayer route; the shrine article supplies the alternatives and reader restriction."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Moondrop_Pendant&oldid=421071",
+              "revisionId": 421071,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Owlbear_Nest&oldid=431001",
+              "revisionId": 431001,
+              "section": "Selûnite Shrine"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "d894a6aa-4848-47e0-ae8d-1b32da567e74",
+      "bindings": [
+        {
+          "id": "372b8c5f-0f97-4d42-9993-555c3ef1a4e2",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of poison resistance",
+          "gameIds": [
+            "UNI_RingOfPoisonResistance",
+            "ARM_RingOfPoisonResistance"
+          ],
+          "wikiPage": "Ring of Poison Resistance"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "a3a83818-828d-4e2f-9f9e-37b020584b09",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Skeleton"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Open sarcophagus before the Worg Pens",
+          "coordinates": {
+            "x": 338,
+            "y": 14,
+            "space": "Shattered Sanctum",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "Existing skeleton inside an open sarcophagus; no living NPC must be killed. Alternate loot-list point: 338,15."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Poison_Resistance&oldid=422389",
+              "revisionId": 422389,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shattered_Sanctum&oldid=431013",
+              "revisionId": 431013,
+              "section": "East; Torture chamber; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item and location prose give skeleton point 338,14; the location loot list gives 338,15. Retain the first point as a corpse reference."
+          }
+        }
+      ]
+    },
+    {
+      "id": "397faf4f-f331-45ee-a6cf-b60d034872f5",
+      "bindings": [
+        {
+          "id": "a5968f21-e022-4ecd-91d1-c02dbadeedca",
+          "act": "ACT 1",
+          "progressKey": "act 1|smuggler's ring",
+          "gameIds": [
+            "UNI_PLA_SmugglersRing",
+            "PLA_SmugglerRing"
+          ],
+          "wikiPage": "Smuggler's Ring"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "fa325c18-e482-49d1-92bf-301ec69b82b6",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Skeleton"
+          },
+          "location": {
+            "name": "The Risen Road",
+            "wikiPage": "The Risen Road"
+          },
+          "sublocation": "Bushes on the lower riverside path near the broken bridge",
+          "coordinates": {
+            "x": 58,
+            "y": 516,
+            "space": "The Risen Road",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "The skeleton is concealed in bushes, not a living NPC target. Alternate location point: 57,516."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Smuggler%27s_Ring&oldid=423333",
+              "revisionId": 423333,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Risen_Road&oldid=425790",
+              "revisionId": 425790,
+              "section": "Overview"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item skeleton point is 58,516; the Risen Road article gives 57,516. Retain the item point as a corpse reference."
+          }
+        }
+      ]
+    },
+    {
+      "id": "32b79f91-e548-441d-90a2-36c23caba57f",
+      "bindings": [
+        {
+          "id": "33fec110-849f-41e3-aa8a-c4957be043bd",
+          "act": "ACT 1",
+          "progressKey": "act 1|spurred band",
+          "gameIds": [
+            "MAG_Mobility_LowHP_Momentum_Ring"
+          ],
+          "wikiPage": "Spurred Band"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "c520df11-f165-4901-b516-93bdeb728c18",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Skeleton"
+          },
+          "location": {
+            "name": "Whispering Depths",
+            "wikiPage": "Whispering Depths"
+          },
+          "sublocation": "Skeleton beside a backpack",
+          "coordinates": {
+            "x": -495,
+            "y": -365,
+            "space": "Whispering Depths",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "Found on an existing skeleton; no living NPC kill requirement."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Spurred_Band&oldid=437985",
+              "revisionId": 437985,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Whispering_Depths&oldid=370813",
+              "revisionId": 370813,
+              "section": "Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b33d5eb0-be1c-4d66-9e4b-41d2636c3cc0",
+      "bindings": [
+        {
+          "id": "ace6a2f5-410d-4ad4-b929-d5044fbc926b",
+          "act": "ACT 1",
+          "progressKey": "act 1|staff of crones",
+          "gameIds": [
+            "S_HAG_GaleMagicItem",
+            "Quest_HAG_HagLair_Staff"
+          ],
+          "wikiPage": "Staff of Crones"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "9d0f4fc9-faa6-4111-8a2e-246cb9c83f8a",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Overgrown Tunnel",
+            "wikiPage": "Overgrown Tunnel"
+          },
+          "sublocation": "Ground pickup in the treasure/workshop room",
+          "coordinates": {
+            "x": -416,
+            "y": 599,
+            "space": "Overgrown Tunnel",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate workshop point: -412,606. Preserve the treasure-room/workshop naming difference in evidence; do not rewrite catalogue geography. Reaching the pickup does not universally require defeating or killing Ethel."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Staff_of_Crones&oldid=423535",
+              "revisionId": 423535,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Overgrown_Tunnel&oldid=433650",
+              "revisionId": 433650,
+              "section": "Acrid Workshop; Notes and references"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item page gives -416,599 in the Ancient Abode treasure room; the tunnel article places the staff at -412,606 in the Acrid Workshop. Retain the item point as a reference."
+          }
+        }
+      ]
+    },
+    {
+      "id": "b5c8557e-fa6b-4341-ab21-4378fbbfd7e8",
+      "bindings": [
+        {
+          "id": "d9a423dd-37ca-40db-974a-4844b14238e3",
+          "act": "ACT 1",
+          "progressKey": "act 1|skybreaker",
+          "gameIds": [
+            "UNI_UND_DuergarBlacksmithHammer",
+            "UND_DuergarBlacksmithHammer"
+          ],
+          "wikiPage": "Skybreaker"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b0fe5229-a400-4176-bef5-5f7793c2c061",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Locked heavy chest outside the entrance",
+          "coordinates": {
+            "x": 28,
+            "y": -295,
+            "space": "Arcane Tower",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate entrance-chest point: 27,-298. Do not average the coordinates or substitute a tower interior point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Skybreaker&oldid=423268",
+              "revisionId": 423268,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arcane_Tower&oldid=431380",
+              "revisionId": 431380,
+              "section": "Loot; Second floor (main entrance)"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 3 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item chest point is 28,-295; the tower article gives 27,-298 for the entrance chest. Retain the item point as a navigation reference."
           }
         }
       ]

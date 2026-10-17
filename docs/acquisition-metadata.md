@@ -5,7 +5,7 @@ Phase 1 introduced an isolated metadata draft for v0.8.7-era catalogue identitie
 ## Files and API
 
 - `acquisition-metadata.js`: standalone CommonJS validator and deterministic resolver; no file reads, network, DOM, storage or timers.
-- `data/acquisition.v1.json`: schema **2**, dataset **2.2.0-act1.batch2**; seventy catalogue entries, seventy-one bindings, eighty-nine acquisition routes. The pilot and checkpoints 1A/1B/1C retain all entry/binding/route identities and rich facts. The coordinate checkpoint adds review metadata and sourced points; four legacy actor roles now correctly identify corpses. The filename remains stable for bundle tooling.
+- `data/acquisition.v1.json`: schema **2**, dataset **2.3.0-act1.batch3**; eighty-five catalogue entries, eighty-six bindings, 104 acquisition routes. The pilot and checkpoints 1A/1B/1C retain all entry/binding/route identities and rich facts. The coordinate checkpoint adds review metadata and sourced points; four legacy actor roles now correctly identify corpses. The filename remains stable for bundle tooling.
 - `tests/acquisition-metadata.test.cjs`: contract tests plus existing application functions exercised through their established mocked boundaries.
 
 ```js
@@ -65,7 +65,7 @@ Coordinate roles retain schema 1's actor/container/entrance/item/interaction/cra
 
 Optional nonempty `navigationPoints` contain closed objects with required `label`, finite `coordinates`, `sources`, optional `location`/`sublocation`. Each has its own evidence; inventory assembly can retain a null finished-item point while showing reviewed component or waypoint/entrance navigation. Navigation labels must accurately describe reference points, not imply unsupported exact actor positions.
 
-The current 89 routes have **34 exact points, 50 reference points and 5 not-applicable exceptions**; none are pending/conflict/not-documented. Original 22 X/Y/space values remain unchanged. All 36 former null routes are reviewed. [Act 1 Batch 1](acquisition-act1-batch1.md) adds fifteen exact strong-ID bindings and fifteen concise routes; the original forty entry objects remain unchanged. [Act 1 Batch 2](acquisition-act1-batch2.md) adds fifteen more bindings and sixteen routes while preserving all previous fifty-five entry objects. See [backfill evidence and roles](acquisition-coordinate-backfill.md) for the full audit and component reference limitations. This supersedes coordinate omissions in the historical pilot table below while preserving its original route coverage boundaries.
+The current 104 routes have **38 exact points, 61 reference points and 5 not-applicable exceptions**; none are pending/conflict/not-documented. Original 22 X/Y/space values remain unchanged. All 36 former null routes are reviewed. [Act 1 Batch 1](acquisition-act1-batch1.md) adds fifteen exact strong-ID bindings and fifteen concise routes; the original forty entry objects remain unchanged. [Act 1 Batch 2](acquisition-act1-batch2.md) adds fifteen more bindings and sixteen routes while preserving all previous fifty-five entry objects. [Act 1 Batch 3](acquisition-act1-batch3.md) adds fifteen more bindings and fifteen routes while preserving all previous seventy entry objects. See [backfill evidence and roles](acquisition-coordinate-backfill.md) for the full audit and component reference limitations. This supersedes coordinate omissions in the historical pilot table below while preserving its original route coverage boundaries.
 
 ## Identity and binding
 
