@@ -105,7 +105,8 @@ async function snapshot(page) {
   return page.evaluate(() => {
     window.__arrivalObserver?.disconnect();
     const selector = '#body > tr,#cards > article,#body details,#cards details,' +
-      '#body summary,#cards summary,#body input,#cards input,#body a,#cards a';
+      '#body summary,#cards summary,#body input,#cards input,#body a,#cards a,' +
+      '#body .item-effects,#cards .item-effects,#body .item-effects .detailrow,#cards .item-effects .detailrow';
     window.__arrivalNodes = [...document.querySelectorAll(selector)];
     window.__arrivalOpen = [...document.querySelectorAll('#body details,#cards details')]
       .map(details => details.open);
@@ -161,7 +162,7 @@ function checkPreserved(before, after, label) {
 function checkSections(after, mode, label) {
   const expected = mode === 'full' ? 2 : 0; // Both responsive surfaces are constructed.
   check(after.enrichment === expected, label + ': unexpected Acquisition section count');
-  check(after.references === expected, label + ': unexpected References section count');
+  check(after.references === 0, label + ': compact UI exposed an evidence References section');
   if (mode !== 'full') check(after.mutations === 0, label + ': protected item trees mutated');
 }
 
@@ -313,6 +314,481 @@ async function checkOptionalFailure(browser, assetBody, label) {
   } finally { await testCase.context.close(); }
 }
 
+async function checkCompactDetails(browser, width) {
+  const testCase = await createCase(browser, width, 'full');
+  const { page } = testCase;
+  try {
+    testCase.releaseAsset();
+    await page.waitForLoadState('domcontentloaded');
+    for (const [name, routes, points] of [
+      ['Phalar Aluve', 3, 1], ['Dolor Amarus', 3, 3],
+      ['Fetish of Callarduran Smoothhands', 4, 2], ["Hellrider's Pride", 4, 1],
+      ['Light of Creation', 2, 1]
+    ]) {
+      await page.locator('#q').fill(name);
+      const scope = width > 780 ? '#body > tr' : '#cards > article';
+      const surface = page.locator(scope).first();
+      await surface.locator('summary').click();
+      const facts = await surface.evaluate(node => {
+        const effects = node.querySelector('.item-effects'), where = node.querySelector('.acquisition-enrichment');
+        const grid = node.querySelector('.detailgrid');
+        return {
+          effectBeforeWhere: !!effects && !!where && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          effects: effects?.textContent, where: where?.textContent,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          points: where?.querySelectorAll('.acquisition-point').length,
+          coordinates: [...where.querySelectorAll('.acquisition-coordinate')].map(n => n.textContent),
+          links: node.querySelectorAll('.item-reference').length,
+          evidence: node.querySelectorAll('.acquisition-references,.acquisition-reference').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth,
+          checkbox: !!node.querySelector('input[type=checkbox]'),
+          preview: !!document.querySelector('.dev-preview') || document.body.classList.contains('dev-preview')
+        };
+      });
+      const label = `${width}px ${name}`;
+      check(facts.effectBeforeWhere, label + ': Effect must precede Where to find');
+      check(facts.routes === routes && facts.points === points, label + ': route or distinct point lost');
+      check(facts.coordinates.length === points, label + ': destination coordinate missing');
+      check(facts.links === 1 && facts.evidence === 0, label + ': must retain one existing Wiki link only');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.where), label + ': technical/walkthrough content remains');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': horizontal overflow');
+      check(facts.checkbox, label + ': progress control missing');
+      record(label, 'compact Full details', { facts });
+      if ((width === 390 || width === 1280) && ['Phalar Aluve', 'Dolor Amarus'].includes(name)) {
+        await surface.screenshot({ path: path.join(outputDirectory, `compact-${width}-${name.replaceAll(' ', '-').toLowerCase()}.png`) });
+      }
+    }
+    check(testCase.errors.length === 0, width + 'px compact details: uncaught page error');
+  } finally { await testCase.context.close(); }
+}
+
+// Data expansion QA uses canonical points; independent literal facts/IDs are
+// checked separately by acquisition-act1-batch1.test.cjs.
+async function checkAct1Batch1(browser, width) {
+  const names = ['Cap of Curing','The Amulet of Lost Voices','Glowing Shield','Spiderstep Boots','Firestoker','Holy Lance Helm','Silver Pendant','Gloves of Baneful Striking','Giantbreaker','Gloves of Uninhibited Kushigo',"Beastmaster's Chain",'Fleetfingers',"Mage's Friend","Reason's Grasp",'The Sparkle Hands'];
+  const dataset = JSON.parse(fs.readFileSync(path.join(root, 'data', 'acquisition.v1.json'), 'utf8'));
+  const catalogue = JSON.parse(catalogueFixture);
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  try {
+    testCase.releaseAsset();
+    await page.waitForLoadState('domcontentloaded');
+    for (const name of names) {
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator('#q').fill(name);
+      const raw = catalogue.find(row => row.act === 'ACT 1' && row.name === name);
+      const entry = dataset.entries.find(entry => entry.bindings.some(binding => binding.progressKey === ('act 1|' + name).toLowerCase()));
+      check(!!raw && !!entry && entry.routes.length === 1, `${width}px ${name}: batch identity/route missing`);
+      const route = entry.routes[0], scope = width > 780 ? '#body > tr' : '#cards > article';
+      check(await page.locator(scope).count() === 1, `${width}px ${name}: search identity mismatch`);
+      const surface = page.locator(scope).first();
+      const toggle = surface.locator('summary');
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${name}: first click failed`);
+      const facts = await surface.evaluate((node, expected) => {
+        const effects = node.querySelector('.item-effects'), where = node.querySelector('.acquisition-enrichment'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!effects && !!where && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(expected.description) && (!expected.properties || effects.textContent.includes(expected.properties)),
+          where: where?.textContent,
+          coordinates: where?.querySelector('.acquisition-coordinate')?.textContent,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          links: node.querySelectorAll('a').length,
+          reference: node.querySelector('.item-reference')?.getAttribute('href'),
+          evidence: node.querySelectorAll('.acquisition-references,.acquisition-reference').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth
+        };
+      }, raw);
+      const label = `${width}px ${name}`;
+      check(facts.ordered && facts.mechanics, label + ': mechanics/order changed');
+      check(facts.coordinates === `X: ${route.coordinates.x} Y: ${route.coordinates.y}`, label + ': coordinate mismatch');
+      check(facts.where.includes(route.sublocation), label + ': sublocation missing');
+      check(facts.routes === 1 && facts.sections === 1, label + ': missing/duplicate enrichment');
+      check(facts.links === 1 && facts.reference === raw.links.Name && facts.evidence === 0, label + ': Wiki/evidence mismatch');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.where), label + ': walkthrough/evidence clutter');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': overflow');
+      await toggle.press('Enter');
+      check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+      await toggle.press('Space');
+      check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
+      if (['Silver Pendant','Giantbreaker','Fleetfingers'].includes(name)) await surface.screenshot({path:path.join(outputDirectory,`batch1-${width}-${name.replaceAll(' ','-').toLowerCase()}.png`)});
+      for (const mode of ['light','minimal']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation').count() === 0, label + ': enrichment leaked in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('.acquisition-enrichment').count() === 2, label + ': Full restoration failed');
+      record(label, 'Act 1 Batch 1 Full/protected/keyboard', {facts});
+    }
+    check(testCase.errors.length === 0, width + 'px Batch 1: uncaught runtime error');
+  } finally { await testCase.context.close(); }
+}
+
+// Batch 2 includes separate table/carried routes; literal facts are guarded by its unit suite.
+async function checkAct1Batch2(browser, width) {
+  const names = ["Helmet of Autonomy", "Slippery Chain Shirt", "Explorer's Ring", "The Joltshooter", "Robe of Summer", "Armour of Uninhibited Kushigo", "Aberration Hunters' Amulet", "Ritual Axe", "Sussur Dagger", "Sorrow", "The Watcher's Guide", "Wondrous Gloves", "Ring of Arcane Synergy", "Strange Conduit Ring", "Sunwalker's Gift"];
+  const dataset = JSON.parse(fs.readFileSync(path.join(root, 'data', 'acquisition.v1.json'), 'utf8'));
+  const catalogue = JSON.parse(catalogueFixture);
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  try {
+    testCase.releaseAsset();
+    await page.waitForLoadState('domcontentloaded');
+    for (const name of names) {
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator('#q').fill(name);
+      const raw = catalogue.find(row => row.act === 'ACT 1' && row.name === name);
+      const entry = dataset.entries.find(entry => entry.bindings.some(binding => binding.progressKey === ('act 1|' + name).toLowerCase()));
+      check(!!raw && !!entry && entry.routes.length === (name === 'Ritual Axe' ? 2 : 1), `${width}px ${name}: batch identity/route missing`);
+      const routes = entry.routes, scope = width > 780 ? '#body > tr' : '#cards > article';
+      check(await page.locator(scope).count() === 1, `${width}px ${name}: search identity mismatch`);
+      const surface = page.locator(scope).first();
+      const toggle = surface.locator('summary');
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${name}: first click failed`);
+      const facts = await surface.evaluate((node, expected) => {
+        const effects = node.querySelector('.item-effects'), where = node.querySelector('.acquisition-enrichment'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!effects && !!where && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(expected.description) && (!expected.properties || effects.textContent.includes(expected.properties)),
+          where: where?.textContent,
+          coordinates: [...(where?.querySelectorAll('.acquisition-coordinate') || [])].map(n=>n.textContent),
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          links: node.querySelectorAll('a').length,
+          reference: node.querySelector('.item-reference')?.getAttribute('href'),
+          evidence: node.querySelectorAll('.acquisition-references,.acquisition-reference').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth
+        };
+      }, raw);
+      const label = `${width}px ${name}`;
+      check(facts.ordered && facts.mechanics, label + ': mechanics/order changed');
+      check(JSON.stringify(facts.coordinates) === JSON.stringify(routes.map(r=>`X: ${r.coordinates.x} Y: ${r.coordinates.y}`)), label + ': coordinate mismatch');
+      check(routes.every(r=>facts.where.includes(r.sublocation)), label + ': sublocation missing');
+      check(facts.routes === routes.length && facts.sections === 1, label + ': missing/duplicate enrichment');
+      check(facts.links === 1 && facts.reference === raw.links.Name && facts.evidence === 0, label + ': Wiki/evidence mismatch');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.where), label + ': walkthrough/evidence clutter');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': overflow');
+      await toggle.press('Enter');
+      check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+      await toggle.press('Space');
+      check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
+      if (["Aberration Hunters' Amulet", "Ritual Axe", "Sussur Dagger"].includes(name)) await surface.screenshot({path:path.join(outputDirectory,`batch2-${width}-${name.replaceAll(' ','-').toLowerCase()}.png`)});
+      for (const mode of ['light','minimal']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation').count() === 0, label + ': enrichment leaked in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('.acquisition-enrichment').count() === 2, label + ': Full restoration failed');
+      record(label, 'Act 1 Batch 2 Full/protected/keyboard', {facts});
+    }
+    check(testCase.errors.length === 0, width + 'px Batch 2: uncaught runtime error');
+  } finally { await testCase.context.close(); }
+}
+
+// Batch 3: literal special-case points plus all fifteen native Full/protected checks.
+async function checkAct1Batch3(browser, width, selectedNames = null) {
+  const names = ["Boots of Aid and Comfort", "Boots of Genial Striding", "Boots of Elemental Momentum", "Gloves of Dexterity", "Gloves of Missile Snaring", "Hunting Shortbow", "The Speedy Lightfeet", "Helmet of Smiting", "Nature's Snare", "Moondrop Pendant", "Ring of Poison Resistance", "Smuggler's Ring", "Spurred Band", "Staff of Crones", "Skybreaker"];
+  const dataset = JSON.parse(fs.readFileSync(path.join(root, 'data', 'acquisition.v1.json'), 'utf8'));
+  const catalogue = JSON.parse(catalogueFixture);
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  try {
+    testCase.releaseAsset();
+    await page.waitForLoadState('domcontentloaded');
+    for (const name of names.filter(name => !selectedNames || selectedNames.includes(name))) {
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator('#q').fill(name);
+      const raw = catalogue.find(row => row.act === 'ACT 1' && row.name === name);
+      const entry = dataset.entries.find(entry => entry.bindings.some(binding => binding.progressKey === ('act 1|' + name).toLowerCase()));
+      const continuation = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act2-complete.json'), 'utf8')).existingUpdates.find(u => u.progressKeys.includes(('act 1|' + name).toLowerCase()));
+      const expectedRouteCount = 1 + (continuation?.routeAdditions || 0);
+      check(!!raw && !!entry && entry.routes.length === expectedRouteCount, `${width}px ${name}: batch identity/route missing`);
+      const route = entry.routes[0], scope = width > 780 ? '#body > tr' : '#cards > article';
+      check(await page.locator(scope).count() === 1, `${width}px ${name}: search identity mismatch`);
+      const surface = page.locator(scope).first();
+      const toggle = surface.locator('summary');
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${name}: first click failed`);
+      const facts = await surface.evaluate((node, expected) => {
+        const effects = node.querySelector('.item-effects'), where = node.querySelector('.acquisition-enrichment'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!effects && !!where && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(expected.description) && (!expected.properties || effects.textContent.includes(expected.properties)),
+          where: where?.textContent,
+          coordinates: where?.querySelector('.acquisition-coordinate')?.textContent,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          links: node.querySelectorAll('a').length,
+          reference: node.querySelector('.item-reference')?.getAttribute('href'),
+          evidence: node.querySelectorAll('.acquisition-references,.acquisition-reference').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth
+        };
+      }, raw);
+      const label = `${width}px ${name}`;
+      check(facts.ordered && facts.mechanics, label + ': mechanics/order changed');
+      check(facts.coordinates === `X: ${route.coordinates.x} Y: ${route.coordinates.y}`, label + ': coordinate mismatch');
+      check(facts.where.includes(route.sublocation), label + ': sublocation missing');
+      check(facts.routes === expectedRouteCount && facts.sections === 1, label + ': missing/duplicate enrichment');
+      check(facts.links === 1 && facts.reference === raw.links.Name && facts.evidence === 0, label + ': Wiki/evidence mismatch');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.where), label + ': walkthrough/evidence clutter');
+      const literalPoints = {
+        'The Speedy Lightfeet': [-711, -412], 'Gloves of Dexterity': [1380, -798],
+        'Moondrop Pendant': [-321, -135], 'Staff of Crones': [-416, 599]
+      };
+      if (literalPoints[name]) check(facts.coordinates === `X: ${literalPoints[name][0]} Y: ${literalPoints[name][1]}`, label + ': approved point lost');
+      if (name === 'Gloves of Dexterity') check(await surface.locator('.acquisition-coordinate-note').textContent() === 'Location', label + ': shop reference role lost');
+      if (name === 'Moondrop Pendant') check(facts.where.includes('Conditional route — see Wiki.') && !/Perception|Religion|DC [0-9]/.test(facts.where), label + ': shrine turned into walkthrough');
+      if (name === 'Staff of Crones') check(!/kill|defeat|Ethel/i.test(facts.where), label + ': invented kill prerequisite');
+      if (name === 'The Speedy Lightfeet') check(!/Barcus|-11|436/.test(facts.where), label + ': outside hatch or rescue substituted');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': overflow');
+      await toggle.press('Enter');
+      check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+      await toggle.press('Space');
+      check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
+      if (['Moondrop Pendant','Staff of Crones','The Speedy Lightfeet','Gloves of Dexterity'].includes(name)) await surface.screenshot({path:path.join(outputDirectory,`batch3-${width}-${name.replaceAll(' ','-').toLowerCase()}.png`)});
+      for (const mode of ['light','minimal']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation').count() === 0, label + ': enrichment leaked in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('.acquisition-enrichment').count() === 2, label + ': Full restoration failed');
+      record(label, 'Act 1 Batch 3 Full/protected/keyboard', {facts});
+    }
+    check(testCase.errors.length === 0, width + 'px Batch 3: uncaught runtime error');
+  } finally { await testCase.context.close(); }
+}
+
+// One independent reviewed table drives the entire large-batch layout sweep.
+async function checkAcquisitionExpansion(browser, width, batch, selectedNames = null) {
+  const continuations = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act2-complete.json'), 'utf8')).existingUpdates;
+  const approved = JSON.parse(fs.readFileSync(path.join(root, `tests/fixtures/acquisition-act1-batch${batch.toLowerCase()}.json`), 'utf8')).items
+    .filter(f => !selectedNames || selectedNames.includes(f.name)).map(f => {
+      const extra = continuations.find(u => u.entryId === f.entryId)?.routesToAdd || [];
+      return {...f,routeCount:f.routeCount + extra.length,
+        pointGroups:(f.pointGroups ?? f.routeCount) + extra.length,
+        coordinateGroups:extra.length ? (f.coordinateGroups ?? f.routes.filter(r => r.point).length) + extra.filter(r => r.coordinates).length : f.coordinateGroups,
+        routes:[...f.routes,...extra.map(r => ({...r,point:r.coordinates ? [r.coordinates.x,r.coordinates.y] : null,state:r.coordinateReview.state,reason:r.coordinateReview.reason,actor:r.actor ? [r.actor.name,r.actor.wikiPage] : null}))]};
+    });
+  const catalogue = JSON.parse(catalogueFixture);
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  const representatives = new Set(batch === '4C' ? ['The Blood of Lathander','Sickle of BOOOAL',"Shapeshifter's Boon Ring",'The Whispering Promise','Key of the Ancients',"Mystra's Grace",'Ring of Restorative Gravity','Robust Chain Shirt',"The Oakfather's Embrace",'Staff of Arcane Blessing'] : batch === '4B' ? ['Boots of Speed','Club of Hill Giant Strength','Dark Justiciar Mail','Dark Justiciar Mask','Sword of Justice','Boots of Stormy Clamour','Warped Headband of Intellect'] : ['Adamantine Scimitar','Daredevil Gloves','Gloves of Belligerent Skies','Speedy Reply','Uncovered Mysteries','Worgfang','Jagged Spear','Blooded Greataxe']);
+  try {
+    testCase.releaseAsset();
+    await page.waitForFunction(() => !!window.BG3AcquisitionUI);
+    await page.locator('[data-act="ACT 1"]').click();
+    for (const expected of approved) {
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator('#q').fill(expected.name);
+      const scope = width > 780 ? '#body > tr' : '#cards > article';
+      check(await page.locator(scope).count() === 1, `${width}px ${expected.name}: exact search mismatch`);
+      const surface = page.locator(scope).first(), toggle = surface.locator('summary');
+      // Search blur must not swallow this first real pointer click.
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${expected.name}: first click failed`);
+      const raw = catalogue.find(row => row.sourceRow === expected.sourceRow && row.act === 'ACT 1');
+      const facts = await surface.evaluate((node, raw) => {
+        const where = node.querySelector('.acquisition-enrichment'), effects = node.querySelector('.item-effects'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!where && !!effects && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(raw.description) && (!raw.properties || effects.textContent.includes(raw.properties)),
+          text: where?.textContent || '',
+          coordinates: [...(where?.querySelectorAll('.acquisition-coordinate') || [])].map(n => n.textContent),
+          methods: [...(where?.querySelectorAll('.acquisition-route-heading') || [])].map(n => n.textContent),
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          link: node.querySelector('.item-reference')?.getAttribute('href'), links: node.querySelectorAll('a').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth,
+          surfaceWidth: node.getBoundingClientRect().width
+        };
+      }, raw);
+      const label = `${width}px Batch ${batch} ${expected.name}`;
+      check(facts.ordered && facts.mechanics, label + ': Effect/order changed');
+      check(facts.sections === 1 && facts.routes === expected.routeCount, label + ': missing/duplicate routes');
+      const coordinateCount = (expected.coordinateGroups ?? ((expected.pointGroups ?? expected.routeCount) - expected.routes.filter(r => !r.point).length)) + expected.routes.reduce((n,r) => n + (r.navigationPoints || []).length, 0);
+      check(facts.coordinates.length === coordinateCount, label + ': coordinate display count mismatch');
+      for (const route of expected.routes) {
+        if (route.point) check(facts.coordinates.includes(`X: ${route.point[0]} Y: ${route.point[1]}`), label + ': independent coordinate mismatch');
+        else check(facts.text.includes(route.state === 'conflict' ? 'Coordinates conflict — see Wiki.' : route.reason), label + ': explicit coordinate disposition missing');
+        for (const point of route.navigationPoints || []) check(facts.coordinates.includes(`X: ${point.coordinates.x} Y: ${point.coordinates.y}`), label + ': navigation point missing');
+        check(facts.text.includes(route.sublocation), label + ': sublocation missing');
+        if (route.actor && route.type !== 'quest_reward') check(facts.text.includes(route.actor[0]), label + ': actor missing');
+      }
+      check(facts.links === 1 && facts.link === expected.wikiURL, label + ': original Wiki link changed');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.text), label + ': acquisition clutter');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': horizontal overflow');
+      if (representatives.has(expected.name) && [390,1280].includes(width)) {
+        await toggle.press('Enter');
+        check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+        await toggle.press('Space');
+        check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
+        check(await toggle.evaluate(node => document.activeElement === node), label + ': keyboard focus lost');
+        await surface.screenshot({path:path.join(outputDirectory,`batch${batch.toLowerCase()}-${width}-${expected.sourceRow}.png`)});
+      }
+      for (const mode of ['light','minimal']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation,.acquisition-route').count() === 0, label + ': protected-mode DOM leak in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('.acquisition-enrichment').count() === 2, label + ': Full restoration failed');
+      record(label, `Act 1 Batch ${batch} independent facts/Full/protected/layout`, {facts});
+    }
+    check(testCase.errors.length === 0, width + 'px Batch ' + batch + ': runtime errors: ' + testCase.errors.join('; '));
+  } finally { await testCase.context.close(); }
+}
+
+async function checkAct2Expansion(browser, width) {
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act2-complete.json'), 'utf8'));
+  const approved = fixture.items;
+  const catalogue = JSON.parse(catalogueFixture);
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  const representatives = new Set(fixture.browserRepresentatives);
+  try {
+    testCase.releaseAsset();
+    await page.waitForFunction(() => !!window.BG3AcquisitionUI);
+    await page.locator('[data-act="ACT 2"]').click();
+    for (const expected of approved) {
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator('#q').fill(expected.name);
+      const scope = width > 780 ? '#body > tr' : '#cards > article';
+      const exact = page.locator(scope).filter({has:page.getByText(expected.name, {exact:true})});
+      check(await exact.count() === 1, `${width}px ${expected.name}: exact rendered identity mismatch`);
+      const surface = exact, toggle = surface.locator('summary');
+      // Search blur must not swallow this first real pointer click.
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${expected.name}: first click failed`);
+      const raw = catalogue.find(row => row.sourceRow === expected.sourceRow && row.act === 'ACT 2');
+      const facts = await surface.evaluate((node, raw) => {
+        const where = node.querySelector('.acquisition-enrichment'), effects = node.querySelector('.item-effects'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!where && !!effects && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(raw.description) && (!raw.properties || effects.textContent.includes(raw.properties)),
+          text: where?.textContent || '',
+          coordinates: [...(where?.querySelectorAll('.acquisition-coordinate') || [])].map(n => n.textContent),
+          methods: [...(where?.querySelectorAll('.acquisition-route-heading') || [])].map(n => n.textContent),
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          link: node.querySelector('.item-reference')?.getAttribute('href'), links: node.querySelectorAll('a').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth,
+          surfaceWidth: node.getBoundingClientRect().width
+        };
+      }, raw);
+      const label = `${width}px Act 2 ${expected.name}`;
+      check(facts.mechanics && (!expected.routeCount || facts.ordered), label + ': Effect/order changed');
+      check(facts.sections === (expected.routeCount ? 1 : 0) && (facts.routes || 0) === expected.routeCount, label + ': missing/duplicate routes');
+      // Independent fixture geography determines presentation grouping; route identities stay separate.
+      const geo = r => JSON.stringify([r.location,r.sublocation,r.coordinates,r.coordinateReview,r.navigationPoints,r.acts,r.validity]);
+      const coordinateCount = new Set(expected.routes.filter(r => r.coordinates).map(geo)).size;
+      check(facts.coordinates.length === coordinateCount, label + ': coordinate display count mismatch');
+      for (const route of expected.routes) {
+        if (route.coordinates) check(facts.coordinates.includes(`X: ${route.coordinates.x} Y: ${route.coordinates.y}`), label + ': independent coordinate mismatch');
+        else check(facts.text.includes(route.coordinateReview.state === 'conflict' ? 'Coordinates conflict — see Wiki.' : route.coordinateReview.reason), label + ': explicit coordinate disposition missing');
+        for (const point of route.navigationPoints || []) check(facts.coordinates.includes(`X: ${point.coordinates.x} Y: ${point.coordinates.y}`), label + ': navigation point missing');
+        check(facts.text.includes(route.sublocation), label + ': sublocation missing');
+        if (route.actor && route.type !== 'quest_reward') check(facts.text.includes(route.actor.name), label + ': actor missing');
+      }
+      check(facts.links === 1 && facts.link === expected.wikiURL, label + ': original Wiki link changed');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.text), label + ': acquisition clutter');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': horizontal overflow');
+      if (representatives.has(expected.name) && [390,1280].includes(width)) {
+        await toggle.press('Enter');
+        check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+        await toggle.press('Space');
+        check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
+        check(await toggle.evaluate(node => document.activeElement === node), label + ': keyboard focus lost');
+        await surface.screenshot({path:path.join(outputDirectory,`act2-${width}-${expected.sourceRow}.png`)});
+      }
+      for (const mode of ['light','minimal']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation,.acquisition-route').count() === 0, label + ': protected-mode DOM leak in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('#body > tr, #cards > article').filter({has:page.getByText(expected.name, {exact:true})}).locator('.acquisition-enrichment').count() === (expected.routeCount ? 2 : 0), label + ': Full restoration failed');
+      record(label, 'Act 2 independent facts/Full/protected/layout', {facts});
+    }
+    check(testCase.errors.length === 0, width + 'px Act 2' + ': runtime errors: ' + testCase.errors.join('; '));
+  } finally { await testCase.context.close(); }
+}
+
+async function checkAct3Expansion(browser, width, selectedNames = null) {
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act3-complete.json'), 'utf8'));
+  const catalogue = JSON.parse(catalogueFixture), byKey = new Map(catalogue.map(row => [(row.act + '|' + row.name).toLowerCase(), row]));
+  const visible = routes => routes.filter(route => route.review.state === 'reviewed' && ['current', 'historical'].includes(route.validity));
+  const cases = new Map(fixture.items.map(item => [item.progressKey, { ...item, visibleCount: visible(item.routes).length, routesToCheck: visible(item.routes) }]));
+  // The old entries are already approved. Independent original route counts and
+  // the approved append fixture suffice; no expected fact is read from current canonical data.
+  for (const previous of fixture.alreadyAccountedAct3) {
+    const update = fixture.existingUpdates.find(u => u.entryId === previous.entryId);
+    cases.set(previous.progressKey, { name: previous.name, progressKey: previous.progressKey, visibleCount: previous.existingRoutes + (update?.routeAdditions || 0), routesToCheck: visible(update?.routesToAdd || []) });
+  }
+  for (const update of fixture.existingUpdates) {
+    if (cases.has(update.progressKeys[0])) continue;
+    const raw = byKey.get(update.progressKeys[0]);
+    cases.set(update.progressKeys[0], { name: raw.name, progressKey: update.progressKeys[0], visibleCount: update.currentRouteIds.length + update.routeAdditions, routesToCheck: visible(update.routesToAdd) });
+  }
+  const approved = [...cases.values()].filter(item => !selectedNames || selectedNames.includes(item.name));
+  check(cases.size === 203, 'Act 3 QA must reconcile 192 Act 3 plus 11 distinct prior-Act continuation identities');
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  try {
+    testCase.releaseAsset();
+    await page.waitForFunction(() => !!window.BG3AcquisitionUI);
+    for (const expected of approved) {
+      const raw = byKey.get(expected.progressKey);
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator(`[data-act="${raw.act}"]`).click();
+      await page.locator('#q').fill(expected.name);
+      const scope = width > 780 ? '#body > tr' : '#cards > article';
+      const surface = page.locator(scope).filter({ has: page.getByText(expected.name, { exact: true }) });
+      check(await surface.count() === 1, `${width}px ${expected.name}: exact rendered identity mismatch`);
+      const toggle = surface.locator('summary');
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${expected.name}: first search-blur click failed`);
+      const facts = await surface.evaluate((node, raw) => {
+        const where = node.querySelector('.acquisition-enrichment'), effects = node.querySelector('.item-effects'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!where && !!effects && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(raw.description) && (!raw.properties || effects.textContent.includes(raw.properties)),
+          text: where?.textContent || '',
+          coordinates: [...(where?.querySelectorAll('.acquisition-coordinate') || [])].map(n => n.textContent),
+          methods: [...(where?.querySelectorAll('.acquisition-route-heading') || [])].map(n => n.textContent),
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          link: node.querySelector('.item-reference')?.getAttribute('href') || '', links: node.querySelectorAll('a').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth,
+          checkbox: !!node.querySelector('input[type=checkbox]'), preview: document.body.classList.contains('dev-preview')
+        };
+      }, raw);
+      const label = `${width}px Act 3 completion ${expected.name}`;
+      check(facts.mechanics && facts.ordered, label + ': original Effect/order changed');
+      check(facts.sections === 1 && facts.routes === expected.visibleCount, label + ': reviewed routes missing/duplicated or a draft branch leaked');
+      for (const route of expected.routesToCheck) {
+        if (route.coordinates) check(facts.coordinates.includes(`X: ${route.coordinates.x} Y: ${route.coordinates.y}`), label + ': independent coordinate mismatch');
+        else check(facts.text.includes(route.coordinateReview.state === 'conflict' ? 'Coordinates conflict — see Wiki.' : route.coordinateReview.reason), label + ': honest coordinate disposition missing');
+        for (const point of route.navigationPoints || []) check(facts.coordinates.includes(`X: ${point.coordinates.x} Y: ${point.coordinates.y}`), label + ': labelled navigation/component missing');
+        if (route.sublocation) check(facts.text.includes(route.sublocation), label + ': sublocation missing');
+        if (route.validity === 'historical') check(facts.text.includes('Historical / unavailable'), label + ': historical label missing');
+      }
+      check(facts.link === (raw.links?.Name || '') && facts.links === (raw.links?.Name ? 1 : 0), label + ': original catalogue link changed or extra link introduced');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.text), label + ': technical/walkthrough clutter');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': horizontal overflow');
+      check(facts.checkbox && facts.preview, label + ': progress control or develop marker missing');
+      if (fixture.browserRepresentatives.includes(expected.name) && [390, 1280].includes(width)) {
+        await toggle.press('Enter');
+        check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+        await toggle.press('Space');
+        check(await toggle.evaluate(node => node.parentElement.open && document.activeElement === node), label + ': Space/focus failed');
+        await surface.screenshot({ path: path.join(outputDirectory, `act3-${width}-${expected.progressKey.replace(/[^a-z0-9]+/g, '-')}.png`) });
+      }
+      for (const mode of ['minimal', 'light']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation,.acquisition-route').count() === 0, label + ': protected-mode enrichment leak in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('#body > tr, #cards > article').filter({ has: page.getByText(expected.name, { exact: true }) }).locator('.acquisition-enrichment').count() === 2, label + ': Full restoration/duplication failed');
+      record(label, 'Act 3 independent oracle/Full/protected/layout', { facts });
+    }
+    check(testCase.errors.length === 0, width + 'px Act 3 runtime errors: ' + testCase.errors.join('; '));
+  } finally { await testCase.context.close(); }
+}
+
 async function main() {
   fs.mkdirSync(outputDirectory, { recursive: true });
   const browser = await chromium.launch({
@@ -327,6 +803,9 @@ async function main() {
         await checkExistingLinkFocus(browser, width, mode);
       }
     }
+    // Historical data checkpoints remain covered by their permanent suites.
+    // Current expansion QA sweeps all Act 3 identities and exact old-entry appends.
+    for (const width of [320,390,768,1280]) await checkAct3Expansion(browser, width);
     await checkOptionalFailure(browser, null, 'missing optional asset');
     await checkOptionalFailure(browser,
       'window.BG3AcquisitionUI={render(){throw new Error("broken optional API")}};',

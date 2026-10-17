@@ -1,5 +1,7 @@
 # Act 1 acquisition expansion — Checkpoint 1B
 
+> Historical checkpoint record. The approved Full Details coordinate checkpoint now supersedes the intentional null-coordinate statements below with reviewed navigation references or explicit exceptions; see [coordinate backfill](acquisition-coordinate-backfill.md). Original route facts and identities are retained. Four legacy corpse points now use schema 2’s `corpse` role.
+
 Approved develop checkpoint: `ff140dc1535bb5bed5ba38af047b9826225ed98e`. Checkpoint 1A data review and develop-preview QA passed before this expansion. This adds only the ten approved 1B identities and twelve routes to the existing twenty-entry dataset. Schema stays **1**; dataset version becomes **1.2.0-act1.1b**. Total: **30 entries, 31 bindings, 36 routes**. The original twenty entries, bindings, routes and facts remain unchanged.
 
 ## Review provenance

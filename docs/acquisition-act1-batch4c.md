@@ -1,0 +1,86 @@
+# Act 1 acquisition — final Batch 4C
+
+Data-only checkpoint on `3ddc1d94ff507fb70415bd64c4cfefe37c14cfd9`; schema **2**, dataset **2.6.0-act1.batch4c**.
+
+46 entries / 46 bindings / 89 routes added: **18 Exact / 55 Reference / 15 Exceptions / 1 explicit conflict**. No item is deferred. Previous 178 entry objects remain unchanged. Totals: **224 entries / 225 bindings / 299 routes**, **68 Exact / 209 Reference / 21 Exceptions / 1 conflict**. All **219/219 Act 1** catalogue identities are accounted for; zero unaccounted. Five other-Act identities make 224 total. Accounted does not mean currently obtainable or precisely located.
+
+## Independent review oracle
+
+The [independent fact table](../tests/fixtures/acquisition-act1-batch4c.json) transcribes the approved 46-item 4C partition, complete original catalogue ID sets, pinned item/support bodies, route availability and discrepancies before canonical append. It is not generated from canonical metadata. No broad new research was needed. Pinned source bodies and revisions were inspected during the approved planning workflow; this checkpoint does not claim newly fetched historical page bodies. UUIDs identify metadata records only; no new game IDs are invented.
+
+## Routes and dispositions
+
+| Row | Exact catalogue name | Reviewed routes | State / role |
+|---:|---|---|---|
+| 5 | Abyss Beckoners | Act 1: Zhentarim Basement · Chest in the gated office · 306,-170 · container | reference / container |
+| 13 | Amulet of Misty Step | Act 1: Defiled Temple · Gilded chest behind Polma · beside Gut’s bed · 386,8 · container; Act 1: Ebonlake Grotto · Blurg’s summon/interaction point · 111,-89 · purchase | exact / container; reference / interaction |
+| 14 | Amulet of Restoration | Act 1: Ebonlake Grotto · Derryth’s shop · navigation reference · 55,-93 · purchase; Act 3: The Counting House · Private Stash · eastern room below the first stairs · -85,-185 · container | reference / location; exact / container |
+| 31 | Bow of the Banshee | Act 1: Ebonlake · Greymon · first raft crossing · no fixed X/Y · actor_loot; Act 1: Grymforge · Greymon’s trader spot · after surviving the voyage · -120,-95 · purchase; Act 1: Decrepit Village · Greymon’s washed-up body · southern pier beach · no fixed X/Y · actor_loot | Exception / none; reference / actor; Exception / none |
+| 34 | Broodmother's Revenge | Act 1: Inner Sanctum · Kagha · carried amulet · -461,-22 · actor_loot; Act 3: High Hall · Koll’s table of goods · 235,44 · world | reference / actor; exact / item |
+| 39 | Ceremonial Longsword | Act 1: Rosymorn Monastery · Dawnmasters Memorial · north-western pedestal · 74,74 · world | exact / item |
+| 40 | Ceremonial Battleaxe | Act 1: Rosymorn Monastery · Dormitory · guarded by a Guardian of Faith · 105,44 · world | exact / item |
+| 41 | Ceremonial Mace | Act 1: Rosymorn Monastery · Firewine storage · random Kobold Looter bearer · 45,37 · actor_loot | reference / encounter |
+| 42 | Ceremonial Warhammer | Act 1: Rosymorn Monastery · Roof · Giant Eagle’s nest · 80,44 · world | exact / item |
+| 59 | Disintegrating Night Walkers | Act 1: Grymforge · Nere cave-in rescue site · encounter navigation · -643,300 · drop | reference / encounter |
+| 62 | Drow Studded Leather Armour | Act 1: Underdark · Lolth cultist’s heavy chest · near the Festering Cove entrance · 71,-220 · container | reference / container |
+| 78 | Gloves of Hail of Thorns | Act 1: Zhentarim Basement · Brem’s unlocked special stock · 295,-250 · purchase; Act 1: Ebonlake Grotto · Derryth’s shop · 55,-93 · purchase | reference / actor; reference / actor |
+| 82 | Gloves of the Growling Underdog | Act 1: Shattered Sanctum · Ragzlin’s treasure crates · behind the iron gate · 298,66 · container; Act 1: Rosymorn Monastery Trail · Conditional buried crate · -118,-134 · container | reference / container; reference / container |
+| 86 | Gold Wyrmling Staff | Act 1: Shattered Sanctum · Roah’s shop · beyond the sanctum entrance · 272,-31 · purchase; Act 2: Moonrise Towers · Roah’s retained Act 1 stock · -174,-176 · purchase; Act 3: Sorcerous Sundries · Ground-floor pedestal · behind the elementals · -2,-66 · world | reference / actor; reference / actor; exact / item |
+| 91 | Harold | Act 1: Zhentarim Basement · Zarys · unopened shipment reward · 277,-247 · quest_reward | reference / actor |
+| 101 | Infernal Robe | Act 1: Campsite · Mizora · camp reward · no fixed X/Y · quest_reward | Exception / none |
+| 104 | Jorgoral's Greatsword | Act 1: Ebonlake · Greymon · first raft crossing · no fixed X/Y · actor_loot; Act 1: Grymforge · Greymon’s trader spot · after surviving the voyage · -120,-95 · purchase; Act 1: Decrepit Village · Greymon’s washed-up body · southern pier beach · no fixed X/Y · actor_loot | Exception / none; reference / actor; Exception / none |
+| 105 | Key of the Ancients | Act 1: Underground Passage · Findal · Underground Passage bearer · -438,-180 · actor_loot; Act 1: Druids' Chambers · Nettie · Druids’ Chambers bearer · -440,6 · actor_loot | reference / actor; reference / actor |
+| 111 | Loviatar's Scourge | Act 1: Shattered Sanctum · Abdirak · carried scourge · 338,-21 · actor_loot | reference / actor |
+| 114 | Mask of the Shapeshifter | Act 1: Campsite · Traveller’s Chest · Digital Deluxe entitlement · no fixed X/Y · container | Exception / none |
+| 116 | Merregon Halberd | Act 1: Grymforge · Legionnaire · hallway with Hellsboars · -574,377 · actor_loot; Act 1: Grymforge · Crumbling Island · first ground pickup · -643,215 · world; Act 1: Grymforge · Crumbling Island · second ground pickup · -601,199 · world; Act 2: Gauntlet of Shar · Yurgir’s accompanying Merregons · -658,753 · actor_loot | reference / actor; reference / item; reference / item; reference / actor |
+| 120 | Mystra's Grace | Act 1: Arcane Tower · Chest of the Mundane · northern balcony at turret-entry level · -36,-265 · container | exact / container |
+| 122 | Necklace of Elemental Augmentation | Act 1: Crèche Y'llek · Inquisitor’s Chamber · display case · 1379,-662 · container; Act 3: Wyrm's Crossing · Shipwreck · Traveller’s Chest north-west of South Span Checkpoint · -97,107 · container | exact / container; exact / container |
+| 123 | Pale Oak | Act 1: Inner Sanctum · Kagha · Faithwarden reward · -461,-22 · quest_reward; Act 1: Inner Sanctum · Rath · alternative Faithwarden reward · -461,-22 · quest_reward | reference / actor; reference / location |
+| 136 | Ring of Evasion | Act 1: Campsite · Tara · first Gale Origin long rest · no fixed X/Y · world | Exception / none |
+| 139 | Ring of Mind-Shielding | Act 1: Ebonlake Grotto · Blurg’s summon/interaction point · 111,-89 · purchase; Act 1: Ebonlake Grotto · Blurg’s summon/interaction point · 111,-89 · quest_reward; Act 1: Ebonlake Grotto · Blurg’s summon/interaction point · 111,-89 · quest_reward; Act 1: Ebonlake Grotto · Blurg’s summon/interaction point · 111,-89 · steal | reference / interaction; reference / interaction; reference / interaction; reference / interaction |
+| 141 | Ring of Protection | Act 1: Tiefling Hideout · Mol · idol quest reward · 84,73 · quest_reward | reference / actor |
+| 142 | Ring of Restorative Gravity | Act 1: Myconid Colony · Omeluum · Early Access sale only · no fixed X/Y · purchase · historical/unavailable | Exception / none |
+| 147 | Robust Chain Shirt | Act 1: Grymforge · Thrinn · former boots-return reward · no fixed X/Y · quest_reward · historical/unavailable | Exception / none |
+| 150 | Sentient Amulet (Rare) | Act 1: Abandoned Refuge · Locked Adamantine Chest · ruined island near the Lava Elemental · -624,224 · container | exact / container |
+| 151 | Shadow of Menzoberranzan | Act 1: Ebonlake Grotto · Secret reward area · ground beside Xargrim’s corpse · 52,-70 · world | exact / item |
+| 152 | Shapeshifter's Boon Ring | Act 1: Emerald Grove · Strange Ox’s grove encounter · 217,540 · actor_loot; Act 1: Emerald Grove · Strange Ox’s grove encounter · 217,540 · purchase; Act 2: Last Light Inn · Dammon’s forge · Strange Ox · -28,170 · actor_loot; Act 2: Last Light Inn · Dammon’s forge · Strange Ox · -28,170 · purchase; Act 3: Rivington · Strange Ox’s Rivington encounter · 39,-149 · actor_loot; Act 3: Rivington · Strange Ox’s Rivington encounter · 39,-149 · purchase; Act 3: Lower City transition · Strange Ox · Lower City transition reward · no fixed X/Y · quest_reward | reference / actor; reference / actor; reference / actor; reference / actor; reference / actor; reference / actor; Exception / none |
+| 154 | Shining Staver-of-Skulls | Act 1: Ebonlake · Greymon · first raft crossing · no fixed X/Y · actor_loot; Act 1: Grymforge · Greymon’s trader spot · after surviving the voyage · -120,-95 · purchase; Act 1: Decrepit Village · Greymon’s washed-up body · southern pier beach · no fixed X/Y · actor_loot | Exception / none; reference / actor; Exception / none |
+| 156 | Sickle of BOOOAL | Act 1: The Festering Cove · BOOOAL’s gathering · -417,284 · actor_loot; Act 1: The Festering Cove · BOOOAL’s gathering · -417,284 · quest_reward; Act 1: The Festering Cove · BOOOAL’s gathering · -417,284 · purchase | reference / encounter; reference / encounter; reference / encounter |
+| 169 | Staff of Arcane Blessing | Act 1: Arcane Tower · Basement · leaning against a table · no fixed X/Y · world | conflict / none |
+| 171 | Steelforge Sword | Act 1: Blighted Village · Blacksmith’s Forge · Sampson’s locked chest · -435,-371 · container; Act 3: High Hall · Koll’s table of goods · 235,44 · world | exact / container; exact / item |
+| 177 | Svartlebee's Woundseeker | Act 1: Waukeen's Rest · Yeva · burning inn · -66,609 · actor_loot; Act 2: Tadpoling Centre · Yeva · after rescue from the pod · 677,15 · actor_loot | reference / actor; reference / actor |
+| 180 | Sword of Screams | Act 1: Grymforge · Nere cave-in rescue site · encounter navigation · -643,300 · actor_loot | reference / encounter |
+| 181 | Tarnished Charm | Act 1: Riverside Teahouse · Ethel · teahouse · -58,263 · actor_loot; Act 1: Overgrown Tunnel · Ethel · tunnel · -412,577 · actor_loot; Act 3: The Blushing Mermaid · Ethel · Blushing Mermaid · -2329,-95 · actor_loot | reference / actor; reference / actor; reference / actor |
+| 185 | The Blood of Lathander | Act 1: Secret Chamber · Altar · locked relic · 1068,-779 · world; Act 1: Secret Chamber · Altar · locked relic · 1068,-779 · world | exact / interaction; exact / interaction |
+| 186 | The Deathstalker Mantle | Act 1: Campsite · Sceleritas Fel · Dark Urge bard-event reward · no fixed X/Y · world | Exception / none |
+| 192 | The Oakfather's Embrace | Act 1: Owlbear Nest · Headless skeleton · beside the nest and egg · -354,-111 · actor_loot | reference / corpse |
+| 198 | The Sparkswall | Act 1: Arcane Tower · Basement upper level · gilded chest · 163,-432 · container | exact / container |
+| 205 | The Whispering Promise | Act 1: Goblin Camp · Grat · before Volo leaves · -99,424 · purchase; Act 1: Goblin Camp · Grat · before Volo leaves · -99,424 · steal; Act 1: Sacred Pool · Volo · Sacred Pool encounter · 260,510 · purchase; Act 1: Sacred Pool · Volo · Sacred Pool encounter · 260,510 · steal; Act 1,2,3: Campsite · Volo · rescued camp guest · no fixed X/Y · purchase; Act 1,2,3: Campsite · Volo · rescued camp guest · no fixed X/Y · steal | reference / actor; reference / actor; reference / actor; reference / actor; Exception / none; Exception / none |
+| 206 | Titanstring Bow | Act 1: Zhentarim Basement · Brem · unlocked special stock · 295,-250 · purchase; Act 2: Moonrise Towers · Lann Tarv · conditional stock · -164,-167 · purchase | reference / actor; reference / actor |
+| 215 | Winter's Clutches | Act 1: Underdark · Glut · circle quest reward · 59,-110 · quest_reward; Act 1: Rosymorn Monastery Trail · Esther · north-east of Trielta Crags · -43,-129 · purchase; Act 3: Sorcerous Sundries · Entrance counter · behind the elementals · -2,-66 · world | reference / location; reference / actor; exact / item |
+
+## Special cases and deliberate plan refinement
+
+- **Staff of Arcane Blessing:** `coordinates: null`, state `conflict`, reason retains **164,+432** versus neighbouring **163,-432** and pinned staff/ring/tower evidence. Safe basement description; no inferred sign flip. The existing renderer displays the honest conflict. This is the approved pending/conflict disposition, not an unaccounted identity.
+- **Winter’s Clutches:** the plan’s first route was typed `world` although the plan text and pinned item page describe Glut’s quest reward. The implementation uses `quest_reward` for that route, preserving the approved reward semantics and **59,-110** location reference. Glut/Esther instances are mutually exclusive; Act 3 world pickup stays separate. This is the only route-type refinement.
+- Abyss Beckoners uses neutral chest wording. Item chest **306,-170**, office/gate **304,-177**, and conflicting chest-lock descriptions stay distinct. No locked-chest claim is promoted over the discrepancy.
+- Amulet of Misty Step retains first-accessed-instance suppression. Omeluum uses Blurg’s **111,-89** interaction reference, retaining **112,-88** / **144,29** evidence. Derryth uses approved **55,-93** shop reference and retains **-55,-93**. Her Counting House route is Act 3.
+- Three Greymon items each retain first-voyage carried loot, surviving merchant **-120,-95**, and conditional washed-up body. Initial dialogue shove loses loot; combat drowning is different. Dynamic raft/body outcomes have honest null-X/Y Exceptions.
+- Ceremonial weapons retain quest-specific plus generic ID sets; generic-only or ordinary substitute matches fail. Key of the Ancients retains all three IDs and two bearer routes. Drow Commander variant remains within the existing catalogue concept without an invented second acquisition route. Sentient Amulet retains Rare IDs and rejects later very-rare/no-ghost variants.
+- Nere items use the **-643,300** rescue-site encounter reference, retaining **-854,+780** / **-854,-780** evidence without sign repair or guaranteed corpse placement.
+- Camp/origin/entitlement outcomes (Infernal Robe, Mask, Ring of Evasion, Deathstalker Mantle) use Exceptions, not invented camp X/Y. Alfira/Quil remain alternatives; Tara requires Gale Origin; Mask requires Digital Deluxe.
+- Ring of Restorative Gravity and Robust Chain Shirt are explicitly historical/unavailable. No current Omeluum/Thrinn claim, replacement UID or invented historical patch/date is introduced. Ring of Salving remains separate.
+- Empty-ID Oakfather and Restorative Gravity bindings use only the existing exact Wiki-page + Act + progress-key contract. Oakfather keeps the original catalogue spelling and redirect identity, no injected Wiki ID and no owlbear-kill prerequisite.
+- Shapeshifter’s Boon retains carried loot and conditional barter across Acts 1/2/3 plus a Lower City transition reward Exception, only if the ring was not obtained before. Whispering Promise remains one ring moving among Volo/Grat/camp, not guaranteed copies.
+- Sickle of BOOOAL retains Pooldripp carried loot, weakened-BOOOAL Chosen reward and first-conversation post-BOOOAL barter. It is not a BOOOAL corpse drop and the old catalogue Harpy Nest prose is not used as enrichment evidence.
+- Lathander preserves Crest-safe OR trap-triggering retrieval, not universally mandatory ceremonial weapons. Mystra’s Grace preserves Chest of the Mundane semantics. Sparkswall/Basement access does not require Bernard’s death.
+- Broodmother, Merregon, Necklace, Steelforge, Yeva, Ethel and Gold Wyrmling retain distinct Act/venue contexts under one progress identity. Steelforge’s catalogue spelling and original Wiki guard are preserved even though evidence resolves to Steelforged Sword.
+- Reward conditions remain canonical facts: Mol timing; Druid-only Kagha/Rath alternatives; Harold unopened-shipment reward distinct from Brem’s stock unlock; Titanstring’s Lann Tarv condition is never-unlocked special stock, not merely not bought.
+
+## Verification
+
+Generic per-item assertions cover exact identity/full-ID sets and input immutability; independently pinned route facts, coordinates, availability and conditions; actual Full desktop/mobile DOM; Minimal/Light zero enrichment DOM; cached ingestion and mode transitions. Targeted tests cover only variant, historical, mutual-exclusion, dynamic and conflict semantics. Baseline 4B assertions remain frozen to its checkpoint while requiring old objects to survive.
+
+Native isolated QA sweeps all 46 at 320/390/768/1280. Screenshots and explicit Enter/Space/focus checks are limited to the ten approved representative items at 390/1280. Shared first-click/search-blur/late-arrival/pointer/focus checks remain active. All requests are intercepted and served from repository fixtures in disposable contexts; no real session or storage is accessed.
+
+Catalogue stays **556 source rows → 555 unique items** and all 555 progress keys remain unchanged. Vendor **63/50/67**, Loot **131/94/125**, Quest **25/0/0**; Graceful Cloth identities remain distinct and Battlemage sourceRow 54 is retained. v5/v6 compatibility stays covered. Renderer/resolver/schema/index.html/auth/sync/Story/storage/PWA/transport/database/deployment code remains unchanged. No .lsv Phase B.

@@ -42,7 +42,7 @@ function runBuilderCLI(dataset) {
 }
 
 for (const [label, mutate, path, code, message] of [
-  ['unsupported schema version', dataset => { dataset.schemaVersion = 2; }, '$.schemaVersion', 'version', /Only schema version 1 is supported/],
+  ['unsupported schema version', dataset => { dataset.schemaVersion = 99; }, '$.schemaVersion', 'version', /Only schema versions 1 and 2 are supported/],
   ['unsafe evidence URL', dataset => { dataset.entries[0].routes[0].sources[0].url = 'javascript:alert(1)'; }, '$.entries[0].routes[0].sources[0].url', 'source', /HTTPS BG3 Wiki page URL/],
   ['malformed evidence URL', dataset => { dataset.entries[0].routes[0].sources[0].url = 'https://bg3.wiki/wiki/%INVALID'; }, '$.entries[0].routes[0].sources[0].url', 'source', /HTTPS BG3 Wiki page URL/]
 ]) test(`actual bundle CLI rejects ${label} with canonical diagnostics and zero writes`, () => {
@@ -75,7 +75,7 @@ test('actual bundle CLI builds the valid canonical pilot deterministically with 
   assert.ok(embedded, 'Generated bundle must retain one canonical serialized dataset');
   const generatedDataset = JSON.parse(embedded[1]);
   assert.deepEqual(generatedDataset, canonicalPilot);
-  assert.equal(generatedDataset.schemaVersion, 1);
+  assert.equal(generatedDataset.schemaVersion, 2);
   assert.equal(generatedDataset.datasetVersion, canonicalPilot.datasetVersion);
   assert.equal(JSON.stringify(canonicalPilot), before, 'Build validation must not mutate the canonical caller data');
 });

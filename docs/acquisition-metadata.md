@@ -5,7 +5,7 @@ Phase 1 introduced an isolated metadata draft for v0.8.7-era catalogue identitie
 ## Files and API
 
 - `acquisition-metadata.js`: standalone CommonJS validator and deterministic resolver; no file reads, network, DOM, storage or timers.
-- `data/acquisition.v1.json`: schema **1**, dataset **1.3.0-act1.1c**; forty catalogue entries, forty-one bindings, fifty-eight acquisition routes. The original ten-entry pilot, [Checkpoint 1A](acquisition-act1-1a.md) and [Checkpoint 1B](acquisition-act1-1b.md) remain unchanged; [Checkpoint 1C](acquisition-act1-1c.md) adds ten Act 1 identities and twenty-two reviewed routes.
+- `data/acquisition.v1.json`: schema **2**, dataset **2.8.0-act3.complete**; 555 catalogue entries, 556 bindings, 817 acquisition routes. The pilot and checkpoints 1A/1B/1C retain all entry/binding/route identities and rich facts. The coordinate checkpoint adds review metadata and sourced points; four legacy actor roles now correctly identify corpses. The filename remains stable for bundle tooling.
 - `tests/acquisition-metadata.test.cjs`: contract tests plus existing application functions exercised through their established mocked boundaries.
 
 ```js
@@ -50,6 +50,23 @@ Zero and negative coordinates are valid. Numeric strings, NaN and infinity are i
 
 Plain metadata is not HTML or a ready-made UI string. Future presentation must escape data. Sparse arrays, accessors, cycles, non-JSON values, duplicate entry/binding/route IDs and malformed nested objects are rejected. IDs are explicit and immutable; they are never array indices or generated from current item display names.
 
+## Schema 2 coordinate review
+
+Schema 1 remains accepted under its original closed contract. Schema 2 extends that contract intentionally: every route requires an explicit `coordinates` object or null plus `coordinateReview`. Unknown fields still reject the whole dataset. No Story/progress migration is involved.
+
+`coordinateReview` is `{state, reason?}` with states:
+
+- `exact`: a sourced exact acquisition point; requires coordinates.
+- `reference`: a sourced navigation point; requires coordinates and keeps the point's role visible.
+- `pending`, `conflict`, `not_documented`: require null coordinates; an optional plain reason may be retained.
+- `not_applicable`: requires null coordinates, a nonempty reason and evidence.
+
+Coordinate roles retain schema 1's actor/container/entrance/item/interaction/crafting station roles and add `corpse`, `encounter`, `former_container`, `component`, `location`. No numeric coercion or `(0,0)` fallback is introduced. Review semantics never reuse `coverage`.
+
+Optional nonempty `navigationPoints` contain closed objects with required `label`, finite `coordinates`, `sources`, optional `location`/`sublocation`. Each has its own evidence; inventory assembly can retain a null finished-item point while showing reviewed component or waypoint/entrance navigation. Navigation labels must accurately describe reference points, not imply unsupported exact actor positions.
+
+The current 817 routes have **164 exact points, 502 reference points, 144 not-applicable exceptions, 4 explicit coordinate conflicts and 3 Pending draft branches**. The three draft/uncertain branches are withheld from Full presentation. Bonespike Boots and both Staff of Interruption routes retain null displayed X/Y conflicts; the original Staff of Arcane Blessing conflict also remains. Staff of Arcane Blessing has null coordinates because the published positive Y conflicts with neighbouring basement evidence; no inferred sign repair is shipped. No route is silently omitted to force completeness. Original 22 X/Y/space values remain unchanged. All 36 former null routes are reviewed. [Act 1 Batch 1](acquisition-act1-batch1.md) adds fifteen exact strong-ID bindings and fifteen concise routes; the original forty entry objects remain unchanged. [Act 1 Batch 2](acquisition-act1-batch2.md) adds fifteen more bindings and sixteen routes while preserving all previous fifty-five entry objects. [Act 1 Batch 3](acquisition-act1-batch3.md) adds fifteen more bindings and fifteen routes while preserving all previous seventy entry objects. [Act 1 Batch 4A](acquisition-act1-batch4a.md) adds 47 bindings and 51 routes while preserving the previous 85 objects; 127/219 Act 1 catalogue items were covered at that checkpoint. [Act 1 Batch 4B](acquisition-act1-batch4b.md) adds 46 bindings and 55 routes without changing the previous 132 entry objects; coverage at that checkpoint was 173/219 Act 1 items. [Act 1 Batch 4C](acquisition-act1-batch4c.md) adds the final 46 entries / 89 routes, preserving the prior 178 objects. All 219 Act 1 catalogue identities are now accounted for, including historical/unobtainable items and the explicit Staff coordinate conflict; this is not a claim that every item is currently obtainable or has exact X/Y. See [backfill evidence and roles](acquisition-coordinate-backfill.md) for the full audit and component reference limitations. This supersedes coordinate omissions in the historical pilot table below while preserving its original route coverage boundaries.
+
 ## Identity and binding
 
 The input shape is the existing normalized item `{act, name, gameIds, source}`. Raw `links.Name`, when supplied, is an additional identity check and must agree with `source`.
@@ -63,9 +80,12 @@ The input shape is the existing normalized item `{act, name, gameIds, source}`. 
 7. Accept only canonical `https://bg3.wiki/wiki/Title` or pinned `https://bg3.wiki/w/index.php?title=Title&oldid=Revision`. No credentials, ports, fragments, extra query parameters, duplicate parameters or normalized traversal paths. A supplied revision ID must agree with the pinned URL.
 8. More than one matching binding is ambiguous even within one entry and returns no enrichment; arrival order cannot select a winner.
 
+Resolver lookup has exactly two frozen legacy-source aliases: Act 3 `act 3|shapeshifter hat` / `https://baldursgate3.wiki.fextralife.com/Shapeshifter+Hat` → `Shapeshifter_Hat`, and `act 3|burnished ring` / `https://baldursgate3.wiki.fextralife.com/Burnished+Ring` → `Burnished_Ring`. Each requires an explicitly supplied own validated empty `gameIds: []`, the exact Act/key/source literal, an agreeing reviewed target and one unique metadata binding. Every supplied source field must independently validate and agree. No input is rewritten, no ID is injected, and `sourceRow` is not used at runtime. Strict BG3 Wiki evidence URL validation is unchanged; this is not general Fextralife/external URL acceptance. Malformed, absent/inherited IDs, other URLs and ambiguous matches remain rejected. The other 553 catalogue identities retain the previous resolver outcomes when evaluated against the same candidate dataset.
+
+
 Catalogue game IDs are opaque values in their existing namespace. Wiki UIDs, Stats IDs, templates and save IDs are not conflated. The two Graceful Cloth entries deliberately retain different Act/progress identities despite their shared ID and item page. Only Gloves of Heroism has an explicit no-ID fallback binding; generic fallback records stay unmatched.
 
-## Reviewed pilot and evidence
+## Original pilot review and evidence (historical baseline)
 
 All pilot route sources retain permanent Wiki links, revision IDs and section labels in the JSON. Facts are concise paraphrases. Canonical pages were read and their permanent-link revision IDs checked; direct oldid retrieval was unavailable in the browsing tool. Additional actor/location/quest pages are pinned where needed for context.
 
@@ -97,3 +117,13 @@ node --test tests/*.test.cjs
 The new tests validate synthetic contracts independently of the pilot, match all ten pilot entries through the real current normalizers, preserve all 555 distinct progress keys, and exercise existing v5/v6 import/export handlers and Story isolation using mocks. Expected catalogue remains **556 source rows / 555 unique items**, Vendor **63/50/67**, Loot **131/94/125**, Quest **25/0/0**. Phase 1 left existing tests unchanged; Phase 2 test-boundary adjustments are documented separately.
 
 The approved Phase 2 disclosure policy and browser/offline packaging are documented in [acquisition-ui.md](acquisition-ui.md). Enriched search/filter behavior, expanded coverage and classifier changes remain deferred. Static metadata is inspectable; spoiler protection is a presentation policy. No storage/database migration or production service access is required. Versioned progress transport and the DEV PREVIEW gate remain untouched.
+
+## Complete Act 2 checkpoint
+
+[Complete Act 2](acquisition-act2-complete.md) adds 142 exact identities and 221 reviewed routes, plus six additive continuation routes on Hunting Shortbow, Safeguard Shield and Armour of Devotion. Existing bindings and existing route objects are unchanged. All 144 unique Act 2 identities are accounted for; Blood-Bound Blade has a bound partial entry with zero routes because current unavailability is proven without a historical acquisition. It intentionally produces no Where to find section. The remaining 141 new entries render in Full only. This is an entry-level unavailability disposition, separate from the 57 new route-level coordinate Exceptions.
+
+## Complete Act 3 coverage
+
+[Complete Act 3](acquisition-act3-complete.md) adds 189 entries/bindings and 268 routes, plus 23 routes appended to 12 existing entries. Final coverage is 219/219 Act 1, 144/144 Act 2, 192/192 Act 3: all 555 unique catalogue identities bind. There are 554 Full-renderable identities; Blood-Bound Blade remains intentionally zero-route/unavailable. Existing entry/binding/route IDs and facts are unchanged except for the exact approved append-only continuations. Three uncertain branches remain draft, not asserted current acquisition. Complete identity accounting is not a promise of present obtainability, exhaustive alternate routes or exact coordinates.
+
+The independent table fixture is copied from the approved planning oracle before canonical mutation. The plan's former two external-source blockers are resolved by the narrow lookup rule above. No additional alias, ID, source rewrite or schema field is introduced. Schema validation and evidence URL validation are byte-identical to the approved Act 2 implementation.

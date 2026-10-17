@@ -1,5 +1,6 @@
 /* Checkpoint 1C: approved facts, exact catalogue bindings and production runtime boundaries. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
@@ -11,9 +12,28 @@ const { createAcquisitionUI } = require('../acquisition-ui.js');
 const { generateBundle } = require('../scripts/build-acquisition-bundle.cjs');
 const { harness: storyHarness, record } = require('./helpers/app-harness.cjs');
 const root = join(__dirname, '..');
+const coordinateSnapshot = JSON.parse(execFileSync('git', ['show', '0b33854b2868f587fd614edf179fd5e0392e7c22:data/acquisition.v1.json'], {cwd:root, encoding:'utf8'}));
+const coordinateIDs = new Set(coordinateSnapshot.entries.map(e => e.id));
 const baselineCommit = '9d4cc4aa38c4c2aa45b228e7175b3b66b95fa210';
 const copy = value => JSON.parse(JSON.stringify(value));
 const key = item => (item.act + '|' + item.name).toLowerCase();
+// Historical checkpoint comparisons retain every rich fact; only the separately
+// tested coordinate backfill, review state and added navigation provenance differ.
+function priorFacts(entries, previous) {
+  const originals = new Map(previous.map(entry => [entry.id, entry]));
+  return entries.map(entry => {
+    const output = copy(withoutAct2Continuations(entry)), original = originals.get(entry.id);
+    for (const route of output.routes) {
+      const old = original.routes.find(value => value.id === route.id);
+      delete route.coordinateReview; delete route.navigationPoints;
+      if (old.coordinates === null) route.coordinates = null;
+      else if (['840f2cfc-76e4-4c99-969e-b75ea7b893d3','32fb0efc-2544-4476-b1e8-6d6450879a22','a91d0d81-612b-4a43-a70f-490b4a421399','f198ec10-6aa3-4155-a9c2-1134d95fa4ec'].includes(route.id)) route.coordinates.subject = old.coordinates.subject;
+      route.sources = route.sources.slice(0, old.sources.length);
+    }
+    return output;
+  });
+}
+
 const dataset = () => JSON.parse(readFileSync(join(root, 'data', 'acquisition.v1.json'), 'utf8'));
 const catalogue = JSON.parse(readFileSync(join(__dirname, 'fixtures', 'vendor-catalogue.json'), 'utf8'));
 const baselineFile = path => execFileSync('git', ['show', baselineCommit + ':' + path], { cwd: root, encoding: 'utf8' });
@@ -221,30 +241,30 @@ const approved = [
 ];
 const facts = [
   { coverage: 'partial', routes: [
-    { type: 'actor_loot', actor: /corpse|deep gnome/i, location: 'Grymforge', sublocation: /corpse.?disposal.*(?:shore|berth)|(?:shore|berth).*corpse.?disposal/i, coordinates: { x: -610, y: 408, space: 'Grymforge', subject: 'actor' }, acts: [1] },
-    { type: 'steal', actor: /corpse|deep gnome/i, location: 'Grymforge', sublocation: /corpse.?disposal.*(?:shore|berth)|(?:shore|berth).*corpse.?disposal/i, coordinates: { x: -610, y: 408, space: 'Grymforge', subject: 'actor' }, acts: [1] },
-    { type: 'purchase', actor: /^Brathwen$/, location: 'Grymforge', sublocation: /corpse.?disposal.*(?:shore|berth)|(?:shore|berth).*corpse.?disposal/i, coordinates: null, acts: [1] },
-    { type: 'drop', actor: /^Brathwen$/, location: 'Grymforge', sublocation: /corpse.?disposal.*(?:shore|berth)|(?:shore|berth).*corpse.?disposal/i, coordinates: null, acts: [1] }
+    { type: 'actor_loot', actor: /corpse|deep gnome/i, location: 'Grymforge', sublocation: /corpse.?disposal.*(?:shore|berth)|(?:shore|berth).*corpse.?disposal/i, coordinates: { x: -610, y: 408, space: 'Grymforge', subject: 'corpse' }, acts: [1] },
+    { type: 'steal', actor: /corpse|deep gnome/i, location: 'Grymforge', sublocation: /corpse.?disposal.*(?:shore|berth)|(?:shore|berth).*corpse.?disposal/i, coordinates: { x: -610, y: 408, space: 'Grymforge', subject: 'corpse' }, acts: [1] },
+    { type: 'purchase', actor: /^Brathwen$/, location: 'Grymforge', sublocation: /corpse.?disposal.*(?:shore|berth)|(?:shore|berth).*corpse.?disposal/i, coordinates: {"x": -608, "y": 404, "space": "Grymforge", "subject": "encounter"}, acts: [1] },
+    { type: 'drop', actor: /^Brathwen$/, location: 'Grymforge', sublocation: /corpse.?disposal.*(?:shore|berth)|(?:shore|berth).*corpse.?disposal/i, coordinates: {"x": -608, "y": 404, "space": "Grymforge", "subject": "encounter"}, acts: [1] }
   ] },
   { coverage: 'reviewed', routes: [
-    { type: 'drop', actor: /^Crusher$/, location: 'Goblin Camp', sublocation: /eastern courtyard/i, coordinates: null, acts: [1] },
-    { type: 'steal', actor: /^Crusher$/, location: 'Goblin Camp', sublocation: /eastern courtyard/i, coordinates: null, acts: [1] }
+    { type: 'drop', actor: /^Crusher$/, location: 'Goblin Camp', sublocation: /eastern courtyard/i, coordinates: {"x": -70, "y": 439, "space": "Goblin Camp", "subject": "encounter"}, acts: [1] },
+    { type: 'steal', actor: /^Crusher$/, location: 'Goblin Camp', sublocation: /eastern courtyard/i, coordinates: {"x": -70, "y": 439, "space": "Goblin Camp", "subject": "encounter"}, acts: [1] }
   ] },
   { coverage: 'reviewed', routes: [
-    { type: 'drop', actor: /^Commander Zhalk$/, location: /Nautiloid/i, sublocation: /helm/i, coordinates: null, acts: ['prologue'] },
-    { type: 'disarm', actor: /^Commander Zhalk$/, location: /Nautiloid/i, sublocation: /helm/i, coordinates: null, acts: ['prologue'] }
+    { type: 'drop', actor: /^Commander Zhalk$/, location: /Nautiloid/i, sublocation: /helm/i, coordinates: {"x": -53, "y": -391, "space": "Nautiloid", "subject": "encounter"}, acts: ['prologue'] },
+    { type: 'disarm', actor: /^Commander Zhalk$/, location: /Nautiloid/i, sublocation: /helm/i, coordinates: {"x": -53, "y": -391, "space": "Nautiloid", "subject": "encounter"}, acts: ['prologue'] }
   ] },
   { coverage: 'partial', routes: [
-    { type: 'gift', actor: /^Varsh Ko'kuu$/, location: "Crèche Y'llek", sublocation: /hatchery.*cliff.*egg/i, coordinates: null, acts: [1] },
-    { type: 'actor_loot', actor: /^Varsh Ko'kuu$/, location: "Crèche Y'llek", sublocation: /hatchery.*cliff.*egg/i, coordinates: null, acts: [1] }
+    { type: 'gift', actor: /^Varsh Ko'kuu$/, location: "Crèche Y'llek", sublocation: /hatchery.*cliff.*egg/i, coordinates: {"x": 1288, "y": -759, "space": "Crèche Y'llek", "subject": "encounter"}, acts: [1] },
+    { type: 'actor_loot', actor: /^Varsh Ko'kuu$/, location: "Crèche Y'llek", sublocation: /hatchery.*cliff.*egg/i, coordinates: {"x": 1288, "y": -759, "space": "Crèche Y'llek", "subject": "encounter"}, acts: [1] }
   ] },
   { coverage: 'reviewed', routes: [
     { type: 'container', actor: null, location: "Waukeen's Rest", sublocation: /upstairs.*(?:adjacent|next).*Benryn/i, coordinates: { x: -85, y: 631, space: "Waukeen's Rest", subject: 'container' }, acts: [1] },
-    { type: 'world', actor: null, location: "Waukeen's Rest", sublocation: /upstairs.*(?:adjacent|next).*Benryn/i, coordinates: null, acts: [1] }
+    { type: 'world', actor: null, location: "Waukeen's Rest", sublocation: /upstairs.*(?:adjacent|next).*Benryn/i, coordinates: {"x": -85, "y": 631, "space": "Waukeen's Rest", "subject": "former_container"}, acts: [1] }
   ] },
   { coverage: 'partial', routes: [
     { type: 'world', actor: null, location: 'Shattered Sanctum', sublocation: /Bloodied Shrine/i, coordinates: { x: 338, y: -26, space: 'Shattered Sanctum', subject: 'item' }, acts: [1] },
-    { type: 'actor_loot', actor: /^Abdirak$/, location: 'Shattered Sanctum', sublocation: /Bloodied Shrine/i, coordinates: null, acts: [1] }
+    { type: 'actor_loot', actor: /^Abdirak$/, location: 'Shattered Sanctum', sublocation: /Bloodied Shrine/i, coordinates: {"x": 338, "y": -26, "space": "Shattered Sanctum", "subject": "location"}, acts: [1] }
   ] },
   { coverage: 'reviewed', routes: [
     { type: 'quest_reward', actor: /^Counsellor Florrick$/, location: "Waukeen's Rest", sublocation: /post.?rescue.*conversation/i, coordinates: { x: -63, y: 600, space: "Waukeen's Rest", subject: 'interaction' }, acts: [1] }
@@ -254,8 +274,8 @@ const facts = [
     { type: 'quest_reward', actor: /Komira.*Locke|Locke.*Komira/i, location: 'Emerald Grove', sublocation: /Sacred Pool.*(?:parents|return)/i, coordinates: { x: 262, y: 542, space: 'Sacred Pool', subject: 'interaction' }, acts: [1] }
   ] },
   { coverage: 'reviewed', routes: [
-    { type: 'gift', actor: /^Bernard$/, location: 'Arcane Tower', sublocation: /roof/i, coordinates: null, acts: [1] },
-    { type: 'drop', actor: /^Bernard$/, location: 'Arcane Tower', sublocation: /roof/i, coordinates: null, acts: [1] }
+    { type: 'gift', actor: /^Bernard$/, location: 'Arcane Tower', sublocation: /roof/i, coordinates: {"x": -26, "y": -283, "space": "Arcane Tower", "subject": "encounter"}, acts: [1] },
+    { type: 'drop', actor: /^Bernard$/, location: 'Arcane Tower', sublocation: /roof/i, coordinates: {"x": -26, "y": -283, "space": "Arcane Tower", "subject": "encounter"}, acts: [1] }
   ] }
 ];
 // Reuse only the existing native DOM boundary and application harness, without
@@ -372,7 +392,7 @@ for (const [index, spec] of approved.entries()) {
   });
   test('1C generated browser and offline runtime render canonical Full facts: ' + spec.name, () => {
     const browser = browserBundle(), item = itemFor(spec), canonical = createAcquisitionUI(metadata, dataset());
-    const result = browser.ui.render(item, 'full'); assert.ok(result.acquisitionHtml); assert.ok(result.referencesHtml);
+    const result = browser.ui.render(item, 'full'); assert.ok(result.acquisitionHtml); assert.equal(result.referencesHtml, '', 'No visible source list');
     assert.deepEqual(copy(result), canonical.render(item, 'full'));
     const offline = browserBundle(browser.ui.offlineSource());
     assert.deepEqual(copy(offline.ui.render(item, 'full')), copy(result));
@@ -381,10 +401,10 @@ for (const [index, spec] of approved.entries()) {
 }
 
 
-test('1C adds only ten approved entries and twenty-two routes: schema 1, dataset 1.3.0-act1.1c, 40/41/58 totals', () => {
-  const data = dataset(), checked = metadata.validateDataset(data);
+test('1C retains only the approved ten entries and twenty-two routes under coordinate schema 2, 40/41/58 totals', () => {
+  const current = dataset(), data = {...current, entries:current.entries.filter(e => coordinateIDs.has(e.id)).map(withoutAct2Continuations)}, checked = metadata.validateDataset(current);
   assert.equal(checked.ok, true, JSON.stringify(checked.issues));
-  assert.equal(data.schemaVersion, 1); assert.equal(data.datasetVersion, '1.3.0-act1.1c');
+  assert.equal(data.schemaVersion, 2); assert.deepEqual(data.entries, coordinateSnapshot.entries);
   assert.equal(data.entries.length, 40); assert.equal(data.entries.flatMap(entry => entry.bindings).length, 41);
   assert.equal(data.entries.flatMap(entry => entry.routes).length, 58);
   const originalIds = new Set(baselineEntries.map(entry => entry.id));
@@ -401,12 +421,12 @@ test('1C adds only ten approved entries and twenty-two routes: schema 1, dataset
 test('1C preserves every original thirty entry object and all IDs against the fixed approved 1B commit', () => {
   assert.equal(baselineEntries.length, 30);
   const originalIds = new Set(baselineEntries.map(entry => entry.id));
-  assert.deepEqual(dataset().entries.filter(entry => originalIds.has(entry.id)), baselineEntries);
+  assert.deepEqual(priorFacts(dataset().entries.filter(entry => originalIds.has(entry.id)), baselineEntries), baselineEntries);
 });
 
-test('1C leaves schema, resolver, renderer, app, PWA, progress, database and builder bytes unchanged from the fixed 1B commit', () => {
+test('1C leaves PWA, progress, database, catalogue and builder bytes unchanged from the fixed 1B commit', () => {
   for (const path of [
-    'acquisition-metadata.js', 'acquisition-ui.js', 'index.html', 'scripts/build-acquisition-bundle.cjs',
+    'scripts/build-acquisition-bundle.cjs',
     'service-worker.js', 'manifest.json', 'versioned-progress.js', 'supabase-schema.sql',
     'database/phase-d1/001_progress_protocol.sql', 'database/phase-d1/002_enforce_progress_protocol.sql',
     'database/phase-d3/003_bulk_progress_protocol.sql', 'tests/fixtures/vendor-catalogue.json', 'tests/fixtures/vendor-membership.json'
@@ -430,7 +450,7 @@ test('1C Fetish keeps corpse inspection alternatives and transferred-Brathwen pu
   assert.ok(hasCondition(steal, /Sleight of Hand/i, 'check')); assert.ok(!hasCondition(steal, /Deception/i, 'check'));
   assert.match(routeText(steal), /dialogue/i);
   for (const route of [purchase, drop]) {
-    assert.equal(route.actor.name, 'Brathwen'); assert.equal(route.coordinates, null);
+    assert.equal(route.actor.name, 'Brathwen'); assert.equal(route.coordinateReview.state, 'reference'); assert.ok(route.coordinates);
     assert.ok(hasCondition(route, /Brathwen.*(?:hold|possess|carr|inventory)|(?:hold|possess|carr|inventory).*ring/i), 'Brathwen must hold the transferred ring');
     assert.ok(!hasCondition(route, /Deception|Sleight of Hand/i, 'check'), 'Brathwen routes cannot require successful corpse checks');
   }
@@ -457,7 +477,7 @@ test('1C Everburn catalogue binding stays ACT 1 while defeat and successful Comm
   const entry = entryFor(approved[2]), [drop, disarm] = routesFor(approved[2]);
   assert.equal(entry.bindings[0].act, 'ACT 1'); assert.equal(entry.bindings[0].progressKey, 'act 1|everburn blade');
   for (const route of [drop, disarm]) {
-    assert.deepEqual(route.acts, ['prologue']); assert.equal(route.coordinates, null);
+    assert.deepEqual(route.acts, ['prologue']); assert.equal(route.coordinateReview.state, 'reference'); assert.ok(route.coordinates);
     assert.ok((route.conditions?.before || []).some(value => /(?:leav|exit|depart).*Nautiloid|Nautiloid.*(?:leav|exit|depart)/i.test(value.subject + ' ' + String(value.value ?? ''))));
     assert.doesNotMatch(conditionText(route), /Shadowheart|Lae.?zel|companion/i, 'Acquisition cannot require a particular companion');
   }
@@ -486,13 +506,13 @@ test('1C Varsh gift follows Persuasion with one protective answer alternative an
   assert.doesNotMatch(conditionText(loot), /Persuasion|raise|forgiv|ghaik/i, 'Loot does not inherit protective conversation requirements');
 });
 
-test('1C Hamarhraft preserves intact chest and loose weapon state alternatives without inventing loose coordinates or disappearance', () => {
+test('1C Hamarhraft preserves intact chest and loose weapon state alternatives with a former-container reference and no invented disappearance', () => {
   const [container, world] = routesFor(approved[4]);
   assert.equal(container.type, 'container'); assert.equal(world.type, 'world');
   assert.ok(hasCondition(container, /(?:intact|not destroyed).*chest|chest.*(?:intact|not destroyed)/i));
   assert.ok(hasCondition(world, /chest.*(?:destroy|burn)|(?:destroy|burn).*chest/i));
   assert.match(routeText(world), /fire/i); assert.match(routeText(world), /rest/i); assert.match(routeText(world), /loose|ground|floor/i);
-  assert.equal(world.coordinates, null);
+  assert.equal(world.coordinates.subject, 'former_container'); assert.equal(world.coordinateReview.state, 'reference');
   assert.ok(!(world.conditions?.before || []).some(value => /rest/i.test(value.subject + ' ' + String(value.value ?? ''))), 'Loose weapon cannot require collection before rest');
   assert.doesNotMatch(conditionText(world), /disappear|unavailable/i, 'Loose weapon remains recoverable after the chest burns');
 });
@@ -503,7 +523,7 @@ test('1C Ritual Dagger keeps world placement and Abdirak carried states separate
   assert.equal(world.actor, null); assert.equal(carried.actor.name, 'Abdirak');
   assert.match(routeText(world), /table|placement/i); assert.match(routeText(world) + ' ' + routeText(carried), /arriv|depart|leav/i);
   assert.match(routeText(carried), /carr|inventory/i);
-  assert.equal(carried.coordinates, null);
+  assert.equal(carried.coordinates.subject, 'location'); assert.equal(carried.coordinateReview.state, 'reference');
   for (const route of [world, carried]) assert.doesNotMatch(conditionText(route), /kill|slay|defeat|disarm|steal|theft|pickpocket/i);
 });
 
@@ -549,7 +569,7 @@ test('1C Guiding Light peaceful verse gift and ungifted Bernard drop remain sepa
   for (const route of [gift, drop]) {
     assert.doesNotMatch(conditionText(route), /Command|pickpocket/i);
     assert.ok(!requirements(route).some(value => value.kind === 'class' || value.kind === 'item'), 'Bard alternative prevents a mandatory class or book prerequisite');
-    assert.equal(route.coordinates, null);
+    assert.equal(route.coordinateReview.state, 'reference'); assert.ok(route.coordinates);
   }
 });
 
@@ -557,7 +577,7 @@ test('1C generated asset is deterministic, validates canonical source and embeds
   const data = dataset(), first = generateBundle(), second = generateBundle(); assert.equal(metadata.validateDataset(data).ok,true);
   assert.equal(first,second); assert.equal(first,readFileSync(join(root,'assets','acquisition-pilot.js'),'utf8'));
   const embedded = first.match(/  const dataset = (\{[^\n]*\});/); assert.ok(embedded);
-  assert.deepEqual(JSON.parse(embedded[1]),data); assert.equal(JSON.parse(embedded[1]).datasetVersion,'1.3.0-act1.1c');
+  assert.deepEqual(JSON.parse(embedded[1]),data); assert.equal(JSON.parse(embedded[1]).datasetVersion,data.datasetVersion);
 });
 
 for (const path of ['fresh','cached']) test('1C actual ' + path + ' Full hydration renders ten new items/twenty-two routes without replacing controls', () => {
@@ -570,7 +590,7 @@ for (const path of ['fresh','cached']) test('1C actual ' + path + ' Full hydrati
   for (const saved of original) {
     assert.equal(required(saved.surface,'input'),saved.control); assert.equal(required(saved.surface,'details'),saved.details);
     assert.equal(saved.surface.querySelectorAll('.acquisition-enrichment').length,1);
-    assert.equal(saved.surface.querySelectorAll('.acquisition-references').length,1);
+    assert.equal(saved.surface.querySelectorAll('.acquisition-references').length,0);
   }
   assert.equal(surfaces(h).length,20); assert.equal(surfaces(h).reduce((sum,surface) => sum+surface.querySelectorAll('.acquisition-route').length,0),44);
   assert.equal(h.app.progress(),progress); assert.deepEqual(copy(progress),before); assert.deepEqual(copy(h.app.items()),items);
@@ -594,43 +614,26 @@ for (const mode of ['minimal','light']) test('1C ' + mode + ' constructs zero en
 });
 
 
-for (const [index, spec] of approved.entries()) test('1C actual desktop/mobile Full keeps route facts, density and compact references complete: ' + spec.name, () => {
-  const entry = entryFor(spec), rows = catalogue.filter(row => key(row) === spec.progressKey), browser = browserBundle();
+for (const [index, spec] of approved.entries()) test('1C desktop/mobile Full keeps compact distinct destinations and methods: ' + spec.name, () => {
+  const rows = catalogue.filter(row => key(row) === spec.progressKey), browser = browserBundle();
   const h = itemHarness(rows, { bundle: false }); h.window.BG3AcquisitionUI = browser.ui; h.app.render(true);
-  const sources = [...new Map(entry.routes.flatMap(route => route.sources).map(source => [JSON.stringify([source.url, source.section]), source])).values()];
-  assert.equal(surfaces(h).length, 2);
+  assert.equal(surfaces(h).length,2);
   for (const surface of surfaces(h)) {
-    const section = required(surface, '.acquisition-enrichment'), rendered = section.querySelectorAll('.acquisition-route');
-    assert.equal(rendered.length, spec.routeIds.length);
-    const headings = rendered.map(route => required(route, '.acquisition-route-heading').textContent);
-    assert.equal(new Set(headings).size, spec.routeIds.length, 'Alternative routes remain distinguishable, including the two Zevlor quest rewards');
-    const shared = [1, 2, 3, 7, 9].includes(index);
-    assert.equal(section.querySelectorAll('.acquisition-shared-location').length, shared ? 1 : 0, 'Only an identical complete geography tuple may compact');
-    assert.equal(section.querySelectorAll('.acquisition-route-number').length, index === 7 ? 2 : 0, 'Number only indistinguishable type/actor headings');
-    if (shared) assert.equal(required(section, '.acquisition-shared-location').textContent.split(entry.routes[0].location.name).length - 1, 1);
-    for (const [routeIndex, route] of routesFor(spec).entries()) {
-      const actual = rendered[routeIndex].textContent;
-      for (const condition of requirements(route)) {
-        assert.ok(actual.includes(condition.subject), 'Route keeps its own condition subject: ' + condition.subject);
-        if (Object.hasOwn(condition, 'value')) assert.ok(actual.includes(String(condition.value)), 'Condition value remains readable');
-      }
-      for (const note of route.notes || []) assert.ok(actual.includes(note), 'Factual notes remain attached to their specific alternative');
-      if (!shared && route.coordinates) {
-        assert.ok(actual.includes(route.coordinates.space)); assert.ok(actual.includes(String(route.coordinates.x))); assert.ok(actual.includes(String(route.coordinates.y)));
-      }
+    const section=required(surface,'.acquisition-enrichment'), rendered=section.querySelectorAll('.acquisition-route');
+    assert.equal(required(section,'h4').textContent,'Where to find'); assert.equal(rendered.length,spec.routeIds.length);
+    assert.equal(section.querySelectorAll('.acquisition-point').length,[2,1,1,1,2,2,1,1,1,1][index]);
+    assert.equal(section.querySelectorAll('.acquisition-route-number').length,0);
+    assert.equal(section.querySelectorAll('.acquisition-shared-location').length,0);
+    assert.equal(surface.querySelectorAll('.acquisition-references').length,0); assert.equal(surface.querySelectorAll('.acquisition-reference').length,0);
+    assert.ok(rendered.every(route=>required(route,'.acquisition-route-heading').textContent.length<160));
+    for (const route of routesFor(spec)) if(route.coordinates) {
+      assert.ok(section.textContent.includes('X: '+route.coordinates.x)); assert.ok(section.textContent.includes('Y: '+route.coordinates.y));
     }
-    const references = required(surface, '.acquisition-references'), links = references.querySelectorAll('.acquisition-reference');
-    assert.equal(links.length, sources.length, 'Compaction retains every unique source/section pair');
-    assert.deepEqual(copy(links.map(link => link.getAttribute('href'))), sources.map(source => source.url));
-    for (const [sourceIndex, link] of links.entries()) assert.ok(link.textContent.includes(sources[sourceIndex].section));
-    const extra = references.querySelector('.acquisition-more-sources');
-    if (sources.length > 3) {
-      assert.ok(extra); assert.equal(extra.open, false); assert.equal(extra.querySelectorAll('.acquisition-reference').length, sources.length - 3);
-      assert.equal(required(extra, 'summary').textContent, 'More sources (' + (sources.length - 3) + ')');
-      required(extra, 'summary').click(); assert.equal(extra.open, true, 'Additional references remain usable');
-    } else assert.equal(extra, null);
+    for (const route of routesFor(spec)) for (const note of route.notes||[]) if(note.length>50) assert.ok(!section.textContent.includes(note),'Walkthrough notes stay in canonical metadata');
+    assert.doesNotMatch(section.textContent,/Route [12]|Shared location|More sources|Prerequisites/);
+    if(index===7){assert.match(section.textContent,/Quest reward: Reward for Kill Kagha\./);assert.match(section.textContent,/Quest reward: Reward for Investigate Kagha\./);}
   }
-  assert.equal(required(h.rows()[0], '.acquisition-enrichment').textContent, required(h.cards()[0], '.acquisition-enrichment').textContent);
+  assert.equal(required(h.rows()[0],'.acquisition-enrichment').textContent,required(h.cards()[0],'.acquisition-enrichment').textContent);
 });
 
 test('1C preserves 556 raw rows, all 555 normalized identities/progress keys and exact classifier memberships', () => {
@@ -658,7 +661,7 @@ test('1C retains separate Graceful Cloth Acts and original Battlemage source row
   const rawPair=catalogue.filter(row=>key(row)==="act 2|gloves of battlemage's power"),retained=byKey("act 2|gloves of battlemage's power");
   assert.equal(rawPair.length,2);assert.equal(retained.length,1);const original=rawPair.find(row=>row.links.Name.includes("Battlemage's"));
   assert.equal(original.sourceRow,54);assert.equal(retained[0].source,original.links.Name);assert.equal(retained[0].description,original.description);assert.deepEqual(copy(retained[0].gameIds),original.gameIds);
-  assert.equal(resolver.resolve(retained[0]),null);
+  assert.equal(metadata.createResolver(coordinateSnapshot).resolve(retained[0]),null,'Historical coordinate checkpoint has no Battlemage entry; current coverage is tested independently');
 });
 
 

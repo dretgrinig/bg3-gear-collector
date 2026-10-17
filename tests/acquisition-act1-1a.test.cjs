@@ -1,5 +1,6 @@
 /* Checkpoint 1A: independent approval facts, real catalogue identities and runtime boundaries. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
@@ -14,6 +15,23 @@ const root = join(__dirname, '..');
 const baselineCommit = '0a986fcd38f798191ed1672e58ac6e5bb3c9eaad';
 const copy = value => JSON.parse(JSON.stringify(value));
 const key = item => (item.act + '|' + item.name).toLowerCase();
+// Historical checkpoint comparisons retain every rich fact; only the separately
+// tested coordinate backfill, review state and added navigation provenance differ.
+function priorFacts(entries, previous) {
+  const originals = new Map(previous.map(entry => [entry.id, entry]));
+  return entries.map(entry => {
+    const output = copy(withoutAct2Continuations(entry)), original = originals.get(entry.id);
+    for (const route of output.routes) {
+      const old = original.routes.find(value => value.id === route.id);
+      delete route.coordinateReview; delete route.navigationPoints;
+      if (old.coordinates === null) route.coordinates = null;
+      else if (['840f2cfc-76e4-4c99-969e-b75ea7b893d3','32fb0efc-2544-4476-b1e8-6d6450879a22','a91d0d81-612b-4a43-a70f-490b4a421399','f198ec10-6aa3-4155-a9c2-1134d95fa4ec'].includes(route.id)) route.coordinates.subject = old.coordinates.subject;
+      route.sources = route.sources.slice(0, old.sources.length);
+    }
+    return output;
+  });
+}
+
 const dataset = () => JSON.parse(readFileSync(join(root, 'data', 'acquisition.v1.json'), 'utf8'));
 const catalogue = JSON.parse(readFileSync(join(__dirname, 'fixtures', 'vendor-catalogue.json'), 'utf8'));
 const baselineFile = path => execFileSync('git', ['show', baselineCommit + ':' + path], { cwd: root, encoding: 'utf8' });
@@ -169,14 +187,14 @@ const approved = [
 const facts = [
   { type: 'purchase', actor: /^Grat(?: the Trader)?$/, location: 'Goblin Camp', sublocation: /courtyard.*shop/i, coordinates: { x: -99, y: 424, space: 'Goblin Camp', subject: 'actor' } },
   { type: 'purchase', actor: /^Grat(?: the Trader)?$/, location: 'Goblin Camp', sublocation: /courtyard.*shop/i, coordinates: { x: -99, y: 424, space: 'Goblin Camp', subject: 'actor' } },
-  { type: 'purchase', actor: /^Lady Esther$/, location: 'Rosymorn Monastery Trail', sublocation: /camp.*north.?east.*Trielta Crags/i, coordinates: null },
+  { type: 'purchase', actor: /^Lady Esther$/, location: 'Rosymorn Monastery Trail', sublocation: /camp.*north.?east.*Trielta Crags/i, coordinates: {"x": -43, "y": -129, "space": "Rosymorn Monastery Trail", "subject": "location"} },
   { type: 'container', actor: null, location: 'Blighted Village', sublocation: /Moss-Covered Chest.*(?:waypoint|wagon)/i, coordinates: { x: 29, y: 405, space: 'Blighted Village', subject: 'container' } },
   { type: 'container', actor: null, location: 'Selûnite Outpost', sublocation: /hidden.*opulent chest/i, coordinates: { x: 176, y: -247, space: 'Selûnite Outpost', subject: 'container' } },
-  { type: 'container', actor: null, location: "Apothecary's Cellar", sublocation: /Necromancer.*Lab.*small.?library.*chest/i, coordinates: null },
+  { type: 'container', actor: null, location: "Apothecary's Cellar", sublocation: /Necromancer.*Lab.*small.?library.*chest/i, coordinates: {"x": -656, "y": -370, "space": "Apothecary's Cellar", "subject": "container"} },
   { type: 'world', actor: null, location: 'Emerald Grove', sublocation: /flat rock.*Ormn/i, coordinates: { x: 262, y: 481, space: 'Emerald Grove', subject: 'item' } },
-  { type: 'actor_loot', actor: /^Za'krug$/i, location: /^Emerald Grove(?: entrance)?$/, sublocation: /(?:initial.*gate|gate.*(?:encounter|entrance))/i, coordinates: null },
-  { type: 'actor_loot', actor: /^Dror Ragzlin$/, location: 'Shattered Sanctum', sublocation: /throne room/i, coordinates: null },
-  { type: 'actor_loot', actor: /(?:executed|dead).*deep gnome|deep gnome.*(?:corpse|dead)/i, location: 'Underdark', sublocation: /Decrepit Village.*entrance/i, coordinates: { x: 73, y: -187, space: 'Underdark', subject: 'actor' } }
+  { type: 'actor_loot', actor: /^Za'krug$/i, location: /^Emerald Grove(?: entrance)?$/, sublocation: /(?:initial.*gate|gate.*(?:encounter|entrance))/i, coordinates: {"x": 208, "y": 427, "space": "Emerald Grove", "subject": "encounter"} },
+  { type: 'actor_loot', actor: /^Dror Ragzlin$/, location: 'Shattered Sanctum', sublocation: /throne room/i, coordinates: {"x": 297, "y": 40, "space": "Shattered Sanctum", "subject": "encounter"} },
+  { type: 'actor_loot', actor: /(?:executed|dead).*deep gnome|deep gnome.*(?:corpse|dead)/i, location: 'Underdark', sublocation: /Decrepit Village.*entrance/i, coordinates: { x: 73, y: -187, space: 'Underdark', subject: 'corpse' } }
 ];
 
 // Reuse only the existing native DOM boundary and application harness, without
@@ -292,7 +310,7 @@ for (const [index, spec] of approved.entries()) {
     const browser = browserBundle(), item = itemFor(spec), canonical = createAcquisitionUI(metadata, dataset());
     const result = browser.ui.render(item, 'full');
     assert.ok(result.acquisitionHtml.length > 0, 'Generated bundle must include this newly approved identity');
-    assert.ok(result.referencesHtml.length > 0);
+    assert.equal(result.referencesHtml, '', 'Evidence remains in metadata, outside normal Full UI');
     assert.deepEqual(copy(result), canonical.render(item, 'full'), 'Generated runtime facts match canonical rendering exactly');
     const offline = browserBundle(browser.ui.offlineSource());
     assert.deepEqual(copy(offline.ui.render(item, 'full')), copy(result));
@@ -300,13 +318,13 @@ for (const [index, spec] of approved.entries()) {
   });
 }
 
-test('1A retains the approved checkpoint snapshot: schema 1, version 1.1.0-act1.1a and 20/21/24 counts', () => {
+test('1A retains approved schema-1 facts and 20/21/24 identities under coordinate schema 2', () => {
   const data = dataset(), result = metadata.validateDataset(data);
-  assert.equal(result.ok, true, JSON.stringify(result.issues)); assert.equal(data.schemaVersion, 1);
+  assert.equal(result.ok, true, JSON.stringify(result.issues)); assert.equal(data.schemaVersion, 2);
   assert.equal(approved1ASnapshot.datasetVersion, '1.1.0-act1.1a');
   const retainedIds = new Set(approved1ASnapshot.entries.map(entry => entry.id));
-  const retained = data.entries.filter(entry => retainedIds.has(entry.id));
-  assert.deepEqual(retained, approved1ASnapshot.entries, 'Later checkpoints cannot modify any approved 1A or pilot fact');
+  const retained = data.entries.filter(entry => retainedIds.has(entry.id)).map(withoutAct2Continuations);
+  assert.deepEqual(priorFacts(retained, approved1ASnapshot.entries), approved1ASnapshot.entries, 'Later checkpoints cannot modify any approved 1A or pilot fact');
   assert.equal(retained.length, 20);
   assert.equal(retained.flatMap(entry => entry.bindings).length, 21);
   assert.equal(retained.flatMap(entry => entry.routes).length, 24);
@@ -320,11 +338,11 @@ test('1A retains the approved checkpoint snapshot: schema 1, version 1.1.0-act1.
 test('1A preserves all ten original pilot objects against fixed approved commit, including IDs and fallback', () => {
   assert.equal(baselinePilot.entries.length, 10);
   const originalIds = new Set(baselinePilot.entries.map(entry => entry.id));
-  assert.deepEqual(dataset().entries.filter(entry => originalIds.has(entry.id)), baselinePilot.entries);
+  assert.deepEqual(priorFacts(dataset().entries.filter(entry => originalIds.has(entry.id)), baselinePilot.entries), baselinePilot.entries);
 });
 
-test('1A keeps runtime schema, resolver, renderer and application source unchanged', () => {
-  for (const path of ['acquisition-metadata.js', 'acquisition-ui.js', 'index.html', 'scripts/build-acquisition-bundle.cjs'])
+test('1A keeps the validating bundle builder unchanged', () => {
+  for (const path of ['scripts/build-acquisition-bundle.cjs'])
     assert.equal(readFileSync(join(root, path), 'utf8'), baselineFile(path), 'Data-only scope: ' + path);
 });
 
@@ -336,8 +354,8 @@ test('1A Grat purchases share documented open-shop prerequisite and poisoning/hi
   assert.ok(requirements(first).every(value => value.kind !== 'quest'));
 });
 
-test('1A Periapt preserves unknown actor coordinates and needs no egg-mission requirement', () => {
-  const route = routeFor(approved[2]); assert.equal(route.coordinates, null); assert.equal(route.conditions, null);
+test('1A Periapt uses a reviewed camp navigation reference and needs no egg-mission requirement', () => {
+  const route = routeFor(approved[2]); assert.equal(route.coordinateReview.state, 'reference'); assert.ok(route.coordinates); assert.equal(route.conditions, null);
   assert.match(notes(route), /egg.*(?:not required|unnecessary)|(?:not required|unnecessary).*egg/i);
 });
 
@@ -357,9 +375,9 @@ test('1A Luminous access notes retain Perception DC 15 OR jumping through breach
   assert.ok(!mandatory.some(value => /jump/i.test(value.subject)), 'An optional jumping path cannot become required');
 });
 
-test('1A Bracers retain unknown point and hidden-lab access without mandatory mirror/highlight checks', () => {
+test('1A Bracers retain the reviewed chest reference and hidden-lab access without mandatory mirror/highlight checks', () => {
   const route = routeFor(approved[5]), mandatory = requirements(route), text = notes(route);
-  assert.equal(route.coordinates, null);
+  assert.equal(route.coordinateReview.state, 'reference'); assert.ok(route.coordinates);
   assert.ok(mandatory.some(value => value.kind === 'interaction' && /reach.*hidden.*lab/i.test(value.subject + ' ' + (value.value || ''))));
   assert.ok(!mandatory.some(value => value.kind === 'check'));
   assert.match(text, /mirror/i); assert.match(text, /persuad|convinc/i); assert.match(text, /destroy|destruct/i); assert.match(text, /\bor\b|alternatively/i);
@@ -376,7 +394,7 @@ test('1A carried gloves/warhammer retain actor_loot only without theft, Brand or
   for (const spec of [approved[7], approved[8]]) {
     const entry = entryFor(spec), route = routeFor(spec);
     assert.deepEqual(entry.routes.map(value => value.type), ['actor_loot']);
-    assert.equal(route.coordinates, null); assert.equal(route.conditions, null);
+    assert.equal(route.coordinateReview.state, 'reference'); assert.ok(route.coordinates); assert.equal(route.conditions, null);
     assert.doesNotMatch(notes(route), /(?:must|required|need to|have to)\s+(?:kill|slay|murder)/i);
   }
 });
@@ -408,7 +426,7 @@ for (const path of ['fresh', 'cached']) test('1A actual ' + path + ' catalogue p
     assert.equal(required(saved.surface, 'input'), saved.control); assert.equal(required(saved.surface, 'details'), saved.details);
     assert.equal(saved.surface.querySelectorAll('.acquisition-enrichment').length, 1);
     assert.equal(saved.surface.querySelectorAll('.acquisition-route').length, 1);
-    assert.equal(saved.surface.querySelectorAll('.acquisition-references').length, 1);
+    assert.equal(saved.surface.querySelectorAll('.acquisition-references').length, 0);
   }
   assert.equal(surfaces(h).length, 20);
   assert.equal(h.app.progress(), progress); assert.deepEqual(copy(progress), before); assert.deepEqual(copy(h.app.items()), items);
@@ -468,7 +486,7 @@ test('1A preserves distinct Graceful Cloth Acts and the single retained original
   const original = rawPair.find(row => row.links.Name.includes("Battlemage's"));
   assert.equal(original.sourceRow, 54, 'Retain the original fixture row, not its percent-encoded duplicate');
   assert.equal(retained[0].source, original.links.Name); assert.equal(retained[0].description, original.description);
-  assert.deepEqual(copy(retained[0].gameIds), original.gameIds); assert.equal(resolver.resolve(retained[0]), null);
+  assert.deepEqual(copy(retained[0].gameIds), original.gameIds); assert.equal(metadata.createResolver(approved1ASnapshot).resolve(retained[0]), null, 'Historical 1A metadata did not yet include Battlemage; current Act 2 coverage is tested independently');
 });
 
 test('1A real bindings leave mocked v5/v6 import/export and non-selected Story records unchanged', async () => {

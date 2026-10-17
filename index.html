@@ -63,8 +63,7 @@ body.dev-preview{--app-background-shade-start:rgba(7,23,47,.90);--app-background
 .spoiler-filter-note{font-size:12px;color:var(--muted);margin:8px 0}
 .spoiler-settings select:disabled{opacity:.7}
 /* Reviewed acquisition facts stay inside the existing Full disclosure. */
-.acquisition-enrichment,.acquisition-references{min-width:0}.acquisition-enrichment h4,.acquisition-references h4{margin:0 0 6px;font-size:12px;color:var(--text);font-weight:650}.acquisition-route{min-width:0;border-left:2px solid var(--line);padding:7px 0 7px 9px}.acquisition-route+.acquisition-route{margin-top:5px}.acquisition-route-heading{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 8px;font-weight:600;color:#e0e5ea;overflow-wrap:anywhere}.acquisition-historical{font-size:10px;font-weight:500;border:1px solid #6e6250;border-radius:4px;padding:1px 5px;background:#27241f;color:#dac8a4}.acquisition-line{display:flex;flex-direction:column;gap:1px;margin-top:5px;font-size:11.5px;line-height:1.45;overflow-wrap:anywhere;min-width:0}.acquisition-label{color:var(--muted);font-size:10px}.acquisition-references ul{margin:0;padding-left:16px}.acquisition-references li{line-height:1.4;overflow-wrap:anywhere}.acquisition-reference{display:inline-block;min-height:36px;padding:8px 0;white-space:normal;overflow-wrap:anywhere;font-size:11px}.acquisition-reference:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:3px}
-.acquisition-shared-location{margin-bottom:8px;padding:7px 9px;border:1px solid var(--line);border-radius:6px}.acquisition-shared-label{margin:0;color:var(--muted);font-size:10px}.acquisition-route-number{color:var(--muted);font-size:10px;font-weight:500}.acquisition-more-sources{margin-top:4px}.acquisition-more-sources>summary{min-height:44px;padding:8px 0;font-size:11px;color:#c4cbd2}
+.item-effects,.acquisition-enrichment{min-width:0}.item-effects h4,.acquisition-enrichment h4{margin:0 0 6px;font-size:12px;color:var(--text);font-weight:650}.item-effects .detailrow+.detailrow{margin-top:5px}.acquisition-point{min-width:0;border-left:2px solid var(--line);padding:6px 0 6px 9px}.acquisition-point+.acquisition-point{margin-top:7px}.acquisition-geography{font-size:12px;line-height:1.5;color:var(--text);overflow-wrap:anywhere}.acquisition-coordinate{font-weight:650;white-space:nowrap}.acquisition-route{min-width:0;margin-top:4px}.acquisition-route-heading{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;font-size:11.5px;line-height:1.45;color:#e0e5ea;overflow-wrap:anywhere}.acquisition-historical{font-size:10px;font-weight:500;border:1px solid #6e6250;border-radius:4px;padding:1px 5px;background:#27241f;color:#dac8a4}.acquisition-condition,.acquisition-coordinate-note,.acquisition-exception{font-size:11px;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}.acquisition-navigation{margin-top:5px}.acquisition-navigation-point+.acquisition-navigation-point{margin-top:4px}
 </style></head>
 <body>
 <header class="top-strip"><div class="wrap brand-strip">
@@ -1684,7 +1683,7 @@ function acquisitionDetailsFor(item,mode){
   const bundle=typeof window!=="undefined"?window.BG3AcquisitionUI:null,renderer=bundle&&bundle.render;
   if(typeof renderer!=="function")return empty;
   const result=renderer.call(bundle,item,mode);
-  return result&&typeof result.acquisitionHtml==="string"&&typeof result.referencesHtml==="string"?result:empty;
+  return result&&typeof result.acquisitionHtml==="string"&&typeof result.referencesHtml==="string"?{acquisitionHtml:result.acquisitionHtml,referencesHtml:""}:empty;
  }catch{return empty}
 }
 
@@ -1699,16 +1698,15 @@ function hydrateAcquisitionDetails(){
   const enriched=rendered.get(item);if(!enriched.acquisitionHtml)continue;
   const grid=surface.querySelector(".detailgrid");
   if(!grid){
-   const content=`<summary>More info</summary><div class=detailgrid>${enriched.acquisitionHtml}${enriched.referencesHtml}</div>`;
+   const content=`<summary>More info</summary><div class=detailgrid>${enriched.acquisitionHtml}</div>`;
    if(surface.tagName==="TR")surface.querySelector(".item-actions").insertAdjacentHTML("beforeend",`<details class=item-details>${content}</details>`);
    else surface.insertAdjacentHTML("beforeend",`<div class=cardfooter><details class=carddetails>${content}</details></div>`);
    continue;
   }
-  if(!grid.querySelector(".acquisition-enrichment"))grid.insertAdjacentHTML("afterbegin",enriched.acquisitionHtml);
-  if(enriched.referencesHtml&&!grid.querySelector(".acquisition-references")){
+  if(!grid.querySelector(".acquisition-enrichment")){
    const originalReference=[...grid.children].find(child=>child.classList.contains("detailrow")&&child.querySelector(".item-reference"));
-   if(originalReference)originalReference.insertAdjacentHTML("beforebegin",enriched.referencesHtml);
-   else grid.insertAdjacentHTML("beforeend",enriched.referencesHtml);
+   if(originalReference)originalReference.insertAdjacentHTML("beforebegin",enriched.acquisitionHtml);
+   else grid.insertAdjacentHTML("beforeend",enriched.acquisitionHtml);
   }
  }
 }
@@ -1732,8 +1730,9 @@ function render(presentationOnly=false){
   const reference=x.source?`<a class="wiki item-reference" href="${esc(x.source)}" target=_blank rel=noopener>External reference · may contain spoilers ↗</a>`:"";
   const hasProperties=!!String(x.properties||"").trim(),hasEffects=!!String(x.description||"").trim();
   const mechanics=`${hasProperties?`<div class=detailrow><span class=label>Properties</span>${esc(x.properties)}</div>`:""}${hasEffects?`<div class=detailrow><span class=label>Effect</span>${esc(x.description)}</div>`:""}`;
+  const fullMechanics=hasProperties||hasEffects?`<section class=item-effects><h4>Effect</h4>${hasProperties?`<div class=detailrow><span class=label>Properties</span>${esc(x.properties)}</div>`:""}${hasEffects?`<div class=detailrow>${esc(x.description)}</div>`:""}</section>`:"";
   const enriched=full?acquisitionDetailsFor(x,mode):{acquisitionHtml:"",referencesHtml:""};
-  const fullDetails=`<div class=detailgrid>${enriched.acquisitionHtml}${mechanics}${enriched.referencesHtml}${fullReference?`<div class=detailrow>${fullReference}</div>`:""}</div>`;
+  const fullDetails=`<div class=detailgrid>${fullMechanics}${enriched.acquisitionHtml}${fullReference?`<div class=detailrow>${fullReference}</div>`:""}</div>`;
   const broad=mode==="light"?broadAreaFor(x):"";
   const place=full?fullPlace:broad?`<div class=item-place-heading><span class=item-area>${esc(broad)}</span></div>`:'<span class=muted>Location in details</span>';
   const details=full?fullDetails:`<div class=detailgrid>${x.area?`<div class=detailrow><span class=label>Original Area</span><div>${esc(x.area)}</div></div>`:""}<div class=detailrow><span class=label>Location / acquisition</span><div class=item-detail-location>${esc(loc)}</div></div>${flags?`<div class=detailrow><span class=label>Acquisition context</span><div>${flags}</div></div>`:""}${mechanics}${reference?`<div class=detailrow>${reference}</div>`:'<div class="detailrow muted">No source specified</div>'}</div>`;
