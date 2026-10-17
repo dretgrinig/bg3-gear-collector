@@ -560,7 +560,7 @@ async function checkAcquisitionExpansion(browser, width, batch) {
   const approved = JSON.parse(fs.readFileSync(path.join(root, `tests/fixtures/acquisition-act1-batch${batch.toLowerCase()}.json`), 'utf8')).items;
   const catalogue = JSON.parse(catalogueFixture);
   const testCase = await createCase(browser, width, 'full'), { page } = testCase;
-  const representatives = new Set(batch === '4B' ? ['Boots of Speed','Club of Hill Giant Strength','Dark Justiciar Mail','Dark Justiciar Mask','Sword of Justice','Boots of Stormy Clamour','Warped Headband of Intellect'] : ['Adamantine Scimitar','Daredevil Gloves','Gloves of Belligerent Skies','Speedy Reply','Uncovered Mysteries','Worgfang','Jagged Spear','Blooded Greataxe']);
+  const representatives = new Set(batch === '4C' ? ['The Blood of Lathander','Sickle of BOOOAL',"Shapeshifter's Boon Ring",'The Whispering Promise','Key of the Ancients',"Mystra's Grace",'Ring of Restorative Gravity','Robust Chain Shirt',"The Oakfather's Embrace",'Staff of Arcane Blessing'] : batch === '4B' ? ['Boots of Speed','Club of Hill Giant Strength','Dark Justiciar Mail','Dark Justiciar Mask','Sword of Justice','Boots of Stormy Clamour','Warped Headband of Intellect'] : ['Adamantine Scimitar','Daredevil Gloves','Gloves of Belligerent Skies','Speedy Reply','Uncovered Mysteries','Worgfang','Jagged Spear','Blooded Greataxe']);
   try {
     testCase.releaseAsset();
     await page.waitForFunction(() => !!window.BG3AcquisitionUI);
@@ -593,14 +593,14 @@ async function checkAcquisitionExpansion(browser, width, batch) {
       const label = `${width}px Batch ${batch} ${expected.name}`;
       check(facts.ordered && facts.mechanics, label + ': Effect/order changed');
       check(facts.sections === 1 && facts.routes === expected.routeCount, label + ': missing/duplicate routes');
-      const coordinateCount = (expected.pointGroups ?? expected.routeCount) - expected.routes.filter(r => !r.point).length + expected.routes.reduce((n,r) => n + (r.navigationPoints || []).length, 0);
+      const coordinateCount = (expected.coordinateGroups ?? ((expected.pointGroups ?? expected.routeCount) - expected.routes.filter(r => !r.point).length)) + expected.routes.reduce((n,r) => n + (r.navigationPoints || []).length, 0);
       check(facts.coordinates.length === coordinateCount, label + ': coordinate display count mismatch');
       for (const route of expected.routes) {
         if (route.point) check(facts.coordinates.includes(`X: ${route.point[0]} Y: ${route.point[1]}`), label + ': independent coordinate mismatch');
-        else check(facts.text.includes(route.reason), label + ': explicit coordinate exception missing');
+        else check(facts.text.includes(route.state === 'conflict' ? 'Coordinates conflict — see Wiki.' : route.reason), label + ': explicit coordinate disposition missing');
         for (const point of route.navigationPoints || []) check(facts.coordinates.includes(`X: ${point.coordinates.x} Y: ${point.coordinates.y}`), label + ': navigation point missing');
         check(facts.text.includes(route.sublocation), label + ': sublocation missing');
-        if (route.actor) check(facts.text.includes(route.actor[0]), label + ': actor missing');
+        if (route.actor && route.type !== 'quest_reward') check(facts.text.includes(route.actor[0]), label + ': actor missing');
       }
       check(facts.links === 1 && facts.link === expected.wikiURL, label + ': original Wiki link changed');
       check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.text), label + ': acquisition clutter');
@@ -645,6 +645,7 @@ async function main() {
     for (const width of [390, 1280]) await checkAct1Batch3(browser, width);
     for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4A');
     for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4B');
+    for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4C');
     await checkOptionalFailure(browser, null, 'missing optional asset');
     await checkOptionalFailure(browser,
       'window.BG3AcquisitionUI={render(){throw new Error("broken optional API")}};',

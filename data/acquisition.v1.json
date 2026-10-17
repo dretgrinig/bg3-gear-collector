@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "datasetVersion": "2.5.0-act1.batch4b",
+  "datasetVersion": "2.6.0-act1.batch4c",
   "entries": [
     {
       "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
@@ -14572,6 +14572,5558 @@
           "coordinateReview": {
             "state": "reference",
             "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "4d2440c2-99c6-500a-8387-5a37147baabe",
+      "bindings": [
+        {
+          "id": "c0365c68-f46f-534d-a6df-bade30ff49e5",
+          "act": "ACT 1",
+          "progressKey": "act 1|abyss beckoners",
+          "gameIds": [
+            "MAG_Zhentarim_Demonspirit_Gloves"
+          ],
+          "wikiPage": "Abyss Beckoners"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "6eccc55d-3903-54c2-bce3-efa0f5fea563",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Zhentarim Basement",
+            "wikiPage": "Zhentarim Basement"
+          },
+          "sublocation": "Chest in the gated office",
+          "coordinates": {
+            "x": 306,
+            "y": -170,
+            "space": "Zhentarim Basement",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Item: locked chest/cell at 306,-170. Basement page: unlocked/untrapped chest in office behind gate 304,-177. Keep access lock distinct from chest lock; use neutral chest wording.",
+            "Neutral chest wording intentionally preserves the locked-chest versus unlocked-office-chest discrepancy. No chest lock is asserted."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Abyss_Beckoners&oldid=438380",
+              "revisionId": 438380,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zhentarim_Basement&oldid=425112",
+              "revisionId": 425112,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item page chest reference 306,-170; basement page office/gate reference 304,-177. Sources disagree on the chest lock; the access gate and chest are distinct."
+          }
+        }
+      ]
+    },
+    {
+      "id": "86b22d7f-38de-542e-838c-5911d938d1ee",
+      "bindings": [
+        {
+          "id": "62bb2f6f-09c3-5171-9b4e-f98c6b52a13d",
+          "act": "ACT 1",
+          "progressKey": "act 1|amulet of misty step",
+          "gameIds": [
+            "UNI_GOB_DrowCommander_Amulet",
+            "GOB_DrowCommander_Amulet"
+          ],
+          "wikiPage": "Amulet of Misty Step"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "49deab6e-e4bd-559c-8cad-cfa21a9dea73",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Defiled Temple",
+            "wikiPage": "Defiled Temple"
+          },
+          "sublocation": "Gilded chest behind Polma · beside Gut’s bed",
+          "coordinates": {
+            "x": 386,
+            "y": 8,
+            "space": "Defiled Temple",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Only the first accessed instance appears; the other location is suppressed."
+              }
+            ]
+          },
+          "notes": [
+            "Only first of temple/Omeluum instances appears. Item Omeluum 112,-88; published 144,29 elsewhere; use explicitly labelled Blurg summon reference 111,-89."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Amulet_of_Misty_Step&oldid=415916",
+              "revisionId": 415916,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        },
+        {
+          "id": "57552f7d-bbbf-5c30-b4e5-3cc20238f32c",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "choice",
+                "subject": "Only if the temple instance has not appeared first."
+              }
+            ]
+          },
+          "notes": [
+            "Only first of temple/Omeluum instances appears. Item Omeluum 112,-88; published 144,29 elsewhere; use explicitly labelled Blurg summon reference 111,-89."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Amulet_of_Misty_Step&oldid=415916",
+              "revisionId": 415916,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Blurg summon/interaction reference 111,-89; item point 112,-88 and other Omeluum item points 144,29 are retained as evidence, not permanent actor positions."
+          }
+        }
+      ]
+    },
+    {
+      "id": "0d698b99-bd3d-5a33-b30b-64c9d57b58c2",
+      "bindings": [
+        {
+          "id": "89f6aaf7-5455-5251-a662-05c20c971677",
+          "act": "ACT 1",
+          "progressKey": "act 1|amulet of restoration",
+          "gameIds": [
+            "MAG_Healer_HPRestoration_Amulet"
+          ],
+          "wikiPage": "Amulet of Restoration"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "cce09a06-057b-5ae0-994e-8a4f9575964f",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Derryth Bonecloak",
+            "wikiPage": "Derryth Bonecloak"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Derryth’s shop · navigation reference",
+          "coordinates": {
+            "x": 55,
+            "y": -93,
+            "space": "Ebonlake Grotto",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Derryth item -55,-93 versus Gloves of Hail of Thorns +55,-93; retain both, no sign repair by guess."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Amulet_of_Restoration&oldid=415917",
+              "revisionId": 415917,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Hail_of_Thorns&oldid=418971",
+              "revisionId": 418971,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Displayed shop reference 55,-93 is supported by Hail of Thorns; this item page publishes -55,-93. Both signs retained without silent correction."
+          }
+        },
+        {
+          "id": "e4cb27d3-fc73-5bee-8f3e-90f9331e01a8",
+          "type": "container",
+          "acts": [
+            3
+          ],
+          "actor": null,
+          "location": {
+            "name": "The Counting House",
+            "wikiPage": "The Counting House"
+          },
+          "sublocation": "Private Stash · eastern room below the first stairs",
+          "coordinates": {
+            "x": -85,
+            "y": -185,
+            "space": "The Counting House",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Derryth item -55,-93 versus Gloves of Hail of Thorns +55,-93; retain both, no sign repair by guess."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Amulet_of_Restoration&oldid=415917",
+              "revisionId": 415917,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "37cb09a8-05d2-5561-8ab1-f6e7ad24c788",
+      "bindings": [
+        {
+          "id": "b3484241-b36d-5c8b-955e-5d42cb2c0f8e",
+          "act": "ACT 1",
+          "progressKey": "act 1|bow of the banshee",
+          "gameIds": [
+            "MAG_BG_OfTheBanshee_Bow"
+          ],
+          "wikiPage": "Bow of the Banshee"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ad38d202-71ef-58e2-ae52-2157278b6fea",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Corsair Greymon",
+            "wikiPage": "Greymon"
+          },
+          "location": {
+            "name": "Ebonlake",
+            "wikiPage": "Ebonlake"
+          },
+          "sublocation": "Greymon · first raft crossing",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Obtain Greymon’s carried inventory during the first voyage."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bow_of_the_Banshee&oldid=437921",
+              "revisionId": 437921,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Greymon&oldid=433957",
+              "revisionId": 433957,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Moving raft encounter; no fixed acquisition X/Y applies."
+          }
+        },
+        {
+          "id": "8ed04785-d723-51c5-b043-36e55bbefc8e",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Corsair Greymon",
+            "wikiPage": "Greymon"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Greymon’s trader spot · after surviving the voyage",
+          "coordinates": {
+            "x": -120,
+            "y": -95,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Greymon survives the first voyage and remains available to trade."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bow_of_the_Banshee&oldid=437921",
+              "revisionId": 437921,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Greymon&oldid=433957",
+              "revisionId": 433957,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Greymon shop reference -120,-95; not a guaranteed death position."
+          }
+        },
+        {
+          "id": "0a5451af-0fc5-520d-9526-83c5974d401d",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Corsair Greymon",
+            "wikiPage": "Greymon"
+          },
+          "location": {
+            "name": "Decrepit Village",
+            "wikiPage": "Decrepit Village"
+          },
+          "sublocation": "Greymon’s washed-up body · southern pier beach",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Greymon drowns after turning hostile in combat, not through the initial Athletics dialogue shove."
+              }
+            ]
+          },
+          "notes": [
+            "The initial dialogue shove permanently loses his loot; combat drowning is a distinct outcome."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bow_of_the_Banshee&oldid=437921",
+              "revisionId": 437921,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Greymon&oldid=433957",
+              "revisionId": 433957,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Conditional washed-up body; no reviewed fixed corpse X/Y is documented."
+          }
+        }
+      ]
+    },
+    {
+      "id": "8d16b45d-31ca-54a7-a3f1-ff891111c8df",
+      "bindings": [
+        {
+          "id": "e9f8876f-9093-507f-a3ed-f988271cad2b",
+          "act": "ACT 1",
+          "progressKey": "act 1|broodmother's revenge",
+          "gameIds": [
+            "MAG_Healer_HealSelfPoisonWeapon_Amulet"
+          ],
+          "wikiPage": "Broodmother's Revenge"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "7257db3c-b113-51b7-a5e4-e83baac63d21",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Kagha",
+            "wikiPage": "Kagha"
+          },
+          "location": {
+            "name": "Inner Sanctum",
+            "wikiPage": "Inner Sanctum"
+          },
+          "sublocation": "Kagha · carried amulet",
+          "coordinates": {
+            "x": -461,
+            "y": -22,
+            "space": "Inner Sanctum",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Separate Act 1 Kagha and Act 3 High Hall table; same identity, not independent progress records.",
+            "Non-lethal retrieval is possible; killing Kagha is not universally required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Broodmother's_Revenge&oldid=431623",
+              "revisionId": 431623,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Kagha&oldid=429080",
+              "revisionId": 429080,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "8996d4ca-d23c-593e-aa49-1caca58f07f1",
+          "type": "world",
+          "acts": [
+            3
+          ],
+          "actor": null,
+          "location": {
+            "name": "High Hall",
+            "wikiPage": "High Hall"
+          },
+          "sublocation": "Koll’s table of goods",
+          "coordinates": {
+            "x": 235,
+            "y": 44,
+            "space": "High Hall",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "Separate Act 1 Kagha and Act 3 High Hall table; same identity, not independent progress records."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Broodmother's_Revenge&oldid=431623",
+              "revisionId": 431623,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ecc6cd63-8a18-51bf-9447-407795fd5c52",
+      "bindings": [
+        {
+          "id": "1527618c-3cb3-58c5-8c4e-4c308903431b",
+          "act": "ACT 1",
+          "progressKey": "act 1|ceremonial longsword",
+          "gameIds": [
+            "S_CRE_Abbot2_Weapon",
+            "WPN_Longsword_1"
+          ],
+          "wikiPage": "Ceremonial Longsword"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "fc1ceb10-757d-5b5e-8bb0-6dbcf7c10fa7",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Rosymorn Monastery",
+            "wikiPage": "Rosymorn Monastery"
+          },
+          "sublocation": "Dawnmasters Memorial · north-western pedestal",
+          "coordinates": {
+            "x": 74,
+            "y": 74,
+            "space": "Rosymorn Monastery",
+            "subject": "item"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Take genuine ceremonial sword; generic longsword is not this item."
+              }
+            ]
+          },
+          "notes": [
+            "Complete quest UID + generic WPN_Longsword_1 required; no generic-only match.",
+            "The complete ceremonial-specific plus generic ID set is required; ordinary weapon substitutes do not acquire this binding."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ceremonial_Longsword&oldid=416955",
+              "revisionId": 416955,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rosymorn_Monastery&oldid=408982",
+              "revisionId": 408982,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ce12b4ed-e7ee-5d4b-bec0-09a04929f665",
+      "bindings": [
+        {
+          "id": "a6665037-dbee-5eae-b1aa-8d23c80094a8",
+          "act": "ACT 1",
+          "progressKey": "act 1|ceremonial battleaxe",
+          "gameIds": [
+            "S_CRE_Abbot4_Weapon",
+            "WPN_Battleaxe_1"
+          ],
+          "wikiPage": "Ceremonial Battleaxe"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "813d0534-0f54-5c78-b778-9fa37f1a1531",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Rosymorn Monastery",
+            "wikiPage": "Rosymorn Monastery"
+          },
+          "sublocation": "Dormitory · guarded by a Guardian of Faith",
+          "coordinates": {
+            "x": 105,
+            "y": 44,
+            "space": "Rosymorn Monastery",
+            "subject": "item"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Take axe; Guardian becomes hostile on theft; do not require killing it as sole method."
+              }
+            ]
+          },
+          "notes": [
+            "Complete quest UID + generic WPN_Battleaxe_1 required; doorway/Guardian coordinates are not axe coordinates.",
+            "The complete ceremonial-specific plus generic ID set is required; ordinary weapon substitutes do not acquire this binding."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ceremonial_Battleaxe&oldid=416954",
+              "revisionId": 416954,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rosymorn_Monastery&oldid=408982",
+              "revisionId": 408982,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ac44e5fe-2791-5809-a6bb-056595a5d9fc",
+      "bindings": [
+        {
+          "id": "6145acb6-a023-5cef-ac6c-39ab09c44d47",
+          "act": "ACT 1",
+          "progressKey": "act 1|ceremonial mace",
+          "gameIds": [
+            "S_CRE_Abbot1_Weapon",
+            "WPN_Mace_1"
+          ],
+          "wikiPage": "Ceremonial Mace"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "d838c797-20e4-522c-bb61-3c7b3fda02ab",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Kobold Looter",
+            "wikiPage": "Kobold Looter"
+          },
+          "location": {
+            "name": "Rosymorn Monastery",
+            "wikiPage": "Rosymorn Monastery"
+          },
+          "sublocation": "Firewine storage · random Kobold Looter bearer",
+          "coordinates": {
+            "x": 45,
+            "y": 37,
+            "space": "Rosymorn Monastery",
+            "subject": "encounter"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Loot the actual bearer among kobolds; ordinary/Rusty Mace is not this identity."
+              }
+            ]
+          },
+          "notes": [
+            "Looter vs Scout description differs; bearer is random. Item room 45,37 vs quest bearer 40,28. Generic/Rusty mace not equivalent.",
+            "The complete ceremonial-specific plus generic ID set is required; ordinary weapon substitutes do not acquire this binding."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ceremonial_Mace&oldid=416956",
+              "revisionId": 416956,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rosymorn_Monastery&oldid=408982",
+              "revisionId": 408982,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Room encounter reference 45,37; quest bearer reference 40,28 differs and the bearer is random. No exact corpse position is claimed."
+          }
+        }
+      ]
+    },
+    {
+      "id": "77a79608-4df4-5d13-a096-81bc70b1d0a4",
+      "bindings": [
+        {
+          "id": "13484b79-80fe-56b8-a898-f2f4daaafbab",
+          "act": "ACT 1",
+          "progressKey": "act 1|ceremonial warhammer",
+          "gameIds": [
+            "S_CRE_Abbot3_Weapon",
+            "WPN_Warhammer_1"
+          ],
+          "wikiPage": "Ceremonial Warhammer"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "53dbc6dc-48c5-5c00-8107-3cb7a2314ce9",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Rosymorn Monastery",
+            "wikiPage": "Rosymorn Monastery"
+          },
+          "sublocation": "Roof · Giant Eagle’s nest",
+          "coordinates": {
+            "x": 80,
+            "y": 44,
+            "space": "Rosymorn Monastery",
+            "subject": "item"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Take from eagle nest; combat or stealth; do not require killing eagles."
+              }
+            ]
+          },
+          "notes": [
+            "Complete quest UID + generic WPN_Warhammer_1; nest point distinct from root-climb access points.",
+            "The complete ceremonial-specific plus generic ID set is required; ordinary weapon substitutes do not acquire this binding."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ceremonial_Warhammer&oldid=416958",
+              "revisionId": 416958,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rosymorn_Monastery&oldid=408982",
+              "revisionId": 408982,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "8244b290-1e94-5c5b-9b83-164770988040",
+      "bindings": [
+        {
+          "id": "3ee21aef-8f86-5297-bae4-8b316796545d",
+          "act": "ACT 1",
+          "progressKey": "act 1|disintegrating night walkers",
+          "gameIds": [
+            "S_UND_DuergarGaleItem",
+            "UNI_NightWalkers",
+            "FOR_NightWalkers"
+          ],
+          "wikiPage": "Disintegrating Night Walkers"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "fc2a635c-aa22-5d4b-88d9-e54c82294b76",
+          "type": "drop",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Nere",
+            "wikiPage": "Nere"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Nere cave-in rescue site · encounter navigation",
+          "coordinates": {
+            "x": -643,
+            "y": 300,
+            "space": "Grymforge",
+            "subject": "encounter"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Loot Nere’s corpse for the inventory-added boots; live pickpocketing or disarming does not promise them."
+              }
+            ]
+          },
+          "notes": [
+            "Item -854,+780 conflicts with cave-in geography and Sword of Screams -854,-780. Use Thrinn/Nere rescue encounter reference -643,300; retain bad-point evidence."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Disintegrating_Night_Walkers&oldid=417785",
+              "revisionId": 417785,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Elenna_Thrinn&oldid=425977",
+              "revisionId": 425977,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Nere&oldid=438414",
+              "revisionId": 438414,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Thrinn rescue-site reference -643,300, not Nere’s standing/corpse point. Night Walkers publishes -854,+780 and Sword of Screams -854,-780; neither sign is corrected by inference."
+          }
+        }
+      ]
+    },
+    {
+      "id": "2fb1eb6b-dee0-52a8-93a2-0d9f99416780",
+      "bindings": [
+        {
+          "id": "75c25c69-3b82-52ab-a95f-bfaaa749cd2d",
+          "act": "ACT 1",
+          "progressKey": "act 1|drow studded leather armour",
+          "gameIds": [
+            "ARM_StuddedLeather_Body_Drow",
+            "ARM_StuddedLeather_Drow_Commander"
+          ],
+          "wikiPage": "Drow Studded Leather Armour"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "48240e6f-87c9-5146-ba88-28135af95828",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Lolth cultist’s heavy chest · near the Festering Cove entrance",
+          "coordinates": {
+            "x": 71,
+            "y": -220,
+            "space": "Underdark",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Item 71,-220 vs Underdark/Outpost stash 84,-207; uncertain same chest; reference, never invent two locations.",
+            "Commander template is unobtainable on the reviewed page; retain the catalogue’s complete variant ID set without inventing a route for that variant."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Drow_Studded_Leather_Armour&oldid=417975",
+              "revisionId": 417975,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Underdark&oldid=424496",
+              "revisionId": 424496,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sel%C3%BBnite_Outpost&oldid=431112",
+              "revisionId": 431112,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published chest reference 71,-220; support stash point 84,-207 may refer to the same chest. One reviewed route only; no invented second copy."
+          }
+        }
+      ]
+    },
+    {
+      "id": "1f09b9f6-e323-59fc-a4cc-04f5121dc5a2",
+      "bindings": [
+        {
+          "id": "5ec602f3-7973-5e7d-81ec-0497a433706c",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of hail of thorns",
+          "gameIds": [
+            "UNI_PLA_ZhentCave_Gloves",
+            "PLA_ZhentCave_Gloves"
+          ],
+          "wikiPage": "Gloves of Hail of Thorns"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b0054102-97c6-53f7-b832-998b68f0e8cb",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Brem",
+            "wikiPage": "Brem"
+          },
+          "location": {
+            "name": "Zhentarim Basement",
+            "wikiPage": "Zhentarim Basement"
+          },
+          "sublocation": "Brem’s unlocked special stock",
+          "coordinates": {
+            "x": 295,
+            "y": -250,
+            "space": "Zhentarim Basement",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Zarys unlocks Brem’s special stock."
+              }
+            ]
+          },
+          "notes": [
+            "Derryth route +55,-93 conflicts with negative-X values on her other item pages; Brem gating applies only to Brem."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Hail_of_Thorns&oldid=418971",
+              "revisionId": 418971,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brem&oldid=425720",
+              "revisionId": 425720,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zarys&oldid=438613",
+              "revisionId": 438613,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "dce6b0b4-9a57-544b-8bea-68056c947078",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Derryth Bonecloak",
+            "wikiPage": "Derryth Bonecloak"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Derryth’s shop",
+          "coordinates": {
+            "x": 55,
+            "y": -93,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Derryth route +55,-93 conflicts with negative-X values on her other item pages; Brem gating applies only to Brem."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Hail_of_Thorns&oldid=418971",
+              "revisionId": 418971,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Hail of Thorns shop reference 55,-93; other Derryth pages publish -55,-93. Do not apply Brem’s quest gate to Derryth."
+          }
+        }
+      ]
+    },
+    {
+      "id": "b4718924-4568-5e83-b945-5306864bf271",
+      "bindings": [
+        {
+          "id": "bb9c6869-edd7-58cd-8242-eda2a9677194",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of the growling underdog",
+          "gameIds": [
+            "MAG_ZOC_AdvantageOnMeleeAttackWhileSurounded_Gloves"
+          ],
+          "wikiPage": "Gloves of the Growling Underdog"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "da739cc5-431b-5628-903f-3cc58925e068",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Ragzlin’s treasure crates · behind the iron gate",
+          "coordinates": {
+            "x": 298,
+            "y": 66,
+            "space": "Shattered Sanctum",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Primary 298,66 vs Sanctum 297,68; optional Rosymorn -118,-134 vs mound -119,-138; conditional spawn, not guaranteed second copy."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_the_Growling_Underdog&oldid=418982",
+              "revisionId": 418982,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shattered_Sanctum&oldid=431013",
+              "revisionId": 431013,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published cache reference 298,66 versus sanctum 297,68; no averaging."
+          }
+        },
+        {
+          "id": "cf7004b1-0884-5fc5-8775-e629f0c4b3f4",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Rosymorn Monastery Trail",
+            "wikiPage": "Rosymorn Monastery Trail"
+          },
+          "sublocation": "Conditional buried crate",
+          "coordinates": {
+            "x": -118,
+            "y": -134,
+            "space": "Rosymorn Monastery Trail",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Conditional alternate spawn; not a guaranteed second copy."
+              }
+            ]
+          },
+          "notes": [
+            "Primary 298,66 vs Sanctum 297,68; optional Rosymorn -118,-134 vs mound -119,-138; conditional spawn, not guaranteed second copy."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_the_Growling_Underdog&oldid=418982",
+              "revisionId": 418982,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published alternate crate reference -118,-134 versus mound -119,-138; conditional spawn retained."
+          }
+        }
+      ]
+    },
+    {
+      "id": "10d0fa9a-ca43-545c-88a3-90d2863057ed",
+      "bindings": [
+        {
+          "id": "6d524f0b-5abc-53ff-844c-966c2d0eb1fe",
+          "act": "ACT 1",
+          "progressKey": "act 1|gold wyrmling staff",
+          "gameIds": [
+            "MAG_Fire_FireDamage_Quarterstaff"
+          ],
+          "wikiPage": "Gold Wyrmling Staff"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "c107c97f-a7d0-5f44-bb12-2184f09a80de",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Roah’s shop · beyond the sanctum entrance",
+          "coordinates": {
+            "x": 272,
+            "y": -31,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Roah remains available; the same earlier stock may be retained."
+              }
+            ]
+          },
+          "notes": [
+            "Current item lists Act 3 pedestal; Roah support explicitly retains Act 1 stock in Act 2."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gold_Wyrmling_Staff&oldid=419035",
+              "revisionId": 419035,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "ed1a6035-4634-5e44-86bd-9948a349cdcc",
+          "type": "purchase",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Moonrise Towers",
+            "wikiPage": "Moonrise Towers"
+          },
+          "sublocation": "Roah’s retained Act 1 stock",
+          "coordinates": {
+            "x": -174,
+            "y": -176,
+            "space": "Moonrise Towers",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Roah remains available; the same earlier stock may be retained."
+              }
+            ]
+          },
+          "notes": [
+            "Current item lists Act 3 pedestal; Roah support explicitly retains Act 1 stock in Act 2."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gold_Wyrmling_Staff&oldid=419035",
+              "revisionId": 419035,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "8002edbd-07f1-5c71-881f-4c4f21ff8956",
+          "type": "world",
+          "acts": [
+            3
+          ],
+          "actor": null,
+          "location": {
+            "name": "Sorcerous Sundries",
+            "wikiPage": "Sorcerous Sundries"
+          },
+          "sublocation": "Ground-floor pedestal · behind the elementals",
+          "coordinates": {
+            "x": -2,
+            "y": -66,
+            "space": "Sorcerous Sundries",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "Current item lists Act 3 pedestal; Roah support explicitly retains Act 1 stock in Act 2."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gold_Wyrmling_Staff&oldid=419035",
+              "revisionId": 419035,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "24dc2c3f-41c8-5e95-860e-02abce66d34f",
+      "bindings": [
+        {
+          "id": "26ee0c80-be6e-5006-9b0f-1c66061b0a48",
+          "act": "ACT 1",
+          "progressKey": "act 1|harold",
+          "gameIds": [
+            "MAG_BG_Harold_HeavyCrossbow"
+          ],
+          "wikiPage": "Harold"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "28fadac1-6406-5133-aa50-c2fa11f8b5ef",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Zarys",
+            "wikiPage": "Zarys"
+          },
+          "location": {
+            "name": "Zhentarim Basement",
+            "wikiPage": "Zhentarim Basement"
+          },
+          "sublocation": "Zarys · unopened shipment reward",
+          "coordinates": {
+            "x": 277,
+            "y": -247,
+            "space": "Zhentarim Basement",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Find the Missing Shipment"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Deliver the unopened shipment and obtain Zarys’s approved reward outcome."
+              }
+            ]
+          },
+          "notes": [
+            "Harold reward conditions stricter than Brem-stock unlock; cannot use one shared prerequisite.",
+            "Reward only; not a purchase or carried-loot route. Brem’s stock unlock is a different condition."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Harold&oldid=438020",
+              "revisionId": 438020,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zarys&oldid=438613",
+              "revisionId": 438613,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Missing_Shipment&oldid=418498",
+              "revisionId": 418498,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "eb09feb0-9e75-5d77-98b1-30c55f375c27",
+      "bindings": [
+        {
+          "id": "1e3c6dbe-811d-5246-bfdc-65ff93b66ddb",
+          "act": "ACT 1",
+          "progressKey": "act 1|infernal robe",
+          "gameIds": [
+            "ORI_Wyll_Infernal_Robe"
+          ],
+          "wikiPage": "Infernal Robe"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "d1719378-c43a-523b-9cd7-03fedb6ff5fa",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Mizora",
+            "wikiPage": "Mizora"
+          },
+          "location": {
+            "name": "Campsite",
+            "wikiPage": "Campsite"
+          },
+          "sublocation": "Mizora · camp reward",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Wyll is recruited."
+              },
+              {
+                "kind": "quest",
+                "subject": "Karlach is killed; Mizora rewards Wyll at camp rest."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Infernal_Robe&oldid=419756",
+              "revisionId": 419756,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mizora&oldid=438369",
+              "revisionId": 438369,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Scripted camp reward; camp layouts have no single acquisition X/Y."
+          }
+        }
+      ]
+    },
+    {
+      "id": "4898d7f8-401e-5c35-be1f-e465b4355fa8",
+      "bindings": [
+        {
+          "id": "511f7981-0ddc-58bd-ac75-79f61005502c",
+          "act": "ACT 1",
+          "progressKey": "act 1|jorgoral's greatsword",
+          "gameIds": [
+            "MAG_Colossal_Greatsword"
+          ],
+          "wikiPage": "Jorgoral's Greatsword"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "33d9f87c-9d83-5462-9e5d-ce9f64594993",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Corsair Greymon",
+            "wikiPage": "Greymon"
+          },
+          "location": {
+            "name": "Ebonlake",
+            "wikiPage": "Ebonlake"
+          },
+          "sublocation": "Greymon · first raft crossing",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Obtain Greymon’s carried inventory during the first voyage."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jorgoral's_Greatsword&oldid=419966",
+              "revisionId": 419966,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Greymon&oldid=433957",
+              "revisionId": 433957,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Moving raft encounter; no fixed acquisition X/Y applies."
+          }
+        },
+        {
+          "id": "b7b20219-bf25-5f97-a6c6-d4f34576ea30",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Corsair Greymon",
+            "wikiPage": "Greymon"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Greymon’s trader spot · after surviving the voyage",
+          "coordinates": {
+            "x": -120,
+            "y": -95,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Greymon survives the first voyage and remains available to trade."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jorgoral's_Greatsword&oldid=419966",
+              "revisionId": 419966,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Greymon&oldid=433957",
+              "revisionId": 433957,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Greymon shop reference -120,-95; not a guaranteed death position."
+          }
+        },
+        {
+          "id": "771240d1-c043-58f9-832a-08827897e728",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Corsair Greymon",
+            "wikiPage": "Greymon"
+          },
+          "location": {
+            "name": "Decrepit Village",
+            "wikiPage": "Decrepit Village"
+          },
+          "sublocation": "Greymon’s washed-up body · southern pier beach",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Greymon drowns after turning hostile in combat, not through the initial Athletics dialogue shove."
+              }
+            ]
+          },
+          "notes": [
+            "The initial dialogue shove permanently loses his loot; combat drowning is a distinct outcome."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jorgoral's_Greatsword&oldid=419966",
+              "revisionId": 419966,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Greymon&oldid=433957",
+              "revisionId": 433957,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Conditional washed-up body; no reviewed fixed corpse X/Y is documented."
+          }
+        }
+      ]
+    },
+    {
+      "id": "e1f8b398-755c-5a87-91cd-7c12a0d3e805",
+      "bindings": [
+        {
+          "id": "b5c1a7f2-92da-5d61-887f-0eebd90f6f8b",
+          "act": "ACT 1",
+          "progressKey": "act 1|key of the ancients",
+          "gameIds": [
+            "S_DEN_AppCirclet",
+            "UNI_Druid_Helmet_Circlet",
+            "DEN_DruidHelmet_Circlet"
+          ],
+          "wikiPage": "Key of the Ancients"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "1f1f2e81-b02c-57a0-be46-7de435fc1cb4",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Findal",
+            "wikiPage": "Findal"
+          },
+          "location": {
+            "name": "Underground Passage",
+            "wikiPage": "Underground Passage"
+          },
+          "sublocation": "Findal · Underground Passage bearer",
+          "coordinates": {
+            "x": -438,
+            "y": -180,
+            "space": "Underground Passage",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Story/uncommon templates merged in catalogue ID set; maintain all three IDs; Findal and Nettie routes separate.",
+            "Distinct bearer variants are represented by the one existing complete three-ID catalogue concept binding. No ordinary circlet fallback."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Key_of_the_Ancients&oldid=420095",
+              "revisionId": 420095,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Findal&oldid=428386",
+              "revisionId": 428386,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "44d7eff8-58b2-51a0-bd9e-1d899ee31d40",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Nettie",
+            "wikiPage": "Nettie"
+          },
+          "location": {
+            "name": "Druids' Chambers",
+            "wikiPage": "Druids' Chambers"
+          },
+          "sublocation": "Nettie · Druids’ Chambers bearer",
+          "coordinates": {
+            "x": -440,
+            "y": 6,
+            "space": "Druids' Chambers",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Story/uncommon templates merged in catalogue ID set; maintain all three IDs; Findal and Nettie routes separate.",
+            "Distinct bearer variants are represented by the one existing complete three-ID catalogue concept binding. No ordinary circlet fallback."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Key_of_the_Ancients&oldid=420095",
+              "revisionId": 420095,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Nettie&oldid=425344",
+              "revisionId": 425344,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "127ba107-1cec-57a1-b247-76553767d6e4",
+      "bindings": [
+        {
+          "id": "87cb9859-d439-5644-9c8b-778997ff732d",
+          "act": "ACT 1",
+          "progressKey": "act 1|loviatar's scourge",
+          "gameIds": [
+            "WPN_GOB_PainPriest_Scourge",
+            "GOB_PainPriest_Scourge"
+          ],
+          "wikiPage": "Loviatar's Scourge"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ce42ccf5-e7e4-5435-9e28-92ba12266295",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Abdirak",
+            "wikiPage": "Abdirak"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Abdirak · carried scourge",
+          "coordinates": {
+            "x": 338,
+            "y": -21,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "338,-21 vs Sanctum 338,-22; barter can reverse acquisition. Do not describe permanent purchase."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Loviatar's_Scourge&oldid=420636",
+              "revisionId": 420636,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Abdirak&oldid=430717",
+              "revisionId": 430717,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Bearer reference 338,-21; sanctum 338,-22 retained. Temporary barter can automatically return the weapon to Abdirak; no reliable permanent purchase route."
+          }
+        }
+      ]
+    },
+    {
+      "id": "40e7d439-8dcd-5aac-9940-96f6593ae431",
+      "bindings": [
+        {
+          "id": "a6f10467-edeb-59aa-a615-ad887bc1f7e2",
+          "act": "ACT 1",
+          "progressKey": "act 1|mask of the shapeshifter",
+          "gameIds": [
+            "MAG_OfTheShapeshifter_Mask"
+          ],
+          "wikiPage": "Mask of the Shapeshifter"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "483e5cca-e2ca-50d7-aad2-4940e671ff55",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Campsite",
+            "wikiPage": "Campsite"
+          },
+          "sublocation": "Traveller’s Chest · Digital Deluxe entitlement",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Digital Deluxe entitlement."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mask_of_the_Shapeshifter&oldid=420853",
+              "revisionId": 420853,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Digital_Deluxe_Upgrade&oldid=403101",
+              "revisionId": 403101,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Campsite&oldid=433524",
+              "revisionId": 433524,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Traveller’s Chest moves between camp layouts; no single fixed acquisition X/Y applies."
+          }
+        }
+      ]
+    },
+    {
+      "id": "78eb98f8-3810-531c-b49f-92b00c6b9eb4",
+      "bindings": [
+        {
+          "id": "79058a53-0103-5cac-84a0-6a8a80efb42f",
+          "act": "ACT 1",
+          "progressKey": "act 1|merregon halberd",
+          "gameIds": [
+            "WPN_Merregon_Halberd"
+          ],
+          "wikiPage": "Merregon Halberd"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "f3058f36-9703-5454-abee-a04c6c24691b",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Merregon Legionnaire",
+            "wikiPage": "Merregon Legionnaire"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Legionnaire · hallway with Hellsboars",
+          "coordinates": {
+            "x": -574,
+            "y": 377,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "World points item -643,215 / -601,199 vs Refuge -646,217 / -600,199; actor and ground routes separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Merregon_Halberd&oldid=420924",
+              "revisionId": 420924,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Abandoned_Refuge&oldid=415729",
+              "revisionId": 415729,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published bearer/ground-pickup reference; related Refuge points differ. Actor and world pickups remain separate."
+          }
+        },
+        {
+          "id": "8b21b12f-601a-51ac-a017-ec15d1c92f13",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Crumbling Island · first ground pickup",
+          "coordinates": {
+            "x": -643,
+            "y": 215,
+            "space": "Grymforge",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "World points item -643,215 / -601,199 vs Refuge -646,217 / -600,199; actor and ground routes separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Merregon_Halberd&oldid=420924",
+              "revisionId": 420924,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Abandoned_Refuge&oldid=415729",
+              "revisionId": 415729,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published bearer/ground-pickup reference; related Refuge points differ. Actor and world pickups remain separate."
+          }
+        },
+        {
+          "id": "31e8586b-61f1-530b-9e1e-aa558d4d2efa",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Crumbling Island · second ground pickup",
+          "coordinates": {
+            "x": -601,
+            "y": 199,
+            "space": "Grymforge",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "World points item -643,215 / -601,199 vs Refuge -646,217 / -600,199; actor and ground routes separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Merregon_Halberd&oldid=420924",
+              "revisionId": 420924,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Abandoned_Refuge&oldid=415729",
+              "revisionId": 415729,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published bearer/ground-pickup reference; related Refuge points differ. Actor and world pickups remain separate."
+          }
+        },
+        {
+          "id": "b236c260-14d1-5040-825a-4461c3368f4a",
+          "type": "actor_loot",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Merregon",
+            "wikiPage": "Merregon"
+          },
+          "location": {
+            "name": "Gauntlet of Shar",
+            "wikiPage": "Gauntlet of Shar"
+          },
+          "sublocation": "Yurgir’s accompanying Merregons",
+          "coordinates": {
+            "x": -658,
+            "y": 753,
+            "space": "Gauntlet of Shar",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "World points item -643,215 / -601,199 vs Refuge -646,217 / -600,199; actor and ground routes separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Merregon_Halberd&oldid=420924",
+              "revisionId": 420924,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Abandoned_Refuge&oldid=415729",
+              "revisionId": 415729,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published bearer/ground-pickup reference; related Refuge points differ. Actor and world pickups remain separate."
+          }
+        }
+      ]
+    },
+    {
+      "id": "6f676123-f6d9-556a-bfe3-13d24afaf1d7",
+      "bindings": [
+        {
+          "id": "d473ff05-7ccd-5f08-91bd-affc98da2d34",
+          "act": "ACT 1",
+          "progressKey": "act 1|mystra's grace",
+          "gameIds": [
+            "UNI_UND_Tower_BootsFeatherFall",
+            "UND_Tower_BootsFeatherFall"
+          ],
+          "wikiPage": "Mystra's Grace"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "c8ca492e-ac12-5a6e-9b82-256b14e0b6f4",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Chest of the Mundane · northern balcony at turret-entry level",
+          "coordinates": {
+            "x": -36,
+            "y": -265,
+            "space": "Arcane Tower",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Remove the disguised contents OR suppress the chest illusion with a Sussur Bloom."
+              }
+            ]
+          },
+          "notes": [
+            "Temporary mundane appearance is not a new identity; avoid old floor-number ambiguity.",
+            "Mundane appearance does not create a different item identity."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mystra's_Grace&oldid=421233",
+              "revisionId": 421233,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Chest_of_the_Mundane&oldid=417030",
+              "revisionId": 417030,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "9676d1f0-5883-555e-9d05-081f6f80db46",
+      "bindings": [
+        {
+          "id": "e50da098-bbb3-5164-9cb8-db507a33c4e4",
+          "act": "ACT 1",
+          "progressKey": "act 1|necklace of elemental augmentation",
+          "gameIds": [
+            "MAG_ElementalGish_CantripBooster_Amulet"
+          ],
+          "wikiPage": "Necklace of Elemental Augmentation"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "81ac629c-a9b6-58dd-9ba2-379f3acbc503",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Inquisitor’s Chamber · display case",
+          "coordinates": {
+            "x": 1379,
+            "y": -662,
+            "space": "Crèche Y'llek",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Same item identity in Acts 1 and 3; distinct physical chest routes."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Necklace_of_Elemental_Augmentation&oldid=421264",
+              "revisionId": 421264,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        },
+        {
+          "id": "2bc40b19-70ec-5623-8379-8b495f62b248",
+          "type": "container",
+          "acts": [
+            3
+          ],
+          "actor": null,
+          "location": {
+            "name": "Wyrm's Crossing",
+            "wikiPage": "Wyrm's Crossing"
+          },
+          "sublocation": "Shipwreck · Traveller’s Chest north-west of South Span Checkpoint",
+          "coordinates": {
+            "x": -97,
+            "y": 107,
+            "space": "Wyrm's Crossing",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Same item identity in Acts 1 and 3; distinct physical chest routes."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Necklace_of_Elemental_Augmentation&oldid=421264",
+              "revisionId": 421264,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "0ef56cf3-5746-534a-8fcd-002a57a41e8a",
+      "bindings": [
+        {
+          "id": "9c137c48-dd64-566f-9ca5-db09e457416c",
+          "act": "ACT 1",
+          "progressKey": "act 1|pale oak",
+          "gameIds": [
+            "DEN_FaithwardenStaff"
+          ],
+          "wikiPage": "Pale Oak"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "03b696e7-8405-535d-9c90-c48d53273b8a",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Kagha",
+            "wikiPage": "Kagha"
+          },
+          "location": {
+            "name": "Inner Sanctum",
+            "wikiPage": "Inner Sanctum"
+          },
+          "sublocation": "Kagha · Faithwarden reward",
+          "coordinates": {
+            "x": -461,
+            "y": -22,
+            "space": "Inner Sanctum",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "class",
+                "subject": "Druid player character."
+              },
+              {
+                "kind": "quest",
+                "subject": "Investigate Kagha before completing Rescue the Druid Halsin."
+              },
+              {
+                "kind": "choice",
+                "subject": "Kagha is swayed to the party’s side."
+              }
+            ]
+          },
+          "notes": [
+            "Kagha or Rath, not Kagha only; Druid player restriction and quest cutoff."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Pale_Oak&oldid=438405",
+              "revisionId": 438405,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Investigate_Kagha&oldid=428719",
+              "revisionId": 428719,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Kagha&oldid=429080",
+              "revisionId": 429080,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rath&oldid=414869",
+              "revisionId": 414869,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Inner Sanctum navigation reference -461,-22; not a verified permanent Rath standing point."
+          }
+        },
+        {
+          "id": "c2f9381a-8b63-5dce-ad03-f24ee37286f7",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Rath",
+            "wikiPage": "Rath"
+          },
+          "location": {
+            "name": "Inner Sanctum",
+            "wikiPage": "Inner Sanctum"
+          },
+          "sublocation": "Rath · alternative Faithwarden reward",
+          "coordinates": {
+            "x": -461,
+            "y": -22,
+            "space": "Inner Sanctum",
+            "subject": "location"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "class",
+                "subject": "Druid player character."
+              },
+              {
+                "kind": "quest",
+                "subject": "Investigate Kagha before completing Rescue the Druid Halsin."
+              },
+              {
+                "kind": "choice",
+                "subject": "Kagha is killed; Rath gives the reward instead."
+              }
+            ]
+          },
+          "notes": [
+            "Kagha or Rath, not Kagha only; Druid player restriction and quest cutoff."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Pale_Oak&oldid=438405",
+              "revisionId": 438405,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Investigate_Kagha&oldid=428719",
+              "revisionId": 428719,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Kagha&oldid=429080",
+              "revisionId": 429080,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rath&oldid=414869",
+              "revisionId": 414869,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Inner Sanctum navigation reference -461,-22; not a verified permanent Rath standing point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "7493a5ca-181e-5324-a718-5115e3462023",
+      "bindings": [
+        {
+          "id": "1124ab10-c7fe-5db7-928c-cf39ffd93d02",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of evasion",
+          "gameIds": [
+            "MAG_PHB_OfEvasion_Ring"
+          ],
+          "wikiPage": "Ring of Evasion"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ae77d897-a4ca-500e-9ee9-264bc20ae6dc",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Tara",
+            "wikiPage": "Tara"
+          },
+          "location": {
+            "name": "Campsite",
+            "wikiPage": "Campsite"
+          },
+          "sublocation": "Tara · first Gale Origin long rest",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Gale Origin only."
+              },
+              {
+                "kind": "interaction",
+                "subject": "First Long Rest after Escape the Nautiloid."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Evasion&oldid=422376",
+              "revisionId": 422376,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Tara&oldid=434271",
+              "revisionId": 434271,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Origin-specific camp reward; no fixed acquisition X/Y."
+          }
+        }
+      ]
+    },
+    {
+      "id": "15c267b1-dcd2-5880-b327-61919676c3d2",
+      "bindings": [
+        {
+          "id": "9e4075db-4bd6-5c4e-97b5-613ee043fe42",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of mind-shielding",
+          "gameIds": [
+            "UNI_UND_SocietyOfBrilliance_RingOfMindShielding",
+            "UNI_UND_RingOfMindShielding"
+          ],
+          "wikiPage": "Ring of Mind-Shielding"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "73f2087c-dbb3-5d94-9e19-289205c3a5f4",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "choice",
+                "subject": "Pay gold."
+              }
+            ]
+          },
+          "notes": [
+            "Early Access name/effect must not create a current separate item; current exchange/theft routes kept distinct."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Mind-Shielding&oldid=422387",
+              "revisionId": 422387,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Blurg summon/interaction reference 111,-89; the item page’s 144,29 remains evidence, not a permanent Omeluum position."
+          }
+        },
+        {
+          "id": "a25606c0-7409-56e0-a3c2-70ee77186056",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "choice",
+                "subject": "Trade Nautiloid information."
+              }
+            ]
+          },
+          "notes": [
+            "Early Access name/effect must not create a current separate item; current exchange/theft routes kept distinct."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Mind-Shielding&oldid=422387",
+              "revisionId": 422387,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Blurg summon/interaction reference 111,-89; the item page’s 144,29 remains evidence, not a permanent Omeluum position."
+          }
+        },
+        {
+          "id": "552265b3-1199-5e26-8de4-02c49160fe5a",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "choice",
+                "subject": "Succeed an applicable Persuasion OR Intimidation dialogue check."
+              }
+            ]
+          },
+          "notes": [
+            "Early Access name/effect must not create a current separate item; current exchange/theft routes kept distinct."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Mind-Shielding&oldid=422387",
+              "revisionId": 422387,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Blurg summon/interaction reference 111,-89; the item page’s 144,29 remains evidence, not a permanent Omeluum position."
+          }
+        },
+        {
+          "id": "e9600f66-3237-57a6-b425-b9fcd97f4847",
+          "type": "steal",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "choice",
+                "subject": "Pickpocket once the ring becomes available."
+              }
+            ]
+          },
+          "notes": [
+            "Early Access name/effect must not create a current separate item; current exchange/theft routes kept distinct."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Mind-Shielding&oldid=422387",
+              "revisionId": 422387,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Blurg summon/interaction reference 111,-89; the item page’s 144,29 remains evidence, not a permanent Omeluum position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "8f9bda9a-b9cc-571c-b4ed-cea9fdddc809",
+      "bindings": [
+        {
+          "id": "1e441b04-01b8-5c4c-9b2a-e490ccb4536c",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of protection",
+          "gameIds": [
+            "MAG_PHB_Ring_Of_Protection"
+          ],
+          "wikiPage": "Ring of Protection"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "6fe7fd59-f4bc-5502-b1c9-2b7c936c0acf",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Mol",
+            "wikiPage": "Mol"
+          },
+          "location": {
+            "name": "Tiefling Hideout",
+            "wikiPage": "Tiefling Hideout"
+          },
+          "sublocation": "Mol · idol quest reward",
+          "coordinates": {
+            "x": 84,
+            "y": 73,
+            "space": "Tiefling Hideout",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Steal the Sacred Idol"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Accept Mol’s quest before the ritual ends and return the idol before the tieflings depart."
+              }
+            ]
+          },
+          "notes": [
+            "Mol item 84,73 vs actor 187,475 may be different map spaces; use hideout point, do not average."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Protection&oldid=422390",
+              "revisionId": 422390,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mol&oldid=434095",
+              "revisionId": 434095,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Steal_the_Sacred_Idol&oldid=434284",
+              "revisionId": 434284,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Hideout-map reference 84,73; actor page 187,475 may use another map space. No averaging or forced grove massacre."
+          }
+        }
+      ]
+    },
+    {
+      "id": "1767202e-3ef9-5d1c-976a-ab6e31d34d02",
+      "bindings": [
+        {
+          "id": "78405742-6393-5ad0-83b7-581c30a88ffd",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of restorative gravity",
+          "gameIds": [],
+          "wikiPage": "Ring of Restorative Gravity"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "593c4e15-29e8-5d5a-bcfc-a3303710a790",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Myconid Colony",
+            "wikiPage": "Myconid Colony"
+          },
+          "sublocation": "Omeluum · Early Access sale only",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite in Early Access only."
+              }
+            ]
+          },
+          "notes": [
+            "No current gameIds and no current acquisition. Do not borrow Ring of Salving UID or coordinates."
+          ],
+          "validity": "historical",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Restorative_Gravity&oldid=422393",
+              "revisionId": 422393,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Early Access only; replaced by Ring of Salving. No current acquisition point or replacement ID is assigned."
+          }
+        }
+      ]
+    },
+    {
+      "id": "9370a414-1e17-58c8-ace5-b9bbbdb4a904",
+      "bindings": [
+        {
+          "id": "a43982d4-91a7-594a-8170-0a459ac1960e",
+          "act": "ACT 1",
+          "progressKey": "act 1|robust chain shirt",
+          "gameIds": [
+            "MAG_LowHP_CounterOnDamage_ChainShirt"
+          ],
+          "wikiPage": "Robust Chain Shirt"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b7a1b3fb-e461-557f-8362-d27d1f4fdb5c",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Sergeant Thrinn",
+            "wikiPage": "Elenna Thrinn"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Thrinn · former boots-return reward",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Former Find the Missing Boots reward; currently unobtainable."
+              }
+            ]
+          },
+          "notes": [
+            "Wiki says unobtainable; catalogue still calls it Thrinn reward. Historical treatment only; no invented historical patch/date/XY."
+          ],
+          "validity": "historical",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Robust_Chain_Shirt&oldid=422442",
+              "revisionId": 422442,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Missing_Boots&oldid=418496",
+              "revisionId": 418496,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Currently unobtainable former reward, replaced by Armour of Uninhibited Kushigo. No verified historical acquisition X/Y."
+          }
+        }
+      ]
+    },
+    {
+      "id": "0ba05dbc-e0db-57e6-946a-292a8aa5ff70",
+      "bindings": [
+        {
+          "id": "a6d3a0e7-4358-514a-9484-4763f703743b",
+          "act": "ACT 1",
+          "progressKey": "act 1|sentient amulet (rare)",
+          "gameIds": [
+            "UNI_UND_MonkAmulet",
+            "UND_MonkAmulet_Amulet"
+          ],
+          "wikiPage": "Sentient Amulet (Rare)"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "07b52ff9-b333-50bc-9cbb-b328959a2567",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Abandoned Refuge",
+            "wikiPage": "Abandoned Refuge"
+          },
+          "sublocation": "Locked Adamantine Chest · ruined island near the Lava Elemental",
+          "coordinates": {
+            "x": -624,
+            "y": 224,
+            "space": "Abandoned Refuge",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Open the Adamantine Chest using its key OR lockpicking."
+              }
+            ]
+          },
+          "notes": [
+            "Rare target must not match Act 3 very-rare/no-ghost IDs; key is not universally mandatory.",
+            "The Act 3 very-rare and no-ghost variants are not this rare identity. The quest starts after pickup, not as a prerequisite."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sentient_Amulet_(Rare)&oldid=422991",
+              "revisionId": 422991,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "a5d98d1a-3b21-5f49-8d7f-63cf89aaaa7e",
+      "bindings": [
+        {
+          "id": "ea3dcba4-af99-5927-82eb-dd7bb8c988e6",
+          "act": "ACT 1",
+          "progressKey": "act 1|shadow of menzoberranzan",
+          "gameIds": [
+            "UNI_UND_ARM_ShadowOfMenzoberranzan",
+            "UND_ShadowOfMenzoberranzan"
+          ],
+          "wikiPage": "Shadow of Menzoberranzan"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "9b2957fa-55eb-5f16-a17d-634b4ff3dc9f",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Secret reward area · ground beside Xargrim’s corpse",
+          "coordinates": {
+            "x": 52,
+            "y": -70,
+            "space": "Ebonlake Grotto",
+            "subject": "item"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Complete Defeat the Duergar Intruders to open the area OR force entry with hostile consequences."
+              }
+            ]
+          },
+          "notes": [
+            "Catalogue says on corpse; Wiki says on ground beside corpse. Acquisition is world pickup.",
+            "World pickup beside the corpse, not armour worn by Xargrim."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shadow_of_Menzoberranzan&oldid=437968",
+              "revisionId": 437968,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "eba6d223-118a-5908-805f-ad5cdd7e5e06",
+      "bindings": [
+        {
+          "id": "c8461bfe-138a-5fa8-aab8-6816b172e3f3",
+          "act": "ACT 1",
+          "progressKey": "act 1|shapeshifter's boon ring",
+          "gameIds": [
+            "MAG_ShapeshiftersBurgeon_Ring"
+          ],
+          "wikiPage": "Shapeshifter's Boon Ring"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "016a20b1-7991-5c9e-9edf-e5faa3650a8f",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Strange Ox",
+            "wikiPage": "Strange Ox"
+          },
+          "location": {
+            "name": "Emerald Grove",
+            "wikiPage": "Emerald Grove"
+          },
+          "sublocation": "Strange Ox’s grove encounter",
+          "coordinates": {
+            "x": 217,
+            "y": 540,
+            "space": "Emerald Grove",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Only while the same ring has not already been obtained."
+              }
+            ]
+          },
+          "notes": [
+            "Item Rivington 39,-149 vs actor 36,-149. Quest completion is Lower City transition, not an exact Rivington acquisition point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shapeshifter's_Boon_Ring&oldid=431541",
+              "revisionId": 431541,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Strange_Ox&oldid=434001",
+              "revisionId": 434001,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_the_Devilish_Ox&oldid=419480",
+              "revisionId": 419480,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Moving Strange Ox encounter/trade reference; Rivington item 39,-149 versus actor 36,-149 retained. No guaranteed second copy across Acts."
+          }
+        },
+        {
+          "id": "9d281d0d-cd95-5a1d-a004-7dca6b8439c4",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Strange Ox",
+            "wikiPage": "Strange Ox"
+          },
+          "location": {
+            "name": "Emerald Grove",
+            "wikiPage": "Emerald Grove"
+          },
+          "sublocation": "Strange Ox’s grove encounter",
+          "coordinates": {
+            "x": 217,
+            "y": 540,
+            "space": "Emerald Grove",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Barter must actually be available; not an unconditional shop."
+              },
+              {
+                "kind": "item",
+                "subject": "The same ring must not already have been obtained."
+              }
+            ]
+          },
+          "notes": [
+            "Item Rivington 39,-149 vs actor 36,-149. Quest completion is Lower City transition, not an exact Rivington acquisition point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shapeshifter's_Boon_Ring&oldid=431541",
+              "revisionId": 431541,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Strange_Ox&oldid=434001",
+              "revisionId": 434001,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_the_Devilish_Ox&oldid=419480",
+              "revisionId": 419480,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Moving Strange Ox encounter/trade reference; Rivington item 39,-149 versus actor 36,-149 retained. No guaranteed second copy across Acts."
+          }
+        },
+        {
+          "id": "68ea2da0-8963-527f-b67e-e1dbad73e4a9",
+          "type": "actor_loot",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Strange Ox",
+            "wikiPage": "Strange Ox"
+          },
+          "location": {
+            "name": "Last Light Inn",
+            "wikiPage": "Last Light Inn"
+          },
+          "sublocation": "Dammon’s forge · Strange Ox",
+          "coordinates": {
+            "x": -28,
+            "y": 170,
+            "space": "Last Light Inn",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Only while the same ring has not already been obtained."
+              }
+            ]
+          },
+          "notes": [
+            "Item Rivington 39,-149 vs actor 36,-149. Quest completion is Lower City transition, not an exact Rivington acquisition point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shapeshifter's_Boon_Ring&oldid=431541",
+              "revisionId": 431541,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Strange_Ox&oldid=434001",
+              "revisionId": 434001,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_the_Devilish_Ox&oldid=419480",
+              "revisionId": 419480,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Moving Strange Ox encounter/trade reference; Rivington item 39,-149 versus actor 36,-149 retained. No guaranteed second copy across Acts."
+          }
+        },
+        {
+          "id": "e14ce662-0834-5091-b06a-ff4eeb770130",
+          "type": "purchase",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Strange Ox",
+            "wikiPage": "Strange Ox"
+          },
+          "location": {
+            "name": "Last Light Inn",
+            "wikiPage": "Last Light Inn"
+          },
+          "sublocation": "Dammon’s forge · Strange Ox",
+          "coordinates": {
+            "x": -28,
+            "y": 170,
+            "space": "Last Light Inn",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Barter must actually be available; not an unconditional shop."
+              },
+              {
+                "kind": "item",
+                "subject": "The same ring must not already have been obtained."
+              }
+            ]
+          },
+          "notes": [
+            "Item Rivington 39,-149 vs actor 36,-149. Quest completion is Lower City transition, not an exact Rivington acquisition point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shapeshifter's_Boon_Ring&oldid=431541",
+              "revisionId": 431541,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Strange_Ox&oldid=434001",
+              "revisionId": 434001,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_the_Devilish_Ox&oldid=419480",
+              "revisionId": 419480,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Moving Strange Ox encounter/trade reference; Rivington item 39,-149 versus actor 36,-149 retained. No guaranteed second copy across Acts."
+          }
+        },
+        {
+          "id": "d48ed0b7-d7d0-5da9-82ad-e981cc9eb133",
+          "type": "actor_loot",
+          "acts": [
+            3
+          ],
+          "actor": {
+            "name": "Strange Ox",
+            "wikiPage": "Strange Ox"
+          },
+          "location": {
+            "name": "Rivington",
+            "wikiPage": "Rivington"
+          },
+          "sublocation": "Strange Ox’s Rivington encounter",
+          "coordinates": {
+            "x": 39,
+            "y": -149,
+            "space": "Rivington",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Only while the same ring has not already been obtained."
+              }
+            ]
+          },
+          "notes": [
+            "Item Rivington 39,-149 vs actor 36,-149. Quest completion is Lower City transition, not an exact Rivington acquisition point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shapeshifter's_Boon_Ring&oldid=431541",
+              "revisionId": 431541,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Strange_Ox&oldid=434001",
+              "revisionId": 434001,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_the_Devilish_Ox&oldid=419480",
+              "revisionId": 419480,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Moving Strange Ox encounter/trade reference; Rivington item 39,-149 versus actor 36,-149 retained. No guaranteed second copy across Acts."
+          }
+        },
+        {
+          "id": "a9f8b919-0567-5984-8e51-35d69cd285c9",
+          "type": "purchase",
+          "acts": [
+            3
+          ],
+          "actor": {
+            "name": "Strange Ox",
+            "wikiPage": "Strange Ox"
+          },
+          "location": {
+            "name": "Rivington",
+            "wikiPage": "Rivington"
+          },
+          "sublocation": "Strange Ox’s Rivington encounter",
+          "coordinates": {
+            "x": 39,
+            "y": -149,
+            "space": "Rivington",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Barter must actually be available; not an unconditional shop."
+              },
+              {
+                "kind": "item",
+                "subject": "The same ring must not already have been obtained."
+              }
+            ]
+          },
+          "notes": [
+            "Item Rivington 39,-149 vs actor 36,-149. Quest completion is Lower City transition, not an exact Rivington acquisition point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shapeshifter's_Boon_Ring&oldid=431541",
+              "revisionId": 431541,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Strange_Ox&oldid=434001",
+              "revisionId": 434001,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_the_Devilish_Ox&oldid=419480",
+              "revisionId": 419480,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Moving Strange Ox encounter/trade reference; Rivington item 39,-149 versus actor 36,-149 retained. No guaranteed second copy across Acts."
+          }
+        },
+        {
+          "id": "d8f778db-3609-5f4b-b473-9d4c01bf358e",
+          "type": "quest_reward",
+          "acts": [
+            3
+          ],
+          "actor": {
+            "name": "Strange Ox",
+            "wikiPage": "Strange Ox"
+          },
+          "location": {
+            "name": "Lower City transition",
+            "wikiPage": "Lower City transition"
+          },
+          "sublocation": "Strange Ox · Lower City transition reward",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help the Devilish Ox"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Bring the Strange Apple into the Lower City."
+              },
+              {
+                "kind": "item",
+                "subject": "No ring reward if already obtained earlier."
+              }
+            ]
+          },
+          "notes": [
+            "Item Rivington 39,-149 vs actor 36,-149. Quest completion is Lower City transition, not an exact Rivington acquisition point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shapeshifter's_Boon_Ring&oldid=431541",
+              "revisionId": 431541,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Strange_Ox&oldid=434001",
+              "revisionId": 434001,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_the_Devilish_Ox&oldid=419480",
+              "revisionId": 419480,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Dynamic Lower City entry/reward transition; Rivington’s 39,-149 is not the reward position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "26590160-efce-5613-a3ce-72dd1703a2de",
+      "bindings": [
+        {
+          "id": "549ff49a-0d9a-5f9f-a4d5-eccc0348ff1e",
+          "act": "ACT 1",
+          "progressKey": "act 1|shining staver-of-skulls",
+          "gameIds": [
+            "MAG_Radiant_Radiating_Hammer"
+          ],
+          "wikiPage": "Shining Staver-of-Skulls"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "0c2fe340-1bdf-5673-bc3f-430b9b2bb7d5",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Corsair Greymon",
+            "wikiPage": "Greymon"
+          },
+          "location": {
+            "name": "Ebonlake",
+            "wikiPage": "Ebonlake"
+          },
+          "sublocation": "Greymon · first raft crossing",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Obtain Greymon’s carried inventory during the first voyage."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shining_Staver-of-Skulls&oldid=437933",
+              "revisionId": 437933,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Greymon&oldid=433957",
+              "revisionId": 433957,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Moving raft encounter; no fixed acquisition X/Y applies."
+          }
+        },
+        {
+          "id": "d47dd898-01fa-5bff-96d1-1517c42db424",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Corsair Greymon",
+            "wikiPage": "Greymon"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Greymon’s trader spot · after surviving the voyage",
+          "coordinates": {
+            "x": -120,
+            "y": -95,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Greymon survives the first voyage and remains available to trade."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shining_Staver-of-Skulls&oldid=437933",
+              "revisionId": 437933,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Greymon&oldid=433957",
+              "revisionId": 433957,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Greymon shop reference -120,-95; not a guaranteed death position."
+          }
+        },
+        {
+          "id": "17eae0f9-9fd5-5def-9333-56dcfda3af2c",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Corsair Greymon",
+            "wikiPage": "Greymon"
+          },
+          "location": {
+            "name": "Decrepit Village",
+            "wikiPage": "Decrepit Village"
+          },
+          "sublocation": "Greymon’s washed-up body · southern pier beach",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Greymon drowns after turning hostile in combat, not through the initial Athletics dialogue shove."
+              }
+            ]
+          },
+          "notes": [
+            "The initial dialogue shove permanently loses his loot; combat drowning is a distinct outcome."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shining_Staver-of-Skulls&oldid=437933",
+              "revisionId": 437933,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Greymon&oldid=433957",
+              "revisionId": 433957,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Conditional washed-up body; no reviewed fixed corpse X/Y is documented."
+          }
+        }
+      ]
+    },
+    {
+      "id": "e4ce20e6-da26-58dc-bb2f-ef79ce326442",
+      "bindings": [
+        {
+          "id": "7164156a-d77d-5c85-98ae-022649714bc5",
+          "act": "ACT 1",
+          "progressKey": "act 1|sickle of boooal",
+          "gameIds": [
+            "UNI_SickleOfBOOOAL"
+          ],
+          "wikiPage": "Sickle of BOOOAL"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "af8f54b2-0649-59bd-ab48-a6bc9125f47e",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Pooldripp the Zealous",
+            "wikiPage": "Pooldripp"
+          },
+          "location": {
+            "name": "The Festering Cove",
+            "wikiPage": "The Festering Cove"
+          },
+          "sublocation": "BOOOAL’s gathering",
+          "coordinates": {
+            "x": -417,
+            "y": 284,
+            "space": "The Festering Cove",
+            "subject": "encounter"
+          },
+          "conditions": null,
+          "notes": [
+            "Catalogue Harpy Nest is wrong; current Wiki Festering Cove. BOOOAL does not drop it; blessing is separate from weapon.",
+            "BOOOAL does not drop the sickle. BOOOAL’s separate blessing is not the weapon. The old Harpy Nest catalogue prose is not an acquisition source."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sickle_of_BOOOAL&oldid=423188",
+              "revisionId": 423188,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=BOOOAL&oldid=438088",
+              "revisionId": 438088,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Pooldripp&oldid=414918",
+              "revisionId": 414918,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Festering Cove encounter reference -417,284; not a guaranteed corpse point."
+          }
+        },
+        {
+          "id": "c35156b8-43a9-5f8a-8700-1827f7ae3fcc",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "BOOOAL",
+            "wikiPage": "BOOOAL"
+          },
+          "location": {
+            "name": "The Festering Cove",
+            "wikiPage": "The Festering Cove"
+          },
+          "sublocation": "BOOOAL’s gathering",
+          "coordinates": {
+            "x": -417,
+            "y": 284,
+            "space": "The Festering Cove",
+            "subject": "encounter"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Choose dialogue that weakens BOOOAL, then agree to be his Chosen."
+              }
+            ]
+          },
+          "notes": [
+            "Catalogue Harpy Nest is wrong; current Wiki Festering Cove. BOOOAL does not drop it; blessing is separate from weapon.",
+            "BOOOAL does not drop the sickle. BOOOAL’s separate blessing is not the weapon. The old Harpy Nest catalogue prose is not an acquisition source."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sickle_of_BOOOAL&oldid=423188",
+              "revisionId": 423188,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=BOOOAL&oldid=438088",
+              "revisionId": 438088,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Pooldripp&oldid=414918",
+              "revisionId": 414918,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Festering Cove encounter reference -417,284; not a guaranteed corpse point."
+          }
+        },
+        {
+          "id": "aff00485-18a5-5296-8dfe-68f3f61b3ad5",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Pooldripp the Zealous",
+            "wikiPage": "Pooldripp"
+          },
+          "location": {
+            "name": "The Festering Cove",
+            "wikiPage": "The Festering Cove"
+          },
+          "sublocation": "BOOOAL’s gathering",
+          "coordinates": {
+            "x": -417,
+            "y": 284,
+            "space": "The Festering Cove",
+            "subject": "encounter"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Kill BOOOAL without making the kuo-toa hostile, then barter in the initial Pooldripp conversation only."
+              }
+            ]
+          },
+          "notes": [
+            "Catalogue Harpy Nest is wrong; current Wiki Festering Cove. BOOOAL does not drop it; blessing is separate from weapon.",
+            "BOOOAL does not drop the sickle. BOOOAL’s separate blessing is not the weapon. The old Harpy Nest catalogue prose is not an acquisition source."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sickle_of_BOOOAL&oldid=423188",
+              "revisionId": 423188,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=BOOOAL&oldid=438088",
+              "revisionId": 438088,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Pooldripp&oldid=414918",
+              "revisionId": 414918,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Festering Cove encounter reference -417,284; not a guaranteed corpse point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "7dc178ee-e0ef-57a1-9aea-66ded4583c43",
+      "bindings": [
+        {
+          "id": "fa5121ed-8eb5-5f28-9c88-58b15ca30bdd",
+          "act": "ACT 1",
+          "progressKey": "act 1|staff of arcane blessing",
+          "gameIds": [
+            "UNI_UND_Tower_StaffBlessMystra",
+            "UND_Tower_StaffBlessMystra"
+          ],
+          "wikiPage": "Staff of Arcane Blessing"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "bcf8026f-530c-525f-9157-e686dc810469",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Basement · leaning against a table",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Basement access: Guiding Light ring/button OR Feather Fall jump OR Mage Hand switch."
+              }
+            ]
+          },
+          "notes": [
+            "Item 164,+432; neighbouring basement ring 163,-432. No verified correction for staff. Withhold finished-item XY pending same-space evidence."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Staff_of_Arcane_Blessing&oldid=423533",
+              "revisionId": 423533,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Sparkswall&oldid=424110",
+              "revisionId": 424110,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arcane_Tower&oldid=431380",
+              "revisionId": 431380,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "conflict",
+            "reason": "Unresolved published staff 164,+432 versus nearby basement ring 163,-432. No same-space evidence verifies a staff sign correction; coordinates intentionally withheld."
+          }
+        }
+      ]
+    },
+    {
+      "id": "8b075be9-2eaf-5a52-b05f-6abdd958834d",
+      "bindings": [
+        {
+          "id": "f32938c1-5be7-5ea2-9e48-e61b5429478c",
+          "act": "ACT 1",
+          "progressKey": "act 1|steelforge sword",
+          "gameIds": [
+            "QUEST_FOR_Village_Blacksmith_FineWeapon"
+          ],
+          "wikiPage": "Steelforged Sword"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "0f602ae7-989e-5b3b-b0ae-fc4de669c426",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Blighted Village",
+            "wikiPage": "Blighted Village"
+          },
+          "sublocation": "Blacksmith’s Forge · Sampson’s locked chest",
+          "coordinates": {
+            "x": -435,
+            "y": -371,
+            "space": "Blighted Village",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Open Sampson’s chest with its key OR lockpicking."
+              }
+            ]
+          },
+          "notes": [
+            "Exact catalogue spelling Steelforge Sword differs from Wiki Steelforged Sword. Item -435,-371 vs village -435,-374; preserve identity/name."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Steelforged_Sword&oldid=423590",
+              "revisionId": 423590,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        },
+        {
+          "id": "fcfeb193-09df-5452-9b13-2ca1f5f83ac6",
+          "type": "world",
+          "acts": [
+            3
+          ],
+          "actor": null,
+          "location": {
+            "name": "High Hall",
+            "wikiPage": "High Hall"
+          },
+          "sublocation": "Koll’s table of goods",
+          "coordinates": {
+            "x": 235,
+            "y": 44,
+            "space": "High Hall",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "Exact catalogue spelling Steelforge Sword differs from Wiki Steelforged Sword. Item -435,-371 vs village -435,-374; preserve identity/name."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Steelforged_Sword&oldid=423590",
+              "revisionId": 423590,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "6d32b3ac-756e-5439-938e-8fb40cebb3e7",
+      "bindings": [
+        {
+          "id": "3cfeaf39-a881-5d4c-8ee8-1a3072cd1c1a",
+          "act": "ACT 1",
+          "progressKey": "act 1|svartlebee's woundseeker",
+          "gameIds": [
+            "MAG_TheWoundSeeker_Greatsword"
+          ],
+          "wikiPage": "Svartlebee's Woundseeker"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b8e2b275-46e9-5ee7-8ccd-b23cfa933ac9",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Gauntlet Yeva",
+            "wikiPage": "Yeva"
+          },
+          "location": {
+            "name": "Waukeen's Rest",
+            "wikiPage": "Waukeen's Rest"
+          },
+          "sublocation": "Yeva · burning inn",
+          "coordinates": {
+            "x": -66,
+            "y": 609,
+            "space": "Waukeen's Rest",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Obtain before leaving or reloading the area."
+              }
+            ]
+          },
+          "notes": [
+            "Act 1 availability cutoff; Act 2 variant/context must not be mistaken for Act 1 position.",
+            "No universal kill requirement; disarming can preserve her as an ally."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Svartlebee's_Woundseeker&oldid=423768",
+              "revisionId": 423768,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Yeva&oldid=426038",
+              "revisionId": 426038,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "f9b53966-51bc-5198-add8-4c9449a1d670",
+          "type": "actor_loot",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Gauntlet Yeva",
+            "wikiPage": "Yeva"
+          },
+          "location": {
+            "name": "Tadpoling Centre",
+            "wikiPage": "Tadpoling Centre"
+          },
+          "sublocation": "Yeva · after rescue from the pod",
+          "coordinates": {
+            "x": 677,
+            "y": 15,
+            "space": "Tadpoling Centre",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Yeva survives and is freed from her pod."
+              }
+            ]
+          },
+          "notes": [
+            "Act 1 availability cutoff; Act 2 variant/context must not be mistaken for Act 1 position.",
+            "No universal kill requirement; disarming can preserve her as an ally."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Svartlebee's_Woundseeker&oldid=423768",
+              "revisionId": 423768,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Yeva&oldid=426038",
+              "revisionId": 426038,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3842326-5653-5356-a26f-8493dfcdc348",
+      "bindings": [
+        {
+          "id": "e81b7f79-af0f-5f84-9bd0-35200996a0c1",
+          "act": "ACT 1",
+          "progressKey": "act 1|sword of screams",
+          "gameIds": [
+            "UNI_UND_WPN_SwordOfScreams",
+            "UND_Nere_Sword"
+          ],
+          "wikiPage": "Sword of Screams"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "3c232818-220f-5580-a7e0-debb5e7d938c",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Nere",
+            "wikiPage": "Nere"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Nere cave-in rescue site · encounter navigation",
+          "coordinates": {
+            "x": -643,
+            "y": 300,
+            "space": "Grymforge",
+            "subject": "encounter"
+          },
+          "conditions": null,
+          "notes": [
+            "Item -854,-780 versus Night Walkers -854,+780; use published rescue encounter reference -643,300."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sword_of_Screams&oldid=423796",
+              "revisionId": 423796,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Elenna_Thrinn&oldid=425977",
+              "revisionId": 425977,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Nere&oldid=438414",
+              "revisionId": 438414,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Thrinn rescue-site reference -643,300, not Nere’s standing/corpse point. Night Walkers publishes -854,+780 and Sword of Screams -854,-780; neither sign is corrected by inference."
+          }
+        }
+      ]
+    },
+    {
+      "id": "1ad488a7-e17b-5762-b1c8-95284fd77575",
+      "bindings": [
+        {
+          "id": "71b51a38-0b10-5f3c-aead-0472b873f7b9",
+          "act": "ACT 1",
+          "progressKey": "act 1|tarnished charm",
+          "gameIds": [
+            "EQ_HAG_Phylactery"
+          ],
+          "wikiPage": "Tarnished Charm"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b1c47c47-a244-5e6b-8534-1ab0aa60053f",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Auntie Ethel",
+            "wikiPage": "Auntie Ethel"
+          },
+          "location": {
+            "name": "Riverside Teahouse",
+            "wikiPage": "Riverside Teahouse"
+          },
+          "sublocation": "Ethel · teahouse",
+          "coordinates": {
+            "x": -58,
+            "y": 263,
+            "space": "Riverside Teahouse",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Only if the same charm has not already been acquired."
+              }
+            ]
+          },
+          "notes": [
+            "Earlier acquisition prevents later copy; Act 3 context explicitly separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Tarnished_Charm&oldid=423857",
+              "revisionId": 423857,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Auntie_Ethel&oldid=431741",
+              "revisionId": 431741,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "3d6b0108-8b62-5b5d-aaa1-3e471995a5ad",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Auntie Ethel",
+            "wikiPage": "Auntie Ethel"
+          },
+          "location": {
+            "name": "Overgrown Tunnel",
+            "wikiPage": "Overgrown Tunnel"
+          },
+          "sublocation": "Ethel · tunnel",
+          "coordinates": {
+            "x": -412,
+            "y": 577,
+            "space": "Overgrown Tunnel",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Only if the same charm has not already been acquired."
+              }
+            ]
+          },
+          "notes": [
+            "Earlier acquisition prevents later copy; Act 3 context explicitly separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Tarnished_Charm&oldid=423857",
+              "revisionId": 423857,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Auntie_Ethel&oldid=431741",
+              "revisionId": 431741,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "1243ce4c-ca7a-51a4-8344-7785d6895aaf",
+          "type": "actor_loot",
+          "acts": [
+            3
+          ],
+          "actor": {
+            "name": "Auntie Ethel",
+            "wikiPage": "Auntie Ethel"
+          },
+          "location": {
+            "name": "The Blushing Mermaid",
+            "wikiPage": "The Blushing Mermaid"
+          },
+          "sublocation": "Ethel · Blushing Mermaid",
+          "coordinates": {
+            "x": -2329,
+            "y": -95,
+            "space": "The Blushing Mermaid",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Only if the same charm has not already been acquired."
+              }
+            ]
+          },
+          "notes": [
+            "Earlier acquisition prevents later copy; Act 3 context explicitly separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Tarnished_Charm&oldid=423857",
+              "revisionId": 423857,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Auntie_Ethel&oldid=431741",
+              "revisionId": 431741,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "b1cfcbe2-1701-537c-a82d-19ae2e7a8f0a",
+      "bindings": [
+        {
+          "id": "ac4ca488-a9b5-589f-a453-e0c4b8acd683",
+          "act": "ACT 1",
+          "progressKey": "act 1|the blood of lathander",
+          "gameIds": [
+            "S_CRE_BloodOfLathander",
+            "CRE_BloodOfLathander",
+            "UNI_CRE_HUM_Sun_Mace_BloodOfLathander",
+            "WPN_HUM_Sun_Mace_Lathander_Blood_A_Glow"
+          ],
+          "wikiPage": "The Blood of Lathander"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "8639c549-bd3d-5ba0-8caf-564c31411f20",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Secret Chamber",
+            "wikiPage": "Secret Chamber"
+          },
+          "sublocation": "Altar · locked relic",
+          "coordinates": {
+            "x": 1068,
+            "y": -779,
+            "space": "Secret Chamber",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Insert the Dawnmaster’s Crest for safe retrieval."
+              }
+            ]
+          },
+          "notes": [
+            "Four-ID set includes multiple template/local variants; current glowing item not dummy relic. Ordinary puzzle substitutes are not ceremonial-item identities.",
+            "Crest-safe and trap-triggering retrieval are alternatives. Ceremonial weapons are not universally mandatory. The dummy relic is not this complete four-ID binding."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Blood_of_Lathander&oldid=423968",
+              "revisionId": 423968,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Blood_of_Lathander&oldid=407480",
+              "revisionId": 407480,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Secret_Chamber&oldid=408987",
+              "revisionId": 408987,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        },
+        {
+          "id": "bd65fd24-464c-5346-a4cf-a5322a7c2a6e",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Secret Chamber",
+            "wikiPage": "Secret Chamber"
+          },
+          "sublocation": "Altar · locked relic",
+          "coordinates": {
+            "x": 1068,
+            "y": -779,
+            "space": "Secret Chamber",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Take without the Crest and handle the trap or escape consequences."
+              }
+            ]
+          },
+          "notes": [
+            "Four-ID set includes multiple template/local variants; current glowing item not dummy relic. Ordinary puzzle substitutes are not ceremonial-item identities.",
+            "Crest-safe and trap-triggering retrieval are alternatives. Ceremonial weapons are not universally mandatory. The dummy relic is not this complete four-ID binding."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Blood_of_Lathander&oldid=423968",
+              "revisionId": 423968,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Blood_of_Lathander&oldid=407480",
+              "revisionId": 407480,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Secret_Chamber&oldid=408987",
+              "revisionId": 408987,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ff5b9b44-82e6-50b6-bf7b-93fa6c187d5c",
+      "bindings": [
+        {
+          "id": "0340e22f-10d4-52b0-9f7b-94cfcfff6425",
+          "act": "ACT 1",
+          "progressKey": "act 1|the deathstalker mantle",
+          "gameIds": [
+            "UNI_DarkUrge_Bhaal_Cloak"
+          ],
+          "wikiPage": "The Deathstalker Mantle"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "df491d24-f52e-5d9c-9612-8a17e63279e8",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Sceleritas Fel",
+            "wikiPage": "Sceleritas Fel"
+          },
+          "location": {
+            "name": "Campsite",
+            "wikiPage": "Campsite"
+          },
+          "sublocation": "Sceleritas Fel · Dark Urge bard-event reward",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "The Dark Urge Origin."
+              },
+              {
+                "kind": "interaction",
+                "subject": "Scripted bard event involving Alfira OR substituted Quil, followed by the butler’s reward."
+              }
+            ]
+          },
+          "notes": [
+            "Alfira/Quil branch and scripted-event ownership; no fabricated fixed camp coordinate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Deathstalker_Mantle&oldid=438432",
+              "revisionId": 438432,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sceleritas_Fel&oldid=425704",
+              "revisionId": 425704,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Origin-specific camp event; no fixed acquisition X/Y across camp layouts."
+          }
+        }
+      ]
+    },
+    {
+      "id": "b8e99c49-0370-5657-b79d-6c05efda1ac1",
+      "bindings": [
+        {
+          "id": "ba57bef7-5b18-5360-b0a4-b48917ba110f",
+          "act": "ACT 1",
+          "progressKey": "act 1|the oakfather's embrace",
+          "gameIds": [],
+          "wikiPage": "The Oakfather's Embrace"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "88ffc5b5-4a76-58c5-8163-33557ba0e349",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Headless skeleton"
+          },
+          "location": {
+            "name": "Owlbear Nest",
+            "wikiPage": "Owlbear Nest"
+          },
+          "sublocation": "Headless skeleton · beside the nest and egg",
+          "coordinates": {
+            "x": -354,
+            "y": -111,
+            "space": "Owlbear Nest",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "No catalogue gameIds; Wiki FOR_OwlbearCubs_Armor must not be injected into catalogue. Original URL redirects Oakfather→Oak Father; exact original binding page retained.",
+            "Empty catalogue strong-ID set retained. Only the existing exact Wiki-page + Act + progress-key contract applies. No injected Wiki UID, no owlbear-kill prerequisite."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Oak_Father's_Embrace&oldid=424068",
+              "revisionId": 424068,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Owlbear_Nest&oldid=431001",
+              "revisionId": 431001,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Reviewed skeleton reference -354,-111; not an owlbear combat target."
+          }
+        }
+      ]
+    },
+    {
+      "id": "7c4a0431-8ff7-59b4-9a6d-a07a756f5b07",
+      "bindings": [
+        {
+          "id": "692d35d6-23ce-544d-b693-9f034670e3a3",
+          "act": "ACT 1",
+          "progressKey": "act 1|the sparkswall",
+          "gameIds": [
+            "MAG_ChargedLightning_Resistance_Ring"
+          ],
+          "wikiPage": "The Sparkswall"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "15d0973e-3200-5c82-8f56-b118ad22ec7b",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Basement upper level · gilded chest",
+          "coordinates": {
+            "x": 163,
+            "y": -432,
+            "space": "Arcane Tower",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Guiding Light ring/button OR alternate basement access; Bernard’s death is not mandatory."
+              }
+            ]
+          },
+          "notes": [
+            "Ring 163,-432 versus staff +432; ring point supported, staff sign not inferred. Ring-access-only note is too restrictive."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Sparkswall&oldid=424110",
+              "revisionId": 424110,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arcane_Tower&oldid=431380",
+              "revisionId": 431380,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "e05a1297-26ee-5340-b7f2-d2ef15ca7230",
+      "bindings": [
+        {
+          "id": "a097377b-bafb-5264-aa8c-ee5d0e63cbfd",
+          "act": "ACT 1",
+          "progressKey": "act 1|the whispering promise",
+          "gameIds": [
+            "UNI_MassHealRing"
+          ],
+          "wikiPage": "The Whispering Promise"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "81192383-fdd7-5e32-9e7b-f553ab798d4b",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Grat the Trader",
+            "wikiPage": "Grat"
+          },
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Grat · before Volo leaves",
+          "coordinates": {
+            "x": -99,
+            "y": 424,
+            "space": "Goblin Camp",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Only if the same ring has not already been acquired from Volo or Grat."
+              },
+              {
+                "kind": "interaction",
+                "subject": "While Grat still carries it before Volo leaves the Goblin Camp."
+              }
+            ]
+          },
+          "notes": [
+            "Not generic merchant-pool membership; one moving ring with prior-acquisition checks. Camp points not fixed."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Whispering_Promise&oldid=424157",
+              "revisionId": 424157,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Volo&oldid=414874",
+              "revisionId": 414874,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving trader reference; this is one ring moving between bearers, not independent copies."
+          }
+        },
+        {
+          "id": "dd1db14e-eca7-5c88-9429-9b730e89c0f6",
+          "type": "steal",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Grat the Trader",
+            "wikiPage": "Grat"
+          },
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Grat · before Volo leaves",
+          "coordinates": {
+            "x": -99,
+            "y": 424,
+            "space": "Goblin Camp",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Only if the same ring has not already been acquired from Volo or Grat."
+              },
+              {
+                "kind": "interaction",
+                "subject": "While Grat still carries it before Volo leaves the Goblin Camp."
+              }
+            ]
+          },
+          "notes": [
+            "Not generic merchant-pool membership; one moving ring with prior-acquisition checks. Camp points not fixed."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Whispering_Promise&oldid=424157",
+              "revisionId": 424157,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Volo&oldid=414874",
+              "revisionId": 414874,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving trader reference; this is one ring moving between bearers, not independent copies."
+          }
+        },
+        {
+          "id": "61b14039-ee6b-5154-a2ff-61f613c34587",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Volo",
+            "wikiPage": "Volo"
+          },
+          "location": {
+            "name": "Sacred Pool",
+            "wikiPage": "Sacred Pool"
+          },
+          "sublocation": "Volo · Sacred Pool encounter",
+          "coordinates": {
+            "x": 260,
+            "y": 510,
+            "space": "Sacred Pool",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Only if the same ring has not already been acquired from Volo or Grat."
+              },
+              {
+                "kind": "interaction",
+                "subject": "Use the trade button during dialogue."
+              }
+            ]
+          },
+          "notes": [
+            "Not generic merchant-pool membership; one moving ring with prior-acquisition checks. Camp points not fixed."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Whispering_Promise&oldid=424157",
+              "revisionId": 424157,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Volo&oldid=414874",
+              "revisionId": 414874,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving trader reference; this is one ring moving between bearers, not independent copies."
+          }
+        },
+        {
+          "id": "8d0295d3-cc69-5fef-8973-ee1a55b15423",
+          "type": "steal",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Volo",
+            "wikiPage": "Volo"
+          },
+          "location": {
+            "name": "Sacred Pool",
+            "wikiPage": "Sacred Pool"
+          },
+          "sublocation": "Volo · Sacred Pool encounter",
+          "coordinates": {
+            "x": 260,
+            "y": 510,
+            "space": "Sacred Pool",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Only if the same ring has not already been acquired from Volo or Grat."
+              },
+              {
+                "kind": "interaction",
+                "subject": "Volo is available as a bearer."
+              }
+            ]
+          },
+          "notes": [
+            "Not generic merchant-pool membership; one moving ring with prior-acquisition checks. Camp points not fixed."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Whispering_Promise&oldid=424157",
+              "revisionId": 424157,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Volo&oldid=414874",
+              "revisionId": 414874,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving trader reference; this is one ring moving between bearers, not independent copies."
+          }
+        },
+        {
+          "id": "91f34ee2-114e-5357-9083-5a88b87cff5a",
+          "type": "purchase",
+          "acts": [
+            1,
+            2,
+            3
+          ],
+          "actor": {
+            "name": "Volo",
+            "wikiPage": "Volo"
+          },
+          "location": {
+            "name": "Campsite",
+            "wikiPage": "Campsite"
+          },
+          "sublocation": "Volo · rescued camp guest",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Only if the same ring has not already been acquired from Volo or Grat."
+              },
+              {
+                "kind": "interaction",
+                "subject": "Rescue Volo and have him join camp."
+              }
+            ]
+          },
+          "notes": [
+            "Not generic merchant-pool membership; one moving ring with prior-acquisition checks. Camp points not fixed."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Whispering_Promise&oldid=424157",
+              "revisionId": 424157,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Volo&oldid=414874",
+              "revisionId": 414874,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Changing camp layouts have no single fixed X/Y."
+          }
+        },
+        {
+          "id": "e4f19935-69c1-5894-8b98-13d9edb062a1",
+          "type": "steal",
+          "acts": [
+            1,
+            2,
+            3
+          ],
+          "actor": {
+            "name": "Volo",
+            "wikiPage": "Volo"
+          },
+          "location": {
+            "name": "Campsite",
+            "wikiPage": "Campsite"
+          },
+          "sublocation": "Volo · rescued camp guest",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Only if the same ring has not already been acquired from Volo or Grat."
+              },
+              {
+                "kind": "interaction",
+                "subject": "Rescue Volo and have him join camp."
+              }
+            ]
+          },
+          "notes": [
+            "Not generic merchant-pool membership; one moving ring with prior-acquisition checks. Camp points not fixed."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Whispering_Promise&oldid=424157",
+              "revisionId": 424157,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Volo&oldid=414874",
+              "revisionId": 414874,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Changing camp layouts have no single fixed X/Y."
+          }
+        }
+      ]
+    },
+    {
+      "id": "159a9161-fbd7-5f33-800b-f56501450bb0",
+      "bindings": [
+        {
+          "id": "07c59aaf-34a8-5adf-8216-0b302118fd5b",
+          "act": "ACT 1",
+          "progressKey": "act 1|titanstring bow",
+          "gameIds": [
+            "MAG_StrongString_Longbow"
+          ],
+          "wikiPage": "Titanstring Bow"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ef36ce38-1c80-5567-b965-662ec7491c92",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Brem",
+            "wikiPage": "Brem"
+          },
+          "location": {
+            "name": "Zhentarim Basement",
+            "wikiPage": "Zhentarim Basement"
+          },
+          "sublocation": "Brem · unlocked special stock",
+          "coordinates": {
+            "x": 295,
+            "y": -250,
+            "space": "Zhentarim Basement",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Zarys unlocks Brem’s special stock."
+              }
+            ]
+          },
+          "notes": [
+            "Act 2 stock depends on never-unlocked Brem special stock, not merely not buying from Brem."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Titanstring_Bow&oldid=424251",
+              "revisionId": 424251,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brem&oldid=425720",
+              "revisionId": 425720,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zarys&oldid=438613",
+              "revisionId": 438613,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "5f5908fa-560c-52f1-b5dc-33678863a71a",
+          "type": "purchase",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Lann Tarv",
+            "wikiPage": "Lann Tarv"
+          },
+          "location": {
+            "name": "Moonrise Towers",
+            "wikiPage": "Moonrise Towers"
+          },
+          "sublocation": "Lann Tarv · conditional stock",
+          "coordinates": {
+            "x": -164,
+            "y": -167,
+            "space": "Moonrise Towers",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Brem’s special stock was never unlocked; merely not buying the bow is insufficient."
+              }
+            ]
+          },
+          "notes": [
+            "Act 2 stock depends on never-unlocked Brem special stock, not merely not buying from Brem."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Titanstring_Bow&oldid=424251",
+              "revisionId": 424251,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brem&oldid=425720",
+              "revisionId": 425720,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zarys&oldid=438613",
+              "revisionId": 438613,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "fa276d2d-5525-58c3-93d0-1f2471186316",
+      "bindings": [
+        {
+          "id": "b83f04e0-cb4c-5722-b2ac-430cce0eb9b2",
+          "act": "ACT 1",
+          "progressKey": "act 1|winter's clutches",
+          "gameIds": [
+            "MAG_Frost_GenerateFrostOnDamage_Gloves"
+          ],
+          "wikiPage": "Winter's Clutches"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b52256e4-a555-528b-8a2f-e8442481b689",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Sovereign Glut",
+            "wikiPage": "Glut"
+          },
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Glut · circle quest reward",
+          "coordinates": {
+            "x": 59,
+            "y": -110,
+            "space": "Underdark",
+            "subject": "location"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Avenge Glut's Circle"
+              },
+              {
+                "kind": "choice",
+                "subject": "Only if the mutually exclusive Esther instance has not appeared."
+              }
+            ]
+          },
+          "notes": [
+            "Mutually exclusive Glut/Esther copies; later Act 3 point separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Winter's_Clutches&oldid=438214",
+              "revisionId": 438214,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Glut&oldid=415629",
+              "revisionId": 415629,
+              "section": "Acquisition; Involvement; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Avenge_Glut's_Circle&oldid=385886",
+              "revisionId": 385886,
+              "section": "Acquisition; Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Glut reward/home-area navigation reference 59,-110; travelling Glut can move."
+          }
+        },
+        {
+          "id": "7fad28e8-cfcb-5def-97cf-88b751274e23",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Lady Esther",
+            "wikiPage": "Esther"
+          },
+          "location": {
+            "name": "Rosymorn Monastery Trail",
+            "wikiPage": "Rosymorn Monastery Trail"
+          },
+          "sublocation": "Esther · north-east of Trielta Crags",
+          "coordinates": {
+            "x": -43,
+            "y": -129,
+            "space": "Rosymorn Monastery Trail",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Only if the mutually exclusive Glut reward instance has not appeared."
+              }
+            ]
+          },
+          "notes": [
+            "Mutually exclusive Glut/Esther copies; later Act 3 point separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Winter's_Clutches&oldid=438214",
+              "revisionId": 438214,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published navigation reference; not a fixed actor/corpse position."
+          }
+        },
+        {
+          "id": "d83845bc-d0b9-51c9-b4e1-535e741ad501",
+          "type": "world",
+          "acts": [
+            3
+          ],
+          "actor": null,
+          "location": {
+            "name": "Sorcerous Sundries",
+            "wikiPage": "Sorcerous Sundries"
+          },
+          "sublocation": "Entrance counter · behind the elementals",
+          "coordinates": {
+            "x": -2,
+            "y": -66,
+            "space": "Sorcerous Sundries",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "Mutually exclusive Glut/Esther copies; later Act 3 point separate."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Winter's_Clutches&oldid=438214",
+              "revisionId": 438214,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4C plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]

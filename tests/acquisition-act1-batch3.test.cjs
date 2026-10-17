@@ -1134,9 +1134,9 @@ test('Batch 3 corpse pickups keep corpse subjects without live-NPC kill conditio
 for(const [name,alternate] of [['Gloves of Dexterity','1387,-821'],['Hunting Shortbow','180,561'],['Helmet of Smiting','163,-244'],['Ring of Poison Resistance','338,15'],["Smuggler's Ring",'57,516'],['Staff of Crones','-412,606'],['Skybreaker','27,-298']])test('Batch 3 retains alternate evidence without averaging: '+name,()=>{
  const r=entryFor(byName(name)).routes[0];assert.equal(r.coordinateReview.state,'reference');assert.ok(r.notes.join(' ').includes(alternate));assert.ok(r.coordinateReview.reason.includes(alternate));assert.ok(r.sources.length>=2);
 });
-test('Batch 3 only approved identities are added and all deferred cases remain unenriched',()=>{
+test('Batch 3 historical checkpoint includes only approved identities and excludes then-deferred cases',()=>{
  const old=metadata.createResolver(baseline),checkpoint=metadata.createResolver(batch3Snapshot),items=Array.from(itemHarness(catalogue,{dataset:data}).app.items());assert.deepEqual(items.filter(i=>checkpoint.resolve(i)&&!old.resolve(i)).map(key).sort(),approved.map(s=>s.binding.progressKey).sort());
- for(const name of ['Abyss Beckoners',"The Oakfather's Embrace",'Drow Studded Leather Armour',"Winter's Clutches",'Amulet of Misty Step','Amulet of Restoration','Necklace of Elemental Augmentation','Gloves of Hail of Thorns',"Loviatar's Scourge",'The Sparkswall']){const item=items.find(i=>i.act==='ACT 1'&&i.name===name);assert.ok(item,name);assert.equal(resolver.resolve(item),null,name);}
+ for(const name of ['Abyss Beckoners',"The Oakfather's Embrace",'Drow Studded Leather Armour',"Winter's Clutches",'Amulet of Misty Step','Amulet of Restoration','Necklace of Elemental Augmentation','Gloves of Hail of Thorns',"Loviatar's Scourge",'The Sparkswall']){const item=items.find(i=>i.act==='ACT 1'&&i.name===name);assert.ok(item,name);assert.equal(checkpoint.resolve(item),null,name);}
 });
 test('Batch 3 actual catalogue keeps all 555 keys, memberships, Graceful contexts and sourceRow 54 Battlemage',()=>{
  const h=itemHarness(catalogue,{dataset:data}),items=Array.from(h.app.items());assert.equal(catalogue.length,556);assert.equal(items.length,555);assert.deepEqual(items.map(key).sort(),[...new Set(catalogue.map(key))].sort());
