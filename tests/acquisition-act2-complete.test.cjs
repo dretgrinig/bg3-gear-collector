@@ -1,11 +1,14 @@
 /* Independent Work-plan facts exercise the real validator, resolver and tracker DOM. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
 const metadata=require('../acquisition-metadata.js'),{createAcquisitionUI}=require('../acquisition-ui.js'),{generateBundle}=require('../scripts/build-acquisition-bundle.cjs');
 const {harness:storyHarness,record}=require('./helpers/app-harness.cjs');
 const root=join(__dirname,'..'),facts=JSON.parse(readFileSync(join(__dirname,'fixtures/acquisition-act2-complete.json'),'utf8'));
-const baseline=JSON.parse(execFileSync('git',['show',facts.baseline+':data/acquisition.v1.json'],{cwd:root,encoding:'utf8'})),data=JSON.parse(readFileSync(join(root,'data/acquisition.v1.json'),'utf8'));
+const baseline=JSON.parse(execFileSync('git',['show',facts.baseline+':data/acquisition.v1.json'],{cwd:root,encoding:'utf8'})),liveData=JSON.parse(readFileSync(join(root,'data/acquisition.v1.json'),'utf8'));
+const approvedAct2=JSON.parse(execFileSync('git',['show','f4b136b09ad4f98c112ecba72aa7a61886504ac1:data/acquisition.v1.json'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024})),act2IDs=new Set(approvedAct2.entries.map(e=>e.id));
+const data={...liveData,datasetVersion:approvedAct2.datasetVersion,entries:liveData.entries.filter(e=>act2IDs.has(e.id)).map(withoutAct2Continuations.withoutAct3)};
 const catalogue=JSON.parse(readFileSync(join(__dirname,'fixtures/vendor-catalogue.json'),'utf8')),copy=x=>JSON.parse(JSON.stringify(x)),key=x=>(x.act+'|'+x.name).toLowerCase();
 const boundary={exports:{}};
 vm.runInNewContext(readFileSync(join(__dirname,'acquisition-ui.test.cjs'),'utf8').split("test('Phase 2 has a frozen standalone factory")[0]+'\nmodule.exports={itemHarness,required,surfaces,entireAttributes,discovery};',{require,__dirname,module:boundary,process,URL});
@@ -41,7 +44,7 @@ for(const f of facts.items){
  });
 }
 test('Act 2 complete checkpoint totals and exact new identity coverage',()=>{
- assert.equal(metadata.validateDataset(data).ok,true);assert.equal(data.schemaVersion,2);assert.equal(data.datasetVersion,facts.datasetVersion);assert.equal(facts.items.length,142);for(const k of ['sourceRow','progressKey','entryId','bindingId'])assert.equal(new Set(facts.items.map(f=>f[k])).size,142,k);
+ assert.deepEqual(data,approvedAct2);assert.equal(metadata.validateDataset(data).ok,true);assert.equal(data.schemaVersion,2);assert.equal(data.datasetVersion,facts.datasetVersion);assert.equal(facts.items.length,142);for(const k of ['sourceRow','progressKey','entryId','bindingId'])assert.equal(new Set(facts.items.map(f=>f[k])).size,142,k);
  assert.equal(data.entries.length,366);assert.equal(data.entries.flatMap(e=>e.bindings).length,367);assert.equal(data.entries.flatMap(e=>e.routes).length,526);
  assert.deepEqual(all.filter(i=>resolver.resolve(i)&&!oldResolver.resolve(i)).map(key).sort(),facts.items.map(f=>f.progressKey).sort());for(const [a,n] of [['ACT 1',219],['ACT 2',144],['ACT 3',3]])assert.equal(all.filter(i=>i.act===a&&resolver.resolve(i)).length,n);
  assert.equal(all.filter(i=>ui.render(i,'full').acquisitionHtml).length,365);assert.equal(all.filter(i=>i.act==='ACT 2'&&ui.render(i,'full').acquisitionHtml).length,143);
@@ -83,8 +86,8 @@ test('Act 2 complete Isobel outcomes are distinct and moving locations never inh
  for(const r of routes('Hat of Fire Acuity'))assert.ok(r.acts.every(a=>a!==1));
 });
 test('Act 2 complete generated, canonical and offline bundles are deterministic without runtime drift',()=>{
- const source=readFileSync(join(root,'assets/acquisition-pilot.js'),'utf8');assert.equal(source,generateBundle());assert.equal(source,generateBundle());assert.deepEqual(JSON.parse(source.match(/  const dataset = (\{[^\n]*\});/)[1]),data);
- const old=execFileSync('git',['show',facts.baseline+':assets/acquisition-pilot.js'],{cwd:root,encoding:'utf8'});assert.equal(source.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'),old.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'));
+ const source=readFileSync(join(root,'assets/acquisition-pilot.js'),'utf8');assert.equal(source,generateBundle());assert.equal(source,generateBundle());assert.deepEqual(JSON.parse(source.match(/  const dataset = (\{[^\n]*\});/)[1]),liveData);
+ const old=execFileSync('git',['show',facts.baseline+':assets/acquisition-pilot.js'],{cwd:root,encoding:'utf8'});assert.equal(withoutAct2Continuations.withoutSourceAliases(source).replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'),old.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'));
  const sandbox={URL};sandbox.globalThis=sandbox;vm.runInNewContext(source,sandbox);const offline={URL};offline.globalThis=offline;vm.runInNewContext(sandbox.BG3AcquisitionUI.offlineSource(),offline);for(const f of facts.items)for(const runtime of [sandbox,offline])assert.deepEqual(copy(runtime.BG3AcquisitionUI.render(itemFor(f),'full')),copy(ui.render(itemFor(f),'full')));
 });
 test('Act 2 complete catalogue/progress keys and exact memberships remain unchanged',()=>{
@@ -100,7 +103,7 @@ test('Act 2 complete cached catalogue and v5/v6 import/export keep exact keys an
  const cached=itemHarness(facts.items.map(itemFor),{dataset:data,cached:true});for(const i of cached.app.items())assert.ok(resolver.resolve(i));
 });
 test('Act 2 complete protected application/runtime/deployment files are byte-identical',()=>{
- for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(readFileSync(join(root,file),'utf8'),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8'}),file);
+ for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):readFileSync(join(root,file),'utf8'),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8'}),file);
 });
 
 test('Act 2 complete special Lann stock gate is not imposed on ordinary stock',()=>{

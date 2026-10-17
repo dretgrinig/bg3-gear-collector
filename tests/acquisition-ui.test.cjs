@@ -354,7 +354,7 @@ test('rendering, mode changes and item progress toggles preserve progress map id
   assert.deepEqual(copy(h.marks), [{ key: 'act 2|armour of devotion', status: 'found' }]);
   assert.equal(progress['act 2|armour of devotion'], 'found'); assert.equal(JSON.stringify(data), before);
 });
-test('expanded acquisition data enriches only its three hundred sixty-five renderable approved item identities and preserves separate Phalar and Dolor alternatives', () => {
+test('expanded acquisition data enriches only its five hundred fifty-four renderable approved item identities and preserves separate Phalar and Dolor alternatives', () => {
   const data = JSON.parse(readFileSync(join(root, 'data', 'acquisition.v1.json'), 'utf8')); createUI(data);
   const h = itemHarness(catalogue, { dataset: data }), matched = new Set();
   for (const [index, item] of Array.from(h.app.view()).entries()) {
@@ -362,10 +362,10 @@ test('expanded acquisition data enriches only its three hundred sixty-five rende
     assert.equal(!!desktop, !!mobile);
     if (desktop) matched.add(key(item));
   }
-  assert.equal(matched.size, 365);
+  assert.equal(matched.size, 554);
   for (const name of ['Phalar Aluve', 'Dolor Amarus']) {
     h.search(name); assert.equal(h.rows().length, 1);
-    for (const surface of surfaces(h)) assert.equal(required(surface, '.acquisition-enrichment').querySelectorAll('.acquisition-route').length, 3);
+    for (const surface of surfaces(h)) assert.equal(required(surface, '.acquisition-enrichment').querySelectorAll('.acquisition-route').length, name==='Dolor Amarus'?4:3);
   }
   h.search('The Graceful Cloth (Araj)');
   for (const surface of surfaces(h)) assert.match(required(surface, '.acquisition-enrichment').textContent, /Historical/);
@@ -487,7 +487,7 @@ async function exportFullSnapshot() {
   createUI(fixture());
   const browser = browserBundle(readFileSync(join(root, 'assets', 'acquisition-pilot.js'), 'utf8'));
   const h = itemHarness(catalogue, { bundle: false }); h.window.BG3AcquisitionUI = browser.ui; h.app.render();
-  assert.equal(surfaces(h).filter(enrichment).length, 730, 'Live Full DOM contains all three hundred sixty-five renderable approved desktop and mobile acquisition entries');
+  assert.equal(surfaces(h).filter(enrichment).length, 1108, 'Live Full DOM contains all five hundred fifty-four renderable approved desktop and mobile acquisition entries');
   exportBoundary(h);
   const liveBefore = h.context.document.documentElement.outerHTML;
   assert.ok(bodyContents(liveBefore).includes('acquisition-enrichment'));
@@ -520,7 +520,7 @@ for (const mode of ['minimal', 'light']) test(`actual saved Full snapshot restor
     assert.equal(surface.querySelectorAll('.acquisition-reference').length, 0);
   }
   const before = discovery(h), progress = h.app.progress();
-  h.mode('full'); assert.equal(surfaces(h).filter(enrichment).length, 730);
+  h.mode('full'); assert.equal(surfaces(h).filter(enrichment).length, 1108);
   h.mode(mode); assert.deepEqual(copy(discovery(h)), copy(before)); assert.equal(h.app.progress(), progress);
   assert.ok(surfaces(h).every(surface => !enrichment(opened(surface))));
   assert.deepEqual(browser.calls, []);
@@ -893,7 +893,7 @@ for(const surfaceName of ['rows','cards']) test(`original Wiki link and native M
 test('real Phalar and Dolor share compact destinations across desktop/mobile without route merging or evidence UI',()=>{
   const data=JSON.parse(readFileSync(join(root,'data','acquisition.v1.json'),'utf8')),before=JSON.stringify(data),h=itemHarness(catalogue,{dataset:data});
   h.search('Phalar Aluve');for(const surface of surfaces(h)){assert.equal(surface.querySelectorAll('.acquisition-point').length,1);assert.equal(surface.querySelectorAll('.acquisition-route').length,3);assert.match(enrichment(surface).textContent,/Strength check \(DC 15\)/);assert.match(enrichment(surface).textContent,/Religion check \(DC 15\)/);assert.equal(surface.querySelectorAll('.acquisition-reference').length,0);}assert.equal(enrichment(h.rows()[0]).textContent,enrichment(h.cards()[0]).textContent);
-  h.search('Dolor Amarus');for(const surface of surfaces(h)){assert.equal(surface.querySelectorAll('.acquisition-point').length,3);assert.equal(surface.querySelectorAll('.acquisition-route').length,3);assert.equal(surface.querySelectorAll('a').length,1);assert.doesNotMatch(enrichment(surface).textContent,/Route \d|Shared location|Prerequisites|Notes|References/);}assert.equal(JSON.stringify(data),before);
+  h.search('Dolor Amarus');for(const surface of surfaces(h)){assert.equal(surface.querySelectorAll('.acquisition-point').length,4);assert.equal(surface.querySelectorAll('.acquisition-route').length,4);assert.equal(surface.querySelectorAll('a').length,1);assert.doesNotMatch(enrichment(surface).textContent,/Route \d|Shared location|Prerequisites|Notes|References/);}assert.equal(JSON.stringify(data),before);
 });
 test('repeated late hydration retains compact destination nodes, original Wiki focus and outer disclosure state',()=>{
   const h=hydrationHarness('full',catalogue);h.search('Dolor Amarus');arriveAtExistingItems(h);const surface=h.rows()[0],outer=required(surface,'details');required(outer,'summary').click();const link=required(surface,'.item-reference');link.focus();const nodes=nodeSnapshot(surface);h.nativeDOM.reset();arriveAtExistingItems(h);arriveAtExistingItems(h);assertNodesSurvive(h,nodes,'rows');assert.equal(outer.open,true);assert.equal(h.context.document.activeElement,link);assert.equal(surface.querySelectorAll('a').length,1);assert.equal(surface.querySelectorAll('.acquisition-enrichment').length,1);assert.equal(h.nativeDOM.writes.filter(entry=>entry.itemTree).length,0);

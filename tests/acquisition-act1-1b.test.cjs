@@ -265,7 +265,7 @@ function entryFor(spec, data = dataset()) {
   const matches = data.entries.filter(entry => entry.bindings.some(binding => binding.act === spec.act && binding.progressKey === spec.progressKey));
   assert.equal(matches.length, 1, 'One approved canonical binding for ' + spec.progressKey);
   assert.equal(matches[0].id, spec.entryId, 'Immutable enrichment ID');
-  return matches[0];
+  return withoutAct2Continuations(matches[0]);
 }
 function routesFor(spec) {
   const entry = entryFor(spec);
@@ -344,7 +344,7 @@ for (const [index, spec] of approved.entries()) {
       else if (fact.sublocation) assert.match(route.sublocation || '', fact.sublocation);
       assert.deepEqual(route.coordinates, fact.coordinates, 'No inferred coordinates or wrong map/subject');
     }
-    assert.equal(metadata.createResolver(dataset()).reviewedRoutesFor(itemFor(spec)).length, spec.routeIds.length);
+    assert.equal(metadata.createResolver(dataset()).reviewedRoutesFor(itemFor(spec)).length, spec.routeIds.length+withoutAct2Continuations.continuationCount(spec.entryId));
   });
   test('1B pinned primary item evidence remains with every route: ' + spec.name, () => {
     for (const route of routesFor(spec)) {
@@ -502,7 +502,7 @@ for (const path of ['fresh','cached']) test('1B actual ' + path + ' Full hydrati
     assert.equal(saved.surface.querySelectorAll('.acquisition-enrichment').length,1);
     assert.equal(saved.surface.querySelectorAll('.acquisition-references').length,0);
   }
-  assert.equal(surfaces(h).length,20); assert.equal(surfaces(h).reduce((sum,surface) => sum+surface.querySelectorAll('.acquisition-route').length,0),24);
+  assert.equal(surfaces(h).length,20); assert.equal(surfaces(h).reduce((sum,surface) => sum+surface.querySelectorAll('.acquisition-route').length,0),28);
   assert.equal(h.app.progress(),progress); assert.deepEqual(copy(progress),before); assert.deepEqual(copy(h.app.items()),items);
   vm.runInContext(onloadHandler(),h.context); assert.ok(surfaces(h).every(surface => surface.querySelectorAll('.acquisition-enrichment').length === 1));
   assert.deepEqual(browser.calls,[]);

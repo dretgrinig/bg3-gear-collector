@@ -9,6 +9,12 @@ const SUBJECTS = new Set(['actor', 'container', 'entrance', 'item', 'interaction
 const SUBJECTS_V2 = new Set([...SUBJECTS, 'corpse', 'encounter', 'former_container', 'component', 'location']);
 const COORDINATE_STATES = new Set(['exact', 'reference', 'pending', 'conflict', 'not_documented', 'not_applicable']);
 const EMPTY = Object.freeze([]);
+// Exact reviewed legacy catalogue sources. This is lookup compatibility only;
+// the strict Wiki/evidence URL parser and dataset schema remain unchanged.
+const REVIEWED_SOURCE_ALIASES = Object.freeze([
+  Object.freeze({ act: 'ACT 3', progressKey: 'act 3|shapeshifter hat', source: 'https://baldursgate3.wiki.fextralife.com/Shapeshifter+Hat', page: 'Shapeshifter_Hat' }),
+  Object.freeze({ act: 'ACT 3', progressKey: 'act 3|burnished ring', source: 'https://baldursgate3.wiki.fextralife.com/Burnished+Ring', page: 'Burnished_Ring' })
+]);
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const nonempty = value => typeof value === 'string' && value.trim().length > 0;
 const token = value => nonempty(value) && value === value.trim() && !/[\u0000-\u001f\u007f]/.test(value);
@@ -294,10 +300,20 @@ function createResolver(input) {
       if (act.invalid || name.invalid || ids.invalid || source.invalid || links.invalid || !ACTS.has(act.value) || !token(name.value)) return null;
       const gameIds = ids.present ? ids.value : [];
       if (!gameIdsValid(gameIds)) return null;
+      const progressKey = (act.value + '|' + name.value).toLowerCase();
+      const lookupIdentity = value => {
+        const identity = wikiIdentity(value);
+        if (identity) return identity;
+        // An absent/inherited/malformed ID field cannot use an external alias.
+        if (!ids.present || gameIds.length !== 0) return null;
+        const alias = REVIEWED_SOURCE_ALIASES.find(candidate => candidate.act === act.value &&
+          candidate.progressKey === progressKey && candidate.source === value);
+        return alias ? { page: alias.page, revisionId: null } : null;
+      };
       const pages = [];
       if (source.present) {
         if (source.value !== '') {
-          const identity = wikiIdentity(source.value);
+          const identity = lookupIdentity(source.value);
           if (!identity || genericPage(identity.page)) return null;
           pages.push(identity.page);
         }
@@ -307,13 +323,13 @@ function createResolver(input) {
         const link = field(links.value, 'Name');
         if (link.invalid) return null;
         if (link.present) {
-          const identity = wikiIdentity(link.value);
+          const identity = lookupIdentity(link.value);
           if (!identity || genericPage(identity.page)) return null;
           pages.push(identity.page);
         }
       }
       if (new Set(pages).size > 1 || (!gameIds.length && !pages.length)) return null;
-      const candidates = bindings.get(signature(act.value, (act.value + '|' + name.value).toLowerCase(), gameIds)) || EMPTY;
+      const candidates = bindings.get(signature(act.value, progressKey, gameIds)) || EMPTY;
       const matching = candidates.filter(candidate => !pages.length || candidate.page === pages[0]);
       return matching.length === 1 ? matching[0].entry : null;
     } catch { return null; }

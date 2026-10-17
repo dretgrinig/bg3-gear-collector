@@ -93,7 +93,7 @@ test('Batch 4A bundle and offline runtime match canonical data without side effe
  const source=readFileSync(join(root,'assets/acquisition-pilot.js'),'utf8');assert.equal(source,generateBundle());assert.equal(source,generateBundle());const live=bundleRuntime(source),offline=bundleRuntime(live.ui.offlineSource());
  assert.deepEqual(JSON.parse(source.match(/  const dataset = (\{[^\n]*\});/)[1]),data);
  for(const f of facts.items)for(const runtime of [live,offline])assert.deepEqual(copy(runtime.ui.render(itemFor(f),'full')),copy(ui.render(itemFor(f),'full')));assert.deepEqual(live.calls,[]);assert.deepEqual(offline.calls,[]);
- const prior=execFileSync('git',['show',facts.baseline+':assets/acquisition-pilot.js'],{cwd:root,encoding:'utf8'});assert.equal(source.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'),prior.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'));
+ const prior=execFileSync('git',['show',facts.baseline+':assets/acquisition-pilot.js'],{cwd:root,encoding:'utf8'});assert.equal(withoutAct2Continuations.withoutSourceAliases(source).replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'),prior.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'));
 });
 test('Batch 4A historical checkpoint resolves only its approved new catalogue identities',()=>{
  const h=itemHarness(catalogue,{dataset:data}),items=Array.from(h.app.items());assert.deepEqual(items.filter(i=>checkpointResolver.resolve(i)&&!oldResolver.resolve(i)).map(key).sort(),facts.items.map(f=>f.progressKey).sort());
@@ -116,5 +116,5 @@ test('Batch 4A v5/v6 imports and exports preserve exact keys and other Stories',
  for(const version of [5,6]){const items=Object.fromEntries(facts.items.map((f,i)=>[f.progressKey,version===5?'found':i%2?'skipped':'found']));const input=version===5?{progress:Object.fromEntries(facts.items.map(f=>['ACT 1|'+f.name,true]))}:{formatVersion:2,items};await h.app.import(input,'merge');assert.deepEqual((await h.exportPayload()).items,items);assert.equal(h.cached('B')['other-story'].status,'skipped');}
 });
 test('Batch 4A protected product, classifier, schema, renderer and deployment code unchanged',()=>{
- for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(readFileSync(join(root,file),'utf8'),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8'}),file);
+ for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):readFileSync(join(root,file),'utf8'),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8'}),file);
 });

@@ -708,6 +708,87 @@ async function checkAct2Expansion(browser, width) {
   } finally { await testCase.context.close(); }
 }
 
+async function checkAct3Expansion(browser, width, selectedNames = null) {
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act3-complete.json'), 'utf8'));
+  const catalogue = JSON.parse(catalogueFixture), byKey = new Map(catalogue.map(row => [(row.act + '|' + row.name).toLowerCase(), row]));
+  const visible = routes => routes.filter(route => route.review.state === 'reviewed' && ['current', 'historical'].includes(route.validity));
+  const cases = new Map(fixture.items.map(item => [item.progressKey, { ...item, visibleCount: visible(item.routes).length, routesToCheck: visible(item.routes) }]));
+  // The old entries are already approved. Independent original route counts and
+  // the approved append fixture suffice; no expected fact is read from current canonical data.
+  for (const previous of fixture.alreadyAccountedAct3) {
+    const update = fixture.existingUpdates.find(u => u.entryId === previous.entryId);
+    cases.set(previous.progressKey, { name: previous.name, progressKey: previous.progressKey, visibleCount: previous.existingRoutes + (update?.routeAdditions || 0), routesToCheck: visible(update?.routesToAdd || []) });
+  }
+  for (const update of fixture.existingUpdates) {
+    if (cases.has(update.progressKeys[0])) continue;
+    const raw = byKey.get(update.progressKeys[0]);
+    cases.set(update.progressKeys[0], { name: raw.name, progressKey: update.progressKeys[0], visibleCount: update.currentRouteIds.length + update.routeAdditions, routesToCheck: visible(update.routesToAdd) });
+  }
+  const approved = [...cases.values()].filter(item => !selectedNames || selectedNames.includes(item.name));
+  check(cases.size === 203, 'Act 3 QA must reconcile 192 Act 3 plus 11 distinct prior-Act continuation identities');
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  try {
+    testCase.releaseAsset();
+    await page.waitForFunction(() => !!window.BG3AcquisitionUI);
+    for (const expected of approved) {
+      const raw = byKey.get(expected.progressKey);
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator(`[data-act="${raw.act}"]`).click();
+      await page.locator('#q').fill(expected.name);
+      const scope = width > 780 ? '#body > tr' : '#cards > article';
+      const surface = page.locator(scope).filter({ has: page.getByText(expected.name, { exact: true }) });
+      check(await surface.count() === 1, `${width}px ${expected.name}: exact rendered identity mismatch`);
+      const toggle = surface.locator('summary');
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${expected.name}: first search-blur click failed`);
+      const facts = await surface.evaluate((node, raw) => {
+        const where = node.querySelector('.acquisition-enrichment'), effects = node.querySelector('.item-effects'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!where && !!effects && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(raw.description) && (!raw.properties || effects.textContent.includes(raw.properties)),
+          text: where?.textContent || '',
+          coordinates: [...(where?.querySelectorAll('.acquisition-coordinate') || [])].map(n => n.textContent),
+          methods: [...(where?.querySelectorAll('.acquisition-route-heading') || [])].map(n => n.textContent),
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          link: node.querySelector('.item-reference')?.getAttribute('href') || '', links: node.querySelectorAll('a').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth,
+          checkbox: !!node.querySelector('input[type=checkbox]'), preview: document.body.classList.contains('dev-preview')
+        };
+      }, raw);
+      const label = `${width}px Act 3 completion ${expected.name}`;
+      check(facts.mechanics && facts.ordered, label + ': original Effect/order changed');
+      check(facts.sections === 1 && facts.routes === expected.visibleCount, label + ': reviewed routes missing/duplicated or a draft branch leaked');
+      for (const route of expected.routesToCheck) {
+        if (route.coordinates) check(facts.coordinates.includes(`X: ${route.coordinates.x} Y: ${route.coordinates.y}`), label + ': independent coordinate mismatch');
+        else check(facts.text.includes(route.coordinateReview.state === 'conflict' ? 'Coordinates conflict — see Wiki.' : route.coordinateReview.reason), label + ': honest coordinate disposition missing');
+        for (const point of route.navigationPoints || []) check(facts.coordinates.includes(`X: ${point.coordinates.x} Y: ${point.coordinates.y}`), label + ': labelled navigation/component missing');
+        if (route.sublocation) check(facts.text.includes(route.sublocation), label + ': sublocation missing');
+        if (route.validity === 'historical') check(facts.text.includes('Historical / unavailable'), label + ': historical label missing');
+      }
+      check(facts.link === (raw.links?.Name || '') && facts.links === (raw.links?.Name ? 1 : 0), label + ': original catalogue link changed or extra link introduced');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.text), label + ': technical/walkthrough clutter');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': horizontal overflow');
+      check(facts.checkbox && facts.preview, label + ': progress control or develop marker missing');
+      if (fixture.browserRepresentatives.includes(expected.name) && [390, 1280].includes(width)) {
+        await toggle.press('Enter');
+        check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+        await toggle.press('Space');
+        check(await toggle.evaluate(node => node.parentElement.open && document.activeElement === node), label + ': Space/focus failed');
+        await surface.screenshot({ path: path.join(outputDirectory, `act3-${width}-${expected.progressKey.replace(/[^a-z0-9]+/g, '-')}.png`) });
+      }
+      for (const mode of ['minimal', 'light']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation,.acquisition-route').count() === 0, label + ': protected-mode enrichment leak in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('#body > tr, #cards > article').filter({ has: page.getByText(expected.name, { exact: true }) }).locator('.acquisition-enrichment').count() === 2, label + ': Full restoration/duplication failed');
+      record(label, 'Act 3 independent oracle/Full/protected/layout', { facts });
+    }
+    check(testCase.errors.length === 0, width + 'px Act 3 runtime errors: ' + testCase.errors.join('; '));
+  } finally { await testCase.context.close(); }
+}
+
 async function main() {
   fs.mkdirSync(outputDirectory, { recursive: true });
   const browser = await chromium.launch({
@@ -722,14 +803,9 @@ async function main() {
         await checkExistingLinkFocus(browser, width, mode);
       }
     }
-    for (const width of [320, 390, 768, 1280]) await checkCompactDetails(browser, width);
-    for (const width of [390, 1280]) await checkAct1Batch1(browser, width);
-    for (const width of [390, 1280]) await checkAct1Batch2(browser, width);
-    for (const width of [390, 1280]) await checkAct1Batch3(browser, width);
-    for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4A');
-    for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4B');
-    for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4C');
-    for (const width of [320,390,768,1280]) await checkAct2Expansion(browser, width);
+    // Historical data checkpoints remain covered by their permanent suites.
+    // Current expansion QA sweeps all Act 3 identities and exact old-entry appends.
+    for (const width of [320,390,768,1280]) await checkAct3Expansion(browser, width);
     await checkOptionalFailure(browser, null, 'missing optional asset');
     await checkOptionalFailure(browser,
       'window.BG3AcquisitionUI={render(){throw new Error("broken optional API")}};',

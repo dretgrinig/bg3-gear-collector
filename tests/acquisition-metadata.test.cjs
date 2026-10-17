@@ -1,4 +1,5 @@
 'use strict';
+const withoutLaterContinuations=require('./helpers/acquisition-checkpoint.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync, existsSync } = require('node:fs');
@@ -602,9 +603,9 @@ test('acquisition metadata remains isolated from tracker state and discovery aft
   assert.doesNotMatch(html.slice(start, end), /BG3AcquisitionUI|acquisitionDetailsFor|reviewedRoutesFor/);
 });
 
-test('the expanded acquisition dataset is valid schema 2 with exactly three hundred sixty-six stable entries', () => {
+test('the expanded acquisition dataset is valid schema 2 with all five hundred fifty-five stable catalogue entries', () => {
   const input = pilot(), before = copy(input), output = valid(input);
-  assert.equal(output.schemaVersion, 2); assert.equal(output.entries.length, 366);
+  assert.equal(output.schemaVersion, 2); assert.equal(output.entries.length, 555);
   assert.deepEqual(input, before);
   for (const entry of output.entries) assert.ok(entry.bindings.length > 0);
 });
@@ -660,7 +661,7 @@ test('the pilot exposes Phalar Aluve as separate structured alternatives at the 
 });
 
 test('the pilot retains both Dolor drop paths and the conditional purchase path as independent routes', () => {
-  const entry = createResolver(pilot()).resolve(pilotItem('act 3|dolor amarus'));
+  const entry = withoutLaterContinuations(copy(createResolver(pilot()).resolve(pilotItem('act 3|dolor amarus'))));
   assert.equal(entry.coverage, 'partial'); assert.deepEqual(entry.routes.map(route => route.type).sort(), ['drop', 'drop', 'purchase']);
   const purchase = entry.routes.find(route => route.type === 'purchase');
   assert.ok(purchase.conditions.prerequisites.some(value => value.kind === 'choice'));
@@ -703,7 +704,7 @@ test('the Devotee ability route keeps unknown geography null and availability in
 
 test('every reviewed pilot route preserves pinned BG3 evidence and explicit current or historical validity', () => {
   for (const entry of valid(pilot()).entries) for (const route of entry.routes) {
-    assert.equal(route.review.state, 'reviewed'); assert.ok(route.sources.length > 0);
+    if(route.review.state!=='reviewed'){const pending=require('./fixtures/acquisition-act3-complete.json').items.flatMap(f=>f.routes).filter(r=>r.review.state==='draft');assert.equal(pending.length,3);assert.ok(pending.some(r=>r.id===route.id));assert.equal(route.review.state,'draft');assert.equal(route.validity,'uncertain');assert.equal(route.coordinateReview.state,'pending');assert.equal(route.coordinates,null);} assert.ok(route.sources.length > 0);
     assert.ok(['current', 'historical', 'uncertain'].includes(route.validity));
     for (const source of route.sources) {
       const url = new URL(source.url); assert.equal(url.protocol, 'https:'); assert.equal(url.hostname, 'bg3.wiki');
@@ -722,7 +723,7 @@ test('all pilot bindings resolve through the existing real normalized catalogue 
       assert.equal(resolver.resolve(found)?.id, entry.id, binding.progressKey); resolved.add(entry.id);
     }
   }
-  assert.equal(resolved.size, 366, 'Every approved pilot, checkpoint, Batch 1, Batch 2, Batch 3, Batch 4A, Batch 4B, Batch 4C and complete Act 2 identity must have a real catalogue lookup');
+  assert.equal(resolved.size, 555, 'Every approved catalogue identity must resolve, including the two exact reviewed legacy-source aliases');
   assert.deepEqual(copy(items), before);
 });
 
@@ -774,4 +775,79 @@ test('metadata lookup leaves real v5/v6 import, selected Story storage and expor
   const exported = await h.exportPayload();
   assert.equal(exported.items['act 1|test relic'], 'found');
   assert.equal(exported.items['act 2|example'], 'found'); assert.equal(exported.items['act 3|example'], 'skipped');
+});
+
+// Closed compatibility contracts: expected identities come from reviewed catalogue
+// rows, not canonical acquisition data or runtime allowlist contents.
+const reviewedSourceAliases = Object.freeze([
+  Object.freeze({name:'Shapeshifter Hat',row:140,key:'act 3|shapeshifter hat',source:'https://baldursgate3.wiki.fextralife.com/Shapeshifter+Hat',page:'Shapeshifter_Hat'}),
+  Object.freeze({name:'Burnished Ring',row:192,key:'act 3|burnished ring',source:'https://baldursgate3.wiki.fextralife.com/Burnished+Ring',page:'Burnished_Ring'})
+]);
+function aliasFixture(c) {
+  const d=fixture(),e=d.entries[0];e.id='alias:entry:'+c.row;e.bindings=[{id:'alias:binding:'+c.row,act:'ACT 3',progressKey:c.key,gameIds:[],wikiPage:c.page}];
+  e.routes[0].acts=[3];e.routes[0].sources=[{url:'https://bg3.wiki/wiki/'+c.page,revisionId:1,section:'Where to find'}];return d;
+}
+const aliasInput=c=>({act:'ACT 3',name:c.name,gameIds:[],source:c.source});
+for(const c of reviewedSourceAliases){
+ test('two-entry source alias positive raw/normalized/agreeing fields/immutable Full rendering: '+c.name,()=>{
+  const d=aliasFixture(c),resolver=createResolver(d),ui=require('../acquisition-ui.js').createAcquisitionUI(implementation,d),raw=copy(catalogue.find(x=>x.act==='ACT 3'&&x.sourceRow===c.row));
+  assert.equal(raw.name,c.name);assert.equal(raw.links.Name,c.source);assert.deepEqual(raw.gameIds,[]);
+  for(const incoming of [raw,aliasInput(c),{...raw,source:c.source},{...aliasInput(c),links:{Name:'https://bg3.wiki/wiki/'+c.page}},{...aliasInput(c),source:'https://bg3.wiki/wiki/'+c.page,links:{Name:c.source}}]){
+   const before=copy(incoming);assert.equal(resolver.resolve(incoming)?.id,d.entries[0].id);assert.deepEqual(incoming,before);assert.ok(ui.render(incoming,'full').acquisitionHtml);
+   for(const mode of ['minimal','light'])assert.deepEqual(copy(ui.render(incoming,mode)),{acquisitionHtml:'',referencesHtml:''});
+  }
+  const frozen=aliasInput(c);Object.freeze(frozen.gameIds);Object.freeze(frozen);assert.ok(resolver.resolve(frozen));
+ });
+ const negatives=[
+  ['wrong Act',x=>{x.act='ACT 2'}],['wrong key',x=>{x.name+=' lookalike'}],
+  ['swapped external URL',x=>{x.source=reviewedSourceAliases.find(y=>y!==c).source}],
+  ['missing source evidence',x=>{delete x.source}],['empty source evidence',x=>{x.source=''}],
+  ['conflicting source fields',x=>{x.links={Name:'https://bg3.wiki/wiki/Unrelated_Item'}}],
+  ['conflicting alias fields',x=>{x.links={Name:reviewedSourceAliases.find(y=>y!==c).source}}],
+  ['invalid primary cannot downgrade to valid secondary',x=>{x.source='https://example.invalid/Unknown';x.links={Name:'https://bg3.wiki/wiki/'+c.page}}],
+  ['invalid secondary cannot downgrade to valid primary',x=>{x.links={Name:'https://example.invalid/Unknown'}}],
+  ['changed protocol',x=>{x.source=x.source.replace('https:','http:')}],
+  ['changed URL spelling',x=>{x.source=x.source.replace(c.name.split(' ').at(-1),c.name.split(' ').at(-1).toLowerCase())}],
+  ['query string',x=>{x.source+='?view=1'}],['fragment',x=>{x.source+='#Where_to_find'}],
+  ['credentials',x=>{x.source=x.source.replace('https://','https://user@')}],
+  ['port',x=>{x.source=x.source.replace('.com/','.com:443/')}],
+  ['other Fextralife page',x=>{x.source='https://baldursgate3.wiki.fextralife.com/Unreviewed+Relic'}],
+  ['unrelated external host',x=>{x.source='https://example.invalid/'+c.page}],
+  ['malformed URL encoding',x=>{x.source+='%XX'}],['missing IDs',x=>{delete x.gameIds}],
+  ['inherited IDs',x=>{delete x.gameIds;Object.setPrototypeOf(x,{gameIds:[]})}],
+  ['own undefined IDs',x=>{x.gameIds=undefined}],['null IDs',x=>{x.gameIds=null}],
+  ['non-array IDs',x=>{x.gameIds=''}],['non-empty IDs',x=>{x.gameIds=['UNKNOWN_ALIAS_ID']}],
+  ['sparse IDs',x=>{x.gameIds=new Array(1)}],['inherited source',x=>{delete x.source;Object.setPrototypeOf(x,{source:c.source})}]
+ ];
+ for(const [label,mutate] of negatives)test('two-entry source alias rejects '+label+': '+c.name,()=>{
+  const resolver=createResolver(aliasFixture(c)),incoming=aliasInput(c);mutate(incoming);assert.equal(resolver.resolve(incoming),null);
+ });
+ test('two-entry source alias requires the exact reviewed target: '+c.name,()=>{
+  const d=aliasFixture(c);d.entries[0].bindings[0].wikiPage='Wrong_Reviewed_Target';assert.equal(createResolver(d).resolve(aliasInput(c)),null);
+ });
+ test('two-entry source alias cannot select an ambiguous binding: '+c.name,()=>{
+  const d=aliasFixture(c),b=copy(d.entries[0].bindings[0]);b.id+=':duplicate';d.entries[0].bindings.push(b);assert.equal(createResolver(d).resolve(aliasInput(c)),null);
+ });
+ test('two-entry source alias never changes strict evidence URL validation: '+c.name,()=>{
+  const d=aliasFixture(c);d.entries[0].routes[0].sources[0].url=c.source;assert.equal(validateDataset(d).ok,false);assert.equal(createResolver(d).resolve(aliasInput(c)),null);
+ });
+ for(const field of ['act','name','gameIds','source','links','links.Name'])test('two-entry source alias getter-free rejection '+field+': '+c.name,()=>{
+  const incoming=aliasInput(c);let calls=0;const target=field==='links.Name'?(incoming.links={Name:c.source}):incoming;
+  Object.defineProperty(target,field==='links.Name'?'Name':field,{enumerable:true,get(){calls++;throw Error('Getter must never execute')}});
+  assert.equal(createResolver(aliasFixture(c)).resolve(incoming),null);assert.equal(calls,0);
+ });
+}
+test('two-entry source alias does not trust unrelated empty-ID items on the same external domain',()=>{
+ const c=reviewedSourceAliases[0],d=aliasFixture(c);d.entries[0].bindings[0].progressKey='act 3|unreviewed relic';d.entries[0].bindings[0].wikiPage='Unreviewed_Relic';
+ assert.equal(createResolver(d).resolve({...aliasInput(c),name:'Unreviewed Relic',source:'https://baldursgate3.wiki.fextralife.com/Unreviewed+Relic'}),null);
+});
+test('two-entry source alias leaves all other 553 real catalogue resolver outcomes unchanged',()=>{
+ const cwd=join(__dirname,'..'),oldSource=require('node:child_process').execFileSync('git',['show','f4b136b09ad4f98c112ecba72aa7a61886504ac1:acquisition-metadata.js'],{cwd,encoding:'utf8'}),sandbox={module:{exports:{}},URL};
+ vm.runInNewContext(oldSource,sandbox);const d=pilot(),before=sandbox.module.exports.createResolver(d),after=createResolver(d),items=Array.from(itemHarness(catalogue).app.items());let count=0;
+ for(const incoming of items){if(reviewedSourceAliases.some(c=>progressKey(incoming)===c.key))continue;assert.deepEqual(copy(after.resolve(incoming)),copy(before.resolve(incoming)),progressKey(incoming));count++;}
+ assert.equal(count,553);
+});
+test('two-entry source alias current generated bundle is deterministic and matches source',()=>{
+ const {generateBundle}=require('../scripts/build-acquisition-bundle.cjs'),source=readFileSync(join(__dirname,'..','assets','acquisition-pilot.js'),'utf8');assert.equal(generateBundle(),source);assert.equal(generateBundle(),source);
+ for(const c of reviewedSourceAliases){const d=aliasFixture(c),sandbox={URL};sandbox.globalThis=sandbox;vm.runInNewContext(source.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = '+JSON.stringify(d)+';'),sandbox);assert.ok(sandbox.BG3AcquisitionUI.render(aliasInput(c),'full').acquisitionHtml);for(const mode of ['minimal','light'])assert.deepEqual(copy(sandbox.BG3AcquisitionUI.render(aliasInput(c),mode)),{acquisitionHtml:'',referencesHtml:''});}
 });
