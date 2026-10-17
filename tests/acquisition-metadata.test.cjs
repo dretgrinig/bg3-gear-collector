@@ -602,9 +602,9 @@ test('acquisition metadata remains isolated from tracker state and discovery aft
   assert.doesNotMatch(html.slice(start, end), /BG3AcquisitionUI|acquisitionDetailsFor|reviewedRoutesFor/);
 });
 
-test('the expanded acquisition dataset is valid schema 2 with exactly eighty-five stable entries', () => {
+test('the expanded acquisition dataset is valid schema 2 with exactly one hundred thirty-two stable entries', () => {
   const input = pilot(), before = copy(input), output = valid(input);
-  assert.equal(output.schemaVersion, 2); assert.equal(output.entries.length, 85);
+  assert.equal(output.schemaVersion, 2); assert.equal(output.entries.length, 132);
   assert.deepEqual(input, before);
   for (const entry of output.entries) assert.ok(entry.bindings.length > 0);
 });
@@ -722,7 +722,7 @@ test('all pilot bindings resolve through the existing real normalized catalogue 
       assert.equal(resolver.resolve(found)?.id, entry.id, binding.progressKey); resolved.add(entry.id);
     }
   }
-  assert.equal(resolved.size, 85, 'Every approved pilot, checkpoint, Batch 1, Batch 2 and Batch 3 identity must have a real catalogue lookup');
+  assert.equal(resolved.size, 132, 'Every approved pilot, checkpoint, Batch 1, Batch 2, Batch 3 and Batch 4A identity must have a real catalogue lookup');
   assert.deepEqual(copy(items), before);
 });
 

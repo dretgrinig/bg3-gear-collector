@@ -555,6 +555,72 @@ async function checkAct1Batch3(browser, width) {
   } finally { await testCase.context.close(); }
 }
 
+// One independent reviewed table drives the entire large-batch layout sweep.
+async function checkAct1Batch4A(browser, width) {
+  const approved = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act1-batch4a.json'), 'utf8')).items;
+  const catalogue = JSON.parse(catalogueFixture);
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  const representatives = new Set(['Adamantine Scimitar','Daredevil Gloves','Gloves of Belligerent Skies','Speedy Reply','Uncovered Mysteries','Worgfang','Jagged Spear','Blooded Greataxe']);
+  try {
+    testCase.releaseAsset();
+    await page.waitForFunction(() => !!window.BG3AcquisitionUI);
+    await page.locator('[data-act="ACT 1"]').click();
+    for (const expected of approved) {
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator('#q').fill(expected.name);
+      const scope = width > 780 ? '#body > tr' : '#cards > article';
+      check(await page.locator(scope).count() === 1, `${width}px ${expected.name}: exact search mismatch`);
+      const surface = page.locator(scope).first(), toggle = surface.locator('summary');
+      // Search blur must not swallow this first real pointer click.
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${expected.name}: first click failed`);
+      const raw = catalogue.find(row => row.sourceRow === expected.sourceRow && row.act === 'ACT 1');
+      const facts = await surface.evaluate((node, raw) => {
+        const where = node.querySelector('.acquisition-enrichment'), effects = node.querySelector('.item-effects'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!where && !!effects && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(raw.description) && (!raw.properties || effects.textContent.includes(raw.properties)),
+          text: where?.textContent || '',
+          coordinates: [...(where?.querySelectorAll('.acquisition-coordinate') || [])].map(n => n.textContent),
+          methods: [...(where?.querySelectorAll('.acquisition-route-heading') || [])].map(n => n.textContent),
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          link: node.querySelector('.item-reference')?.getAttribute('href'), links: node.querySelectorAll('a').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth,
+          surfaceWidth: node.getBoundingClientRect().width
+        };
+      }, raw);
+      const label = `${width}px Batch 4A ${expected.name}`;
+      check(facts.ordered && facts.mechanics, label + ': Effect/order changed');
+      check(facts.sections === 1 && facts.routes === expected.routeCount, label + ': missing/duplicate routes');
+      check(JSON.stringify(facts.coordinates) === JSON.stringify(expected.routes.map(r => `X: ${r.point[0]} Y: ${r.point[1]}`)), label + ': independent coordinate mismatch');
+      for (const route of expected.routes) {
+        check(facts.text.includes(route.sublocation), label + ': sublocation missing');
+        if (route.actor) check(facts.text.includes(route.actor[0]), label + ': actor missing');
+      }
+      check(facts.links === 1 && facts.link === expected.wikiURL, label + ': original Wiki link changed');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.text), label + ': acquisition clutter');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': horizontal overflow');
+      if (representatives.has(expected.name) && [390,1280].includes(width)) {
+        await toggle.press('Enter');
+        check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+        await toggle.press('Space');
+        check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
+        check(await toggle.evaluate(node => document.activeElement === node), label + ': keyboard focus lost');
+        await surface.screenshot({path:path.join(outputDirectory,`batch4a-${width}-${expected.sourceRow}.png`)});
+      }
+      for (const mode of ['light','minimal']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation,.acquisition-route').count() === 0, label + ': protected-mode DOM leak in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('.acquisition-enrichment').count() === 2, label + ': Full restoration failed');
+      record(label, 'Act 1 Batch 4A independent facts/Full/protected/layout', {facts});
+    }
+    check(testCase.errors.length === 0, width + 'px Batch 4A: runtime errors: ' + testCase.errors.join('; '));
+  } finally { await testCase.context.close(); }
+}
+
 async function main() {
   fs.mkdirSync(outputDirectory, { recursive: true });
   const browser = await chromium.launch({
@@ -573,6 +639,7 @@ async function main() {
     for (const width of [390, 1280]) await checkAct1Batch1(browser, width);
     for (const width of [390, 1280]) await checkAct1Batch2(browser, width);
     for (const width of [390, 1280]) await checkAct1Batch3(browser, width);
+    for (const width of [320,390,768,1280]) await checkAct1Batch4A(browser, width);
     await checkOptionalFailure(browser, null, 'missing optional asset');
     await checkOptionalFailure(browser,
       'window.BG3AcquisitionUI={render(){throw new Error("broken optional API")}};',

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "datasetVersion": "2.3.0-act1.batch3",
+  "datasetVersion": "2.4.0-act1.batch4a",
   "entries": [
     {
       "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
@@ -7564,6 +7564,3308 @@
           "coordinateReview": {
             "state": "reference",
             "reason": "Item chest point is 28,-295; the tower article gives 27,-298 for the entrance chest. Retain the item point as a navigation reference."
+          }
+        }
+      ]
+    },
+    {
+      "id": "8943ca9d-4ac7-4a5e-a9b0-5a5900da651a",
+      "bindings": [
+        {
+          "id": "64fcbff5-1db7-4508-9758-23feec15bacd",
+          "act": "ACT 1",
+          "progressKey": "act 1|adamantine mace",
+          "gameIds": [
+            "WPN_HUM_Mace_Adamantine_A",
+            "MAG_MeleeDebuff_AttackDebuff1_OnDamage_Mace"
+          ],
+          "wikiPage": "Adamantine Mace"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "a67d23c0-c843-478c-a7ec-3144cacc7dc4",
+          "type": "craft",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Adamantine Forge",
+            "wikiPage": "Adamantine Forge (location)"
+          },
+          "sublocation": "Mace Mould + Mithral Ore (two ore total)",
+          "coordinates": {
+            "x": -558,
+            "y": 230,
+            "space": "Adamantine Forge",
+            "subject": "crafting_station"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Mace Mould"
+              },
+              {
+                "kind": "item",
+                "subject": "Mithral Ore"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Use the Adamantine Forge."
+              }
+            ]
+          },
+          "notes": [
+            "Only two pieces of Mithral Ore are available; each crafted item consumes one."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Mace&oldid=415814",
+              "revisionId": 415814,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Forge_(location)&oldid=438493",
+              "revisionId": 438493,
+              "section": "Overview; Using the Adamantine Forge"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mithral_Ore&oldid=437772",
+              "revisionId": 437772,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item page publishes -558,230 as a forge reference; forge mechanism page uses -568,243. No exact finished-item pickup or unlimited ore is implied."
+          }
+        }
+      ]
+    },
+    {
+      "id": "f3ad536e-82d6-4487-b46f-d24a26ae3296",
+      "bindings": [
+        {
+          "id": "a1fc9adb-78c7-4928-9efe-b41820f1bf32",
+          "act": "ACT 1",
+          "progressKey": "act 1|adamantine scale mail",
+          "gameIds": [
+            "ARM_Scalemail_Adamantine_A",
+            "MAG_MeleeDebuff_AttackDebuff1_OnDamage_ScaleMail"
+          ],
+          "wikiPage": "Adamantine Scale Mail"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "d36dbcd4-c7a0-4893-942c-379308eee439",
+          "type": "craft",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Adamantine Forge",
+            "wikiPage": "Adamantine Forge (location)"
+          },
+          "sublocation": "Scale Mail Mould + Mithral Ore (two ore total)",
+          "coordinates": {
+            "x": -558,
+            "y": 230,
+            "space": "Adamantine Forge",
+            "subject": "crafting_station"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Scale Mail Mould"
+              },
+              {
+                "kind": "item",
+                "subject": "Mithral Ore"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Use the Adamantine Forge."
+              }
+            ]
+          },
+          "notes": [
+            "Only two pieces of Mithral Ore are available; each crafted item consumes one."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Scale_Mail&oldid=438231",
+              "revisionId": 438231,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Forge_(location)&oldid=438493",
+              "revisionId": 438493,
+              "section": "Overview; Using the Adamantine Forge"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mithral_Ore&oldid=437772",
+              "revisionId": 437772,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item page publishes -558,230 as a forge reference; forge mechanism page uses -568,243. No exact finished-item pickup or unlimited ore is implied."
+          }
+        }
+      ]
+    },
+    {
+      "id": "3f1a55d6-7e75-4b68-b95e-186cecf70326",
+      "bindings": [
+        {
+          "id": "27993952-03c9-4d48-a6f2-9ef21bbccb09",
+          "act": "ACT 1",
+          "progressKey": "act 1|adamantine scimitar",
+          "gameIds": [
+            "WPN_HUM_Scimitar_Adamantine_A"
+          ],
+          "wikiPage": "Adamantine Scimitar"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "69e81742-81fe-4f69-9c19-3ad811cfa5d4",
+          "type": "craft",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Adamantine Forge",
+            "wikiPage": "Adamantine Forge (location)"
+          },
+          "sublocation": "Scimitar Mould + Mithral Ore (two ore total)",
+          "coordinates": {
+            "x": -558,
+            "y": 230,
+            "space": "Adamantine Forge",
+            "subject": "crafting_station"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Scimitar Mould"
+              },
+              {
+                "kind": "item",
+                "subject": "Mithral Ore"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Use the Adamantine Forge."
+              }
+            ]
+          },
+          "notes": [
+            "Only two pieces of Mithral Ore are available; each crafted item consumes one."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Scimitar&oldid=415818",
+              "revisionId": 415818,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Forge_(location)&oldid=438493",
+              "revisionId": 438493,
+              "section": "Overview; Using the Adamantine Forge"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mithral_Ore&oldid=437772",
+              "revisionId": 437772,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item page publishes -558,230 as a forge reference; forge mechanism page uses -568,243. No exact finished-item pickup or unlimited ore is implied."
+          }
+        }
+      ]
+    },
+    {
+      "id": "b46a4fd6-9375-49e1-af65-18b1bd6333d6",
+      "bindings": [
+        {
+          "id": "50d3e483-08d3-44cd-afb7-d1e244083471",
+          "act": "ACT 1",
+          "progressKey": "act 1|adamantine splint armour",
+          "gameIds": [
+            "MAG_MeleeDebuff_AttackDebuff2_OnDamage_SplintMail"
+          ],
+          "wikiPage": "Adamantine Splint Armour"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "11d7683b-2c4a-43eb-8131-fab6db36895b",
+          "type": "craft",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Adamantine Forge",
+            "wikiPage": "Adamantine Forge (location)"
+          },
+          "sublocation": "Splint Mould + Mithral Ore (two ore total)",
+          "coordinates": {
+            "x": -558,
+            "y": 230,
+            "space": "Adamantine Forge",
+            "subject": "crafting_station"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Splint Mould"
+              },
+              {
+                "kind": "item",
+                "subject": "Mithral Ore"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Use the Adamantine Forge."
+              }
+            ]
+          },
+          "notes": [
+            "Only two pieces of Mithral Ore are available; each crafted item consumes one."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Splint_Armour&oldid=437941",
+              "revisionId": 437941,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Adamantine_Forge_(location)&oldid=438493",
+              "revisionId": 438493,
+              "section": "Overview; Using the Adamantine Forge"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mithral_Ore&oldid=437772",
+              "revisionId": 437772,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item page publishes -558,230 as a forge reference; forge mechanism page uses -568,243. No exact finished-item pickup or unlimited ore is implied."
+          }
+        }
+      ]
+    },
+    {
+      "id": "67302bc6-3dd4-4bbb-a319-31a07294299c",
+      "bindings": [
+        {
+          "id": "1087ce6e-747e-4a14-b304-4c8c4b1d1a7f",
+          "act": "ACT 1",
+          "progressKey": "act 1|amulet of selûne's chosen",
+          "gameIds": [
+            "UNI_GOB_SeluneAmulet"
+          ],
+          "wikiPage": "Amulet of Selûne's Chosen"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "4e94e9ae-347c-4f52-a60f-4f4d4b76cccb",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Treasure cache behind Ragzlin’s throne",
+          "coordinates": {
+            "x": 296,
+            "y": 71,
+            "space": "Shattered Sanctum",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Open the iron gate with lockpicking OR Dror Ragzlin’s Key."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate treasure-list point: 297,68. No mandatory Ragzlin kill is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Amulet_of_Sel%C3%BBne's_Chosen&oldid=415918",
+              "revisionId": 415918,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shattered_Sanctum&oldid=431013",
+              "revisionId": 431013,
+              "section": "Ragzlin's throne; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item point 296,71; Sanctum treasure list instead publishes 297,68. Container reference, not averaged."
+          }
+        }
+      ]
+    },
+    {
+      "id": "35aa192b-f057-4021-8789-292dc096bfd0",
+      "bindings": [
+        {
+          "id": "60b641ca-ec32-4e9e-a878-cb2ffdc452d1",
+          "act": "ACT 1",
+          "progressKey": "act 1|blooded greataxe",
+          "gameIds": [
+            "MAG_LowHP_IncreaseDamage_Greataxe"
+          ],
+          "wikiPage": "Blooded Greataxe"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "7aa849ee-21ec-422d-ae9c-5e5a8445a460",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Roah’s shop · Act 1",
+          "coordinates": {
+            "x": 272,
+            "y": -31,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade with Roah while she is available in the Shattered Sanctum."
+              }
+            ]
+          },
+          "notes": [
+            "Actor page publishes 275,-29; displayed shop reference remains 272,-31. Later stock is a separate Act context, not a new progress identity."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blooded_Greataxe&oldid=416582",
+              "revisionId": 416582,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Act One; Act Two; Store"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item-shop reference 272,-31; actor page instead publishes 275,-29. No averaging. Roah can move or become unavailable."
+          }
+        },
+        {
+          "id": "0f8c3e04-e97c-4057-8d89-ecb6c4a2e956",
+          "type": "purchase",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Moonrise Towers",
+            "wikiPage": "Moonrise Towers"
+          },
+          "sublocation": "Roah’s shop · Act 2",
+          "coordinates": {
+            "x": -174,
+            "y": -176,
+            "space": "Moonrise Towers",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade with Roah in Moonrise Towers while she remains available."
+              }
+            ]
+          },
+          "notes": [
+            "Roah’s Act Two store explicitly carries previous stock in addition to new stock. No Act Three venue or new progress identity is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Act Two; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act Two moving-trader reference; not a fixed item pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "f3d55006-00b9-4ecb-9bc3-91334da41190",
+      "bindings": [
+        {
+          "id": "e2f2810b-14e9-4915-88a7-4a44a5a39ce4",
+          "act": "ACT 1",
+          "progressKey": "act 1|bow of awareness",
+          "gameIds": [
+            "MAG_Generic_01_Shortbow_1",
+            "MAG_OfAwareness_Bow"
+          ],
+          "wikiPage": "Bow of Awareness"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "651c5d92-0d67-4e06-af91-401ab55d744c",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Roah’s shop · Act 1",
+          "coordinates": {
+            "x": 272,
+            "y": -31,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade with Roah while she is available in the Shattered Sanctum."
+              }
+            ]
+          },
+          "notes": [
+            "Actor page publishes 275,-29; displayed shop reference remains 272,-31. Later stock is a separate Act context, not a new progress identity."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bow_of_Awareness&oldid=416714",
+              "revisionId": 416714,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Act One; Act Two; Store"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item-shop reference 272,-31; actor page instead publishes 275,-29. No averaging. Roah can move or become unavailable."
+          }
+        },
+        {
+          "id": "4169f4d7-0630-4816-bdf0-135b1b785277",
+          "type": "purchase",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Moonrise Towers",
+            "wikiPage": "Moonrise Towers"
+          },
+          "sublocation": "Roah’s shop · Act 2",
+          "coordinates": {
+            "x": -174,
+            "y": -176,
+            "space": "Moonrise Towers",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade with Roah in Moonrise Towers while she remains available."
+              }
+            ]
+          },
+          "notes": [
+            "Roah’s Act Two store explicitly carries previous stock in addition to new stock. No Act Three venue or new progress identity is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Act Two; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act Two moving-trader reference; not a fixed item pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "3966d4f1-34f9-4327-8938-f9eca4509400",
+      "bindings": [
+        {
+          "id": "75d0d60c-09fa-4d18-a733-fb1fb6eaece2",
+          "act": "ACT 1",
+          "progressKey": "act 1|cacophony",
+          "gameIds": [
+            "MAG_Thunder_ThunderClap_Quarterstaff"
+          ],
+          "wikiPage": "Cacophony"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "21f756c2-e961-4ddb-88e3-f9b7bd0262cc",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Lady Esther",
+            "wikiPage": "Esther"
+          },
+          "location": {
+            "name": "Rosymorn Monastery Trail",
+            "wikiPage": "Rosymorn Monastery Trail"
+          },
+          "sublocation": "Camp northeast of Trielta Crags",
+          "coordinates": {
+            "x": -43,
+            "y": -129,
+            "space": "Rosymorn Monastery Trail",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Accepting or completing the egg request is not a purchase prerequisite."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Cacophony&oldid=416866",
+              "revisionId": 416866,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Esther&oldid=425220",
+              "revisionId": 425220,
+              "section": "Act One; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Lady Esther navigation reference; the trader can move or become unavailable."
+          }
+        }
+      ]
+    },
+    {
+      "id": "4820d050-8d23-4653-b22e-f0dc39f92655",
+      "bindings": [
+        {
+          "id": "80e135b0-16ea-49e1-9b31-13585e473540",
+          "act": "ACT 1",
+          "progressKey": "act 1|cap of wrath",
+          "gameIds": [
+            "ARM_Helmet_Barbarian_Magic",
+            "MAG_Violence_ViolenceOnDamaged_Helmet"
+          ],
+          "wikiPage": "Cap of Wrath"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "073779fc-ae10-462e-92e8-6d8599ba96e1",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Thudd",
+            "wikiPage": "Thudd"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Thudd’s encounter area",
+          "coordinates": {
+            "x": -617,
+            "y": 320,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Cap_of_Wrath&oldid=416894",
+              "revisionId": 416894,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Thudd&oldid=426545",
+              "revisionId": 426545,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-combatant reference; carried loot is not a fixed corpse pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "d2e94f21-19f2-4b2b-86d3-1071b858467c",
+      "bindings": [
+        {
+          "id": "2cd964c2-ab76-4686-ab74-ad4b9e82ac44",
+          "act": "ACT 1",
+          "progressKey": "act 1|cinder shoes",
+          "gameIds": [
+            "MAG_Fire_HeatOnInflictBurning_Boots"
+          ],
+          "wikiPage": "Cinder Shoes"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "86e35f09-26ce-4ed8-892f-71e2c9a0c202",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Blurg",
+            "wikiPage": "Blurg"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s shop",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "No Omeluum quest prerequisite is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Cinder_Shoes&oldid=437895",
+              "revisionId": 437895,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blurg&oldid=434059",
+              "revisionId": 434059,
+              "section": "Act One; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Blurg navigation reference; actor availability is not a fixed item point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "eba2f7a7-54b2-4187-aecc-4b94f27bb30a",
+      "bindings": [
+        {
+          "id": "19bf3536-9ea7-4aed-87b3-20d44266e2b8",
+          "act": "ACT 1",
+          "progressKey": "act 1|circlet of blasting",
+          "gameIds": [
+            "ARM_CircletOfBlasting"
+          ],
+          "wikiPage": "Circlet of Blasting"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b0a91af3-5a8d-4929-8ad9-e12a8c79f6c9",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Blurg",
+            "wikiPage": "Blurg"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s shop",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "No Omeluum quest prerequisite is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Circlet_of_Blasting&oldid=432474",
+              "revisionId": 432474,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blurg&oldid=434059",
+              "revisionId": 434059,
+              "section": "Act One; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Blurg navigation reference; actor availability is not a fixed item point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "fa39e64e-2906-488f-bb7f-461855729595",
+      "bindings": [
+        {
+          "id": "274abf79-f23b-476b-90f5-9aaa0f7407b0",
+          "act": "ACT 1",
+          "progressKey": "act 1|crossbow of arcane force",
+          "gameIds": [
+            "MAG_Githborn_Telekinetic_HeavyCrossbow",
+            "MAG_Githborn_TelekineticBolt_HeavyCrossbow"
+          ],
+          "wikiPage": "Crossbow of Arcane Force"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "73e0d356-cbf1-4cf0-84c5-eaf7a3d55509",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Raider G'r'ath",
+            "wikiPage": "G'r'ath"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Camp south of the Crèche waypoint",
+          "coordinates": {
+            "x": 1396,
+            "y": -839,
+            "space": "Crèche Y'llek",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Crossbow_of_Arcane_Force&oldid=417402",
+              "revisionId": 417402,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=G'r'ath&oldid=427351",
+              "revisionId": 427351,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published actor encounter reference; carried loot is not a fixed corpse point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "1ca6a3e2-c5cd-419f-b080-884d0150a38d",
+      "bindings": [
+        {
+          "id": "be966cc8-f0a8-4bbb-bbd4-515bac78bf4e",
+          "act": "ACT 1",
+          "progressKey": "act 1|daredevil gloves",
+          "gameIds": [
+            "MAG_CQCaster_CloseRangedSpellMastery_Gloves"
+          ],
+          "wikiPage": "Daredevil Gloves"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "855fdcff-37f0-48d8-82d3-49e371805d1b",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "A'jak'nir Jeera",
+            "wikiPage": "Jeera"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Jeera’s shop",
+          "coordinates": {
+            "x": 1380,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Jeera actor point: 1387,-821; displayed shop reference: 1380,-798."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Daredevil_Gloves&oldid=417509",
+              "revisionId": 417509,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jeera&oldid=416522",
+              "revisionId": 416522,
+              "section": "Involvement; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved shop reference 1380,-798; NPC page instead publishes 1387,-821. These are distinct shop and actor points, never averaged."
+          }
+        }
+      ]
+    },
+    {
+      "id": "6ca072ce-1fa1-44f9-a81a-a38bf73a002c",
+      "bindings": [
+        {
+          "id": "e349a524-3e6d-4572-850a-fc60500bd62f",
+          "act": "ACT 1",
+          "progressKey": "act 1|defender flail",
+          "gameIds": [
+            "MAG_BG_OfEasthaven_Defender_Flail"
+          ],
+          "wikiPage": "Defender Flail"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "2de1c0da-85bc-4990-9d7e-3e9f6697631b",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "A'jak'nir Jeera",
+            "wikiPage": "Jeera"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Jeera’s shop",
+          "coordinates": {
+            "x": 1380,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Jeera actor point: 1387,-821; displayed shop reference: 1380,-798."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Defender_Flail&oldid=417632",
+              "revisionId": 417632,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jeera&oldid=416522",
+              "revisionId": 416522,
+              "section": "Involvement; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved shop reference 1380,-798; NPC page instead publishes 1387,-821. These are distinct shop and actor points, never averaged."
+          }
+        }
+      ]
+    },
+    {
+      "id": "0947de25-4d56-4126-b044-d9144c7dbc1f",
+      "bindings": [
+        {
+          "id": "36a8a229-9caf-48f7-a7ef-6088906d0608",
+          "act": "ACT 1",
+          "progressKey": "act 1|diadem of arcane synergy",
+          "gameIds": [
+            "MAG_Gish_ArcaneSynergy_Circlet"
+          ],
+          "wikiPage": "Diadem of Arcane Synergy"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "4f6c7cb7-9300-4313-8d5f-691229ca911e",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Ardent Jhe'rezath",
+            "wikiPage": "Jhe'rezath"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Inquisitor’s Chamber",
+          "coordinates": {
+            "x": 1365,
+            "y": -663,
+            "space": "Crèche Y'llek",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Diadem_of_Arcane_Synergy&oldid=417691",
+              "revisionId": 417691,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jhe'rezath&oldid=426553",
+              "revisionId": 426553,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor reference in the Inquisitor’s Chamber; not an exact corpse point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "9c5f206f-67a3-43a8-ad5a-ca1a9c6aed95",
+      "bindings": [
+        {
+          "id": "7c8a1af2-aa8e-4047-be08-5be83d2bb7b5",
+          "act": "ACT 1",
+          "progressKey": "act 1|doom hammer",
+          "gameIds": [
+            "UNI_DoomHammer"
+          ],
+          "wikiPage": "Doom Hammer"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "559c6e74-7bdd-4532-8568-b6e6b940403d",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Grat",
+            "wikiPage": "Grat"
+          },
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Grat the Trader’s shop",
+          "coordinates": {
+            "x": -99,
+            "y": 424,
+            "space": "Goblin Camp",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade while Grat remains available."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Doom_Hammer&oldid=417889",
+              "revisionId": 417889,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grat&oldid=414927",
+              "revisionId": 414927,
+              "section": "Store; Stock"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader navigation reference; availability can change."
+          }
+        }
+      ]
+    },
+    {
+      "id": "14335054-95c5-4ede-86cf-3744a7ed3b72",
+      "bindings": [
+        {
+          "id": "77e35af6-1705-40a3-bbdc-cfa0db1c591a",
+          "act": "ACT 1",
+          "progressKey": "act 1|dragon's grasp",
+          "gameIds": [
+            "MAG_Fire_IncreaseSlashingDamageToBurning_Handaxe"
+          ],
+          "wikiPage": "Dragon's Grasp"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "47ff0d44-a769-46b0-917f-d9846a2ced1f",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Arron",
+            "wikiPage": "Arron"
+          },
+          "location": {
+            "name": "The Hollow",
+            "wikiPage": "The Hollow"
+          },
+          "sublocation": "Arron’s shop by the Silvanus statue",
+          "coordinates": {
+            "x": 205,
+            "y": 516,
+            "space": "The Hollow",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dragon's_Grasp&oldid=438340",
+              "revisionId": 438340,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arron&oldid=414921",
+              "revisionId": 414921,
+              "section": "Shop; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader navigation reference; not a fixed item pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "c9a59ebd-f2b8-4aa7-a1cc-86a33f3b7654",
+      "bindings": [
+        {
+          "id": "5be6aa1d-37c1-4137-b8e6-6fa6c9bfe2f8",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of belligerent skies",
+          "gameIds": [
+            "MAG_Thunder_Reverberation_Gloves"
+          ],
+          "wikiPage": "Gloves of Belligerent Skies"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "f04477a9-c02a-46dc-a4c9-00094a1a780e",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Inquisitor’s Chamber · elegant chest, southwest wall",
+          "coordinates": {
+            "x": 1348,
+            "y": -677,
+            "space": "Crèche Y'llek",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Wiki specifies an elegant chest; no lock prerequisite is inferred from catalogue prose."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Belligerent_Skies&oldid=437701",
+              "revisionId": 437701,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "f46f3c20-12b3-4796-aeac-0ab660d2a8d3",
+      "bindings": [
+        {
+          "id": "f9bbb902-e31e-401f-9555-894c8589b911",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of cinder and sizzle",
+          "gameIds": [
+            "MAG_Monk_Fire_Gloves"
+          ],
+          "wikiPage": "Gloves of Cinder and Sizzle"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "8dce4baa-2ac0-418c-a4e3-36349cc49f6c",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Lady Esther",
+            "wikiPage": "Esther"
+          },
+          "location": {
+            "name": "Rosymorn Monastery Trail",
+            "wikiPage": "Rosymorn Monastery Trail"
+          },
+          "sublocation": "Camp northeast of Trielta Crags",
+          "coordinates": {
+            "x": -43,
+            "y": -129,
+            "space": "Rosymorn Monastery Trail",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Accepting or completing the egg request is not a purchase prerequisite."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Cinder_and_Sizzle&oldid=418966",
+              "revisionId": 418966,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Esther&oldid=425220",
+              "revisionId": 425220,
+              "section": "Act One; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Lady Esther navigation reference; the trader can move or become unavailable."
+          }
+        }
+      ]
+    },
+    {
+      "id": "3deb3494-2d07-43c1-bbbd-27d3f7a81a10",
+      "bindings": [
+        {
+          "id": "9f558588-c573-4a89-a14b-1d20778a47cd",
+          "act": "ACT 1",
+          "progressKey": "act 1|hedge wanderer armour",
+          "gameIds": [
+            "MAG_Druid_Magic_Hide_Armor"
+          ],
+          "wikiPage": "Hedge Wanderer Armour"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "af11e43f-a276-48ab-b581-e6a20a6504f8",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Arron",
+            "wikiPage": "Arron"
+          },
+          "location": {
+            "name": "The Hollow",
+            "wikiPage": "The Hollow"
+          },
+          "sublocation": "Arron’s shop by the Silvanus statue",
+          "coordinates": {
+            "x": 205,
+            "y": 516,
+            "space": "The Hollow",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hedge_Wanderer_Armour&oldid=419433",
+              "revisionId": 419433,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arron&oldid=414921",
+              "revisionId": 414921,
+              "section": "Shop; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader navigation reference; not a fixed item pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "0473f24c-833c-4be6-87e5-cbf55b928fd6",
+      "bindings": [
+        {
+          "id": "8ffff0f9-3283-4898-92d0-efbf51a21eb5",
+          "act": "ACT 1",
+          "progressKey": "act 1|hoarfrost boots",
+          "gameIds": [
+            "MAG_Frost_IceSurfaceProneImmunity_Boots"
+          ],
+          "wikiPage": "Hoarfrost Boots"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "78c6c7b2-2b71-4df9-977b-30594d920342",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Inquisitor’s Chamber · display case",
+          "coordinates": {
+            "x": 1335,
+            "y": -660,
+            "space": "Crèche Y'llek",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Reviewed Wiki display-case wording does not rewrite catalogue cabinet text."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hoarfrost_Boots&oldid=419546",
+              "revisionId": 419546,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "4c0d56f6-ab33-4cb9-b4f9-c49a866f264e",
+      "bindings": [
+        {
+          "id": "a1182cdf-e61f-446a-897c-9c2a71cf422d",
+          "act": "ACT 1",
+          "progressKey": "act 1|hunter's dagger",
+          "gameIds": [
+            "MAG_TheHunters_Dagger"
+          ],
+          "wikiPage": "Hunter's Dagger"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "84977f6f-dbdb-42fb-90d2-c5daaf45c67c",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Roah’s shop · Act 1",
+          "coordinates": {
+            "x": 272,
+            "y": -31,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade with Roah while she is available in the Shattered Sanctum."
+              }
+            ]
+          },
+          "notes": [
+            "Actor page publishes 275,-29; displayed shop reference remains 272,-31. Later stock is a separate Act context, not a new progress identity."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hunter's_Dagger&oldid=438222",
+              "revisionId": 438222,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Act One; Act Two; Store"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item-shop reference 272,-31; actor page instead publishes 275,-29. No averaging. Roah can move or become unavailable."
+          }
+        },
+        {
+          "id": "b0aec7cf-ef53-4df0-b32a-9c64ce9a8fe6",
+          "type": "purchase",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Moonrise Towers",
+            "wikiPage": "Moonrise Towers"
+          },
+          "sublocation": "Roah’s shop · Act 2",
+          "coordinates": {
+            "x": -174,
+            "y": -176,
+            "space": "Moonrise Towers",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade with Roah in Moonrise Towers while she remains available."
+              }
+            ]
+          },
+          "notes": [
+            "Roah’s Act Two store explicitly carries previous stock in addition to new stock. No Act Three venue or new progress identity is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Act Two; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act Two moving-trader reference; not a fixed item pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "981d1794-0a19-48dc-ba8c-deae64a7a6bb",
+      "bindings": [
+        {
+          "id": "fb322441-efd5-4237-a05d-a1f82dd0232d",
+          "act": "ACT 1",
+          "progressKey": "act 1|jagged spear",
+          "gameIds": [
+            "GOB_Torturer_Spear"
+          ],
+          "wikiPage": "Jagged Spear"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "c908b590-4fdc-4448-b34a-cb0bd9439024",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Ground near Torturer Spike",
+          "coordinates": {
+            "x": 334,
+            "y": -37,
+            "space": "Shattered Sanctum",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "Ground pickup; no kill requirement is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jagged_Spear&oldid=419910",
+              "revisionId": 419910,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "0adc0ac3-cea6-45b0-b4cc-9e4d4c80dff1",
+      "bindings": [
+        {
+          "id": "285fd60b-87db-48e4-a2c0-fb5f285cacb8",
+          "act": "ACT 1",
+          "progressKey": "act 1|larethian's wrath",
+          "gameIds": [
+            "MAG_Finesse_Longsword"
+          ],
+          "wikiPage": "Larethian's Wrath"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "41c8fc31-352d-4c4f-b8e8-63c732d04b08",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "A'jak'nir Jeera",
+            "wikiPage": "Jeera"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Jeera’s shop",
+          "coordinates": {
+            "x": 1380,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Jeera actor point: 1387,-821; displayed shop reference: 1380,-798."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Larethian's_Wrath&oldid=420237",
+              "revisionId": 420237,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jeera&oldid=416522",
+              "revisionId": 416522,
+              "section": "Involvement; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved shop reference 1380,-798; NPC page instead publishes 1387,-821. These are distinct shop and actor points, never averaged."
+          }
+        }
+      ]
+    },
+    {
+      "id": "d7ebde5d-674e-4392-b230-37d6242e9ac9",
+      "bindings": [
+        {
+          "id": "32065b01-6558-4158-b707-da07f07be6ff",
+          "act": "ACT 1",
+          "progressKey": "act 1|melf's first staff",
+          "gameIds": [
+            "MAG_BasicEnchanted_Quarterstaff"
+          ],
+          "wikiPage": "Melf's First Staff"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "f72bdbde-09c8-4ef4-9786-7d2298b82112",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Blurg",
+            "wikiPage": "Blurg"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s shop",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "No Omeluum quest prerequisite is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Melf's_First_Staff&oldid=420890",
+              "revisionId": 420890,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blurg&oldid=434059",
+              "revisionId": 434059,
+              "section": "Act One; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Blurg navigation reference; actor availability is not a fixed item point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "026ec825-35fc-4bd3-9683-fc85f0e2f36a",
+      "bindings": [
+        {
+          "id": "f6bebc40-9ebe-4331-8808-94582ed59ed2",
+          "act": "ACT 1",
+          "progressKey": "act 1|monster slayer glaive",
+          "gameIds": [
+            "MAG_MonsterSlayer_Glaive"
+          ],
+          "wikiPage": "Monster Slayer Glaive"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "11a9d703-ef28-415c-a1c8-b9d79335adea",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Roah’s shop · Act 1",
+          "coordinates": {
+            "x": 272,
+            "y": -31,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade with Roah while she is available in the Shattered Sanctum."
+              }
+            ]
+          },
+          "notes": [
+            "Actor page publishes 275,-29; displayed shop reference remains 272,-31. Later stock is a separate Act context, not a new progress identity."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Monster_Slayer_Glaive&oldid=421063",
+              "revisionId": 421063,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Act One; Act Two; Store"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item-shop reference 272,-31; actor page instead publishes 275,-29. No averaging. Roah can move or become unavailable."
+          }
+        },
+        {
+          "id": "e66aaead-19d3-4a12-b56e-a000d8d5c078",
+          "type": "purchase",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Roah Moonglow",
+            "wikiPage": "Roah Moonglow"
+          },
+          "location": {
+            "name": "Moonrise Towers",
+            "wikiPage": "Moonrise Towers"
+          },
+          "sublocation": "Roah’s shop · Act 2",
+          "coordinates": {
+            "x": -174,
+            "y": -176,
+            "space": "Moonrise Towers",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade with Roah in Moonrise Towers while she remains available."
+              }
+            ]
+          },
+          "notes": [
+            "Roah’s Act Two store explicitly carries previous stock in addition to new stock. No Act Three venue or new progress identity is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Roah_Moonglow&oldid=431417",
+              "revisionId": 431417,
+              "section": "Act Two; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act Two moving-trader reference; not a fixed item pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "0bfd7da8-8e23-44c8-8f26-01c0d6650a39",
+      "bindings": [
+        {
+          "id": "a970ee08-501b-4395-b440-d11e0cab5002",
+          "act": "ACT 1",
+          "progressKey": "act 1|rain dancer",
+          "gameIds": [
+            "UNI_DEN_StaffOfRain",
+            "UNI_StaffOfRain"
+          ],
+          "wikiPage": "Rain Dancer"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "2442267d-7b66-4758-a0f7-6760973ad9a9",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Arron",
+            "wikiPage": "Arron"
+          },
+          "location": {
+            "name": "The Hollow",
+            "wikiPage": "The Hollow"
+          },
+          "sublocation": "Arron’s shop by the Silvanus statue",
+          "coordinates": {
+            "x": 205,
+            "y": 516,
+            "space": "The Hollow",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rain_Dancer&oldid=422121",
+              "revisionId": 422121,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arron&oldid=414921",
+              "revisionId": 414921,
+              "section": "Shop; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader navigation reference; not a fixed item pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ce3d5fe6-8de9-43e5-adf1-0fc37c80ced9",
+      "bindings": [
+        {
+          "id": "57ed3a51-0315-4307-a6a2-a16d4427bb56",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of colour spray",
+          "gameIds": [
+            "UNI_DEN_HarpyMeal_NestRing",
+            "DEN_HarpyMeal_NestRing"
+          ],
+          "wikiPage": "Ring of Colour Spray"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b7800a20-682b-45b3-98ea-b0ac834e0946",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Secluded Cove",
+            "wikiPage": "Secluded Cove"
+          },
+          "sublocation": "Harpy nest south of the encounter",
+          "coordinates": {
+            "x": 326,
+            "y": 495,
+            "space": "Secluded Cove",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate nest point: 325,491. No mandatory harpy kill is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Colour_Spray&oldid=422373",
+              "revisionId": 422373,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Secluded_Cove&oldid=422947",
+              "revisionId": 422947,
+              "section": "Overview; Notable loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved nest reference 326,495; Secluded Cove publishes 325,491. No averaging."
+          }
+        }
+      ]
+    },
+    {
+      "id": "85d83b4c-c535-4cef-9fcc-4ceb0ec36f07",
+      "bindings": [
+        {
+          "id": "3b7bc767-829a-4e1f-a363-a389c0c5c70c",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of flinging",
+          "gameIds": [
+            "MAG_Harpers_RingOfProjection"
+          ],
+          "wikiPage": "Ring of Flinging"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ecc47064-9d38-4c09-a175-d53ab016ae70",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Arron",
+            "wikiPage": "Arron"
+          },
+          "location": {
+            "name": "The Hollow",
+            "wikiPage": "The Hollow"
+          },
+          "sublocation": "Arron’s shop by the Silvanus statue",
+          "coordinates": {
+            "x": 205,
+            "y": 516,
+            "space": "The Hollow",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Flinging&oldid=422380",
+              "revisionId": 422380,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arron&oldid=414921",
+              "revisionId": 414921,
+              "section": "Shop; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader navigation reference; not a fixed item pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "dbc24c80-b28e-4719-9a9a-ace157c6aac4",
+      "bindings": [
+        {
+          "id": "247f5f28-625c-45b9-9892-ed171c553809",
+          "act": "ACT 1",
+          "progressKey": "act 1|safeguard shield",
+          "gameIds": [
+            "MAG_Safeguard_Shield"
+          ],
+          "wikiPage": "Safeguard Shield"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "8ccf9d24-de76-4f4e-a5db-cf741e6a461c",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Dammon",
+            "wikiPage": "Dammon"
+          },
+          "location": {
+            "name": "The Hollow",
+            "wikiPage": "The Hollow"
+          },
+          "sublocation": "Dammon’s shop · Act 1",
+          "coordinates": {
+            "x": 177,
+            "y": 562,
+            "space": "The Hollow",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Purchase in Act One before Dammon leaves the Emerald Grove."
+              }
+            ]
+          },
+          "notes": [
+            "NPC point 180,561 retained as alternate evidence."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Safeguard_Shield&oldid=422588",
+              "revisionId": 422588,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dammon&oldid=414844",
+              "revisionId": 414844,
+              "section": "Items sold; Act One"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item reference 177,562; NPC page instead publishes 180,561. Act One only; no averaging."
+          }
+        }
+      ]
+    },
+    {
+      "id": "62f6ef62-1ec6-490c-a0f7-fa4fd726c684",
+      "bindings": [
+        {
+          "id": "e13ca45f-7dd0-442c-95ae-1d59aee02a9b",
+          "act": "ACT 1",
+          "progressKey": "act 1|speedy reply",
+          "gameIds": [
+            "MAG_Mobility_MomentumOnAttack_Scimitar"
+          ],
+          "wikiPage": "Speedy Reply"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "fe6c3a9f-0fdf-4378-9f79-d47a1c690966",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Dead caravan agent"
+          },
+          "location": {
+            "name": "The Risen Road",
+            "wikiPage": "The Risen Road"
+          },
+          "sublocation": "Existing corpse near the gnoll cave",
+          "coordinates": {
+            "x": 25,
+            "y": 603,
+            "space": "The Risen Road",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "Already-dead caravan agent; no living-NPC kill is required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Speedy_Reply&oldid=423435",
+              "revisionId": 423435,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "20d08c2f-e430-4a10-951f-81242f96ba63",
+      "bindings": [
+        {
+          "id": "d62a14b7-1343-436c-9679-b50be3d2c9e3",
+          "act": "ACT 1",
+          "progressKey": "act 1|spellthief",
+          "gameIds": [
+            "UNI_Bow_SpellslotRecharge"
+          ],
+          "wikiPage": "Spellthief"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "27c9798c-fd36-4452-85c6-950f5cea0ae8",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Arron",
+            "wikiPage": "Arron"
+          },
+          "location": {
+            "name": "The Hollow",
+            "wikiPage": "The Hollow"
+          },
+          "sublocation": "Arron’s shop by the Silvanus statue",
+          "coordinates": {
+            "x": 205,
+            "y": 516,
+            "space": "The Hollow",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Spellthief&oldid=423444",
+              "revisionId": 423444,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arron&oldid=414921",
+              "revisionId": 414921,
+              "section": "Shop; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader navigation reference; not a fixed item pickup."
+          }
+        }
+      ]
+    },
+    {
+      "id": "f8b0b53d-665e-406f-ac31-d16ceda35cfa",
+      "bindings": [
+        {
+          "id": "5cb37b89-1d96-4060-b517-931fd8e64fc5",
+          "act": "ACT 1",
+          "progressKey": "act 1|springstep boots",
+          "gameIds": [
+            "MAG_Mobility_MomentumOnDash_Boots"
+          ],
+          "wikiPage": "Springstep Boots"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "516eefaa-10aa-4ee5-92b6-d2b3285b11bc",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Treasure cache behind Ragzlin’s throne",
+          "coordinates": {
+            "x": 296,
+            "y": 71,
+            "space": "Shattered Sanctum",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Open the iron gate with lockpicking OR Dror Ragzlin’s Key."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate treasure-list point: 297,68. No mandatory Ragzlin kill is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Springstep_Boots&oldid=423520",
+              "revisionId": 423520,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shattered_Sanctum&oldid=431013",
+              "revisionId": 431013,
+              "section": "Ragzlin's throne; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item point 296,71; Sanctum treasure list instead publishes 297,68. Container reference, not averaged."
+          }
+        }
+      ]
+    },
+    {
+      "id": "f8dbf9e9-1374-4cf9-b355-26760e874cfb",
+      "bindings": [
+        {
+          "id": "3c1d12a1-16a1-48d4-8c5e-6a175b6f5919",
+          "act": "ACT 1",
+          "progressKey": "act 1|sussur sickle",
+          "gameIds": [
+            "QUEST_FOR_SussurSickle",
+            "FOR_IncompleteMasterwork_SussurSickle"
+          ],
+          "wikiPage": "Sussur Sickle"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "9808c743-3012-49aa-8390-24edbb5c87df",
+          "type": "craft",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Blighted Village",
+            "wikiPage": "Blighted Village"
+          },
+          "sublocation": "Blacksmith’s furnace · ordinary Sickle + Sussur Tree Bark",
+          "coordinates": {
+            "x": -477,
+            "y": -378,
+            "space": "Blighted Village",
+            "subject": "crafting_station"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Ordinary Sickle (not a Redcap sickle)."
+              },
+              {
+                "kind": "item",
+                "subject": "Sussur Tree Bark"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Combine bark with the lit furnace, then the ordinary Sickle."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate quest furnace point: -446,-378. Redcap sickles cannot be used."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sussur_Sickle&oldid=438505",
+              "revisionId": 438505,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Finish_the_Masterwork_Weapon&oldid=438508",
+              "revisionId": 438508,
+              "section": "Walkthrough"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item reference -477,-378; quest furnace page instead publishes -446,-378. Preserve both; no sign correction or averaging."
+          }
+        }
+      ]
+    },
+    {
+      "id": "f7039750-c359-4192-b9b6-b3009c9f374b",
+      "bindings": [
+        {
+          "id": "ff0a43eb-fde2-4a7f-926f-1c802ae4b10f",
+          "act": "ACT 1",
+          "progressKey": "act 1|swiresy shoes",
+          "gameIds": [
+            "MAG_Jumping_Shoes"
+          ],
+          "wikiPage": "Swiresy Shoes"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b7dec147-8c0e-4607-9c37-1b09801bbd77",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Grat",
+            "wikiPage": "Grat"
+          },
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Grat the Trader’s shop",
+          "coordinates": {
+            "x": -99,
+            "y": 424,
+            "space": "Goblin Camp",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade while Grat remains available."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Swiresy_Shoes&oldid=423786",
+              "revisionId": 423786,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Grat&oldid=414927",
+              "revisionId": 414927,
+              "section": "Store; Stock"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Act One trader navigation reference; availability can change."
+          }
+        }
+      ]
+    },
+    {
+      "id": "f73643de-de90-4f7b-b761-21074bcc7863",
+      "bindings": [
+        {
+          "id": "c11f1250-aec9-4403-86a9-c9462e2ebb5d",
+          "act": "ACT 1",
+          "progressKey": "act 1|the baneful",
+          "gameIds": [
+            "MAG_Bonded_Baneful_Shortsword"
+          ],
+          "wikiPage": "The Baneful"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "4507c8e2-b674-4d88-a487-3a374b789e21",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Blurg",
+            "wikiPage": "Blurg"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s shop",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "No Omeluum quest prerequisite is inferred.",
+            "Weapon binding changes mechanics, not purchase eligibility."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Baneful&oldid=437914",
+              "revisionId": 437914,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blurg&oldid=434059",
+              "revisionId": 434059,
+              "section": "Act One; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Blurg navigation reference; actor availability is not a fixed item point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "570ca33f-263b-4674-9910-414dc88927c6",
+      "bindings": [
+        {
+          "id": "24a81f50-7029-4a6e-9266-f8a1d21a691e",
+          "act": "ACT 1",
+          "progressKey": "act 1|the ever-seeing eye",
+          "gameIds": [
+            "HAG_HagLair_EyeballNecklace",
+            "HAG_EyeballNecklace"
+          ],
+          "wikiPage": "The Ever-Seeing Eye"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "6bc81453-3194-4d0a-bc77-a8108016eeac",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Overgrown Tunnel",
+            "wikiPage": "Overgrown Tunnel"
+          },
+          "sublocation": "Ground pickup · treasure/workshop room",
+          "coordinates": {
+            "x": -416,
+            "y": 599,
+            "space": "Overgrown Tunnel",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "Nearby workshop evidence: -412,606. No mandatory Ethel defeat is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Ever-Seeing_Eye&oldid=424001",
+              "revisionId": 424001,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Overgrown_Tunnel&oldid=433650",
+              "revisionId": 433650,
+              "section": "Acrid Workshop"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item page -416,599 versus nearby workshop point -412,606. Room reference, not asserted exact item placement."
+          }
+        }
+      ]
+    },
+    {
+      "id": "1e91fcb4-cdab-43dc-b287-8e455351e363",
+      "bindings": [
+        {
+          "id": "591252bf-3370-477d-a7e4-db898dc99539",
+          "act": "ACT 1",
+          "progressKey": "act 1|the lifebringer",
+          "gameIds": [
+            "MAG_ChargedLightning_TempHP_Circlet"
+          ],
+          "wikiPage": "The Lifebringer"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "76ebfac5-4d61-419f-91e1-3c9fad7881fe",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Blurg",
+            "wikiPage": "Blurg"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s shop",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "No Omeluum quest prerequisite is inferred.",
+            "Catalogue strong IDs contain MAG_ChargedLightning_TempHP_Circlet only; Wiki also lists stats MAG_ChargedLightning_TempHP_Helmet. Preserve the complete existing catalogue set without extending it."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Lifebringer&oldid=432476",
+              "revisionId": 432476,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Blurg&oldid=434059",
+              "revisionId": 434059,
+              "section": "Act One; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Blurg navigation reference; actor availability is not a fixed item point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "33fe5122-677d-4855-b977-09ac3ce0302a",
+      "bindings": [
+        {
+          "id": "ab8fb348-b096-43b4-884e-461fd88134d5",
+          "act": "ACT 1",
+          "progressKey": "act 1|the protecty sparkswall",
+          "gameIds": [
+            "MAG_ChargedLightning_BonusAC_Robe"
+          ],
+          "wikiPage": "The Protecty Sparkswall"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ed0317de-301f-4eb0-bc8f-e0af97c29ed2",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Gilded chest at the end of the trapped bridge",
+          "coordinates": {
+            "x": -645,
+            "y": 360,
+            "space": "Grymforge",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "No boss-kill prerequisite is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Protecty_Sparkswall&oldid=424085",
+              "revisionId": 424085,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "092c2562-3c64-4b54-aa3e-2de5698911b8",
+      "bindings": [
+        {
+          "id": "21c356e0-b47f-418e-a70c-144590eb68b3",
+          "act": "ACT 1",
+          "progressKey": "act 1|the real sparky sparkswall",
+          "gameIds": [
+            "MAG_ChargedLightning_StaticDischarge_Shield"
+          ],
+          "wikiPage": "The Real Sparky Sparkswall"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "7c02d608-4302-4a25-9ce2-359ae6f284a2",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Locked, trapped chest",
+          "coordinates": {
+            "x": -695,
+            "y": 420,
+            "space": "Grymforge",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Lock and trap are distinct properties; no mandatory disarming check is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Real_Sparky_Sparkswall&oldid=424089",
+              "revisionId": 424089,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "0bb031ef-fe6b-49e9-a6f2-cd35f9d57db7",
+      "bindings": [
+        {
+          "id": "3da313d2-c354-4371-9488-eff4bedd2cb4",
+          "act": "ACT 1",
+          "progressKey": "act 1|the skinburster",
+          "gameIds": [
+            "MAG_ZOC_ForceConduit_Halberd"
+          ],
+          "wikiPage": "The Skinburster"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "78266571-7248-47e1-92d1-d5e0d99471ba",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Inquisitor’s Chamber · leaning beside display case",
+          "coordinates": {
+            "x": 1383,
+            "y": -659,
+            "space": "Crèche Y'llek",
+            "subject": "item"
+          },
+          "conditions": null,
+          "notes": [
+            "World pickup, not chest contents; original catalogue prose remains unchanged."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Skinburster&oldid=424105",
+              "revisionId": 424105,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "82fdec52-a2ab-4dfd-8e33-ab6a0755ec1b",
+      "bindings": [
+        {
+          "id": "7c13037f-2862-47d8-821e-023107615774",
+          "act": "ACT 1",
+          "progressKey": "act 1|the watersparkers",
+          "gameIds": [
+            "MAG_ChargedLightning_ElectricSurface_Boots"
+          ],
+          "wikiPage": "The Watersparkers"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "5a5a4d64-61f1-40f8-b083-f94b18d59252",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Gilded chest in Minthara’s area",
+          "coordinates": {
+            "x": 339,
+            "y": 41,
+            "space": "Shattered Sanctum",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "No mandatory Minthara kill is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Watersparkers&oldid=424152",
+              "revisionId": 424152,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "4cd898ba-e3a5-4958-abd8-5661f3835842",
+      "bindings": [
+        {
+          "id": "76f77803-a31b-4c45-8917-9ad29e384820",
+          "act": "ACT 1",
+          "progressKey": "act 1|uncovered mysteries",
+          "gameIds": [
+            "UNI_UND_Tower_AmuletDetectThoughts",
+            "UND_Tower_AmuletDetectThoughts"
+          ],
+          "wikiPage": "Uncovered Mysteries"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "75f2089f-f554-4fa7-ac61-a01db545f044",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Basement mezzanine · chest beside elevator exit",
+          "coordinates": {
+            "x": -48,
+            "y": -282,
+            "space": "Arcane Tower",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate tower chest point: -53,-284. Catalogue first-floor text is not rewritten."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Uncovered_Mysteries&oldid=424485",
+              "revisionId": 424485,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arcane_Tower&oldid=431380",
+              "revisionId": 431380,
+              "section": "The basement (secret room); Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item reference -48,-282; tower loot list instead publishes -53,-284. No averaging; basement mezzanine avoids inconsistent floor numbering."
+          }
+        }
+      ]
+    },
+    {
+      "id": "88f66d1b-ed00-4f39-b104-93a4e8282031",
+      "bindings": [
+        {
+          "id": "8a393b05-d47d-4fee-aafa-76c8716a29bc",
+          "act": "ACT 1",
+          "progressKey": "act 1|unseen menace",
+          "gameIds": [
+            "MAG_Invisible_Pike"
+          ],
+          "wikiPage": "Unseen Menace"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "184595b1-5c74-4b36-918f-ce96f0d0a8a4",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "A'jak'nir Jeera",
+            "wikiPage": "Jeera"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Jeera’s shop",
+          "coordinates": {
+            "x": 1380,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Jeera actor point: 1387,-821; displayed shop reference: 1380,-798."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Unseen_Menace&oldid=424533",
+              "revisionId": 424533,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jeera&oldid=416522",
+              "revisionId": 416522,
+              "section": "Involvement; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved shop reference 1380,-798; NPC page instead publishes 1387,-821. These are distinct shop and actor points, never averaged."
+          }
+        }
+      ]
+    },
+    {
+      "id": "b0c93d21-6e6e-4d74-b098-5e1d5c01a52e",
+      "bindings": [
+        {
+          "id": "d5eea785-129f-4cae-9bda-711112438f23",
+          "act": "ACT 1",
+          "progressKey": "act 1|vital conduit boots",
+          "gameIds": [
+            "MAG_Gish_TempHPWhileConcentrating_Boots"
+          ],
+          "wikiPage": "Vital Conduit Boots"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "1a491992-e073-4e44-926f-7f6233624653",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "A'jak'nir Jeera",
+            "wikiPage": "Jeera"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Jeera’s shop",
+          "coordinates": {
+            "x": 1380,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Jeera actor point: 1387,-821; displayed shop reference: 1380,-798."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Vital_Conduit_Boots&oldid=424696",
+              "revisionId": 424696,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jeera&oldid=416522",
+              "revisionId": 416522,
+              "section": "Involvement; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved shop reference 1380,-798; NPC page instead publishes 1387,-821. These are distinct shop and actor points, never averaged."
+          }
+        }
+      ]
+    },
+    {
+      "id": "9d75dc9c-f06b-45e3-a01d-701885341b1b",
+      "bindings": [
+        {
+          "id": "e70b7235-b7fa-4196-8bfe-62cb6c8320fa",
+          "act": "ACT 1",
+          "progressKey": "act 1|witchbreaker",
+          "gameIds": [
+            "MAG_Spellbreaker_Battleaxe"
+          ],
+          "wikiPage": "Witchbreaker"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ef17817b-98ae-4c33-bf71-a39ddf28831c",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "A'jak'nir Jeera",
+            "wikiPage": "Jeera"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Jeera’s shop",
+          "coordinates": {
+            "x": 1380,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Jeera actor point: 1387,-821; displayed shop reference: 1380,-798."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Witchbreaker&oldid=424946",
+              "revisionId": 424946,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jeera&oldid=416522",
+              "revisionId": 416522,
+              "section": "Involvement; Notable items sold"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved shop reference 1380,-798; NPC page instead publishes 1387,-821. These are distinct shop and actor points, never averaged."
+          }
+        }
+      ]
+    },
+    {
+      "id": "a86de7d1-08af-425c-8a63-2f5a2cbeb56e",
+      "bindings": [
+        {
+          "id": "18184846-ca93-40d4-8879-a87e729a173d",
+          "act": "ACT 1",
+          "progressKey": "act 1|worgfang",
+          "gameIds": [
+            "S_GOB_WolfPens_BloodFang"
+          ],
+          "wikiPage": "Worgfang"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "eb37240a-5aa0-40b7-8ece-d39746909491",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Worg Pens",
+            "wikiPage": "Worg Pens"
+          },
+          "sublocation": "Bone pile inside a cell",
+          "coordinates": {
+            "x": 386,
+            "y": -17,
+            "space": "Worg Pens",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate bone-pile point: 386,-15. No living-NPC kill is required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Worgfang&oldid=424991",
+              "revisionId": 424991,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Worg_Pens&oldid=424990",
+              "revisionId": 424990,
+              "section": "Animal pens; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex BG3 Wiki primary-source Batch 4A review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item reference 386,-17; Worg Pens publishes 386,-15. No averaging."
           }
         }
       ]
