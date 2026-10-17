@@ -424,6 +424,67 @@ async function checkAct1Batch1(browser, width) {
   } finally { await testCase.context.close(); }
 }
 
+// Batch 2 includes separate table/carried routes; literal facts are guarded by its unit suite.
+async function checkAct1Batch2(browser, width) {
+  const names = ["Helmet of Autonomy", "Slippery Chain Shirt", "Explorer's Ring", "The Joltshooter", "Robe of Summer", "Armour of Uninhibited Kushigo", "Aberration Hunters' Amulet", "Ritual Axe", "Sussur Dagger", "Sorrow", "The Watcher's Guide", "Wondrous Gloves", "Ring of Arcane Synergy", "Strange Conduit Ring", "Sunwalker's Gift"];
+  const dataset = JSON.parse(fs.readFileSync(path.join(root, 'data', 'acquisition.v1.json'), 'utf8'));
+  const catalogue = JSON.parse(catalogueFixture);
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  try {
+    testCase.releaseAsset();
+    await page.waitForLoadState('domcontentloaded');
+    for (const name of names) {
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator('#q').fill(name);
+      const raw = catalogue.find(row => row.act === 'ACT 1' && row.name === name);
+      const entry = dataset.entries.find(entry => entry.bindings.some(binding => binding.progressKey === ('act 1|' + name).toLowerCase()));
+      check(!!raw && !!entry && entry.routes.length === (name === 'Ritual Axe' ? 2 : 1), `${width}px ${name}: batch identity/route missing`);
+      const routes = entry.routes, scope = width > 780 ? '#body > tr' : '#cards > article';
+      check(await page.locator(scope).count() === 1, `${width}px ${name}: search identity mismatch`);
+      const surface = page.locator(scope).first();
+      const toggle = surface.locator('summary');
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${name}: first click failed`);
+      const facts = await surface.evaluate((node, expected) => {
+        const effects = node.querySelector('.item-effects'), where = node.querySelector('.acquisition-enrichment'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!effects && !!where && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(expected.description) && (!expected.properties || effects.textContent.includes(expected.properties)),
+          where: where?.textContent,
+          coordinates: [...(where?.querySelectorAll('.acquisition-coordinate') || [])].map(n=>n.textContent),
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          links: node.querySelectorAll('a').length,
+          reference: node.querySelector('.item-reference')?.getAttribute('href'),
+          evidence: node.querySelectorAll('.acquisition-references,.acquisition-reference').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth
+        };
+      }, raw);
+      const label = `${width}px ${name}`;
+      check(facts.ordered && facts.mechanics, label + ': mechanics/order changed');
+      check(JSON.stringify(facts.coordinates) === JSON.stringify(routes.map(r=>`X: ${r.coordinates.x} Y: ${r.coordinates.y}`)), label + ': coordinate mismatch');
+      check(routes.every(r=>facts.where.includes(r.sublocation)), label + ': sublocation missing');
+      check(facts.routes === routes.length && facts.sections === 1, label + ': missing/duplicate enrichment');
+      check(facts.links === 1 && facts.reference === raw.links.Name && facts.evidence === 0, label + ': Wiki/evidence mismatch');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.where), label + ': walkthrough/evidence clutter');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': overflow');
+      await toggle.press('Enter');
+      check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+      await toggle.press('Space');
+      check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
+      if (["Aberration Hunters' Amulet", "Ritual Axe", "Sussur Dagger"].includes(name)) await surface.screenshot({path:path.join(outputDirectory,`batch2-${width}-${name.replaceAll(' ','-').toLowerCase()}.png`)});
+      for (const mode of ['light','minimal']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation').count() === 0, label + ': enrichment leaked in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('.acquisition-enrichment').count() === 2, label + ': Full restoration failed');
+      record(label, 'Act 1 Batch 2 Full/protected/keyboard', {facts});
+    }
+    check(testCase.errors.length === 0, width + 'px Batch 2: uncaught runtime error');
+  } finally { await testCase.context.close(); }
+}
+
 async function main() {
   fs.mkdirSync(outputDirectory, { recursive: true });
   const browser = await chromium.launch({
@@ -440,6 +501,7 @@ async function main() {
     }
     for (const width of [320, 390, 768, 1280]) await checkCompactDetails(browser, width);
     for (const width of [390, 1280]) await checkAct1Batch1(browser, width);
+    for (const width of [390, 1280]) await checkAct1Batch2(browser, width);
     await checkOptionalFailure(browser, null, 'missing optional asset');
     await checkOptionalFailure(browser,
       'window.BG3AcquisitionUI={render(){throw new Error("broken optional API")}};',

@@ -7,6 +7,8 @@ const {harness:storyHarness,record}=require('./helpers/app-harness.cjs');
 const root=join(__dirname,'..'),base='0b33854b2868f587fd614edf179fd5e0392e7c22';
 const baseline=JSON.parse(execFileSync('git',['show',base+':data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}));
 const data=JSON.parse(readFileSync(join(root,'data/acquisition.v1.json'),'utf8'));
+const batch1Snapshot=JSON.parse(execFileSync('git',['show','2087779449092caf968e1a07f11943d480018990:data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}));
+const batch1IDs=new Set(batch1Snapshot.entries.map(e=>e.id));
 const catalogue=JSON.parse(readFileSync(join(__dirname,'fixtures/vendor-catalogue.json'),'utf8'));
 const clone=x=>JSON.parse(JSON.stringify(x)),key=x=>(x.act+'|'+x.name).toLowerCase();
 // Allocate once, before canonical data; expected facts are not derived from runtime output.
@@ -406,13 +408,14 @@ for(const spec of approved){
  });
 }
 test('Batch 1 appends exactly fifteen entries/bindings/routes and preserves all original forty objects byte-semantically',()=>{
- assert.equal(data.schemaVersion,2);assert.equal(data.datasetVersion,'2.1.0-act1.batch1');assert.equal(metadata.validateDataset(data).ok,true);assert.equal(data.entries.length,55);
- assert.deepEqual(data.entries.slice(0,40),baseline.entries);const additions=data.entries.slice(40);assert.deepEqual(additions.map(e=>e.id),approved.map(s=>s.entryId));assert.deepEqual(additions.flatMap(e=>e.bindings.map(b=>b.id)),approved.map(s=>s.bindingId));assert.deepEqual(additions.flatMap(e=>e.routes.map(r=>r.id)),approved.map(s=>s.routeId));
- assert.equal(data.entries.flatMap(e=>e.bindings).length,56);assert.equal(data.entries.flatMap(e=>e.routes).length,73);
+ const scoped={...data,datasetVersion:batch1Snapshot.datasetVersion,entries:data.entries.filter(e=>batch1IDs.has(e.id))};assert.deepEqual(scoped,batch1Snapshot);
+ assert.equal(scoped.schemaVersion,2);assert.equal(scoped.datasetVersion,'2.1.0-act1.batch1');assert.equal(metadata.validateDataset(data).ok,true);assert.equal(scoped.entries.length,55);
+ assert.deepEqual(scoped.entries.slice(0,40),baseline.entries);const additions=scoped.entries.slice(40);assert.deepEqual(additions.map(e=>e.id),approved.map(s=>s.entryId));assert.deepEqual(additions.flatMap(e=>e.bindings.map(b=>b.id)),approved.map(s=>s.bindingId));assert.deepEqual(additions.flatMap(e=>e.routes.map(r=>r.id)),approved.map(s=>s.routeId));
+ assert.equal(scoped.entries.flatMap(e=>e.bindings).length,56);assert.equal(scoped.entries.flatMap(e=>e.routes).length,73);
  const addedRoutes=additions.flatMap(e=>e.routes);assert.equal(addedRoutes.filter(r=>r.coordinateReview.state==='exact').length,6);assert.equal(addedRoutes.filter(r=>r.coordinateReview.state==='reference').length,9);assert.equal(addedRoutes.filter(r=>r.coordinates===null).length,0);
 });
 test('Batch 1 keeps all prior coordinate review states and five exceptions unchanged',()=>{
- const routes=data.entries.flatMap(e=>e.routes),count=state=>routes.filter(r=>r.coordinateReview.state===state).length;
+ const routes=data.entries.filter(e=>batch1IDs.has(e.id)).flatMap(e=>e.routes),count=state=>routes.filter(r=>r.coordinateReview.state===state).length;
  assert.equal(count('exact'),28);assert.equal(count('reference'),40);assert.equal(count('not_applicable'),5);assert.equal(count('pending')+count('conflict')+count('not_documented'),0);
 });
 test('Batch 1 Fleetfingers keeps Perception OR War Map discovery, not a mandatory check',()=>{
@@ -434,7 +437,7 @@ test('Batch 1 actual catalogue retains all 555 keys, classifications and old ide
  const h=itemHarness(catalogue,{dataset:data}),items=Array.from(h.app.items());assert.equal(catalogue.length,556);assert.equal(items.length,555);assert.deepEqual(items.map(key).sort(),[...new Set(catalogue.map(key))].sort());
  for(const [index,act] of ['ACT 1','ACT 2','ACT 3'].entries()){const rows=items.filter(i=>i.act===act);assert.equal(rows.filter(h.app.vendor).length,[63,50,67][index]);assert.equal(rows.filter(i=>h.app.acquisitionFor(i).loot).length,[131,94,125][index]);assert.equal(rows.filter(h.app.quest).length,[25,0,0][index]);}
  const cloth=items.filter(i=>i.name.startsWith('The Graceful Cloth'));assert.equal(cloth.length,2);assert.notEqual(key(cloth[0]),key(cloth[1]));const b=items.filter(i=>i.name==="Gloves of Battlemage's Power");assert.equal(b.length,1);assert.equal(b[0].source,catalogue.find(i=>i.sourceRow===54&&i.name===b[0].name).links.Name);
- const matched=items.filter(i=>resolver.resolve(i));assert.equal(matched.length,55);assert.equal(matched.filter(i=>i.act==='ACT 1').length,50);assert.deepEqual(matched.filter(i=>!metadata.createResolver(baseline).resolve(i)).map(key).sort(),approved.map(s=>s.progressKey).sort());
+ const checkpointResolver=metadata.createResolver(batch1Snapshot),matched=items.filter(i=>checkpointResolver.resolve(i));assert.equal(matched.length,55);assert.equal(matched.filter(i=>i.act==='ACT 1').length,50);assert.deepEqual(matched.filter(i=>!metadata.createResolver(baseline).resolve(i)).map(key).sort(),approved.map(s=>s.progressKey).sort());
 });
 for(const mode of ['full','minimal','light'])test('Batch 1 '+mode+' data does not change discovery, filters, sorting or progress maps',()=>{
  const before=itemHarness(catalogue,{dataset:baseline,mode}),after=itemHarness(catalogue,{dataset:data,mode});assert.deepEqual(clone(discovery(after)),clone(discovery(before)));assert.deepEqual(clone(after.app.items()),clone(before.app.items()));const progress=after.app.progress();
