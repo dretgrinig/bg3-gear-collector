@@ -11,6 +11,8 @@ const { createAcquisitionUI } = require('../acquisition-ui.js');
 const { generateBundle } = require('../scripts/build-acquisition-bundle.cjs');
 const { harness: storyHarness, record } = require('./helpers/app-harness.cjs');
 const root = join(__dirname, '..');
+const coordinateSnapshot = JSON.parse(execFileSync('git', ['show', '0b33854b2868f587fd614edf179fd5e0392e7c22:data/acquisition.v1.json'], {cwd:root, encoding:'utf8'}));
+const coordinateIDs = new Set(coordinateSnapshot.entries.map(e => e.id));
 const baselineCommit = '9d4cc4aa38c4c2aa45b228e7175b3b66b95fa210';
 const copy = value => JSON.parse(JSON.stringify(value));
 const key = item => (item.act + '|' + item.name).toLowerCase();
@@ -399,9 +401,9 @@ for (const [index, spec] of approved.entries()) {
 
 
 test('1C retains only the approved ten entries and twenty-two routes under coordinate schema 2, 40/41/58 totals', () => {
-  const data = dataset(), checked = metadata.validateDataset(data);
+  const current = dataset(), data = {...current, entries:current.entries.filter(e => coordinateIDs.has(e.id))}, checked = metadata.validateDataset(current);
   assert.equal(checked.ok, true, JSON.stringify(checked.issues));
-  assert.equal(data.schemaVersion, 2); assert.equal(data.datasetVersion, '2.0.0-full-details-coordinate-contract');
+  assert.equal(data.schemaVersion, 2); assert.deepEqual(data.entries, coordinateSnapshot.entries);
   assert.equal(data.entries.length, 40); assert.equal(data.entries.flatMap(entry => entry.bindings).length, 41);
   assert.equal(data.entries.flatMap(entry => entry.routes).length, 58);
   const originalIds = new Set(baselineEntries.map(entry => entry.id));
@@ -574,7 +576,7 @@ test('1C generated asset is deterministic, validates canonical source and embeds
   const data = dataset(), first = generateBundle(), second = generateBundle(); assert.equal(metadata.validateDataset(data).ok,true);
   assert.equal(first,second); assert.equal(first,readFileSync(join(root,'assets','acquisition-pilot.js'),'utf8'));
   const embedded = first.match(/  const dataset = (\{[^\n]*\});/); assert.ok(embedded);
-  assert.deepEqual(JSON.parse(embedded[1]),data); assert.equal(JSON.parse(embedded[1]).datasetVersion,'2.0.0-full-details-coordinate-contract');
+  assert.deepEqual(JSON.parse(embedded[1]),data); assert.equal(JSON.parse(embedded[1]).datasetVersion,data.datasetVersion);
 });
 
 for (const path of ['fresh','cached']) test('1C actual ' + path + ' Full hydration renders ten new items/twenty-two routes without replacing controls', () => {

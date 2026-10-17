@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "datasetVersion": "2.0.0-full-details-coordinate-contract",
+  "datasetVersion": "2.1.0-act1.batch1",
   "entries": [
     {
       "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
@@ -4483,6 +4483,948 @@
           "coordinateReview": {
             "state": "reference",
             "reason": "Documented encounter reference; the actor may move within this area."
+          }
+        }
+      ]
+    },
+    {
+      "id": "dd599543-0f80-4e09-a20b-b5c00a14a614",
+      "bindings": [
+        {
+          "id": "ee3521e6-663f-4185-9f49-56892b57a088",
+          "act": "ACT 1",
+          "progressKey": "act 1|cap of curing",
+          "gameIds": [
+            "MAG_Bard_HealingBardicInspiration_Hat"
+          ],
+          "wikiPage": "Cap of Curing"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "cddca05f-efb9-47cc-9049-20a76d801b66",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Sacred Pool",
+            "wikiPage": "Sacred Pool"
+          },
+          "sublocation": "Locked gilded chest near Alfira",
+          "coordinates": {
+            "x": 289,
+            "y": 488,
+            "space": "Sacred Pool",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "The item page gives 289,488; Sacred Pool gives 292,483 for the chest. Retain the published item point as a reference without averaging."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Cap_of_Curing&oldid=416893",
+              "revisionId": 416893,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sacred_Pool&oldid=422574",
+              "revisionId": 422574,
+              "section": "Points of interest / Cliff overlook"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item-page chest reference; the location page gives a different point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "7a5bbf9e-de62-4419-884a-c8dcb49ec6bd",
+      "bindings": [
+        {
+          "id": "469f69ae-9465-432c-951e-4553f105becc",
+          "act": "ACT 1",
+          "progressKey": "act 1|the amulet of lost voices",
+          "gameIds": [
+            "UNI_CHA_TalismanOfJergal",
+            "ARM_TalismanOfJergal"
+          ],
+          "wikiPage": "The Amulet of Lost Voices"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "5fc621f8-88bb-4551-bbbb-8034bcef29a7",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Dank Crypt",
+            "wikiPage": "Dank Crypt"
+          },
+          "sublocation": "Heavy chest in Withers' room",
+          "coordinates": {
+            "x": -290,
+            "y": -235,
+            "space": "Dank Crypt",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Amulet_of_Lost_Voices&oldid=423936",
+              "revisionId": 423936,
+              "section": "Where to find"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "00909cc2-7577-472b-9d5f-9d2f58c2bb12",
+      "bindings": [
+        {
+          "id": "e0c63f1a-a34a-4b8e-942b-d25dfeb85d61",
+          "act": "ACT 1",
+          "progressKey": "act 1|glowing shield",
+          "gameIds": [
+            "MAG_LowHP_TemporaryHP_Shield"
+          ],
+          "wikiPage": "Glowing Shield"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "5cb1f3c0-5918-4548-b4f4-4d548baa6006",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Goblin Camp",
+            "wikiPage": "Goblin Camp"
+          },
+          "sublocation": "Locked chest on the ridge behind the camp",
+          "coordinates": {
+            "x": -53,
+            "y": 461,
+            "space": "Goblin Camp",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "The item page gives -53,461; Goblin Camp gives -57,467 for the chest. Retain the item reference rather than silently substituting the location-page point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Glowing_Shield&oldid=418984",
+              "revisionId": 418984,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Goblin_Camp&oldid=433423",
+              "revisionId": 433423,
+              "section": "Overview / Eastern courtyard; Notable loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item-page chest reference; the location page gives a different point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "a32dbac2-0079-4f6c-aedb-6d2c5cdc625c",
+      "bindings": [
+        {
+          "id": "5e7ed27b-65ae-45d5-ac10-da372a8bbf43",
+          "act": "ACT 1",
+          "progressKey": "act 1|spiderstep boots",
+          "gameIds": [
+            "UNI_FOR_SpiderstepShoes",
+            "FOR_SpiderstepBoots"
+          ],
+          "wikiPage": "Spiderstep Boots"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "092eae73-ef6f-44ba-96aa-d9d0d611d5f9",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Whispering Depths",
+            "wikiPage": "Whispering Depths"
+          },
+          "sublocation": "Chest in the Arachnomancer's lab",
+          "coordinates": {
+            "x": -514,
+            "y": -411,
+            "space": "Whispering Depths",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Spiderstep_Boots&oldid=423462",
+              "revisionId": 423462,
+              "section": "Where to find"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "e8dc08e4-09f6-4c2f-b599-2c97c8b850f7",
+      "bindings": [
+        {
+          "id": "bff4dff7-527e-48ce-a7a3-cfc3ede97076",
+          "act": "ACT 1",
+          "progressKey": "act 1|firestoker",
+          "gameIds": [
+            "MAG_Fire_IncreasePiercingDamageToBurning_HandCrossbow"
+          ],
+          "wikiPage": "Firestoker"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "7056d7e8-8469-41a2-85a3-947ed8589245",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Dormitory chest near the Hellsboars",
+          "coordinates": {
+            "x": -574,
+            "y": 382,
+            "space": "Grymforge",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Firestoker&oldid=418522",
+              "revisionId": 418522,
+              "section": "Where to find"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "a96da366-d459-4e38-99c2-a2fb87b38bdb",
+      "bindings": [
+        {
+          "id": "c780fc45-5ed7-4eac-82b3-7d3489fa8f2a",
+          "act": "ACT 1",
+          "progressKey": "act 1|holy lance helm",
+          "gameIds": [
+            "MAG_Radiant_Radiating_Helmet"
+          ],
+          "wikiPage": "Holy Lance Helm"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "782920ee-62fa-44d1-bfb6-7d11f94471e8",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Rosymorn Monastery",
+            "wikiPage": "Rosymorn Monastery"
+          },
+          "sublocation": "Painted chest accessed from the top level",
+          "coordinates": {
+            "x": 120,
+            "y": 35,
+            "space": "Rosymorn Monastery",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "The item page and monastery item list give 120,35. Monastery prose gives 121,37 for reaching the chest. Retain the item-page reference without averaging or claiming exact source agreement."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Holy_Lance_Helm&oldid=419557",
+              "revisionId": 419557,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rosymorn_Monastery&oldid=408982",
+              "revisionId": 408982,
+              "section": "Upper levels; Notable loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item-page chest reference; location prose also gives a different nearby point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "92e1c35c-3780-4ae1-98e1-90af6637cd7f",
+      "bindings": [
+        {
+          "id": "c15b922d-3813-4acf-bb72-ff87d197b234",
+          "act": "ACT 1",
+          "progressKey": "act 1|silver pendant",
+          "gameIds": [
+            "CHA_OutpostJewelry"
+          ],
+          "wikiPage": "Silver Pendant"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b69ebe26-482c-4d80-aebf-5116c622efb4",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Harper Outpost skeleton"
+          },
+          "location": {
+            "name": "Ravaged Beach",
+            "wikiPage": "Ravaged Beach"
+          },
+          "sublocation": "Harper Outpost skeleton by the campfire",
+          "coordinates": {
+            "x": 152,
+            "y": 366,
+            "space": "Ravaged Beach",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "The History check identifies the insignia and is not needed to retrieve the pendant. The nearby point 160,373 identifies a spider crevice, not this skeleton."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Silver_Pendant&oldid=434159",
+              "revisionId": 434159,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ravaged_Beach&oldid=434158",
+              "revisionId": 434158,
+              "section": "Overview / Harper outpost"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "2df71385-68cc-406d-9b91-07a1b20c8575",
+      "bindings": [
+        {
+          "id": "804c9bcc-cf11-4870-9d53-94acd7b6db6f",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of baneful striking",
+          "gameIds": [
+            "MAG_ElementalGish_BaneOnElementalWeaponDamage_Gloves"
+          ],
+          "wikiPage": "Gloves of Baneful Striking"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "f1c0e32a-ea20-4e38-84c6-9a569bfc9e52",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Lady Esther",
+            "wikiPage": "Esther"
+          },
+          "location": {
+            "name": "Rosymorn Monastery Trail",
+            "wikiPage": "Rosymorn Monastery Trail"
+          },
+          "sublocation": "Lady Esther's camp",
+          "coordinates": {
+            "x": -43,
+            "y": -129,
+            "space": "Rosymorn Monastery Trail",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Esther's camp is the navigation target. Her egg request is not a trading prerequisite. No death-drop route is inferred from merchant stock."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Baneful_Striking&oldid=418963",
+              "revisionId": 418963,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Esther&oldid=425220",
+              "revisionId": 425220,
+              "section": "Store / Notable items sold"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rosymorn_Monastery_Trail&oldid=426994",
+              "revisionId": 426994,
+              "section": "Areas / Lady Esther's camp"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Reviewed camp reference, not a fixed position for Lady Esther."
+          }
+        }
+      ]
+    },
+    {
+      "id": "e28cbe1e-3e5d-474f-9b56-ec42ebf02851",
+      "bindings": [
+        {
+          "id": "c3ad2db8-cd49-462f-89ef-feefc28e31b7",
+          "act": "ACT 1",
+          "progressKey": "act 1|giantbreaker",
+          "gameIds": [
+            "MAG_MeleeDebuff_AttackDebuff2_OnDamage_HeavyCrossbow"
+          ],
+          "wikiPage": "Giantbreaker"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "aefc4ce4-1ed6-4d89-9347-71446bc0d747",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Brem",
+            "wikiPage": "Brem"
+          },
+          "location": {
+            "name": "Zhentarim Basement",
+            "wikiPage": "Zhentarim Basement"
+          },
+          "sublocation": "Brem's shop",
+          "coordinates": {
+            "x": 295,
+            "y": -250,
+            "space": "Zhentarim Basement",
+            "subject": "encounter"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Zarys' approval for Brem's special stock",
+                "value": "Earn approval through Find the Missing Shipment."
+              }
+            ]
+          },
+          "notes": [
+            "Zarys' approval unlocks Brem's special stock. It is not restricted to a single shipment-resolution branch. No generic stock loot statement is promoted into an item-specific loot route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Giantbreaker&oldid=418879",
+              "revisionId": 418879,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brem&oldid=425720",
+              "revisionId": 425720,
+              "section": "Shop / Secret shop"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Missing_Shipment&oldid=418498",
+              "revisionId": 418498,
+              "section": "Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item-page trader encounter reference, not the quest-giver's position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "9fb372ad-34a4-4745-b09f-c5f7c29ef577",
+      "bindings": [
+        {
+          "id": "3259e113-8a4e-402a-aaf1-f49abd06b525",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of uninhibited kushigo",
+          "gameIds": [
+            "MAG_Monk_Magic_Gloves"
+          ],
+          "wikiPage": "Gloves of Uninhibited Kushigo"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "17473c98-2858-4045-b7f6-844ddbf4ce85",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Derryth Bonecloak",
+            "wikiPage": "Derryth Bonecloak"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Derryth's stall",
+          "coordinates": {
+            "x": -55,
+            "y": -93,
+            "space": "Ebonlake Grotto",
+            "subject": "encounter"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Find the Mushroom Picker",
+                "value": "Rescue Baelen and speak with Derryth."
+              }
+            ]
+          },
+          "notes": [
+            "Rescue Baelen, then speak to Derryth for the reward. Giving Noblestalk is not required. The quest page lists 51,-96 for its initial encounter; this route retains the item-page reward reference -55,-93."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Uninhibited_Kushigo&oldid=418979",
+              "revisionId": 418979,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Derryth_Bonecloak&oldid=433882",
+              "revisionId": 433882,
+              "section": "Involvement / Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Mushroom_Picker&oldid=418499",
+              "revisionId": 418499,
+              "section": "Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item-page reward encounter reference, not the quest-start point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "c6742140-9686-48fd-8073-32e2de063cf3",
+      "bindings": [
+        {
+          "id": "0a6c6fd9-49e0-498f-99d8-905ca95a4df4",
+          "act": "ACT 1",
+          "progressKey": "act 1|beastmaster's chain",
+          "gameIds": [
+            "Quest_GOB_WolfPens_AmuletOfBeastmaster"
+          ],
+          "wikiPage": "Beastmaster's Chain"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "26675fa4-b827-4d55-a670-f7cbb991f712",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Worg Pens",
+            "wikiPage": "Worg Pens"
+          },
+          "sublocation": "Chest by the meat table",
+          "coordinates": {
+            "x": 379,
+            "y": -43,
+            "space": "Worg Pens",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "The item page gives 379,-43; Worg Pens gives 377,-44 in its overview and 378,-44 in its item list. Retain the item-page container reference without averaging."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Beastmaster%27s_Chain&oldid=425313",
+              "revisionId": 425313,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Worg_Pens&oldid=424990",
+              "revisionId": 424990,
+              "section": "Overview / Animal pens; Notable loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item-page chest reference; the location page gives different nearby points."
+          }
+        }
+      ]
+    },
+    {
+      "id": "3628bd0b-341a-47f9-81c9-79d054e655b4",
+      "bindings": [
+        {
+          "id": "1653aebe-5e32-480f-b210-23d5f135edda",
+          "act": "ACT 1",
+          "progressKey": "act 1|fleetfingers",
+          "gameIds": [
+            "MAG_Mobility_JumpOnDash_Gloves"
+          ],
+          "wikiPage": "Fleetfingers"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "0f30ab9b-2800-4f91-a810-543309f5e802",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Forest",
+            "wikiPage": "Forest"
+          },
+          "sublocation": "Buried chest southeast of the Blighted Village",
+          "coordinates": {
+            "x": 80,
+            "y": 347,
+            "space": "Forest",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Reveal the buried chest",
+                "value": "Perception DC 20 OR read the War Map."
+              }
+            ]
+          },
+          "notes": [
+            "Reading the War Map reveals the chest and bypasses its Perception check. The item page gives 80,347, while Forest gives 79,347."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Fleetfingers&oldid=418599",
+              "revisionId": 418599,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Forest&oldid=418673",
+              "revisionId": 418673,
+              "section": "Overview / Blighted Village environs; Notable loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item-page buried-chest reference; the location page differs by one unit."
+          }
+        }
+      ]
+    },
+    {
+      "id": "2f3955dc-ceb1-40a4-9fb0-cb2f4752b33f",
+      "bindings": [
+        {
+          "id": "71a5da33-ef5b-4b82-8d73-fadf1b5f7914",
+          "act": "ACT 1",
+          "progressKey": "act 1|mage's friend",
+          "gameIds": [
+            "UND_Tower_RingArcana"
+          ],
+          "wikiPage": "Mage's Friend"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "3eb4faf9-5fb1-4660-8d82-8ffb6e3d69d7",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Chest at the foot of the bedroom bed",
+          "coordinates": {
+            "x": -34,
+            "y": -274,
+            "space": "Arcane Tower",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": [
+            "The item page gives -34,-274 and Arcane Tower gives -29,-273 for the bedroom chest. Use a reference rather than claim agreement. Floor-number conventions in the catalogue are left unchanged; the reviewed sublocation identifies the bed instead."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Mage%27s_Friend&oldid=420704",
+              "revisionId": 420704,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Arcane_Tower&oldid=431380",
+              "revisionId": 431380,
+              "section": "Third floor (bedroom)"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Item-page bedroom-chest reference; the location page gives a different point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "0a07035b-3374-4fa3-b5e6-7662c0de8f8f",
+      "bindings": [
+        {
+          "id": "d79aff13-4f70-48dd-a80d-92b0b0f901ff",
+          "act": "ACT 1",
+          "progressKey": "act 1|reason's grasp",
+          "gameIds": [
+            "ARM_Gloves_Barbarian_Magic",
+            "MAG_Rage_TempHPOnExit_Gloves"
+          ],
+          "wikiPage": "Reason's Grasp"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "ca58f20a-8b59-490a-840b-f70ccb3a3c29",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "The Risen Road",
+            "wikiPage": "The Risen Road"
+          },
+          "sublocation": "Locked chest behind the caravan survivors",
+          "coordinates": {
+            "x": 37,
+            "y": 644,
+            "space": "The Risen Road",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Reason%27s_Grasp&oldid=422199",
+              "revisionId": 422199,
+              "section": "Where to find"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "3ec7a407-4c88-4387-9bea-4d426ac417d9",
+      "bindings": [
+        {
+          "id": "3dc52da3-25d0-4021-881b-8931caa7bc84",
+          "act": "ACT 1",
+          "progressKey": "act 1|the sparkle hands",
+          "gameIds": [
+            "MAG_ChargedLightning_AbilityCheckBoost_Gloves"
+          ],
+          "wikiPage": "The Sparkle Hands"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "e0f3c508-094c-4a9b-a255-bb73f13f5b4e",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Decrepit Sanctuary",
+            "wikiPage": "Decrepit Sanctuary"
+          },
+          "sublocation": "Wooden chest at the giant stump in the Sunlit Wetlands",
+          "coordinates": {
+            "x": 95,
+            "y": 210,
+            "space": "Decrepit Sanctuary",
+            "subject": "container"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Sparkle_Hands&oldid=424109",
+              "revisionId": 424109,
+              "section": "Where to find"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-14",
+            "reviewer": "Codex primary-source Batch 1 review"
+          },
+          "coordinateReview": {
+            "state": "exact"
           }
         }
       ]

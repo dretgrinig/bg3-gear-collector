@@ -11,6 +11,8 @@ const root = join(__dirname, '..');
 const before = JSON.parse(execFileSync('git', ['show', '74df6103ab836542b4516910bd83b50b35ea232d:data/acquisition.v1.json'], { cwd: root, encoding: 'utf8' }));
 const dataset = () => JSON.parse(readFileSync(join(root, 'data', 'acquisition.v1.json'), 'utf8'));
 const corpseRouteIds = ["840f2cfc-76e4-4c99-969e-b75ea7b893d3", "32fb0efc-2544-4476-b1e8-6d6450879a22", "a91d0d81-612b-4a43-a70f-490b4a421399", "f198ec10-6aa3-4155-a9c2-1134d95fa4ec"];
+const originalEntryIDs = new Set(before.entries.map(e => e.id));
+const originalScope = data => ({...data, entries:data.entries.filter(e => originalEntryIDs.has(e.id))});
 const routeMap = data => new Map(data.entries.flatMap(entry => entry.routes.map(route => [route.id, route])));
 // Literal points reviewed against public Wiki revision bodies, independent of runtime output.
 const backfill = [
@@ -403,7 +405,7 @@ for (const fact of backfill) test('coordinate backfill: ' + fact.item + ' / ' + 
 });
 
 test('coordinate checkpoint is schema 2 with 40 entries / 41 bindings / 58 resolved routes', () => {
-  const data = dataset(), checked = metadata.validateDataset(data), routes = [...routeMap(data).values()];
+  const current = dataset(), data = originalScope(current), checked = metadata.validateDataset(current), routes = [...routeMap(data).values()];
   assert.equal(data.schemaVersion, 2); assert.equal(checked.ok, true, JSON.stringify(checked.issues));
   assert.equal(data.entries.length, 40); assert.equal(data.entries.flatMap(e => e.bindings).length, 41);
   assert.equal(routes.length, 58); assert.equal(backfill.length, 36);
@@ -417,7 +419,7 @@ test('coordinate checkpoint is schema 2 with 40 entries / 41 bindings / 58 resol
 
 test('coordinate backfill preserves all UUIDs, bindings, routes, rich facts, and original 22 points', () => {
   const data = dataset(), current = routeMap(data);
-  assert.deepEqual(data.entries.map(e => e.id), before.entries.map(e => e.id));
+  assert.deepEqual(originalScope(data).entries.map(e => e.id), before.entries.map(e => e.id));
   for (const oldEntry of before.entries) {
     const entry = data.entries.find(e => e.id === oldEntry.id);
     assert.deepEqual(entry.bindings, oldEntry.bindings); assert.equal(entry.coverage, oldEntry.coverage);
@@ -485,7 +487,7 @@ test('backfill does not expand catalogue matches or change progress and classifi
   const expectedVendor = JSON.parse(readFileSync(join(__dirname,'fixtures','vendor-membership.json'),'utf8'));
   let source = readFileSync(join(__dirname,'spoiler-ui.test.cjs'),'utf8').split('const required =')[0].replace('items:()=>ITEMS','items:()=>ITEMS,key');
   const module = { exports:{} }; vm.runInNewContext(source + '\nmodule.exports=harness;', {require,__dirname,module,process,URL});
-  const app = module.exports(catalogue).app, items = Array.from(app.items()), resolver = metadata.createResolver(dataset());
+  const app = module.exports(catalogue).app, items = Array.from(app.items()), resolver = metadata.createResolver(originalScope(dataset()));
   assert.equal(catalogue.length,556); assert.equal(items.length,555); assert.equal(new Set(items.map(app.key)).size,555);
   assert.equal(items.filter(item => resolver.resolve(item)).length,40);
   for (const act of ['ACT 1','ACT 2','ACT 3']) {
