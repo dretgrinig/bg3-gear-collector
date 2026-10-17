@@ -1,5 +1,6 @@
 /* Independent reviewed fact table; real validator, resolver, tracker and renderer paths. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
 const metadata=require('../acquisition-metadata.js'),{createAcquisitionUI}=require('../acquisition-ui.js'),{generateBundle}=require('../scripts/build-acquisition-bundle.cjs');
@@ -9,7 +10,7 @@ const baseline=JSON.parse(execFileSync('git',['show',facts.baseline+':data/acqui
 const data=JSON.parse(readFileSync(join(root,'data/acquisition.v1.json'),'utf8'));
 const checkpointSnapshot=JSON.parse(execFileSync('git',['show','3ddc1d94ff507fb70415bd64c4cfefe37c14cfd9:data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}));
 const checkpointIDs=new Set(checkpointSnapshot.entries.map(e=>e.id));
-const checkpointData={...data,datasetVersion:checkpointSnapshot.datasetVersion,entries:data.entries.filter(e=>checkpointIDs.has(e.id))};
+const checkpointData={...data,datasetVersion:checkpointSnapshot.datasetVersion,entries:data.entries.filter(e=>checkpointIDs.has(e.id)).map(withoutAct2Continuations)};
 const checkpointResolver=metadata.createResolver(checkpointData);
 const catalogue=JSON.parse(readFileSync(join(__dirname,'fixtures/vendor-catalogue.json'),'utf8'));
 const copy=x=>JSON.parse(JSON.stringify(x)),key=x=>(x.act+'|'+x.name).toLowerCase();

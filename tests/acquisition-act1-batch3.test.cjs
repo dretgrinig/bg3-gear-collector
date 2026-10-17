@@ -1,5 +1,6 @@
 /* Batch 3: literal reviewed identities and points; production resolver/render/import paths. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
 const metadata=require('../acquisition-metadata.js'),{createAcquisitionUI}=require('../acquisition-ui.js'),{generateBundle}=require('../scripts/build-acquisition-bundle.cjs');
@@ -1038,7 +1039,7 @@ const rows=approved.map(s=>{const found=catalogue.filter(row=>key(row)===s.bindi
 const normalized=Array.from(itemHarness(rows,{bundle:false}).app.items());
 const resolver=metadata.createResolver(data),ui=createAcquisitionUI(metadata,data);
 const itemFor=s=>normalized.find(x=>key(x)===s.binding.progressKey);
-const entryFor=s=>{const e=data.entries.find(e=>e.id===s.entryId);assert.ok(e,'Missing reviewed Batch 3 entry: '+s.name);return e};
+const entryFor=s=>{const e=data.entries.find(e=>e.id===s.entryId);assert.ok(e,'Missing reviewed Batch 3 entry: '+s.name);return withoutAct2Continuations(e)};
 function browser(source=readFileSync(join(root,'assets/acquisition-pilot.js'),'utf8')){
  const calls=[],blocked=name=>()=>{calls.push(name);throw Error('Unexpected '+name)};
  const sandbox={URL,fetch:blocked('network'),setTimeout:blocked('timer'),document:new Proxy({},{get:blocked('DOM')}),localStorage:new Proxy({},{get:blocked('storage')})};
@@ -1069,9 +1070,9 @@ for(const spec of approved){
   for(const surface of surfaces(h)){
    const details=required(surface,'details'),effects=required(details,'.item-effects'),where=required(details,'.acquisition-enrichment'),grid=required(details,'.detailgrid');
    assert.ok(effects.textContent.includes(raw.description));if(raw.properties)assert.ok(effects.textContent.includes(raw.properties));assert.ok(grid.children.indexOf(effects)<grid.children.indexOf(where));
-   assert.equal(required(where,'h4').textContent,'Where to find');assert.equal(where.querySelectorAll('.acquisition-route').length,spec.routes.length);
+   assert.equal(required(where,'h4').textContent,'Where to find');assert.equal(where.querySelectorAll('.acquisition-route').length,spec.routes.length+withoutAct2Continuations.continuationCount(spec.entryId));
    for(const r of spec.routes){assert.ok(where.textContent.includes(`X: ${r.coordinates.x} Y: ${r.coordinates.y}`));assert.ok(where.textContent.includes(r.sublocation));}
-   assert.equal(where.querySelectorAll('.acquisition-point').length,spec.routes.length);
+   assert.equal(where.querySelectorAll('.acquisition-point').length,spec.routes.length+withoutAct2Continuations.continuationCount(spec.entryId));
    for(const heading of where.querySelectorAll('.acquisition-route-heading'))assert.match(heading.textContent,/^(?:Container|Loot|Vendor|Quest reward|Craft|World):/);
    assert.doesNotMatch(where.textContent,/Route \d|Shared location|Prerequisites|References|Notes:/);
    assert.equal(surface.querySelectorAll('a').length,1);assert.equal(required(surface,'.item-reference').getAttribute('href'),spec.source);assert.equal(surface.querySelectorAll('.acquisition-references,.acquisition-reference').length,0);
@@ -1092,13 +1093,13 @@ for(const spec of approved){
 }
 const byName=name=>approved.find(s=>s.name===name);
 test('Batch 3 appends only fifteen entries/bindings/routes and preserves all seventy existing objects',()=>{
- const scoped={...data,datasetVersion:batch3Snapshot.datasetVersion,entries:data.entries.filter(e=>batch3IDs.has(e.id))};assert.deepEqual(scoped,batch3Snapshot);
+ const scoped={...data,datasetVersion:batch3Snapshot.datasetVersion,entries:data.entries.filter(e=>batch3IDs.has(e.id)).map(withoutAct2Continuations)};assert.deepEqual(scoped,batch3Snapshot);
  assert.equal(scoped.schemaVersion,2);assert.equal(scoped.datasetVersion,'2.3.0-act1.batch3');assert.equal(metadata.validateDataset(data).ok,true);assert.equal(scoped.entries.length,85);
  assert.deepEqual(scoped.entries.slice(0,70),baseline.entries);const added=scoped.entries.slice(70);assert.deepEqual(added.map(e=>e.id),approved.map(s=>s.entryId));assert.deepEqual(added.flatMap(e=>e.bindings),approved.map(s=>s.binding));assert.deepEqual(added.flatMap(e=>e.routes),approved.flatMap(s=>s.routes));
  assert.equal(scoped.entries.flatMap(e=>e.bindings).length,86);assert.equal(scoped.entries.flatMap(e=>e.routes).length,104);
 });
 test('Batch 3 has four Exact, eleven Reference, zero new exceptions and no unresolved coordinates',()=>{
- const scoped=data.entries.filter(e=>batch3IDs.has(e.id));const added=scoped.slice(70).flatMap(e=>e.routes),all=scoped.flatMap(e=>e.routes);assert.equal(added.length,15);
+ const scoped=data.entries.filter(e=>batch3IDs.has(e.id)).map(withoutAct2Continuations);const added=scoped.slice(70).flatMap(e=>e.routes),all=scoped.flatMap(e=>e.routes);assert.equal(added.length,15);
  for(const [state,count] of [['exact',4],['reference',11],['not_applicable',0]])assert.equal(added.filter(r=>r.coordinateReview.state===state).length,count);
  assert.equal(added.filter(r=>r.coordinates===null).length,0);for(const [state,count] of [['exact',38],['reference',61],['not_applicable',5]])assert.equal(all.filter(r=>r.coordinateReview.state===state).length,count);assert.equal(all.filter(r=>['pending','conflict','not_documented'].includes(r.coordinateReview.state)).length,0);
 });

@@ -1,5 +1,6 @@
 /* Full Details coordinate checkpoint: literal primary-Wiki facts and protected identities. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
@@ -12,7 +13,7 @@ const before = JSON.parse(execFileSync('git', ['show', '74df6103ab836542b4516910
 const dataset = () => JSON.parse(readFileSync(join(root, 'data', 'acquisition.v1.json'), 'utf8'));
 const corpseRouteIds = ["840f2cfc-76e4-4c99-969e-b75ea7b893d3", "32fb0efc-2544-4476-b1e8-6d6450879a22", "a91d0d81-612b-4a43-a70f-490b4a421399", "f198ec10-6aa3-4155-a9c2-1134d95fa4ec"];
 const originalEntryIDs = new Set(before.entries.map(e => e.id));
-const originalScope = data => ({...data, entries:data.entries.filter(e => originalEntryIDs.has(e.id))});
+const originalScope = data => ({...data, entries:data.entries.filter(e => originalEntryIDs.has(e.id)).map(withoutAct2Continuations)});
 const routeMap = data => new Map(data.entries.flatMap(entry => entry.routes.map(route => [route.id, route])));
 // Literal points reviewed against public Wiki revision bodies, independent of runtime output.
 const backfill = [
@@ -421,7 +422,7 @@ test('coordinate backfill preserves all UUIDs, bindings, routes, rich facts, and
   const data = dataset(), current = routeMap(data);
   assert.deepEqual(originalScope(data).entries.map(e => e.id), before.entries.map(e => e.id));
   for (const oldEntry of before.entries) {
-    const entry = data.entries.find(e => e.id === oldEntry.id);
+    const entry = withoutAct2Continuations(data.entries.find(e => e.id === oldEntry.id));
     assert.deepEqual(entry.bindings, oldEntry.bindings); assert.equal(entry.coverage, oldEntry.coverage);
     assert.deepEqual(entry.routes.map(r => r.id), oldEntry.routes.map(r => r.id));
     for (const oldRoute of oldEntry.routes) {

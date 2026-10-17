@@ -1,5 +1,6 @@
 /* Checkpoint 1B: approved facts, exact catalogue bindings and production runtime boundaries. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
@@ -19,7 +20,7 @@ const key = item => (item.act + '|' + item.name).toLowerCase();
 function priorFacts(entries, previous) {
   const originals = new Map(previous.map(entry => [entry.id, entry]));
   return entries.map(entry => {
-    const output = copy(entry), original = originals.get(entry.id);
+    const output = copy(withoutAct2Continuations(entry)), original = originals.get(entry.id);
     for (const route of output.routes) {
       const old = original.routes.find(value => value.id === route.id);
       delete route.coordinateReview; delete route.navigationPoints;
@@ -567,7 +568,7 @@ test('1B retains separate Graceful Cloth Acts and original Battlemage source row
   const rawPair=catalogue.filter(row=>key(row)==="act 2|gloves of battlemage's power"),retained=byKey("act 2|gloves of battlemage's power");
   assert.equal(rawPair.length,2);assert.equal(retained.length,1);const original=rawPair.find(row=>row.links.Name.includes("Battlemage's"));
   assert.equal(original.sourceRow,54);assert.equal(retained[0].source,original.links.Name);assert.equal(retained[0].description,original.description);assert.deepEqual(copy(retained[0].gameIds),original.gameIds);
-  assert.equal(resolver.resolve(retained[0]),null);
+  assert.equal(metadata.createResolver(JSON.parse(execFileSync('git',['show',baselineCommit+':data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}))).resolve(retained[0]),null,'Pre-Act-2 checkpoint has no Battlemage entry; current coverage is tested independently');
 });
 
 test('1B metadata lookup leaves real mocked v5/v6 imports/exports and non-selected Story records unchanged', async () => {

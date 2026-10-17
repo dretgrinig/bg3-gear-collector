@@ -1,5 +1,6 @@
 /* Checkpoint 1C: approved facts, exact catalogue bindings and production runtime boundaries. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
@@ -21,7 +22,7 @@ const key = item => (item.act + '|' + item.name).toLowerCase();
 function priorFacts(entries, previous) {
   const originals = new Map(previous.map(entry => [entry.id, entry]));
   return entries.map(entry => {
-    const output = copy(entry), original = originals.get(entry.id);
+    const output = copy(withoutAct2Continuations(entry)), original = originals.get(entry.id);
     for (const route of output.routes) {
       const old = original.routes.find(value => value.id === route.id);
       delete route.coordinateReview; delete route.navigationPoints;
@@ -401,7 +402,7 @@ for (const [index, spec] of approved.entries()) {
 
 
 test('1C retains only the approved ten entries and twenty-two routes under coordinate schema 2, 40/41/58 totals', () => {
-  const current = dataset(), data = {...current, entries:current.entries.filter(e => coordinateIDs.has(e.id))}, checked = metadata.validateDataset(current);
+  const current = dataset(), data = {...current, entries:current.entries.filter(e => coordinateIDs.has(e.id)).map(withoutAct2Continuations)}, checked = metadata.validateDataset(current);
   assert.equal(checked.ok, true, JSON.stringify(checked.issues));
   assert.equal(data.schemaVersion, 2); assert.deepEqual(data.entries, coordinateSnapshot.entries);
   assert.equal(data.entries.length, 40); assert.equal(data.entries.flatMap(entry => entry.bindings).length, 41);
@@ -660,7 +661,7 @@ test('1C retains separate Graceful Cloth Acts and original Battlemage source row
   const rawPair=catalogue.filter(row=>key(row)==="act 2|gloves of battlemage's power"),retained=byKey("act 2|gloves of battlemage's power");
   assert.equal(rawPair.length,2);assert.equal(retained.length,1);const original=rawPair.find(row=>row.links.Name.includes("Battlemage's"));
   assert.equal(original.sourceRow,54);assert.equal(retained[0].source,original.links.Name);assert.equal(retained[0].description,original.description);assert.deepEqual(copy(retained[0].gameIds),original.gameIds);
-  assert.equal(resolver.resolve(retained[0]),null);
+  assert.equal(metadata.createResolver(coordinateSnapshot).resolve(retained[0]),null,'Historical coordinate checkpoint has no Battlemage entry; current coverage is tested independently');
 });
 
 

@@ -1,5 +1,6 @@
 /* Act 1 Batch 1: independent reviewed bindings and literal primary-source points. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
 const metadata=require('../acquisition-metadata.js'),{createAcquisitionUI}=require('../acquisition-ui.js'),{generateBundle}=require('../scripts/build-acquisition-bundle.cjs');
@@ -408,14 +409,14 @@ for(const spec of approved){
  });
 }
 test('Batch 1 appends exactly fifteen entries/bindings/routes and preserves all original forty objects byte-semantically',()=>{
- const scoped={...data,datasetVersion:batch1Snapshot.datasetVersion,entries:data.entries.filter(e=>batch1IDs.has(e.id))};assert.deepEqual(scoped,batch1Snapshot);
+ const scoped={...data,datasetVersion:batch1Snapshot.datasetVersion,entries:data.entries.filter(e=>batch1IDs.has(e.id)).map(withoutAct2Continuations)};assert.deepEqual(scoped,batch1Snapshot);
  assert.equal(scoped.schemaVersion,2);assert.equal(scoped.datasetVersion,'2.1.0-act1.batch1');assert.equal(metadata.validateDataset(data).ok,true);assert.equal(scoped.entries.length,55);
  assert.deepEqual(scoped.entries.slice(0,40),baseline.entries);const additions=scoped.entries.slice(40);assert.deepEqual(additions.map(e=>e.id),approved.map(s=>s.entryId));assert.deepEqual(additions.flatMap(e=>e.bindings.map(b=>b.id)),approved.map(s=>s.bindingId));assert.deepEqual(additions.flatMap(e=>e.routes.map(r=>r.id)),approved.map(s=>s.routeId));
  assert.equal(scoped.entries.flatMap(e=>e.bindings).length,56);assert.equal(scoped.entries.flatMap(e=>e.routes).length,73);
  const addedRoutes=additions.flatMap(e=>e.routes);assert.equal(addedRoutes.filter(r=>r.coordinateReview.state==='exact').length,6);assert.equal(addedRoutes.filter(r=>r.coordinateReview.state==='reference').length,9);assert.equal(addedRoutes.filter(r=>r.coordinates===null).length,0);
 });
 test('Batch 1 keeps all prior coordinate review states and five exceptions unchanged',()=>{
- const routes=data.entries.filter(e=>batch1IDs.has(e.id)).flatMap(e=>e.routes),count=state=>routes.filter(r=>r.coordinateReview.state===state).length;
+ const routes=data.entries.filter(e=>batch1IDs.has(e.id)).map(withoutAct2Continuations).flatMap(e=>e.routes),count=state=>routes.filter(r=>r.coordinateReview.state===state).length;
  assert.equal(count('exact'),28);assert.equal(count('reference'),40);assert.equal(count('not_applicable'),5);assert.equal(count('pending')+count('conflict')+count('not_documented'),0);
 });
 test('Batch 1 Fleetfingers keeps Perception OR War Map discovery, not a mandatory check',()=>{

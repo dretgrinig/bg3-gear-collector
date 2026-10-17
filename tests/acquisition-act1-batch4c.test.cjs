@@ -1,5 +1,6 @@
 /* Independent reviewed fact table; real validator, resolver, tracker and renderer paths. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
 const metadata=require('../acquisition-metadata.js'),{createAcquisitionUI}=require('../acquisition-ui.js'),{generateBundle}=require('../scripts/build-acquisition-bundle.cjs');
@@ -7,6 +8,9 @@ const {harness:storyHarness,record}=require('./helpers/app-harness.cjs');
 const root=join(__dirname,'..'),facts=JSON.parse(readFileSync(join(__dirname,'fixtures/acquisition-act1-batch4c.json'),'utf8'));
 const baseline=JSON.parse(execFileSync('git',['show',facts.baseline+':data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}));
 const data=JSON.parse(readFileSync(join(root,'data/acquisition.v1.json'),'utf8'));
+const checkpointIDs=new Set(JSON.parse(execFileSync('git',['show','59ef1ce7d1a8e0b6878c55e6126cab36a6c9c7a8:data/acquisition.v1.json'],{cwd:root,encoding:'utf8'})).entries.map(e=>e.id));
+const checkpointData={...data,datasetVersion:'2.6.0-act1.batch4c',entries:data.entries.filter(e=>checkpointIDs.has(e.id)).map(withoutAct2Continuations)};
+const checkpointResolver=metadata.createResolver(checkpointData);
 const catalogue=JSON.parse(readFileSync(join(__dirname,'fixtures/vendor-catalogue.json'),'utf8'));
 const copy=x=>JSON.parse(JSON.stringify(x)),key=x=>(x.act+'|'+x.name).toLowerCase();
 const boundary={exports:{}};
@@ -58,11 +62,11 @@ for(const f of facts.items){
 }
 
 test('Batch 4C reconciles all 46 identities and preserves all previous 178 entry objects',()=>{
- assert.equal(facts.items.length,46);for(const field of ['sourceRow','progressKey','entryId','bindingId'])assert.equal(new Set(facts.items.map(f=>f[field])).size,46,field);const v=metadata.validateDataset(data);assert.equal(v.ok,true,JSON.stringify(v.issues));assert.equal(data.schemaVersion,2);assert.equal(data.datasetVersion,'2.6.0-act1.batch4c');assert.deepEqual(data.entries.slice(0,178),baseline.entries);assert.deepEqual(data.entries.slice(178).map(e=>e.id),facts.items.map(f=>f.entryId));assert.equal(data.entries.length,224);assert.equal(data.entries.flatMap(e=>e.bindings).length,225);assert.equal(data.entries.flatMap(e=>e.routes).length,299);
+ assert.equal(facts.items.length,46);for(const field of ['sourceRow','progressKey','entryId','bindingId'])assert.equal(new Set(facts.items.map(f=>f[field])).size,46,field);const v=metadata.validateDataset(data);assert.equal(v.ok,true,JSON.stringify(v.issues));assert.equal(data.schemaVersion,2);assert.equal(checkpointData.datasetVersion,'2.6.0-act1.batch4c');assert.deepEqual(checkpointData.entries.slice(0,178),baseline.entries);assert.deepEqual(checkpointData.entries.slice(178).map(e=>e.id),facts.items.map(f=>f.entryId));assert.equal(checkpointData.entries.length,224);assert.equal(checkpointData.entries.flatMap(e=>e.bindings).length,225);assert.equal(checkpointData.entries.flatMap(e=>e.routes).length,299);
 });
 test('Batch 4C accounts honestly for 18 Exact, 55 Reference, 15 Exceptions and 1 conflict',()=>{
- const added=data.entries.slice(178).flatMap(e=>e.routes);assert.equal(added.length,89);for(const [state,n] of [['exact',18],['reference',55],['not_applicable',15],['conflict',1],['pending',0],['not_documented',0]])assert.equal(added.filter(r=>r.coordinateReview.state===state).length,n);for(const r of added)assert.equal(r.coordinates===null,!['exact','reference'].includes(r.coordinateReview.state));
- for(const [state,n] of [['exact',68],['reference',209],['not_applicable',21],['conflict',1]])assert.equal(data.entries.flatMap(e=>e.routes).filter(r=>r.coordinateReview.state===state).length,n);
+ const added=checkpointData.entries.slice(178).flatMap(e=>e.routes);assert.equal(added.length,89);for(const [state,n] of [['exact',18],['reference',55],['not_applicable',15],['conflict',1],['pending',0],['not_documented',0]])assert.equal(added.filter(r=>r.coordinateReview.state===state).length,n);for(const r of added)assert.equal(r.coordinates===null,!['exact','reference'].includes(r.coordinateReview.state));
+ for(const [state,n] of [['exact',68],['reference',209],['not_applicable',21],['conflict',1]])assert.equal(checkpointData.entries.flatMap(e=>e.routes).filter(r=>r.coordinateReview.state===state).length,n);
 });
 const factAt=row=>facts.items.find(f=>f.sourceRow===row),entryAt=row=>entryFor(factAt(row)),routeAt=(row,i=0)=>entryAt(row).routes[i],condition=(row,i=0)=>JSON.stringify(routeAt(row,i).conditions);
 test('Batch 4C ceremonial variants never resolve from generic-only or ordinary replacement weapons',()=>{
@@ -134,7 +138,7 @@ test('Batch 4C canonical/generated/offline bundles are deterministic and preserv
  const source=readFileSync(join(root,'assets/acquisition-pilot.js'),'utf8');assert.equal(source,generateBundle());assert.equal(source,generateBundle());assert.deepEqual(JSON.parse(source.match(/  const dataset = (\{[^\n]*\});/)[1]),data);const live=bundleRuntime(source),offline=bundleRuntime(live.ui.offlineSource());for(const f of facts.items)for(const runtime of [live,offline])assert.deepEqual(copy(runtime.ui.render(itemFor(f),'full')),copy(ui.render(itemFor(f),'full')));assert.deepEqual(live.calls,[]);assert.deepEqual(offline.calls,[]);const prior=execFileSync('git',['show',facts.baseline+':assets/acquisition-pilot.js'],{cwd:root,encoding:'utf8'});assert.equal(source.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'),prior.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'));
 });
 test('Batch 4C enriches exactly all 46 remaining identities and completes Act 1 accounting',()=>{
- const items=Array.from(itemHarness(catalogue,{dataset:data}).app.items());assert.deepEqual(items.filter(i=>resolver.resolve(i)&&!oldResolver.resolve(i)).map(key).sort(),facts.items.map(f=>f.progressKey).sort());assert.equal(items.filter(i=>resolver.resolve(i)).length,224);assert.equal(items.filter(i=>i.act==='ACT 1'&&resolver.resolve(i)).length,219);assert.equal(items.filter(i=>i.act==='ACT 1'&&!resolver.resolve(i)).length,0);
+ const items=Array.from(itemHarness(catalogue,{dataset:data}).app.items());assert.deepEqual(items.filter(i=>checkpointResolver.resolve(i)&&!oldResolver.resolve(i)).map(key).sort(),facts.items.map(f=>f.progressKey).sort());assert.equal(items.filter(i=>checkpointResolver.resolve(i)).length,224);assert.equal(items.filter(i=>i.act==='ACT 1'&&resolver.resolve(i)).length,219);assert.equal(items.filter(i=>i.act==='ACT 1'&&!resolver.resolve(i)).length,0);
 });
 test('Batch 4C preserves all 555 progress keys, memberships, Graceful contexts and Battlemage row 54',()=>{
  const h=itemHarness(catalogue,{dataset:data}),items=Array.from(h.app.items());assert.equal(catalogue.length,556);assert.equal(items.length,555);assert.deepEqual(items.map(key).sort(),[...new Set(catalogue.map(key))].sort());for(const [i,act] of ['ACT 1','ACT 2','ACT 3'].entries()){const a=items.filter(x=>x.act===act);assert.equal(a.filter(h.app.vendor).length,[63,50,67][i]);assert.equal(a.filter(x=>h.app.acquisitionFor(x).loot).length,[131,94,125][i]);assert.equal(a.filter(h.app.quest).length,[25,0,0][i]);}const cloth=items.filter(x=>x.name.startsWith('The Graceful Cloth'));assert.equal(cloth.length,2);assert.notEqual(key(cloth[0]),key(cloth[1]));const b=items.filter(x=>x.name==="Gloves of Battlemage's Power");assert.equal(b.length,1);assert.equal(b[0].source,catalogue.find(x=>x.sourceRow===54&&x.name===b[0].name).links.Name);

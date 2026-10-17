@@ -486,7 +486,7 @@ async function checkAct1Batch2(browser, width) {
 }
 
 // Batch 3: literal special-case points plus all fifteen native Full/protected checks.
-async function checkAct1Batch3(browser, width) {
+async function checkAct1Batch3(browser, width, selectedNames = null) {
   const names = ["Boots of Aid and Comfort", "Boots of Genial Striding", "Boots of Elemental Momentum", "Gloves of Dexterity", "Gloves of Missile Snaring", "Hunting Shortbow", "The Speedy Lightfeet", "Helmet of Smiting", "Nature's Snare", "Moondrop Pendant", "Ring of Poison Resistance", "Smuggler's Ring", "Spurred Band", "Staff of Crones", "Skybreaker"];
   const dataset = JSON.parse(fs.readFileSync(path.join(root, 'data', 'acquisition.v1.json'), 'utf8'));
   const catalogue = JSON.parse(catalogueFixture);
@@ -494,12 +494,14 @@ async function checkAct1Batch3(browser, width) {
   try {
     testCase.releaseAsset();
     await page.waitForLoadState('domcontentloaded');
-    for (const name of names) {
+    for (const name of names.filter(name => !selectedNames || selectedNames.includes(name))) {
       await page.locator('#spoilerMode').selectOption('full');
       await page.locator('#q').fill(name);
       const raw = catalogue.find(row => row.act === 'ACT 1' && row.name === name);
       const entry = dataset.entries.find(entry => entry.bindings.some(binding => binding.progressKey === ('act 1|' + name).toLowerCase()));
-      check(!!raw && !!entry && entry.routes.length === 1, `${width}px ${name}: batch identity/route missing`);
+      const continuation = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act2-complete.json'), 'utf8')).existingUpdates.find(u => u.progressKeys.includes(('act 1|' + name).toLowerCase()));
+      const expectedRouteCount = 1 + (continuation?.routeAdditions || 0);
+      check(!!raw && !!entry && entry.routes.length === expectedRouteCount, `${width}px ${name}: batch identity/route missing`);
       const route = entry.routes[0], scope = width > 780 ? '#body > tr' : '#cards > article';
       check(await page.locator(scope).count() === 1, `${width}px ${name}: search identity mismatch`);
       const surface = page.locator(scope).first();
@@ -525,7 +527,7 @@ async function checkAct1Batch3(browser, width) {
       check(facts.ordered && facts.mechanics, label + ': mechanics/order changed');
       check(facts.coordinates === `X: ${route.coordinates.x} Y: ${route.coordinates.y}`, label + ': coordinate mismatch');
       check(facts.where.includes(route.sublocation), label + ': sublocation missing');
-      check(facts.routes === 1 && facts.sections === 1, label + ': missing/duplicate enrichment');
+      check(facts.routes === expectedRouteCount && facts.sections === 1, label + ': missing/duplicate enrichment');
       check(facts.links === 1 && facts.reference === raw.links.Name && facts.evidence === 0, label + ': Wiki/evidence mismatch');
       check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.where), label + ': walkthrough/evidence clutter');
       const literalPoints = {
@@ -556,8 +558,16 @@ async function checkAct1Batch3(browser, width) {
 }
 
 // One independent reviewed table drives the entire large-batch layout sweep.
-async function checkAcquisitionExpansion(browser, width, batch) {
-  const approved = JSON.parse(fs.readFileSync(path.join(root, `tests/fixtures/acquisition-act1-batch${batch.toLowerCase()}.json`), 'utf8')).items;
+async function checkAcquisitionExpansion(browser, width, batch, selectedNames = null) {
+  const continuations = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act2-complete.json'), 'utf8')).existingUpdates;
+  const approved = JSON.parse(fs.readFileSync(path.join(root, `tests/fixtures/acquisition-act1-batch${batch.toLowerCase()}.json`), 'utf8')).items
+    .filter(f => !selectedNames || selectedNames.includes(f.name)).map(f => {
+      const extra = continuations.find(u => u.entryId === f.entryId)?.routesToAdd || [];
+      return {...f,routeCount:f.routeCount + extra.length,
+        pointGroups:(f.pointGroups ?? f.routeCount) + extra.length,
+        coordinateGroups:extra.length ? (f.coordinateGroups ?? f.routes.filter(r => r.point).length) + extra.filter(r => r.coordinates).length : f.coordinateGroups,
+        routes:[...f.routes,...extra.map(r => ({...r,point:r.coordinates ? [r.coordinates.x,r.coordinates.y] : null,state:r.coordinateReview.state,reason:r.coordinateReview.reason,actor:r.actor ? [r.actor.name,r.actor.wikiPage] : null}))]};
+    });
   const catalogue = JSON.parse(catalogueFixture);
   const testCase = await createCase(browser, width, 'full'), { page } = testCase;
   const representatives = new Set(batch === '4C' ? ['The Blood of Lathander','Sickle of BOOOAL',"Shapeshifter's Boon Ring",'The Whispering Promise','Key of the Ancients',"Mystra's Grace",'Ring of Restorative Gravity','Robust Chain Shirt',"The Oakfather's Embrace",'Staff of Arcane Blessing'] : batch === '4B' ? ['Boots of Speed','Club of Hill Giant Strength','Dark Justiciar Mail','Dark Justiciar Mask','Sword of Justice','Boots of Stormy Clamour','Warped Headband of Intellect'] : ['Adamantine Scimitar','Daredevil Gloves','Gloves of Belligerent Skies','Speedy Reply','Uncovered Mysteries','Worgfang','Jagged Spear','Blooded Greataxe']);
@@ -625,6 +635,79 @@ async function checkAcquisitionExpansion(browser, width, batch) {
   } finally { await testCase.context.close(); }
 }
 
+async function checkAct2Expansion(browser, width) {
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act2-complete.json'), 'utf8'));
+  const approved = fixture.items;
+  const catalogue = JSON.parse(catalogueFixture);
+  const testCase = await createCase(browser, width, 'full'), { page } = testCase;
+  const representatives = new Set(fixture.browserRepresentatives);
+  try {
+    testCase.releaseAsset();
+    await page.waitForFunction(() => !!window.BG3AcquisitionUI);
+    await page.locator('[data-act="ACT 2"]').click();
+    for (const expected of approved) {
+      await page.locator('#spoilerMode').selectOption('full');
+      await page.locator('#q').fill(expected.name);
+      const scope = width > 780 ? '#body > tr' : '#cards > article';
+      const exact = page.locator(scope).filter({has:page.getByText(expected.name, {exact:true})});
+      check(await exact.count() === 1, `${width}px ${expected.name}: exact rendered identity mismatch`);
+      const surface = exact, toggle = surface.locator('summary');
+      // Search blur must not swallow this first real pointer click.
+      await toggle.click();
+      check(await toggle.evaluate(node => node.parentElement.open), `${width}px ${expected.name}: first click failed`);
+      const raw = catalogue.find(row => row.sourceRow === expected.sourceRow && row.act === 'ACT 2');
+      const facts = await surface.evaluate((node, raw) => {
+        const where = node.querySelector('.acquisition-enrichment'), effects = node.querySelector('.item-effects'), grid = node.querySelector('.detailgrid');
+        return {
+          ordered: !!where && !!effects && [...grid.children].indexOf(effects) < [...grid.children].indexOf(where),
+          mechanics: !!effects && effects.textContent.includes(raw.description) && (!raw.properties || effects.textContent.includes(raw.properties)),
+          text: where?.textContent || '',
+          coordinates: [...(where?.querySelectorAll('.acquisition-coordinate') || [])].map(n => n.textContent),
+          methods: [...(where?.querySelectorAll('.acquisition-route-heading') || [])].map(n => n.textContent),
+          sections: node.querySelectorAll('.acquisition-enrichment').length,
+          routes: where?.querySelectorAll('.acquisition-route').length,
+          link: node.querySelector('.item-reference')?.getAttribute('href'), links: node.querySelectorAll('a').length,
+          viewport: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth,
+          surfaceWidth: node.getBoundingClientRect().width
+        };
+      }, raw);
+      const label = `${width}px Act 2 ${expected.name}`;
+      check(facts.mechanics && (!expected.routeCount || facts.ordered), label + ': Effect/order changed');
+      check(facts.sections === (expected.routeCount ? 1 : 0) && (facts.routes || 0) === expected.routeCount, label + ': missing/duplicate routes');
+      // Independent fixture geography determines presentation grouping; route identities stay separate.
+      const geo = r => JSON.stringify([r.location,r.sublocation,r.coordinates,r.coordinateReview,r.navigationPoints,r.acts,r.validity]);
+      const coordinateCount = new Set(expected.routes.filter(r => r.coordinates).map(geo)).size;
+      check(facts.coordinates.length === coordinateCount, label + ': coordinate display count mismatch');
+      for (const route of expected.routes) {
+        if (route.coordinates) check(facts.coordinates.includes(`X: ${route.coordinates.x} Y: ${route.coordinates.y}`), label + ': independent coordinate mismatch');
+        else check(facts.text.includes(route.coordinateReview.state === 'conflict' ? 'Coordinates conflict — see Wiki.' : route.coordinateReview.reason), label + ': explicit coordinate disposition missing');
+        for (const point of route.navigationPoints || []) check(facts.coordinates.includes(`X: ${point.coordinates.x} Y: ${point.coordinates.y}`), label + ': navigation point missing');
+        check(facts.text.includes(route.sublocation), label + ': sublocation missing');
+        if (route.actor && route.type !== 'quest_reward') check(facts.text.includes(route.actor.name), label + ': actor missing');
+      }
+      check(facts.links === 1 && facts.link === expected.wikiURL, label + ': original Wiki link changed');
+      check(!/Route [1-9]|Shared location|Prerequisites|Notes:|References/.test(facts.text), label + ': acquisition clutter');
+      check(facts.html <= width + 1 && facts.body <= width + 1, label + ': horizontal overflow');
+      if (representatives.has(expected.name) && [390,1280].includes(width)) {
+        await toggle.press('Enter');
+        check(!(await toggle.evaluate(node => node.parentElement.open)), label + ': Enter failed');
+        await toggle.press('Space');
+        check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
+        check(await toggle.evaluate(node => document.activeElement === node), label + ': keyboard focus lost');
+        await surface.screenshot({path:path.join(outputDirectory,`act2-${width}-${expected.sourceRow}.png`)});
+      }
+      for (const mode of ['light','minimal']) {
+        await page.locator('#spoilerMode').selectOption(mode);
+        check(await page.locator('.acquisition-enrichment,.acquisition-coordinate,.acquisition-navigation,.acquisition-route').count() === 0, label + ': protected-mode DOM leak in ' + mode);
+      }
+      await page.locator('#spoilerMode').selectOption('full');
+      check(await page.locator('#body > tr, #cards > article').filter({has:page.getByText(expected.name, {exact:true})}).locator('.acquisition-enrichment').count() === (expected.routeCount ? 2 : 0), label + ': Full restoration failed');
+      record(label, 'Act 2 independent facts/Full/protected/layout', {facts});
+    }
+    check(testCase.errors.length === 0, width + 'px Act 2' + ': runtime errors: ' + testCase.errors.join('; '));
+  } finally { await testCase.context.close(); }
+}
+
 async function main() {
   fs.mkdirSync(outputDirectory, { recursive: true });
   const browser = await chromium.launch({
@@ -646,6 +729,7 @@ async function main() {
     for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4A');
     for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4B');
     for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4C');
+    for (const width of [320,390,768,1280]) await checkAct2Expansion(browser, width);
     await checkOptionalFailure(browser, null, 'missing optional asset');
     await checkOptionalFailure(browser,
       'window.BG3AcquisitionUI={render(){throw new Error("broken optional API")}};',

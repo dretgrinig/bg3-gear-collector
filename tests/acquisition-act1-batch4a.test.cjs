@@ -1,5 +1,6 @@
 /* Independent reviewed fact table; real validator, resolver, tracker and renderer paths. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
 const metadata=require('../acquisition-metadata.js'),{createAcquisitionUI}=require('../acquisition-ui.js'),{generateBundle}=require('../scripts/build-acquisition-bundle.cjs');
@@ -9,7 +10,7 @@ const baseline=JSON.parse(execFileSync('git',['show',facts.baseline+':data/acqui
 const data=JSON.parse(readFileSync(join(root,'data/acquisition.v1.json'),'utf8'));
 const checkpointSnapshot=JSON.parse(execFileSync('git',['show','6e71b247424e9ae17ae0782724b1972197574c8c:data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}));
 const checkpointIDs=new Set(checkpointSnapshot.entries.map(e=>e.id));
-const checkpointData={...data,datasetVersion:checkpointSnapshot.datasetVersion,entries:data.entries.filter(e=>checkpointIDs.has(e.id))};
+const checkpointData={...data,datasetVersion:checkpointSnapshot.datasetVersion,entries:data.entries.filter(e=>checkpointIDs.has(e.id)).map(withoutAct2Continuations)};
 const checkpointResolver=metadata.createResolver(checkpointData);
 const catalogue=JSON.parse(readFileSync(join(__dirname,'fixtures/vendor-catalogue.json'),'utf8'));
 const copy=x=>JSON.parse(JSON.stringify(x)),key=x=>(x.act+'|'+x.name).toLowerCase();
@@ -20,7 +21,7 @@ const {itemHarness,required,surfaces,entireAttributes,discovery}=boundary.export
 const rawFor=f=>{const rows=catalogue.filter(x=>key(x)===f.progressKey);assert.equal(rows.length,1,f.name);return rows[0]};
 const normalized=Array.from(itemHarness(facts.items.map(rawFor),{bundle:false}).app.items());
 const itemFor=f=>normalized.find(x=>key(x)===f.progressKey);
-const entryFor=f=>{const found=data.entries.filter(e=>e.id===f.entryId);assert.equal(found.length,1,'Expected approved entry: '+f.name);return found[0]};
+const entryFor=f=>{const found=data.entries.filter(e=>e.id===f.entryId);assert.equal(found.length,1,'Expected approved entry: '+f.name);return withoutAct2Continuations(found[0])};
 const resolver=metadata.createResolver(data),oldResolver=metadata.createResolver(baseline),ui=createAcquisitionUI(metadata,data);
 const simple=x=>x===null?null:{name:x[0],...(x[1]===null?{}:{wikiPage:x[1]})};
 function bundleRuntime(source){const calls=[],blocked=name=>()=>{calls.push(name);throw Error(name)};const sandbox={URL,fetch:blocked('network'),setTimeout:blocked('timer'),document:new Proxy({},{get:blocked('DOM')}),localStorage:new Proxy({},{get:blocked('storage')})};sandbox.window=sandbox;vm.runInNewContext(source,sandbox);return {ui:sandbox.BG3AcquisitionUI,calls};}
@@ -49,7 +50,7 @@ for(const f of facts.items){
   for(const surface of surfaces(h)){
    const details=required(surface,'details'),where=required(details,'.acquisition-enrichment'),effects=required(details,'.item-effects'),grid=required(details,'.detailgrid');
    required(details,'summary').click();assert.equal(details.open,true);assert.ok(effects.textContent.includes(raw.description));if(raw.properties)assert.ok(effects.textContent.includes(raw.properties));assert.ok(grid.children.indexOf(effects)<grid.children.indexOf(where));
-   assert.equal(required(where,'h4').textContent,'Where to find');assert.equal(where.querySelectorAll('.acquisition-route').length,f.routeCount);assert.equal(where.querySelectorAll('.acquisition-point').length,f.routeCount);
+   assert.equal(required(where,'h4').textContent,'Where to find');assert.equal(where.querySelectorAll('.acquisition-route').length,f.routeCount+withoutAct2Continuations.continuationCount(f.entryId));assert.equal(where.querySelectorAll('.acquisition-point').length,f.routeCount+withoutAct2Continuations.continuationCount(f.entryId));
    for(const r of f.routes){assert.ok(where.textContent.includes(`X: ${r.point[0]} Y: ${r.point[1]}`));assert.ok(where.textContent.includes(r.sublocation));if(r.actor)assert.ok(where.textContent.includes(r.actor[0]));}
    assert.doesNotMatch(where.textContent,/Route \d|Notes:|References|Prerequisites|Shared location/);assert.equal(surface.querySelectorAll('a').length,1);assert.equal(required(surface,'.item-reference').getAttribute('href'),f.wikiURL);
   }

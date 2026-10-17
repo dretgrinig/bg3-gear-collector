@@ -1,5 +1,6 @@
 /* Checkpoint 1A: independent approval facts, real catalogue identities and runtime boundaries. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
@@ -19,7 +20,7 @@ const key = item => (item.act + '|' + item.name).toLowerCase();
 function priorFacts(entries, previous) {
   const originals = new Map(previous.map(entry => [entry.id, entry]));
   return entries.map(entry => {
-    const output = copy(entry), original = originals.get(entry.id);
+    const output = copy(withoutAct2Continuations(entry)), original = originals.get(entry.id);
     for (const route of output.routes) {
       const old = original.routes.find(value => value.id === route.id);
       delete route.coordinateReview; delete route.navigationPoints;
@@ -322,7 +323,7 @@ test('1A retains approved schema-1 facts and 20/21/24 identities under coordinat
   assert.equal(result.ok, true, JSON.stringify(result.issues)); assert.equal(data.schemaVersion, 2);
   assert.equal(approved1ASnapshot.datasetVersion, '1.1.0-act1.1a');
   const retainedIds = new Set(approved1ASnapshot.entries.map(entry => entry.id));
-  const retained = data.entries.filter(entry => retainedIds.has(entry.id));
+  const retained = data.entries.filter(entry => retainedIds.has(entry.id)).map(withoutAct2Continuations);
   assert.deepEqual(priorFacts(retained, approved1ASnapshot.entries), approved1ASnapshot.entries, 'Later checkpoints cannot modify any approved 1A or pilot fact');
   assert.equal(retained.length, 20);
   assert.equal(retained.flatMap(entry => entry.bindings).length, 21);
@@ -485,7 +486,7 @@ test('1A preserves distinct Graceful Cloth Acts and the single retained original
   const original = rawPair.find(row => row.links.Name.includes("Battlemage's"));
   assert.equal(original.sourceRow, 54, 'Retain the original fixture row, not its percent-encoded duplicate');
   assert.equal(retained[0].source, original.links.Name); assert.equal(retained[0].description, original.description);
-  assert.deepEqual(copy(retained[0].gameIds), original.gameIds); assert.equal(resolver.resolve(retained[0]), null);
+  assert.deepEqual(copy(retained[0].gameIds), original.gameIds); assert.equal(metadata.createResolver(approved1ASnapshot).resolve(retained[0]), null, 'Historical 1A metadata did not yet include Battlemage; current Act 2 coverage is tested independently');
 });
 
 test('1A real bindings leave mocked v5/v6 import/export and non-selected Story records unchanged', async () => {

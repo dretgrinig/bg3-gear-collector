@@ -1,5 +1,6 @@
 /* Batch 2: literal reviewed identities and points; production resolver/render/import paths. */
 'use strict';
+const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
 const metadata=require('../acquisition-metadata.js'),{createAcquisitionUI}=require('../acquisition-ui.js'),{generateBundle}=require('../scripts/build-acquisition-bundle.cjs');
@@ -1229,13 +1230,13 @@ for(const spec of approved){
 }
 const byName=name=>approved.find(s=>s.name===name);
 test('Batch 2 adds only fifteen reviewed entries/bindings and sixteen routes without changing the original fifty-five',()=>{
- const scoped={...data,datasetVersion:batch2Snapshot.datasetVersion,entries:data.entries.filter(e=>batch2IDs.has(e.id))};assert.deepEqual(scoped,batch2Snapshot);
+ const scoped={...data,datasetVersion:batch2Snapshot.datasetVersion,entries:data.entries.filter(e=>batch2IDs.has(e.id)).map(withoutAct2Continuations)};assert.deepEqual(scoped,batch2Snapshot);
  assert.equal(scoped.schemaVersion,2);assert.equal(scoped.datasetVersion,'2.2.0-act1.batch2');assert.equal(metadata.validateDataset(data).ok,true);assert.equal(scoped.entries.length,70);
  assert.deepEqual(scoped.entries.slice(0,55),baseline.entries);const additions=scoped.entries.slice(55);assert.deepEqual(additions.map(e=>e.id),approved.map(s=>s.entryId));assert.deepEqual(additions.flatMap(e=>e.bindings),approved.map(s=>s.binding));assert.deepEqual(additions.flatMap(e=>e.routes),approved.flatMap(s=>s.routes));
  assert.equal(scoped.entries.flatMap(e=>e.bindings).length,71);assert.equal(scoped.entries.flatMap(e=>e.routes).length,89);
 });
 test('Batch 2 closes all coordinate states: six exact, ten reference, no new exceptions or unresolved routes',()=>{
- const scoped=data.entries.filter(e=>batch2IDs.has(e.id));const added=scoped.slice(55).flatMap(e=>e.routes),all=scoped.flatMap(e=>e.routes);assert.equal(added.length,16);
+ const scoped=data.entries.filter(e=>batch2IDs.has(e.id)).map(withoutAct2Continuations);const added=scoped.slice(55).flatMap(e=>e.routes),all=scoped.flatMap(e=>e.routes);assert.equal(added.length,16);
  for(const [state,count] of [['exact',6],['reference',10],['not_applicable',0]])assert.equal(added.filter(r=>r.coordinateReview.state===state).length,count);
  assert.equal(added.filter(r=>r.coordinates===null).length,0);for(const [state,count] of [['exact',34],['reference',50],['not_applicable',5]])assert.equal(all.filter(r=>r.coordinateReview.state===state).length,count);assert.equal(all.filter(r=>['pending','conflict','not_documented'].includes(r.coordinateReview.state)).length,0);
 });
