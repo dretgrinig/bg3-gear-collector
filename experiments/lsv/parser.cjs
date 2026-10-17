@@ -1,5 +1,5 @@
 /* Phase A research spike: independent bounded LSPK v18 reader. No product integration. */
-(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./vendor/fzstd-0.1.1.js'):root.fzstd);if(typeof module==='object'&&module.exports)module.exports=api;else root.BG3LsvParser=api})(typeof globalThis==='object'?globalThis:this,function(zstd){
+(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./zstd-bounded.cjs'):root.BG3ZstdBounded);if(typeof module==='object'&&module.exports)module.exports=api;else root.BG3LsvParser=api})(typeof globalThis==='object'?globalThis:this,function(zstd){
 'use strict';
 const MiB=1024*1024;
 const LIMITS=Object.freeze({fileBytes:128*MiB,entries:512,memberBytes:128*MiB,cumulativeBytes:512*MiB,stringBytes:MiB,depth:64,timeoutMs:30000,reportBytes:10*MiB});
@@ -33,29 +33,15 @@ async function zlibStream(data,expected,signal){
  catch(error){if(error instanceof SpikeError)throw error;fail('invalid-structure','Invalid zlib stream.')}
  finally{signal?.removeEventListener('abort',onAbort);await reader.cancel().catch(()=>{});reader.releaseLock()}
 }
-// Preflight every frame/block before giving data to the vendored decoder. A narrow
-// single-frame raw/RLE subset rejects compressed blocks, dictionaries, checksums
-// and concatenation. Raw/RLE headers prove exact output sizes before decoding.
-async function zstdPreflight(data,expected,limits,signal){
- if(data.length<5)fail('truncated','Truncated Zstandard frame.');const dv=new DataView(data.buffer,data.byteOffset,data.byteLength);if(dv.getUint32(0,true)!==0xfd2fb528)fail('unsupported-codec','Only a single standard Zstandard frame is supported.');
- const flags=data[4];if(flags&0x18)fail('invalid-structure','Reserved Zstandard flags are set.');if(flags&4)fail('unsupported-codec','Zstandard checksummed frames are not supported in Phase A.');if(flags&3)fail('unsupported-codec','Zstandard dictionaries are not supported in Phase A.');
- const single=!!(flags&32),contentFlag=flags>>>6;let at=5,window=0;
- if(!single){if(at>=data.length)fail('truncated','Truncated Zstandard window.');const wd=data[at++],base=2**(10+(wd>>>3));window=base+(base/8)*(wd&7);number(window,limits.memberBytes)}
- const count=contentFlag?2**contentFlag:(single?1:0);if(count>data.length-at)fail('truncated','Truncated Zstandard content size.');let content=0n;for(let n=0;n<count;n++)content|=BigInt(data[at+n])<<BigInt(8*n);at+=count;if(contentFlag===1)content+=256n;
- if(count){if(content>BigInt(limits.memberBytes))fail('size-limit','Zstandard content size exceeds the cap.');if(content!==BigInt(expected))fail('invalid-structure','Zstandard content size disagrees with the manifest.');if(single)window=Number(content)}
- number(window,limits.memberBytes);let last=false,blockCount=0,decodedSize=0;
- while(!last){abort(signal);if(data.length-at<3)fail('truncated','Truncated Zstandard block.');const header=data[at]+data[at+1]*256+data[at+2]*65536;at+=3;last=!!(header&1);const type=(header>>>1)&3,size=header>>>3;if(type===3)fail('invalid-structure','Reserved Zstandard block type.');if(type===2)fail('unsupported-codec','Zstandard compressed block type 2 is unsupported in Phase A.');if(size>Math.min(window,131072))fail('size-limit','Zstandard block exceeds its frame window.');const stored=type===1?1:size;if(stored>data.length-at)fail('truncated','Truncated Zstandard payload.');if(size>expected-decodedSize)fail('size-limit','Zstandard block output exceeds declared size.');decodedSize+=size;at+=stored;if(++blockCount%1024===0){await yieldTask();abort(signal)}}
- if(at!==data.length)fail('unsupported-codec','Concatenated or trailing Zstandard data is unsupported.');if(decodedSize!==expected)fail('invalid-structure','Zstandard block output length disagrees with the manifest.');
-}
 async function decompress(codec,input,expected,options={}){
  const limits=mergeLimits(options.limits),data=bytes(input);abort(options.signal);number(data.length,limits.fileBytes);number(expected,limits.memberBytes);if(!CODECS.includes(codec))fail('unsupported-codec','Unsupported compression method.');reserve(options.budget,expected,limits);
  if(codec==='none'){if(data.length!==expected)fail('invalid-structure','Uncompressed length does not match the manifest.');return Uint8Array.from(data)}
  if(codec==='lz4')return lz4Block(data,expected,options.signal);
  if(codec==='zlib')return zlibStream(data,expected,options.signal);
- await zstdPreflight(data,expected,limits,options.signal);abort(options.signal);
- if(!zstd?.Decompress)fail('unsupported-codec','Zstandard decoder is unavailable.');const output=new Uint8Array(expected);let offset=0;
- try{const decoder=new zstd.Decompress((chunk)=>{abort(options.signal);if(chunk.length>expected-offset)fail('size-limit','Zstandard output exceeds declared size.');output.set(chunk,offset);offset+=chunk.length});decoder.push(data,true);if(offset!==expected)fail('invalid-structure','Decoded length does not match the manifest.');return output}
- catch(error){if(error instanceof SpikeError)throw error;fail('invalid-structure','Invalid Zstandard stream.')}
+ if(!zstd||typeof zstd.inspect!=='function'||typeof zstd.decode!=='function')fail('unsupported-codec','Checked Zstandard decoder is unavailable.');
+ try{await zstd.inspect(data,expected,{limits,signal:options.signal});return await zstd.decode(data,expected,{limits,signal:options.signal})}
+ catch(error){if(error instanceof SpikeError)throw error;if(error&&['unsupported-codec','invalid-structure','truncated','size-limit','aborted'].includes(error.code))fail(error.code,error.message);fail('invalid-structure','Invalid Zstandard stream.')}
+
 }
 function classify(name){if(name==='SaveInfo.json')return 'save-info';if(name==='meta.lsf')return 'metadata';if(name==='Globals.lsf')return 'globals';if(name==='StorySave.bin')return 'story';if(name.startsWith('LevelCache/'))return 'level-cache';if(/\.webp$/i.test(name))return 'thumbnail';return 'other'}
 function validateName(raw,limits){const zero=raw.indexOf(0);if(zero<0)fail('invalid-structure','Manifest name is not terminated.');if(zero===0||zero>limits.stringBytes)fail('size-limit','Invalid manifest name length.');for(let i=zero+1;i<raw.length;i++)if(raw[i]!==0)fail('invalid-structure','Manifest name padding is invalid.');let name;try{name=new TextDecoder('utf-8',{fatal:true}).decode(raw.subarray(0,zero))}catch{fail('invalid-structure','Manifest name is not valid UTF-8.')}

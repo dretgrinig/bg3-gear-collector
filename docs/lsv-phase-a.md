@@ -1,5 +1,10 @@
 # .lsv save import research — Phase A
 
+This document records the approved Phase A boundary and historical measurements.
+The separate compressed-Zstandard checkpoint is described in
+[lsv-phase-b.md](lsv-phase-b.md); its checked module supersedes the runtime
+raw/RLE-only restriction below without changing the original vendor file.
+
 This is an isolated read-only tooling spike. It is not a production importer. Only an explicitly selected file is inspected; selected member bytes remain in memory. There is no Story/progress, cloud, Supabase, persistent parser history, automatic directory scanning, save writing, archive extraction, or product entry-point integration. A package result, a decoded LSF result, and understood ECS data are separate outcomes.
 
 ## Format reference and implementation boundary
@@ -90,7 +95,7 @@ The browser workbench needs a localhost static server with `.cjs` served as Java
 node - <<'NODE'
 const http = require('node:http'), fs = require('node:fs'), path = require('node:path');
 const base = path.resolve('experiments/lsv');
-const files = new Set(['workbench.html','controller.cjs','worker.cjs','parser.cjs','resource.cjs','vendor/fzstd-0.1.1.js']);
+const files = new Set(['workbench.html','controller.cjs','worker.cjs','parser.cjs','resource.cjs','zstd-bounded.cjs']);
 http.createServer((req,res) => {
   const name = new URL(req.url,'http://localhost').pathname.slice(1);
   if (req.method !== 'GET' || !files.has(name)) { res.writeHead(404); return res.end(); }

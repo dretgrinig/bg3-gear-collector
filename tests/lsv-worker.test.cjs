@@ -199,18 +199,19 @@ test('LSV real browser worker path transfers actual synthetic selected bytes wit
     context.postMessage = (message, transfer) => { worker.outputTransfers.push(transfer.length); const copied = structuredClone(message, { transfer }); if (!worker.terminated) parentListeners.get('message')?.({ data: copied }); };
     context.addEventListener = (type, fn) => { listeners[type] = fn; };
     context.importScripts = (...scripts) => {
-      assert.deepEqual(scripts, ['./vendor/fzstd-0.1.1.js', './parser.cjs', './resource.cjs']);
+      assert.deepEqual(scripts, ['./zstd-bounded.cjs', './parser.cjs', './resource.cjs']);
       for (const script of scripts) vm.runInContext(fs.readFileSync(path.join(sourceRoot, script), 'utf8'), context);
     };
     vm.createContext(context);
     vm.runInContext(fs.readFileSync(path.join(sourceRoot, 'worker.cjs'), 'utf8'), context);
     workers.push(worker); return worker;
   } });
-  const data = makePackage([{ name: 'SaveInfo.json', data: '{"synthetic":true}' }, { name: 'StorySave.bin', data: 'opaque', codec: 2 }, { name: 'meta.lsf', data: makeLsf(), codec: 1 }, { name: 'LevelCache/Synthetic.bin', data: 'opaque-zstd', codec: 3 }]);
+  const compressedFixture=require('./helpers/lsv-zstd-fixtures.cjs');
+  const data = makePackage([{ name: 'SaveInfo.json', data: '{"synthetic":true}' }, { name: 'StorySave.bin', data: 'opaque', codec: 2 }, { name: 'meta.lsf', data: makeLsf(), codec: 1 }, { name: 'LevelCache/Synthetic.bin', data: 'opaque-zstd', codec: 3 }, {name:'Synthetic/compressed.bin',codec:3,data:compressedFixture.recipe('golden'),encoded:compressedFixture.golden()}]);
   const buffer = data.buffer;
   const result = await controller.inspect(buffer);
   assert.equal(buffer.byteLength, 0, 'The selected input ownership is transferred to its worker');
-  assert.equal(result.version, 18); assert.equal(result.entries.length, 4);
+  assert.equal(result.version, 18); assert.equal(result.entries.length, 5);
   assert.deepEqual(workers[0].outputTransfers, [0], 'Inspection does not emit selected payload bytes');
   const read = await controller.readMember('SaveInfo.json');
   assert.equal(new TextDecoder().decode(read.bytes), '{"synthetic":true}');
@@ -223,7 +224,10 @@ test('LSV real browser worker path transfers actual synthetic selected bytes wit
   assert.equal(metadata.resource.ecs.status, 'opaque'); assert.equal(metadata.resource.structure.nodeCount, 0);
   const cache = await controller.readMember('LevelCache/Synthetic.bin');
   assert.equal(cache.codec, 'zstd'); assert.equal(new TextDecoder().decode(cache.bytes), 'opaque-zstd');
-  assert.equal(cache.metrics.cumulativeExpandedBytes, 4 * 272 + new TextEncoder().encode('{"synthetic":true}').length + 6 + makeLsf().length + 4 + 11);
+  assert.equal(cache.metrics.cumulativeExpandedBytes, 5 * 272 + new TextEncoder().encode('{"synthetic":true}').length + 6 + makeLsf().length + 4 + 11);
+  const compressed=await controller.readMember('Synthetic/compressed.bin');
+  assert.deepEqual(new Uint8Array(compressed.bytes),compressedFixture.recipe('golden'));
+  assert.equal(compressed.resource.status,'not-attempted');
   const reselected = await controller.inspect(new Blob([makePackage()]));
   assert.equal(workers[0].terminated, true); assert.equal(reselected.entries.length, 1);
   assert.deepEqual(workers[1].inputTransfers, [0], 'Blob inputs are structured-cloned, not transferred');
