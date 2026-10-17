@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "datasetVersion": "2.4.0-act1.batch4a",
+  "datasetVersion": "2.5.0-act1.batch4b",
   "entries": [
     {
       "id": "c03cdb15-5d73-434a-b965-ef1f3cef4e8e",
@@ -10866,6 +10866,3712 @@
           "coordinateReview": {
             "state": "reference",
             "reason": "Approved item reference 386,-17; Worg Pens publishes 386,-15. No averaging."
+          }
+        }
+      ]
+    },
+    {
+      "id": "1fe6855b-121b-43ea-8615-f0875a6b502a",
+      "bindings": [
+        {
+          "id": "81e0df8d-05bf-4781-967d-6cfb1f0ae9c3",
+          "act": "ACT 1",
+          "progressKey": "act 1|absolute's talisman",
+          "gameIds": [
+            "UNI_GOB_Priest_Amulet",
+            "GOB_Priest_Amulet"
+          ],
+          "wikiPage": "Absolute's Talisman"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "db51fcc5-7d7f-4bae-a249-c8b2c9222f1d",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Priestess Gut",
+            "wikiPage": "Gut"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Gut’s sanctum area",
+          "coordinates": {
+            "x": 298,
+            "y": -16,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Gut can move; no universal kill requirement or fixed corpse position is asserted."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Absolute's_Talisman&oldid=432031",
+              "revisionId": 432031,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gut&oldid=432032",
+              "revisionId": 432032,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "da9f65d1-7c00-4681-9fee-c70f3c0292df",
+      "bindings": [
+        {
+          "id": "89988cd1-60c1-4e3e-8e14-63a6e745a412",
+          "act": "ACT 1",
+          "progressKey": "act 1|absolute's warboard",
+          "gameIds": [
+            "UNI_Gob_Priest_Shield",
+            "GOB_Priest_Shield"
+          ],
+          "wikiPage": "Absolute's Warboard"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "42ab1f6a-2d24-4358-bb49-79f7233ecf77",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Priestess Gut",
+            "wikiPage": "Gut"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Gut’s sanctum area",
+          "coordinates": {
+            "x": 298,
+            "y": -16,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Gut can move; no universal kill requirement or fixed corpse position is asserted."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Absolute's_Warboard&oldid=415746",
+              "revisionId": 415746,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gut&oldid=432032",
+              "revisionId": 432032,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "7d85a1d3-bcc7-4496-810c-7738ff378c27",
+      "bindings": [
+        {
+          "id": "3af87ee8-416a-43dc-bcd8-6e2bed5de43e",
+          "act": "ACT 1",
+          "progressKey": "act 1|amulet of branding",
+          "gameIds": [
+            "MAG_Gish_WeaknessBranding_Amulet"
+          ],
+          "wikiPage": "Amulet of Branding"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "4f5ac748-5f79-40ac-863e-1f201a035fe3",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "A'jak'nir Jeera",
+            "wikiPage": "Jeera"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Jeera’s shop · carried loot",
+          "coordinates": {
+            "x": 1380,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate NPC point: 1387,-821. This amulet is carried loot, not shop stock."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Amulet_of_Branding&oldid=415913",
+              "revisionId": 415913,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Jeera&oldid=416522",
+              "revisionId": 416522,
+              "section": "Loot; Involvement"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Shop reference 1380,-798; Jeera NPC page publishes 1387,-821. Carried loot, not a purchase route."
+          }
+        }
+      ]
+    },
+    {
+      "id": "a01fc6ab-4ed5-4cdf-8dc9-9a240f3a7717",
+      "bindings": [
+        {
+          "id": "8b16e580-0f1a-4ca6-a6b8-654258a8440c",
+          "act": "ACT 1",
+          "progressKey": "act 1|amulet of the unworthy",
+          "gameIds": [
+            "UNI_UND_Minotaur_BeltAmulet",
+            "UND_Minotaur_BeltAmulet"
+          ],
+          "wikiPage": "Amulet of the Unworthy"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "883a0108-8d5e-4af2-bebd-cb22c9cd0a10",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Minotaur",
+            "wikiPage": "Minotaur"
+          },
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Wandering Minotaur bearer",
+          "coordinates": {
+            "x": 160,
+            "y": -147,
+            "space": "Underdark",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Amulet_of_the_Unworthy&oldid=415925",
+              "revisionId": 415925,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Minotaur&oldid=414931",
+              "revisionId": 414931,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "23e8fe31-487e-4e4f-88b5-6cd4a28b0f1d",
+      "bindings": [
+        {
+          "id": "dd5007b2-eca2-43c0-a20a-c9e811d9e679",
+          "act": "ACT 1",
+          "progressKey": "act 1|assassin's touch",
+          "gameIds": [
+            "DEN_CapturedGoblin_MurderDagger"
+          ],
+          "wikiPage": "Assassin's Touch"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "89220f41-9dd1-4801-bf5f-689bace5c2a3",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Minthara",
+            "wikiPage": "Minthara"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Sazza’s meeting with Minthara",
+          "coordinates": {
+            "x": 333,
+            "y": 41,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Save the Goblin Sazza"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Escort Sazza to the Goblin Camp and Minthara, then obtain the reward."
+              }
+            ]
+          },
+          "notes": [
+            "Escort/quest reward; no generic camp loot or purchase route is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Assassin's_Touch&oldid=438255",
+              "revisionId": 438255,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Save_the_Goblin_Sazza&oldid=434293",
+              "revisionId": 434293,
+              "section": "Speak to Sazza and the drow; Rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3efdb81-aa49-40d3-980c-da11bc79750f",
+      "bindings": [
+        {
+          "id": "b00e89c3-436e-480d-80a9-b34f5c5c1502",
+          "act": "ACT 1",
+          "progressKey": "act 1|bloodguzzler garb",
+          "gameIds": [
+            "MAG_Violence_LowHP_Violence_Clothes"
+          ],
+          "wikiPage": "Bloodguzzler Garb"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "6e65a6a3-dbbb-4530-b534-1ad27f8331f9",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Bulette",
+            "wikiPage": "Bulette"
+          },
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Roaming Bulette · encounter navigation",
+          "coordinates": {
+            "x": 120,
+            "y": -175,
+            "space": "Underdark",
+            "subject": "encounter"
+          },
+          "conditions": null,
+          "notes": [
+            "One roaming-enemy loot route, not two independent copies. The primary reference and extra navigation point preserve both scripted approaches."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bloodguzzler_Garb&oldid=438452",
+              "revisionId": 438452,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bulette&oldid=426866",
+              "revisionId": 426866,
+              "section": "Involvement; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Scripted encounter references 120,-175 and 160,-150; neither is a permanent actor or guaranteed corpse point."
+          },
+          "navigationPoints": [
+            {
+              "label": "Alternate scripted Bulette encounter",
+              "coordinates": {
+                "x": 160,
+                "y": -150,
+                "space": "Underdark",
+                "subject": "encounter"
+              },
+              "sources": [
+                {
+                  "url": "https://bg3.wiki/w/index.php?title=Bulette&oldid=426866",
+                  "revisionId": 426866,
+                  "section": "Notes"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6c63f424-22e3-438f-adc7-d33232a29036",
+      "bindings": [
+        {
+          "id": "aab74484-2e22-4f28-afb2-fd14e9ee9296",
+          "act": "ACT 1",
+          "progressKey": "act 1|boots of speed",
+          "gameIds": [
+            "ARM_BootsOfSpeed"
+          ],
+          "wikiPage": "Boots of Speed"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "91c4a617-bd8f-41c7-8f70-18c36711f6b3",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Thulla",
+            "wikiPage": "Thulla"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Thulla’s refuge",
+          "coordinates": {
+            "x": 82,
+            "y": -97,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Cure the Poisoned Gnome"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Cure Thulla’s poison and agree to aid her fellow gnomes."
+              }
+            ]
+          },
+          "notes": [
+            "Item point 82,-97; actor point 87,-95; quest page also uses 83,-97. No averaging."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Speed&oldid=416686",
+              "revisionId": 416686,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Thulla&oldid=438643",
+              "revisionId": 438643,
+              "section": "Involvement"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Missing_Boots&oldid=418496",
+              "revisionId": 418496,
+              "section": "Walkthrough; Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Thulla item reference 82,-97 versus actor 87,-95. Navigation only; not a fixed corpse point."
+          }
+        },
+        {
+          "id": "83d3fa40-f01c-4c74-8b45-764832a9b3dc",
+          "type": "steal",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Thulla",
+            "wikiPage": "Thulla"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Thulla’s refuge",
+          "coordinates": {
+            "x": 82,
+            "y": -97,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "choice",
+                "subject": "Take the boots through Thulla’s specific dialogue theft option; not generic pickpocketing."
+              }
+            ]
+          },
+          "notes": [
+            "Item point 82,-97; actor point 87,-95; quest page also uses 83,-97. No averaging."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Speed&oldid=416686",
+              "revisionId": 416686,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Thulla&oldid=438643",
+              "revisionId": 438643,
+              "section": "Involvement"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Missing_Boots&oldid=418496",
+              "revisionId": 418496,
+              "section": "Walkthrough; Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Thulla item reference 82,-97 versus actor 87,-95. Navigation only; not a fixed corpse point."
+          }
+        },
+        {
+          "id": "5915860e-4fd2-4fc4-85ff-4826b1a3673e",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Thulla",
+            "wikiPage": "Thulla"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Thulla · corpse or slain spore-servant inventory",
+          "coordinates": {
+            "x": 82,
+            "y": -97,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Obtain the boots from Thulla’s corpse, including a slain spore servant."
+              }
+            ]
+          },
+          "notes": [
+            "Item point 82,-97; actor point 87,-95; quest page also uses 83,-97. No averaging.",
+            "Corpse inventory is an alternative to aid/reward or dialogue theft, not a mandatory kill."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Speed&oldid=416686",
+              "revisionId": 416686,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Thulla&oldid=438643",
+              "revisionId": 438643,
+              "section": "Involvement"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Missing_Boots&oldid=418496",
+              "revisionId": 418496,
+              "section": "Walkthrough; Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Thulla item reference 82,-97 versus actor 87,-95. Navigation only; not a fixed corpse point."
+          }
+        },
+        {
+          "id": "42ebdbe4-2722-43e7-a7d6-eca27814ae63",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Sergeant Thrinn",
+            "wikiPage": "Elenna Thrinn"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Thrinn · retrieve previously returned boots",
+          "coordinates": {
+            "x": -628,
+            "y": 320,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": {
+            "after": [
+              {
+                "kind": "interaction",
+                "subject": "Previously returned the Boots of Speed to Thrinn."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate Thrinn actor point: -643,300. This retrieves returned boots, not a new guaranteed copy."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Speed&oldid=416686",
+              "revisionId": 416686,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Elenna_Thrinn&oldid=425977",
+              "revisionId": 425977,
+              "section": "Involvement; Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Missing_Boots&oldid=418496",
+              "revisionId": 418496,
+              "section": "Walkthrough; Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved Thrinn item reference -628,320; actor point -643,300. Retrieval applies only after returning the boots."
+          }
+        }
+      ]
+    },
+    {
+      "id": "0f6015b3-2105-4d80-a5df-910d5f46170a",
+      "bindings": [
+        {
+          "id": "0c084790-3f76-4dbb-9b51-bcb06bdc9942",
+          "act": "ACT 1",
+          "progressKey": "act 1|boots of stormy clamour",
+          "gameIds": [
+            "MAG_Thunder_ReverberationOnStatusApply_Boots"
+          ],
+          "wikiPage": "Boots of Stormy Clamour"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "8bd63b8e-0a13-47d4-aec5-498801f1e8de",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Complete the parasite investigation to unlock Omeluum’s trade."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate item-page point: 144,29. Displayed interaction reference remains 111,-89, never an exact actor position."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Stormy_Clamour&oldid=416687",
+              "revisionId": 416687,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Involvement; Shop"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Walkthrough"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved Blurg summon/interaction reference 111,-89; item pages publish 144,29. Omeluum is summoned here; no permanent standing position at Blurg is asserted."
+          }
+        }
+      ]
+    },
+    {
+      "id": "5c5a6785-4516-43d0-bb71-4e6b87cade0b",
+      "bindings": [
+        {
+          "id": "68bd68e2-f187-4478-b842-6a2f9c7057b7",
+          "act": "ACT 1",
+          "progressKey": "act 1|boots of striding",
+          "gameIds": [
+            "MAG_Paladin_MomentumOnConcentration_Boots"
+          ],
+          "wikiPage": "Boots of Striding"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "2f41eb4a-ed2e-4f11-b987-480ba5b53e63",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Minthara",
+            "wikiPage": "Minthara"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Minthara’s area · carried gear",
+          "coordinates": {
+            "x": 335,
+            "y": 43,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Worn by Minthara; carried-loot route with no universal killing requirement."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Striding&oldid=416688",
+              "revisionId": 416688,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Minthara&oldid=438228",
+              "revisionId": 438228,
+              "section": "Act One; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "d0c6ce67-3f6c-4167-a078-82b9870e2070",
+      "bindings": [
+        {
+          "id": "8c429014-9bd6-4a4b-854c-b896cfad5d45",
+          "act": "ACT 1",
+          "progressKey": "act 1|bracing band",
+          "gameIds": [
+            "MAG_Shove_ACboost_Ring"
+          ],
+          "wikiPage": "Bracing Band"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "44a6620c-cac1-4ad6-b0f5-13a8ba9941ee",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Sergeant Thrinn",
+            "wikiPage": "Elenna Thrinn"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Thrinn · return the missing boots",
+          "coordinates": {
+            "x": -628,
+            "y": 320,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "item",
+                "subject": "Return Boots of Speed to Thrinn."
+              },
+              {
+                "kind": "choice",
+                "subject": "Choose Bracing Band instead of Armour of Uninhibited Kushigo."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate actor point: -643,300. The alternative reward is Armour of Uninhibited Kushigo, not Robust Chain Shirt."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Bracing_Band&oldid=416722",
+              "revisionId": 416722,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Elenna_Thrinn&oldid=425977",
+              "revisionId": 425977,
+              "section": "Involvement; Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Find_the_Missing_Boots&oldid=418496",
+              "revisionId": 418496,
+              "section": "Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved reward reference -628,320; Thrinn actor page publishes -643,300. No averaging."
+          }
+        }
+      ]
+    },
+    {
+      "id": "f2ece319-c95e-44bd-b8fd-768c006504b0",
+      "bindings": [
+        {
+          "id": "b9853a11-5cbf-44e0-be70-dd0ea4ca2ab9",
+          "act": "ACT 1",
+          "progressKey": "act 1|champion's chain",
+          "gameIds": [
+            "UNI_UND_MyconidAmulet_Evil"
+          ],
+          "wikiPage": "Champion's Chain"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "bac02c9a-0aae-41f3-8e93-42a2680eb10c",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Sovereign Glut",
+            "wikiPage": "Glut"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Sovereign Glut · after becoming sovereign",
+          "coordinates": {
+            "x": 58,
+            "y": -110,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Deliver Nere's Head"
+              },
+              {
+                "kind": "npc",
+                "subject": "Glut must be sovereign."
+              },
+              {
+                "kind": "item",
+                "subject": "Deliver Nere’s Head to Glut."
+              }
+            ]
+          },
+          "notes": [
+            "Alternative sovereign/reward branch to Spaw’s Envoy’s Amulet, not an interchangeable reward."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Champion's_Chain&oldid=425309",
+              "revisionId": 425309,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Glut&oldid=415629",
+              "revisionId": 415629,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "3d33fce6-6452-44d5-b093-e9cb494f99af",
+      "bindings": [
+        {
+          "id": "2c3200dd-9af7-44e1-8146-3b6fbbca39b8",
+          "act": "ACT 1",
+          "progressKey": "act 1|circlet of psionic revenge",
+          "gameIds": [
+            "CRE_MAG_Psychic_Githborn_Circlet"
+          ],
+          "wikiPage": "Circlet of Psionic Revenge"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "925847e7-29c8-4831-bf77-02afba5dc309",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Ch'r'ai W'wargaz",
+            "wikiPage": "W'wargaz"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Inquisitor’s Chamber · carried circlet",
+          "coordinates": {
+            "x": 1392,
+            "y": -752,
+            "space": "Crèche Y'llek",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Carried loot, not a chest route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Circlet_of_Psionic_Revenge&oldid=417079",
+              "revisionId": 417079,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=W'wargaz&oldid=414828",
+              "revisionId": 414828,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "1e2b682b-7e8e-45f4-bfc8-182c6e94c8f0",
+      "bindings": [
+        {
+          "id": "3e31ae26-54ef-40a8-8917-1304f351dd26",
+          "act": "ACT 1",
+          "progressKey": "act 1|club of hill giant strength",
+          "gameIds": [
+            "UND_StrengthChair_Leg"
+          ],
+          "wikiPage": "Club of Hill Giant Strength"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "9a160a9e-3528-4b73-add3-2cc185afbf1e",
+          "type": "world",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Arcane Tower",
+            "wikiPage": "Arcane Tower"
+          },
+          "sublocation": "Top floor · break the genuine magical stool",
+          "coordinates": {
+            "x": -26,
+            "y": -272,
+            "space": "Arcane Tower",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Break the genuine Stool of Hill Giant Strength."
+              }
+            ]
+          },
+          "notes": [
+            "Patch 6 moved the genuine magical stool; the ordinary replacement at the old location is not the acquisition subject. No guaranteed second Act 3 club is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Club_of_Hill_Giant_Strength&oldid=417171",
+              "revisionId": 417171,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Stool_of_Hill_Giant_Strength&oldid=429550",
+              "revisionId": 429550,
+              "section": "Overview; Notes and references"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "43c2ae70-c283-475e-958e-30a497201142",
+      "bindings": [
+        {
+          "id": "38a48098-b909-4c2b-99e5-5807227516e8",
+          "act": "ACT 1",
+          "progressKey": "act 1|corellon's grace",
+          "gameIds": [
+            "UNI_RepeatStaff"
+          ],
+          "wikiPage": "Corellon's Grace"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "d66c1a13-2a3d-4a2d-af81-da5c488065b3",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Auntie Ethel",
+            "wikiPage": "Auntie Ethel"
+          },
+          "location": {
+            "name": "The Hollow",
+            "wikiPage": "The Hollow"
+          },
+          "sublocation": "Ethel’s shop in the Hollow",
+          "coordinates": {
+            "x": 192,
+            "y": 546,
+            "space": "The Hollow",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade while Auntie Ethel remains available before transforming or retreating."
+              }
+            ]
+          },
+          "notes": [
+            "Two purchase venues for the same item identity; no guaranteed death-drop route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Corellon's_Grace&oldid=428079",
+              "revisionId": 428079,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Auntie_Ethel&oldid=431741",
+              "revisionId": 431741,
+              "section": "Act One; Shop"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Ethel shop/navigation point; not a guaranteed drop or fixed corpse position."
+          }
+        },
+        {
+          "id": "cdc3dea9-ef50-40d9-b544-b8ca4376fc03",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Auntie Ethel",
+            "wikiPage": "Auntie Ethel"
+          },
+          "location": {
+            "name": "Riverside Teahouse",
+            "wikiPage": "Riverside Teahouse"
+          },
+          "sublocation": "Ethel’s Riverside Teahouse shop",
+          "coordinates": {
+            "x": -58,
+            "y": 263,
+            "space": "Riverside Teahouse",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Trade while Auntie Ethel remains available before transforming or retreating."
+              }
+            ]
+          },
+          "notes": [
+            "Two purchase venues for the same item identity; no guaranteed death-drop route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Corellon's_Grace&oldid=428079",
+              "revisionId": 428079,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Auntie_Ethel&oldid=431741",
+              "revisionId": 431741,
+              "section": "Act One; Shop"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Ethel shop/navigation point; not a guaranteed drop or fixed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "f0eb3300-a11d-41c9-b824-63085e2c6122",
+      "bindings": [
+        {
+          "id": "49e1f137-67ed-40d8-803d-c9c653121a24",
+          "act": "ACT 1",
+          "progressKey": "act 1|corrosive flail",
+          "gameIds": [
+            "MAG_Corrosive_Flail"
+          ],
+          "wikiPage": "Corrosive Flail"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "6d1b8ada-db9f-4b39-9a22-04c606d3bcf3",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Derryth Bonecloak",
+            "wikiPage": "Derryth Bonecloak"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Derryth’s shop · navigation reference",
+          "coordinates": {
+            "x": 55,
+            "y": -93,
+            "space": "Ebonlake Grotto",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Displayed shop navigation: 55,-93. Published item-page alternative: -55,-93. The cross-item shop reference is explicit, not an exact item point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Corrosive_Flail&oldid=417318",
+              "revisionId": 417318,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Hail_of_Thorns&oldid=418971",
+              "revisionId": 418971,
+              "section": "Where to find"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved displayed shop reference 55,-93, supported by the published Hail of Thorns route; this item page publishes -55,-93. Both signs are retained; no silent correction."
+          }
+        }
+      ]
+    },
+    {
+      "id": "df0330df-28c2-48e2-8902-d5ff094f07b4",
+      "bindings": [
+        {
+          "id": "0fec08f3-e4f4-4cec-858b-897887ca03c0",
+          "act": "ACT 1",
+          "progressKey": "act 1|creation's echo",
+          "gameIds": [
+            "UNI_UND_SocietyOfBrilliance_ElementalResonanceStaff",
+            "UND_SocietyOfBrilliance_ResonanceStaff"
+          ],
+          "wikiPage": "Creation's Echo"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "e91106df-b8b7-4b52-9fad-9d8f96395108",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Complete the parasite investigation to unlock Omeluum’s trade."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate item-page point: 144,29. Displayed interaction reference remains 111,-89, never an exact actor position."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Creation's_Echo&oldid=417381",
+              "revisionId": 417381,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Involvement; Shop"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Walkthrough"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved Blurg summon/interaction reference 111,-89; item pages publish 144,29. Omeluum is summoned here; no permanent standing position at Blurg is asserted."
+          }
+        }
+      ]
+    },
+    {
+      "id": "95851557-1163-46dd-b434-3f1fe2d34a8b",
+      "bindings": [
+        {
+          "id": "d17e53b7-e7ea-4eec-a33a-383f5b95eda6",
+          "act": "ACT 1",
+          "progressKey": "act 1|dark justiciar mail",
+          "gameIds": [
+            "ARM_ChainShirt_Justiciar_Magic",
+            "UND_Justiciar_Chainshirt_Magic"
+          ],
+          "wikiPage": "Dark Justiciar Mail"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "67a90cf6-f482-4fc6-b37c-dcf90212353a",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Skeleton"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Skeleton north of the Grymforge waypoint",
+          "coordinates": {
+            "x": -655,
+            "y": 424,
+            "space": "Grymforge",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "Two separate skeleton pickup routes. The second published Y is -246, not +246; no sign correction."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dark_Justiciar_Mail&oldid=417529",
+              "revisionId": 417529,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published skeleton navigation reference; retain -655,424 and -609,-246 exactly without asserting a corrected coordinate."
+          }
+        },
+        {
+          "id": "e7ce0517-d78d-4bd0-9c86-849066a586da",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Skeleton"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Skeleton south of Ancient Forge",
+          "coordinates": {
+            "x": -609,
+            "y": -246,
+            "space": "Grymforge",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "Two separate skeleton pickup routes. The second published Y is -246, not +246; no sign correction."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dark_Justiciar_Mail&oldid=417529",
+              "revisionId": 417529,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published skeleton navigation reference; retain -655,424 and -609,-246 exactly without asserting a corrected coordinate."
+          }
+        }
+      ]
+    },
+    {
+      "id": "d48a91b2-6c5a-4ba5-aedf-b962fc67ed85",
+      "bindings": [
+        {
+          "id": "08725566-e49a-4d1a-9b93-44ea613004f0",
+          "act": "ACT 1",
+          "progressKey": "act 1|dark justiciar mask",
+          "gameIds": [
+            "DEC_Ketheric_Armor_Mask_Scrap_A_Magic",
+            "UND_Justiciar_Mask_Magic"
+          ],
+          "wikiPage": "Dark Justiciar Mask"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "4136b7f6-ea26-4463-a93a-6e0546ba7778",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Skeleton"
+          },
+          "location": {
+            "name": "Abandoned Refuge",
+            "wikiPage": "Abandoned Refuge"
+          },
+          "sublocation": "Skeleton near Ancient Forge · Act 1",
+          "coordinates": {
+            "x": -606,
+            "y": 282,
+            "space": "Abandoned Refuge",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "Separate Act 1 and Act 2 corpse contexts. The second skeleton’s presumed named identity is not asserted as fact."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dark_Justiciar_Mask&oldid=417530",
+              "revisionId": 417530,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        },
+        {
+          "id": "13334b24-5fcb-4a5d-9ca1-a6b7becaf77a",
+          "type": "actor_loot",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Skeleton"
+          },
+          "location": {
+            "name": "Ruined Battlefield",
+            "wikiPage": "Ruined Battlefield"
+          },
+          "sublocation": "Beside a skeleton · Act 2",
+          "coordinates": {
+            "x": -35,
+            "y": -88,
+            "space": "Ruined Battlefield",
+            "subject": "corpse"
+          },
+          "conditions": null,
+          "notes": [
+            "Separate Act 1 and Act 2 corpse contexts. The second skeleton’s presumed named identity is not asserted as fact."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dark_Justiciar_Mask&oldid=417530",
+              "revisionId": 417530,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "5faab685-726c-437b-91a7-d0aefcba7e62",
+      "bindings": [
+        {
+          "id": "298e2f9f-9ea6-4e9c-9f3a-7581d246a9d8",
+          "act": "ACT 1",
+          "progressKey": "act 1|deep delver",
+          "gameIds": [
+            "UNI_UND_KC_Elder_Warpick",
+            "UND_KC_Elder_Warpick"
+          ],
+          "wikiPage": "Deep Delver"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "30159d2a-43ac-4fb6-a80e-08e484072ad6",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Elder Brithvar",
+            "wikiPage": "Brithvar"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Brithvar’s encounter area",
+          "coordinates": {
+            "x": -631,
+            "y": 326,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate actor point: -624,355."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Deep_Delver&oldid=437897",
+              "revisionId": 437897,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brithvar&oldid=438478",
+              "revisionId": 438478,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item reference -631,326; actor page instead publishes -624,355. No averaging."
+          }
+        }
+      ]
+    },
+    {
+      "id": "7021288a-983d-48bb-ab4f-83f575fedfaa",
+      "bindings": [
+        {
+          "id": "24c2652d-3418-41bf-a55d-49adb5a5b9d4",
+          "act": "ACT 1",
+          "progressKey": "act 1|envoy's amulet",
+          "gameIds": [
+            "UNI_UND_MyconidAmulet_Good",
+            "UND_MyconidAmulet_Good"
+          ],
+          "wikiPage": "Envoy's Amulet"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "37272be8-21c6-45ab-8ed6-98a294168a2c",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Sovereign Spaw",
+            "wikiPage": "Spaw"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Sovereign Spaw · deliver Nere’s head",
+          "coordinates": {
+            "x": 79,
+            "y": -106,
+            "space": "Ebonlake Grotto",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Deliver Nere's Head"
+              },
+              {
+                "kind": "npc",
+                "subject": "Spaw must remain sovereign."
+              },
+              {
+                "kind": "item",
+                "subject": "Deliver Nere’s Head to Spaw."
+              }
+            ]
+          },
+          "notes": [
+            "Distinct from Glut’s Champion’s Chain reward branch."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Envoy's_Amulet&oldid=425311",
+              "revisionId": 425311,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "f44bc9b6-4c97-4c2d-a43c-ee47ef9d1f5a",
+      "bindings": [
+        {
+          "id": "9ead5c49-9506-4c75-bf3a-95d26b768941",
+          "act": "ACT 1",
+          "progressKey": "act 1|exterminator's axe",
+          "gameIds": [
+            "UNI_UND_DuergarRaft_PestKillerAxe",
+            "UND_DuergarRaft_PestKillerAxe"
+          ],
+          "wikiPage": "Exterminator's Axe"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "b7db310a-6e42-4c90-8437-f5ac4dd9f8d2",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Gekh Coal",
+            "wikiPage": "Gekh Coal"
+          },
+          "location": {
+            "name": "Decrepit Village",
+            "wikiPage": "Decrepit Village"
+          },
+          "sublocation": "Gekh Coal’s encampment",
+          "coordinates": {
+            "x": 14,
+            "y": -196,
+            "space": "Decrepit Village",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Act 1 carried loot; no fixed corpse claim."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Exterminator's_Axe&oldid=418330",
+              "revisionId": 418330,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "151b13d8-2bc9-4107-a8bf-229744ae4424",
+      "bindings": [
+        {
+          "id": "4a32189f-8409-4c1f-b11a-c52c71e40d48",
+          "act": "ACT 1",
+          "progressKey": "act 1|gandrel's aspiration",
+          "gameIds": [
+            "MAG_Gandrel_UndeadSlayer_HeavyCrossbow"
+          ],
+          "wikiPage": "Gandrel's Aspiration"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "dcda893d-6373-4d0d-b4e3-aefc09de4125",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Gandrel",
+            "wikiPage": "Gandrel"
+          },
+          "location": {
+            "name": "Sunlit Wetlands",
+            "wikiPage": "Sunlit Wetlands"
+          },
+          "sublocation": "Gandrel’s Act 1 encounter",
+          "coordinates": {
+            "x": -26,
+            "y": 238,
+            "space": "Sunlit Wetlands",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Act 1 carried route only; no later-Act route is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gandrel's_Aspiration&oldid=437848",
+              "revisionId": 437848,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "b93c3b4b-b384-4442-a29f-5793a97ab2be",
+      "bindings": [
+        {
+          "id": "90b611e9-3686-459a-bf10-95cfcf83bc0d",
+          "act": "ACT 1",
+          "progressKey": "act 1|gloves of thievery",
+          "gameIds": [
+            "MAG_PHB_OfThievery_Gloves"
+          ],
+          "wikiPage": "Gloves of Thievery"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "426a220a-6676-426d-9bb3-6e3cdfc4fcc3",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Brem",
+            "wikiPage": "Brem"
+          },
+          "location": {
+            "name": "Zhentarim Basement",
+            "wikiPage": "Zhentarim Basement"
+          },
+          "sublocation": "Brem’s unlocked special stock",
+          "coordinates": {
+            "x": 295,
+            "y": -250,
+            "space": "Zhentarim Basement",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Zarys must unlock Brem’s special stock."
+              }
+            ]
+          },
+          "notes": [
+            "Entering the hideout alone does not unlock this stock. No specific Zarys branch is universally required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Thievery&oldid=418978",
+              "revisionId": 418978,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brem&oldid=425720",
+              "revisionId": 425720,
+              "section": "Shop; Secret shop"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zarys&oldid=438613",
+              "revisionId": 438613,
+              "section": "Involvement"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "93342949-cbcd-428d-a53d-57b223ee3368",
+      "bindings": [
+        {
+          "id": "0fc888ed-f21d-4fe3-926c-f495eebbe85d",
+          "act": "ACT 1",
+          "progressKey": "act 1|herbalist's gloves",
+          "gameIds": [
+            "UNI_UND_Myco_Alchemist_HealerGloves",
+            "UND_Myco_Alchemist_HealerGloves"
+          ],
+          "wikiPage": "Herbalist's Gloves"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "9d305750-fb93-413e-aa8d-c013c8b97197",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Derryth Bonecloak",
+            "wikiPage": "Derryth Bonecloak"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Derryth’s shop · navigation reference",
+          "coordinates": {
+            "x": 55,
+            "y": -93,
+            "space": "Ebonlake Grotto",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Displayed shop navigation: 55,-93. Published item-page alternative: -55,-93. The cross-item shop reference is explicit, not an exact item point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Herbalist's_Gloves&oldid=419491",
+              "revisionId": 419491,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Hail_of_Thorns&oldid=418971",
+              "revisionId": 418971,
+              "section": "Where to find"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved displayed shop reference 55,-93, supported by the published Hail of Thorns route; this item page publishes -55,-93. Both signs are retained; no silent correction."
+          }
+        }
+      ]
+    },
+    {
+      "id": "7b1a0b00-431d-49f1-8acb-6d64bc9926ce",
+      "bindings": [
+        {
+          "id": "3b39252a-1acd-4927-a97b-ecc1ecf2edfe",
+          "act": "ACT 1",
+          "progressKey": "act 1|intransigent warhammer",
+          "gameIds": [
+            "UNI_UND_DuergarRaft_GruesomeHammer"
+          ],
+          "wikiPage": "Intransigent Warhammer"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "87039a08-a533-487b-a1c8-38fcfe3229c7",
+          "type": "container",
+          "acts": [
+            1
+          ],
+          "actor": null,
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "First voyage · watertight chest on the duergar skiff",
+          "coordinates": {
+            "x": -447,
+            "y": -525,
+            "space": "Grymforge",
+            "subject": "container"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Access the watertight chest during the first crossing to Grymforge."
+              }
+            ]
+          },
+          "notes": [
+            "First-voyage context only; later skiff access is not promised."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Intransigent_Warhammer&oldid=438473",
+              "revisionId": 438473,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "7a47855b-fc42-42b2-8922-dd8d93f94bb6",
+      "bindings": [
+        {
+          "id": "0b2ad6af-a7a4-42f2-b46c-a9774a1439c4",
+          "act": "ACT 1",
+          "progressKey": "act 1|linebreaker boots",
+          "gameIds": [
+            "ARM_Shoes_Barbarian_Magic",
+            "MAG_Violence_ViolenceOnDash_Boots"
+          ],
+          "wikiPage": "Linebreaker Boots"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "37c5fb8a-64bc-4d30-be1f-165ebca7334a",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Beastmaster Zurk",
+            "wikiPage": "Zurk"
+          },
+          "location": {
+            "name": "Worg Pens",
+            "wikiPage": "Worg Pens"
+          },
+          "sublocation": "Zurk’s Worg Pens area",
+          "coordinates": {
+            "x": 379,
+            "y": -39,
+            "space": "Worg Pens",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Linebreaker_Boots&oldid=437742",
+              "revisionId": 437742,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "d1d56cf5-e735-4eb6-bc68-b0e7a5159437",
+      "bindings": [
+        {
+          "id": "5eb65ea1-9b21-47a1-b886-5929b3398742",
+          "act": "ACT 1",
+          "progressKey": "act 1|pearl of power amulet",
+          "gameIds": [
+            "MAG_PHB_ofPower_Pearl_Amulet"
+          ],
+          "wikiPage": "Pearl of Power Amulet"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "26182c1f-5438-49e5-b706-3bbe1113295d",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Complete the parasite investigation to unlock Omeluum’s trade."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate item-page point: 144,29. Displayed interaction reference remains 111,-89, never an exact actor position."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Pearl_of_Power_Amulet&oldid=421729",
+              "revisionId": 421729,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Involvement; Shop"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Walkthrough"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved Blurg summon/interaction reference 111,-89; item pages publish 144,29. Omeluum is summoned here; no permanent standing position at Blurg is asserted."
+          }
+        }
+      ]
+    },
+    {
+      "id": "60b51487-7b46-4eb5-a219-f0c386f89f93",
+      "bindings": [
+        {
+          "id": "7e4983a3-b68e-40f8-869b-1f4c979cae6c",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of absolute force",
+          "gameIds": [
+            "UNI_UND_KC_RingOfAbsolute",
+            "UND_KC_RingOfAbsolute"
+          ],
+          "wikiPage": "Ring of Absolute Force"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "44569a7e-9251-45e1-bfac-609ed13f31b8",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Sergeant Thrinn",
+            "wikiPage": "Elenna Thrinn"
+          },
+          "location": {
+            "name": "Grymforge",
+            "wikiPage": "Grymforge"
+          },
+          "sublocation": "Thrinn’s area · carried ring",
+          "coordinates": {
+            "x": -628,
+            "y": 320,
+            "space": "Grymforge",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate actor point: -643,300. No Brand prerequisite is inferred for obtaining the ring."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Absolute_Force&oldid=422368",
+              "revisionId": 422368,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Elenna_Thrinn&oldid=425977",
+              "revisionId": 425977,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item reference -628,320; actor page instead publishes -643,300. No averaging."
+          }
+        }
+      ]
+    },
+    {
+      "id": "5066053f-e113-4b17-b9e2-43b68491e477",
+      "bindings": [
+        {
+          "id": "84136378-2384-439d-b15e-e1e29d105b83",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of elemental infusion",
+          "gameIds": [
+            "MAG_ElementalGish_ElementalInfusion_Ring"
+          ],
+          "wikiPage": "Ring of Elemental Infusion"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "483fcad5-782f-4880-9573-3c6a865db9ef",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Gish Umr'a'ac",
+            "wikiPage": "Umr'a'ac"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Umr’a’ac’s crèche encounter",
+          "coordinates": {
+            "x": 1303,
+            "y": -798,
+            "space": "Crèche Y'llek",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Elemental_Infusion&oldid=422375",
+              "revisionId": 422375,
+              "section": "Where to find; Notes"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "beef3ca9-42d0-48c8-90e5-ffb22d560afa",
+      "bindings": [
+        {
+          "id": "01579e66-d3ef-4ddb-b293-44e40a98e7b0",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of jumping",
+          "gameIds": [
+            "MAG_PHB_OfJumping_Ring"
+          ],
+          "wikiPage": "Ring of Jumping"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "33405a02-3c8f-44e5-b05b-ad29a296bbe5",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Derryth Bonecloak",
+            "wikiPage": "Derryth Bonecloak"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Derryth’s shop · navigation reference",
+          "coordinates": {
+            "x": 55,
+            "y": -93,
+            "space": "Ebonlake Grotto",
+            "subject": "location"
+          },
+          "conditions": null,
+          "notes": [
+            "Displayed shop navigation: 55,-93. Published item-page alternative: -55,-93. The cross-item shop reference is explicit, not an exact item point."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Jumping&oldid=422385",
+              "revisionId": 422385,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Gloves_of_Hail_of_Thorns&oldid=418971",
+              "revisionId": 418971,
+              "section": "Where to find"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved displayed shop reference 55,-93, supported by the published Hail of Thorns route; this item page publishes -55,-93. Both signs are retained; no silent correction."
+          }
+        }
+      ]
+    },
+    {
+      "id": "be9e6a56-9e6b-4e63-b7ea-99ea1fe3029a",
+      "bindings": [
+        {
+          "id": "09c8f503-8f33-4bb6-b954-10963286eb5f",
+          "act": "ACT 1",
+          "progressKey": "act 1|ring of salving",
+          "gameIds": [
+            "UND_SocietyOfBrilliance_PullingRing"
+          ],
+          "wikiPage": "Ring of Salving"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "f837dc2c-344b-4bc0-a5bb-6b13a090257a",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Complete the parasite investigation to unlock Omeluum’s trade."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate item-page point: 144,29. Displayed interaction reference remains 111,-89, never an exact actor position."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Ring_of_Salving&oldid=422394",
+              "revisionId": 422394,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Involvement; Shop"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Walkthrough"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved Blurg summon/interaction reference 111,-89; item pages publish 144,29. Omeluum is summoned here; no permanent standing position at Blurg is asserted."
+          }
+        }
+      ]
+    },
+    {
+      "id": "d9f8b1b9-9016-4121-916c-529ddbf7f4a9",
+      "bindings": [
+        {
+          "id": "c0164548-3815-4dbd-81be-448c8df34bf8",
+          "act": "ACT 1",
+          "progressKey": "act 1|rupturing blade",
+          "gameIds": [
+            "MAG_OfRupture_Rapier"
+          ],
+          "wikiPage": "Rupturing Blade"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "5e9327fa-3d2c-42f7-96d0-9a34fa89db1a",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Brem",
+            "wikiPage": "Brem"
+          },
+          "location": {
+            "name": "Zhentarim Basement",
+            "wikiPage": "Zhentarim Basement"
+          },
+          "sublocation": "Brem’s unlocked special stock",
+          "coordinates": {
+            "x": 295,
+            "y": -250,
+            "space": "Zhentarim Basement",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Zarys must unlock Brem’s special stock."
+              }
+            ]
+          },
+          "notes": [
+            "Entering the hideout alone does not unlock this stock. No specific Zarys branch is universally required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rupturing_Blade&oldid=438110",
+              "revisionId": 438110,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brem&oldid=425720",
+              "revisionId": 425720,
+              "section": "Shop; Secret shop"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zarys&oldid=438613",
+              "revisionId": 438613,
+              "section": "Involvement"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "56325ff3-19e7-4b26-bb45-4c4d601a40c3",
+      "bindings": [
+        {
+          "id": "6f7d9a54-4e16-49b0-9075-5e3d3df3b4c9",
+          "act": "ACT 1",
+          "progressKey": "act 1|shattered flail",
+          "gameIds": [
+            "UNI_PLA_ConflictedFlind_Flail_Broken",
+            "PLA_ConflictedFlind_Flail_Broken"
+          ],
+          "wikiPage": "Shattered Flail"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "e2da1319-f280-4eb2-aed9-749c9be3f303",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Flind",
+            "wikiPage": "Flind"
+          },
+          "location": {
+            "name": "The Risen Road",
+            "wikiPage": "The Risen Road"
+          },
+          "sublocation": "Flind’s moving encounter",
+          "coordinates": {
+            "x": 33,
+            "y": 597,
+            "space": "The Risen Road",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Encounter reference; not an exact corpse position."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Shattered_Flail&oldid=423121",
+              "revisionId": 423121,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Flind&oldid=414956",
+              "revisionId": 414956,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "6279029a-e863-447e-9414-2bca970ea2e9",
+      "bindings": [
+        {
+          "id": "d6cb2b25-c697-4a83-bea3-47241c6d8c51",
+          "act": "ACT 1",
+          "progressKey": "act 1|soulbreaker greatsword",
+          "gameIds": [
+            "MAG_Githborn_Mindcrusher_Greatsword"
+          ],
+          "wikiPage": "Soulbreaker Greatsword"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "c6b65387-9ded-47c8-a061-717e3a677e0c",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Kith’rak Therezzyn",
+            "wikiPage": "Therezzyn"
+          },
+          "location": {
+            "name": "Crèche Y'llek",
+            "wikiPage": "Crèche Y'llek"
+          },
+          "sublocation": "Therezzyn’s chamber",
+          "coordinates": {
+            "x": 1408,
+            "y": -763,
+            "space": "Crèche Y'llek",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Alternate actor point: 1409,-765."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Soulbreaker_Greatsword&oldid=423404",
+              "revisionId": 423404,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Therezzyn&oldid=426108",
+              "revisionId": 426108,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved item reference 1408,-763; actor page instead publishes 1409,-765. No averaging."
+          }
+        }
+      ]
+    },
+    {
+      "id": "de923297-933b-4e4b-84fd-9ca19c3937e2",
+      "bindings": [
+        {
+          "id": "67b32791-7ad4-4ef6-8acf-dda65fd8f0cc",
+          "act": "ACT 1",
+          "progressKey": "act 1|spidersilk armour",
+          "gameIds": [
+            "GOB_DrowCommander_Armor_Leather",
+            "GOB_DrowCommander_Leather_Armor"
+          ],
+          "wikiPage": "Spidersilk Armour"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "7167d7ba-7eb4-48bf-bfc3-301795ef577b",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Minthara",
+            "wikiPage": "Minthara"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Minthara’s area · carried gear",
+          "coordinates": {
+            "x": 335,
+            "y": 43,
+            "space": "Shattered Sanctum",
+            "subject": "encounter"
+          },
+          "conditions": null,
+          "notes": [
+            "Carried gear; no universal killing requirement is inferred.",
+            "Primary armour page has no coordinates; corroborating Boots of Striding and Xyanyde publish 335,43."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Spidersilk_Armour&oldid=423461",
+              "revisionId": 423461,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Minthara&oldid=438228",
+              "revisionId": 438228,
+              "section": "Act One; Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Boots_of_Striding&oldid=416688",
+              "revisionId": 416688,
+              "section": "Where to find"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Xyanyde&oldid=438399",
+              "revisionId": 438399,
+              "section": "Where to find"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Spidersilk Armour’s page omits X/Y. Reference 335,43 comes from corroborating Minthara gear, not an exact armour pickup point."
+          }
+        }
+      ]
+    },
+    {
+      "id": "a04dc92a-d759-47cd-a83e-85518e6e0e11",
+      "bindings": [
+        {
+          "id": "654a9020-58bf-40e5-be24-57dbe381130f",
+          "act": "ACT 1",
+          "progressKey": "act 1|sword of justice",
+          "gameIds": [
+            "UNI_PLA_WPN_SwordOfJustice",
+            "PLA_WPN_SwordOfJustice"
+          ],
+          "wikiPage": "Sword of Justice"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "051e93ea-dd3a-436f-8248-b22d655e6ea8",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Anders",
+            "wikiPage": "Anders"
+          },
+          "location": {
+            "name": "Risen Road Toll House",
+            "wikiPage": "Risen Road Toll House"
+          },
+          "sublocation": "Anders · toll house",
+          "coordinates": {
+            "x": 110,
+            "y": 560,
+            "space": "Risen Road Toll House",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "The Karlach-kill reward condition belongs only to the quest-reward route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sword_of_Justice&oldid=423794",
+              "revisionId": 423794,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Anders&oldid=414957",
+              "revisionId": 414957,
+              "section": "Involvement; Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hunt_the_Devil&oldid=437726",
+              "revisionId": 437726,
+              "section": "Walkthrough; Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Anders encounter reference; the loot and reward branches remain separate."
+          }
+        },
+        {
+          "id": "87476246-b04e-4e5a-9e6f-5366c7424d54",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Anders",
+            "wikiPage": "Anders"
+          },
+          "location": {
+            "name": "Risen Road Toll House",
+            "wikiPage": "Risen Road Toll House"
+          },
+          "sublocation": "Anders · toll house",
+          "coordinates": {
+            "x": 110,
+            "y": 560,
+            "space": "Risen Road Toll House",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Hunt the Devil"
+              },
+              {
+                "kind": "choice",
+                "subject": "Kill Karlach and claim Anders’ reward."
+              }
+            ]
+          },
+          "notes": [
+            "The Karlach-kill reward condition belongs only to the quest-reward route."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Sword_of_Justice&oldid=423794",
+              "revisionId": 423794,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Anders&oldid=414957",
+              "revisionId": 414957,
+              "section": "Involvement; Loot"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Hunt_the_Devil&oldid=437726",
+              "revisionId": 437726,
+              "section": "Walkthrough; Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Anders encounter reference; the loot and reward branches remain separate."
+          }
+        }
+      ]
+    },
+    {
+      "id": "7ad8661a-aa34-4ea3-b730-f8a6a6f7e697",
+      "bindings": [
+        {
+          "id": "c2805d71-b47e-4c7f-b936-eb1d357f56c2",
+          "act": "ACT 1",
+          "progressKey": "act 1|the blast pendant",
+          "gameIds": [
+            "MAG_ChargedLightning_LightningBlast_Amulet"
+          ],
+          "wikiPage": "The Blast Pendant"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "63e8d240-cc8d-40ea-919f-0bbdd3303cac",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Dhourn",
+            "wikiPage": "Dhourn"
+          },
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Petrified battlefield · Dhourn encounter",
+          "coordinates": {
+            "x": 121,
+            "y": -245,
+            "space": "Underdark",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Obtain Dhourn’s carried pendant in the petrified-encounter context."
+              }
+            ]
+          },
+          "notes": [
+            "Petrified-encounter context is retained; no fixed corpse or universal kill requirement is asserted."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Blast_Pendant&oldid=423966",
+              "revisionId": 423966,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Dhourn&oldid=433990",
+              "revisionId": 433990,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "6bdaf3a6-34f7-4e05-86bb-07e861b190e6",
+      "bindings": [
+        {
+          "id": "4afa89fa-e0dd-4f49-8a44-b8373be434e0",
+          "act": "ACT 1",
+          "progressKey": "act 1|the jolty vest",
+          "gameIds": [
+            "MAG_ChargedLightning_Electrocute_Armor"
+          ],
+          "wikiPage": "The Jolty Vest"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "d472c248-1438-4a52-9578-cc5dcc28d364",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Brem",
+            "wikiPage": "Brem"
+          },
+          "location": {
+            "name": "Zhentarim Basement",
+            "wikiPage": "Zhentarim Basement"
+          },
+          "sublocation": "Brem’s unlocked special stock",
+          "coordinates": {
+            "x": 295,
+            "y": -250,
+            "space": "Zhentarim Basement",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "npc",
+                "subject": "Zarys must unlock Brem’s special stock."
+              }
+            ]
+          },
+          "notes": [
+            "Entering the hideout alone does not unlock this stock. No specific Zarys branch is universally required."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Jolty_Vest&oldid=424042",
+              "revisionId": 424042,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Brem&oldid=425720",
+              "revisionId": 425720,
+              "section": "Shop; Secret shop"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Zarys&oldid=438613",
+              "revisionId": 438613,
+              "section": "Involvement"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "1869105b-ffb5-4279-a989-ded82c61350c",
+      "bindings": [
+        {
+          "id": "cfadec2d-9cb2-45c2-b8ec-f2ca85b7e0b7",
+          "act": "ACT 1",
+          "progressKey": "act 1|the shadespell circlet",
+          "gameIds": [
+            "MAG_Shadow_SpellDCBonusWhileObscured_Circlet"
+          ],
+          "wikiPage": "The Shadespell Circlet"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "7e791dc5-f632-4a60-84d2-e158b119e97d",
+          "type": "purchase",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Omeluum",
+            "wikiPage": "Omeluum"
+          },
+          "location": {
+            "name": "Ebonlake Grotto",
+            "wikiPage": "Ebonlake Grotto"
+          },
+          "sublocation": "Blurg’s summon/interaction point",
+          "coordinates": {
+            "x": 111,
+            "y": -89,
+            "space": "Ebonlake Grotto",
+            "subject": "interaction"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Help Omeluum Investigate the Parasite"
+              },
+              {
+                "kind": "interaction",
+                "subject": "Complete the parasite investigation to unlock Omeluum’s trade."
+              }
+            ]
+          },
+          "notes": [
+            "Alternate item-page point: 144,29. Displayed interaction reference remains 111,-89, never an exact actor position."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Shadespell_Circlet&oldid=424101",
+              "revisionId": 424101,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Omeluum&oldid=428216",
+              "revisionId": 428216,
+              "section": "Involvement; Shop"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Help_Omeluum_Investigate_the_Parasite&oldid=419477",
+              "revisionId": 419477,
+              "section": "Walkthrough"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Approved Blurg summon/interaction reference 111,-89; item pages publish 144,29. Omeluum is summoned here; no permanent standing position at Blurg is asserted."
+          }
+        }
+      ]
+    },
+    {
+      "id": "68125167-75d6-433b-836a-3428e81f4486",
+      "bindings": [
+        {
+          "id": "54e80e70-bc46-4cc0-b649-ec764235d83f",
+          "act": "ACT 1",
+          "progressKey": "act 1|the sparky points",
+          "gameIds": [
+            "MAG_ChargedLightning_Trident"
+          ],
+          "wikiPage": "The Sparky Points"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "7b987ace-a1ac-4050-b724-053e0a4919e6",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Counsellor Florrick",
+            "wikiPage": "Florrick"
+          },
+          "location": {
+            "name": "Waukeen's Rest",
+            "wikiPage": "Waukeen's Rest"
+          },
+          "sublocation": "Counsellor Florrick · rescue and choose this weapon",
+          "coordinates": {
+            "x": -63,
+            "y": 600,
+            "space": "Waukeen's Rest",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Rescue the Grand Duke"
+              },
+              {
+                "kind": "npc",
+                "subject": "Rescue Counsellor Florrick from the burning inn."
+              },
+              {
+                "kind": "choice",
+                "subject": "Choose The Sparky Points instead of The Joltshooter or The Spellsparkler."
+              }
+            ]
+          },
+          "notes": [
+            "The three weapons are alternative rewards, not three guaranteed simultaneous items."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Sparky_Points&oldid=424111",
+              "revisionId": 424111,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Florrick&oldid=431924",
+              "revisionId": 431924,
+              "section": "Act One"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Rescue_the_Grand_Duke&oldid=408690",
+              "revisionId": 408690,
+              "section": "Quest rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "2bfa0b4a-5af9-4dff-8f53-ceb7e0bd24a7",
+      "bindings": [
+        {
+          "id": "118e7b3f-8d93-469a-8910-8809ae098814",
+          "act": "ACT 1",
+          "progressKey": "act 1|the spectator eyes",
+          "gameIds": [
+            "MAG_SpectatorEye_Amulet"
+          ],
+          "wikiPage": "The Spectator Eyes"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "a71097cb-fa4c-4efd-9b70-4d3aecef3e63",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Spectator",
+            "wikiPage": "Spectator"
+          },
+          "location": {
+            "name": "Underdark",
+            "wikiPage": "Underdark"
+          },
+          "sublocation": "Petrified Battlefield · encounter reference",
+          "coordinates": {
+            "x": 112,
+            "y": -249,
+            "space": "Underdark",
+            "subject": "encounter"
+          },
+          "conditions": null,
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=The_Spectator_Eyes&oldid=424112",
+              "revisionId": 424112,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Spectator&oldid=431088",
+              "revisionId": 431088,
+              "section": "Act One; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published Spectator encounter navigation reference, not a guaranteed death position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "e6a9e2db-1c67-4e93-89f3-63fcde011c5a",
+      "bindings": [
+        {
+          "id": "b300ff96-e575-43ba-bbf8-3cf617cc07c9",
+          "act": "ACT 1",
+          "progressKey": "act 1|very heavy greataxe",
+          "gameIds": [
+            "UNI_WPN_HeavyGreataxe",
+            "UNI_SuperheavyWeapon"
+          ],
+          "wikiPage": "Very Heavy Greataxe"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "32042002-86ff-40da-ac44-d96a6d754331",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Fezzerk",
+            "wikiPage": "Fezzerk"
+          },
+          "location": {
+            "name": "Blighted Village",
+            "wikiPage": "Blighted Village"
+          },
+          "sublocation": "Fezzerk at the windmill · Act 1",
+          "coordinates": {
+            "x": 10,
+            "y": 420,
+            "space": "Blighted Village",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Separate Act venues; no duplicate progress key or guaranteed second copy."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Very_Heavy_Greataxe&oldid=437950",
+              "revisionId": 437950,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Fezzerk&oldid=415776",
+              "revisionId": 415776,
+              "section": "Act One; Act Two; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-bearer reference; later venue is conditional, not a guaranteed second copy."
+          }
+        },
+        {
+          "id": "55d4350b-3da0-4b0b-a4c3-78fc7c374435",
+          "type": "actor_loot",
+          "acts": [
+            2
+          ],
+          "actor": {
+            "name": "Fezzerk",
+            "wikiPage": "Fezzerk"
+          },
+          "location": {
+            "name": "Moonrise Towers",
+            "wikiPage": "Moonrise Towers"
+          },
+          "sublocation": "Fezzerk on the main floor · Act 2 if available",
+          "coordinates": {
+            "x": -152,
+            "y": -191,
+            "space": "Moonrise Towers",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Separate Act venues; no duplicate progress key or guaranteed second copy."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Very_Heavy_Greataxe&oldid=437950",
+              "revisionId": 437950,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Fezzerk&oldid=415776",
+              "revisionId": 415776,
+              "section": "Act One; Act Two; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-bearer reference; later venue is conditional, not a guaranteed second copy."
+          }
+        }
+      ]
+    },
+    {
+      "id": "8f0bd066-4aec-4ff4-8abc-0893a62a3aa6",
+      "bindings": [
+        {
+          "id": "3fcf4429-972f-4087-a90d-1998d13c3a65",
+          "act": "ACT 1",
+          "progressKey": "act 1|wapira's crown",
+          "gameIds": [
+            "MAG_Healer_HealSelf_Helmet"
+          ],
+          "wikiPage": "Wapira's Crown"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "d082bfd1-18a2-49c7-80f8-61fe413e11bc",
+          "type": "quest_reward",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Zevlor",
+            "wikiPage": "Zevlor"
+          },
+          "location": {
+            "name": "Secluded Chamber",
+            "wikiPage": "Secluded Chamber"
+          },
+          "sublocation": "Zevlor · accept the reward package",
+          "coordinates": {
+            "x": -53,
+            "y": 67,
+            "space": "Secluded Chamber",
+            "subject": "actor"
+          },
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "quest",
+                "subject": "Save the Refugees"
+              },
+              {
+                "kind": "choice",
+                "subject": "Accept Zevlor’s monetary reward/package to receive the crown."
+              }
+            ]
+          },
+          "notes": null,
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Wapira's_Crown&oldid=424746",
+              "revisionId": 424746,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Save_the_Refugees&oldid=422653",
+              "revisionId": 422653,
+              "section": "Rewards"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
+          }
+        }
+      ]
+    },
+    {
+      "id": "bc83746b-fcba-409e-9afa-55fc42d6fed9",
+      "bindings": [
+        {
+          "id": "9bf0a6b4-a658-4b5c-89a1-0f9064c4a936",
+          "act": "ACT 1",
+          "progressKey": "act 1|warped headband of intellect",
+          "gameIds": [
+            "UNI_FOR_OgresForHire_HeadbandOfIntellect",
+            "FOR_OgresForHire_HeadbandOfIntellect"
+          ],
+          "wikiPage": "Warped Headband of Intellect"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "fff30a17-d842-4176-b570-f076274dcd9b",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Lump the Enlightened",
+            "wikiPage": "Lump"
+          },
+          "location": {
+            "name": "Blighted Village",
+            "wikiPage": "Blighted Village"
+          },
+          "sublocation": "Lump’s village encounter",
+          "coordinates": {
+            "x": 13,
+            "y": 366,
+            "space": "Blighted Village",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Lump carries the headband in his gut; it is not worn equipment."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Warped_Headband_of_Intellect&oldid=424764",
+              "revisionId": 424764,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Lump&oldid=414928",
+              "revisionId": 414928,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published village bearer reference; does not describe every possible summoned corpse position."
+          }
+        },
+        {
+          "id": "79e0dbb2-a53d-4ab9-b3ae-701721d8ea22",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Lump the Enlightened",
+            "wikiPage": "Lump"
+          },
+          "location": null,
+          "sublocation": "Where Lump is summoned · Act 1",
+          "coordinates": null,
+          "conditions": {
+            "prerequisites": [
+              {
+                "kind": "interaction",
+                "subject": "Recruit and summon Lump in Act 1, then obtain his carried headband."
+              }
+            ]
+          },
+          "notes": [
+            "Lump carries the headband in his gut; it is not worn equipment."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Warped_Headband_of_Intellect&oldid=424764",
+              "revisionId": 424764,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Lump&oldid=414928",
+              "revisionId": 414928,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "not_applicable",
+            "reason": "Lump may be summoned to different Act 1 locations; there is no fixed acquisition coordinate."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ad88b6d3-0195-4510-a04a-c7c0f5b898b4",
+      "bindings": [
+        {
+          "id": "177340fe-e783-4427-bba8-29d2fa2f575e",
+          "act": "ACT 1",
+          "progressKey": "act 1|wood woad shield",
+          "gameIds": [
+            "MAG_WoodWoad_Nature_Shield"
+          ],
+          "wikiPage": "Wood Woad Shield"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "73f312d6-2c90-405b-a33d-bf99c2f023de",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Wood Woad",
+            "wikiPage": "Wood Woad"
+          },
+          "location": {
+            "name": "Decrepit Sanctuary",
+            "wikiPage": "Decrepit Sanctuary"
+          },
+          "sublocation": "Decrepit Sanctuary · one shield-bearing Wood Woad",
+          "coordinates": {
+            "x": 85,
+            "y": 212,
+            "space": "Decrepit Sanctuary",
+            "subject": "encounter"
+          },
+          "conditions": null,
+          "notes": [
+            "One bearer, not a guaranteed shield on every Wood Woad."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Wood_Woad_Shield&oldid=424971",
+              "revisionId": 424971,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Wood_Woad&oldid=414951",
+              "revisionId": 414951,
+              "section": "Involvement; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Encounter navigation reference; only one of the Wood Woads carries this shield."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ad127130-984c-4d46-bc06-6c3d155b3da9",
+      "bindings": [
+        {
+          "id": "f6ac17d5-9f6a-45ae-afff-0e62b937bcbd",
+          "act": "ACT 1",
+          "progressKey": "act 1|xyanyde",
+          "gameIds": [
+            "GOB_DrowCommander_Mace"
+          ],
+          "wikiPage": "Xyanyde"
+        }
+      ],
+      "coverage": "reviewed",
+      "routes": [
+        {
+          "id": "5b775c3f-ac69-4dd4-b46c-b6df99e1d97d",
+          "type": "actor_loot",
+          "acts": [
+            1
+          ],
+          "actor": {
+            "name": "Minthara",
+            "wikiPage": "Minthara"
+          },
+          "location": {
+            "name": "Shattered Sanctum",
+            "wikiPage": "Shattered Sanctum"
+          },
+          "sublocation": "Minthara’s area · carried gear",
+          "coordinates": {
+            "x": 335,
+            "y": 43,
+            "space": "Shattered Sanctum",
+            "subject": "actor"
+          },
+          "conditions": null,
+          "notes": [
+            "Carried gear; no universal killing requirement is inferred."
+          ],
+          "validity": "current",
+          "sources": [
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Xyanyde&oldid=438399",
+              "revisionId": 438399,
+              "section": "Where to find; Notes"
+            },
+            {
+              "url": "https://bg3.wiki/w/index.php?title=Minthara&oldid=438228",
+              "revisionId": 438228,
+              "section": "Act One; Loot"
+            }
+          ],
+          "review": {
+            "state": "reviewed",
+            "reviewedAt": "2026-10-17",
+            "reviewer": "Codex approved Batch 4B plan integration; pinned planning evidence"
+          },
+          "coordinateReview": {
+            "state": "reference",
+            "reason": "Published moving-actor navigation reference; not an exact or guaranteed corpse position."
           }
         }
       ]

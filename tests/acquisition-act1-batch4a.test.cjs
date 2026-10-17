@@ -7,6 +7,10 @@ const {harness:storyHarness,record}=require('./helpers/app-harness.cjs');
 const root=join(__dirname,'..'),facts=JSON.parse(readFileSync(join(__dirname,'fixtures/acquisition-act1-batch4a.json'),'utf8'));
 const baseline=JSON.parse(execFileSync('git',['show',facts.baseline+':data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}));
 const data=JSON.parse(readFileSync(join(root,'data/acquisition.v1.json'),'utf8'));
+const checkpointSnapshot=JSON.parse(execFileSync('git',['show','6e71b247424e9ae17ae0782724b1972197574c8c:data/acquisition.v1.json'],{cwd:root,encoding:'utf8'}));
+const checkpointIDs=new Set(checkpointSnapshot.entries.map(e=>e.id));
+const checkpointData={...data,datasetVersion:checkpointSnapshot.datasetVersion,entries:data.entries.filter(e=>checkpointIDs.has(e.id))};
+const checkpointResolver=metadata.createResolver(checkpointData);
 const catalogue=JSON.parse(readFileSync(join(__dirname,'fixtures/vendor-catalogue.json'),'utf8'));
 const copy=x=>JSON.parse(JSON.stringify(x)),key=x=>(x.act+'|'+x.name).toLowerCase();
 const boundary={exports:{}};
@@ -58,12 +62,12 @@ for(const f of facts.items){
 }
 test('Batch 4A fixture exhaustively reconciles 47 rows without duplicate or previous bindings',()=>{
  assert.equal(facts.items.length,47);for(const field of ['sourceRow','progressKey','entryId','bindingId'])assert.equal(new Set(facts.items.map(f=>f[field])).size,47,field);
- assert.equal(metadata.validateDataset(data).ok,true);assert.equal(data.schemaVersion,2);assert.equal(data.datasetVersion,'2.4.0-act1.batch4a');assert.deepEqual(data.entries.slice(0,85),baseline.entries);
- assert.deepEqual(data.entries.slice(85).map(e=>e.id),facts.items.map(f=>f.entryId));assert.equal(data.entries.length,132);assert.equal(data.entries.flatMap(e=>e.bindings).length,133);assert.equal(data.entries.flatMap(e=>e.routes).length,155);
+ assert.equal(metadata.validateDataset(data).ok,true);assert.equal(data.schemaVersion,2);assert.deepEqual(checkpointData,checkpointSnapshot);assert.equal(checkpointData.datasetVersion,'2.4.0-act1.batch4a');assert.deepEqual(checkpointData.entries.slice(0,85),baseline.entries);
+ assert.deepEqual(checkpointData.entries.slice(85).map(e=>e.id),facts.items.map(f=>f.entryId));assert.equal(checkpointData.entries.length,132);assert.equal(checkpointData.entries.flatMap(e=>e.bindings).length,133);assert.equal(checkpointData.entries.flatMap(e=>e.routes).length,155);
 });
 test('Batch 4A adds 8 Exact and 43 Reference routes, zero exceptions or pending points',()=>{
- const added=data.entries.slice(85).flatMap(e=>e.routes);assert.equal(added.length,51);for(const [state,n] of [['exact',8],['reference',43],['not_applicable',0],['pending',0],['conflict',0],['not_documented',0]])assert.equal(added.filter(r=>r.coordinateReview.state===state).length,n);assert.ok(added.every(r=>r.coordinates&&!(r.coordinates.x===0&&r.coordinates.y===0)));
- for(const [state,n] of [['exact',46],['reference',104],['not_applicable',5]])assert.equal(data.entries.flatMap(e=>e.routes).filter(r=>r.coordinateReview.state===state).length,n);
+ const added=checkpointData.entries.slice(85).flatMap(e=>e.routes);assert.equal(added.length,51);for(const [state,n] of [['exact',8],['reference',43],['not_applicable',0],['pending',0],['conflict',0],['not_documented',0]])assert.equal(added.filter(r=>r.coordinateReview.state===state).length,n);assert.ok(added.every(r=>r.coordinates&&!(r.coordinates.x===0&&r.coordinates.y===0)));
+ for(const [state,n] of [['exact',46],['reference',104],['not_applicable',5]])assert.equal(checkpointData.entries.flatMap(e=>e.routes).filter(r=>r.coordinateReview.state===state).length,n);
 });
 test('Batch 4A all four Roah venues remain distinct Act contexts under one binding each',()=>{
  for(const name of ['Blooded Greataxe','Bow of Awareness',"Hunter's Dagger",'Monster Slayer Glaive']){
@@ -90,9 +94,9 @@ test('Batch 4A bundle and offline runtime match canonical data without side effe
  for(const f of facts.items)for(const runtime of [live,offline])assert.deepEqual(copy(runtime.ui.render(itemFor(f),'full')),copy(ui.render(itemFor(f),'full')));assert.deepEqual(live.calls,[]);assert.deepEqual(offline.calls,[]);
  const prior=execFileSync('git',['show',facts.baseline+':assets/acquisition-pilot.js'],{cwd:root,encoding:'utf8'});assert.equal(source.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'),prior.replace(/  const dataset = \{[^\n]*\};/,'  const dataset = DATA;'));
 });
-test('Batch 4A only approved new catalogue identities resolve; 4B/4C are not included',()=>{
- const h=itemHarness(catalogue,{dataset:data}),items=Array.from(h.app.items());assert.deepEqual(items.filter(i=>resolver.resolve(i)&&!oldResolver.resolve(i)).map(key).sort(),facts.items.map(f=>f.progressKey).sort());
- assert.equal(items.filter(i=>resolver.resolve(i)).length,132);assert.equal(items.filter(i=>i.act==='ACT 1'&&resolver.resolve(i)).length,127);assert.equal(items.filter(i=>i.act==='ACT 1'&&!resolver.resolve(i)).length,92);
+test('Batch 4A historical checkpoint resolves only its approved new catalogue identities',()=>{
+ const h=itemHarness(catalogue,{dataset:data}),items=Array.from(h.app.items());assert.deepEqual(items.filter(i=>checkpointResolver.resolve(i)&&!oldResolver.resolve(i)).map(key).sort(),facts.items.map(f=>f.progressKey).sort());
+ assert.equal(items.filter(i=>checkpointResolver.resolve(i)).length,132);assert.equal(items.filter(i=>i.act==='ACT 1'&&checkpointResolver.resolve(i)).length,127);assert.equal(items.filter(i=>i.act==='ACT 1'&&!checkpointResolver.resolve(i)).length,92);
 });
 test('Batch 4A catalogue/progress/classification identities remain unchanged',()=>{
  const h=itemHarness(catalogue,{dataset:data}),items=Array.from(h.app.items());assert.equal(catalogue.length,556);assert.equal(items.length,555);assert.deepEqual(items.map(key).sort(),[...new Set(catalogue.map(key))].sort());

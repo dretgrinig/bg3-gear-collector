@@ -556,11 +556,11 @@ async function checkAct1Batch3(browser, width) {
 }
 
 // One independent reviewed table drives the entire large-batch layout sweep.
-async function checkAct1Batch4A(browser, width) {
-  const approved = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/acquisition-act1-batch4a.json'), 'utf8')).items;
+async function checkAcquisitionExpansion(browser, width, batch) {
+  const approved = JSON.parse(fs.readFileSync(path.join(root, `tests/fixtures/acquisition-act1-batch${batch.toLowerCase()}.json`), 'utf8')).items;
   const catalogue = JSON.parse(catalogueFixture);
   const testCase = await createCase(browser, width, 'full'), { page } = testCase;
-  const representatives = new Set(['Adamantine Scimitar','Daredevil Gloves','Gloves of Belligerent Skies','Speedy Reply','Uncovered Mysteries','Worgfang','Jagged Spear','Blooded Greataxe']);
+  const representatives = new Set(batch === '4B' ? ['Boots of Speed','Club of Hill Giant Strength','Dark Justiciar Mail','Dark Justiciar Mask','Sword of Justice','Boots of Stormy Clamour','Warped Headband of Intellect'] : ['Adamantine Scimitar','Daredevil Gloves','Gloves of Belligerent Skies','Speedy Reply','Uncovered Mysteries','Worgfang','Jagged Spear','Blooded Greataxe']);
   try {
     testCase.releaseAsset();
     await page.waitForFunction(() => !!window.BG3AcquisitionUI);
@@ -590,11 +590,15 @@ async function checkAct1Batch4A(browser, width) {
           surfaceWidth: node.getBoundingClientRect().width
         };
       }, raw);
-      const label = `${width}px Batch 4A ${expected.name}`;
+      const label = `${width}px Batch ${batch} ${expected.name}`;
       check(facts.ordered && facts.mechanics, label + ': Effect/order changed');
       check(facts.sections === 1 && facts.routes === expected.routeCount, label + ': missing/duplicate routes');
-      check(JSON.stringify(facts.coordinates) === JSON.stringify(expected.routes.map(r => `X: ${r.point[0]} Y: ${r.point[1]}`)), label + ': independent coordinate mismatch');
+      const coordinateCount = (expected.pointGroups ?? expected.routeCount) - expected.routes.filter(r => !r.point).length + expected.routes.reduce((n,r) => n + (r.navigationPoints || []).length, 0);
+      check(facts.coordinates.length === coordinateCount, label + ': coordinate display count mismatch');
       for (const route of expected.routes) {
+        if (route.point) check(facts.coordinates.includes(`X: ${route.point[0]} Y: ${route.point[1]}`), label + ': independent coordinate mismatch');
+        else check(facts.text.includes(route.reason), label + ': explicit coordinate exception missing');
+        for (const point of route.navigationPoints || []) check(facts.coordinates.includes(`X: ${point.coordinates.x} Y: ${point.coordinates.y}`), label + ': navigation point missing');
         check(facts.text.includes(route.sublocation), label + ': sublocation missing');
         if (route.actor) check(facts.text.includes(route.actor[0]), label + ': actor missing');
       }
@@ -607,7 +611,7 @@ async function checkAct1Batch4A(browser, width) {
         await toggle.press('Space');
         check(await toggle.evaluate(node => node.parentElement.open), label + ': Space failed');
         check(await toggle.evaluate(node => document.activeElement === node), label + ': keyboard focus lost');
-        await surface.screenshot({path:path.join(outputDirectory,`batch4a-${width}-${expected.sourceRow}.png`)});
+        await surface.screenshot({path:path.join(outputDirectory,`batch${batch.toLowerCase()}-${width}-${expected.sourceRow}.png`)});
       }
       for (const mode of ['light','minimal']) {
         await page.locator('#spoilerMode').selectOption(mode);
@@ -615,9 +619,9 @@ async function checkAct1Batch4A(browser, width) {
       }
       await page.locator('#spoilerMode').selectOption('full');
       check(await page.locator('.acquisition-enrichment').count() === 2, label + ': Full restoration failed');
-      record(label, 'Act 1 Batch 4A independent facts/Full/protected/layout', {facts});
+      record(label, `Act 1 Batch ${batch} independent facts/Full/protected/layout`, {facts});
     }
-    check(testCase.errors.length === 0, width + 'px Batch 4A: runtime errors: ' + testCase.errors.join('; '));
+    check(testCase.errors.length === 0, width + 'px Batch ' + batch + ': runtime errors: ' + testCase.errors.join('; '));
   } finally { await testCase.context.close(); }
 }
 
@@ -639,7 +643,8 @@ async function main() {
     for (const width of [390, 1280]) await checkAct1Batch1(browser, width);
     for (const width of [390, 1280]) await checkAct1Batch2(browser, width);
     for (const width of [390, 1280]) await checkAct1Batch3(browser, width);
-    for (const width of [320,390,768,1280]) await checkAct1Batch4A(browser, width);
+    for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4A');
+    for (const width of [320,390,768,1280]) await checkAcquisitionExpansion(browser, width, '4B');
     await checkOptionalFailure(browser, null, 'missing optional asset');
     await checkOptionalFailure(browser,
       'window.BG3AcquisitionUI={render(){throw new Error("broken optional API")}};',
