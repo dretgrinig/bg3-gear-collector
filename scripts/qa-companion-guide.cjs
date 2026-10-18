@@ -6,12 +6,13 @@ const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),http
 const {chromium}=require(process.env.BG3_PLAYWRIGHT_MODULE||'playwright');
 const hostedOrigin=process.env.BG3_QA_ORIGIN?new URL(process.env.BG3_QA_ORIGIN).origin:null;
 const root=path.resolve(__dirname,'..'),dist=path.join(root,'dist'),out=process.env.BG3_QA_OUTPUT_DIR||path.join(os.tmpdir(),'bg3-companion-qa');
-const catalogue=fs.readFileSync(path.join(root,'tests/fixtures/vendor-catalogue.json')),checks=[],errors=[],unexpected=[],screenshots=[];
+const catalogue=fs.readFileSync(path.join(root,'tests/fixtures/vendor-catalogue.json')),checks=[],errors=[],unexpected=[],screenshots=[],layout=[];
 const mime=p=>p.endsWith('.js')?'text/javascript':p.endsWith('.css')?'text/css':p.endsWith('.json')?'application/json':p.endsWith('.png')?'image/png':p.endsWith('.jpg')?'image/jpeg':p.endsWith('.webp')?'image/webp':'text/html';
 const check=(value,message)=>{assert.ok(value,message);checks.push(message);};
 const control=(page,key)=>page.locator(`[data-cg-control="${key}"]`);
 const button=(page,action)=>page.locator(`[data-cg-action="${action}"]`);
 async function snapshot(page){return page.evaluate(()=>({url:location.href,filters:Object.fromEntries(['q','area','type','rarity','tier','source','state','sort'].map(id=>[id,document.getElementById(id).value])),act,activeStoryId,progress:JSON.stringify(progress),records:JSON.stringify(storyRecords),syncPending,storage:JSON.stringify(Object.entries(localStorage).sort()),session:JSON.stringify(Object.entries(sessionStorage).sort())}));}
+async function filters(page){const panel=page.locator('.cg-filter-panel');if(!await panel.evaluate(n=>n.open))await panel.locator('summary').click();}
 async function party(page){for(const name of ['Gale','Astarion','Shadowheart'])await page.locator(`[data-cg-action="party"][data-name="${name}"]`).click();}
 async function loaded(page){await page.waitForFunction(()=>document.querySelector('[data-cg-load]')?.textContent.trim()==='');}
 // Native click avoids Playwright auto-scrolling before the adapter captures the viewport.
@@ -36,6 +37,16 @@ try{
   check(await control(p,'act').inputValue()==='',width+' no inferred/default Act');
   await p.waitForFunction(()=>[...document.querySelectorAll('.cg-picks img')].length===10&&[...document.querySelectorAll('.cg-picks img')].every(n=>n.complete&&n.naturalWidth>0));
   check(await p.locator('.cg-picks img').count()===10,width+' all ten local choice portraits decoded');
+  check(await p.locator('.cg-picks').evaluate(n=>n.getBoundingClientRect().height<=290),width+' compact party grid avoids five oversized mobile rows');
+  check(await p.locator('.cg-picks button').evaluateAll(ns=>ns.every(n=>n.getBoundingClientRect().height>=44&&n.scrollWidth<=n.clientWidth)),width+' all ten portrait targets fit and remain touch-sized');
+  check(await control(p,'act').evaluate(n=>n.compareDocumentPosition(document.querySelector('.cg-party'))&Node.DOCUMENT_POSITION_FOLLOWING),width+' Act preference precedes party selection');
+  check(await p.locator('.cg-about').evaluate(n=>!n.open),width+' lengthy research caveats use native optional disclosure');
+  await p.locator('.cg-about summary').press('Enter');check(await p.locator('.cg-about .cg-limit').isVisible(),width+' full guide limitations remain keyboard accessible');await p.locator('.cg-about summary').press('Space');
+  check(await p.locator('.cg-filter-panel').evaluate(n=>!n.open),width+' secondary filters start collapsed while search stays available');
+  check(await control(p,'search').isVisible(),width+' primary search remains visible');
+  await p.locator('.cg-filter-panel summary').press('Enter');check(await control(p,'companion').isVisible(),width+' secondary filters expand with keyboard');await p.locator('.cg-filter-panel summary').press('Space');
+  check(await p.locator('.cg-filter-panel summary').evaluate(n=>n===document.activeElement),width+' filter disclosure retains keyboard focus');
+
   check(await p.locator('.cg-picks .cg-companion-name').evaluateAll(nodes=>nodes.every(n=>{const range=document.createRange();range.selectNodeContents(n);return range.getClientRects().length===1})),width+' all choice names stay on one line');
   check(await p.locator('.cg-picks img').evaluateAll(nodes=>nodes.every(n=>n.alt===''&&n.parentElement.getAttribute('aria-hidden')==='true'&&new URL(n.src).origin===location.origin)),width+' decorative local images keep button names accessible');
   const galePick=p.getByRole('button',{name:'Gale',exact:true});await galePick.locator('img').click();check(await p.locator('[data-cg-selected-party] img').count()===1,width+' clicking portrait selects companion');
@@ -44,6 +55,7 @@ try{
   await party(p);check(await p.locator('[data-cg-selected-party] img').count()===3,width+' current party has three portraits');
   await p.evaluate(()=>window.__qaSelectedPortrait=document.querySelector('[data-cg-selected-party] img'));await control(p,'act').selectOption('1');check(await p.locator('.cg-card').count()===8,width+' Full Act 1 records');
   check(await p.locator('.cg-advice').filter({hasText:'Suggested swap'}).count()>0,width+' Full multi-swap utility');
+  layout.push(await p.evaluate(()=>({width:innerWidth,partyGridHeight:document.querySelector('.cg-picks').getBoundingClientRect().height,partyColumns:getComputedStyle(document.querySelector('.cg-picks')).gridTemplateColumns.split(' ').length,firstResultTop:document.querySelector('.cg-card').getBoundingClientRect().top+scrollY})));
   const radios=p.getByRole('radio');check(await radios.count()===4,width+' four native guide radios');check(await p.locator('.cg-spoilers').evaluate(n=>n.nextElementSibling.matches('[data-cg-mode]')),width+' effective mode status adjacent to control');check(await p.getByRole('radio',{name:'Story',exact:true}).isChecked(),width+' Story default');
   check(await p.locator('.cg-segment span').evaluateAll(nodes=>nodes.every(n=>n.getBoundingClientRect().height>=44)),width+' segmented touch targets');
   await p.evaluate(()=>window.__qaRadio=document.querySelector('[data-cg-control="guideChoice"][value="story"]'));
@@ -60,7 +72,7 @@ try{
   await p.evaluate(()=>window.__qaRadio=document.querySelector('[data-cg-control="guideChoice"][value="story"]'));
   await guideMode(p,'light');await guideMode(p,'full');await guideMode(p,'story');check(await p.evaluate(()=>__qaRadio===document.querySelector('[data-cg-control="guideChoice"][value="story"]')),width+' radio node identity survives mode changes');
   check(JSON.stringify(await snapshot(p))===JSON.stringify(guideOnlyBefore),width+' local choices leave complete Tracker state unchanged');check(await p.evaluate(()=>__guideStorageWrites)===guideWrites,width+' local choices cause zero storage writes');
-  if(width===390||width===1280){await p.locator('.cg-spoilers').scrollIntoViewIfNeeded();const file=path.join(out,'guide-mode-'+width+'.png');await p.screenshot({path:file});screenshots.push(file);}
+  {await p.evaluate(()=>scrollTo(0,0));const file=path.join(out,'guide-mode-'+width+'.png');await p.screenshot({path:file});screenshots.push(file);}
 
   // Reopen intentionally rebuilds the closed guide shell; capture the current portrait.
   await p.evaluate(()=>window.__qaSelectedPortrait=document.querySelector('[data-cg-selected-party] img'));
@@ -68,7 +80,11 @@ try{
   check(await p.locator('[data-cg-swap="out"] img').count()===2&&await p.locator('[data-cg-swap="in"] img').count()===2,width+' both multi-swap directions show portraits');
   check(await p.locator('.cg-companion-detail img').count()===2,width+' guide card companion portraits');
   check(await p.evaluate(()=>__qaSelectedPortrait===document.querySelector('[data-cg-selected-party] img')),width+' selected party portrait nodes survive filtering');
-  if(width===390||width===1280){const file=path.join(out,'companion-swap-portraits-'+width+'.png');await p.locator('.cg-card').scrollIntoViewIfNeeded();await p.screenshot({path:file});screenshots.push(file);await p.locator('.cg-current-party').scrollIntoViewIfNeeded();const setup=path.join(out,'companion-party-portraits-'+width+'.png');await p.screenshot({path:setup});screenshots.push(setup);}
+  check(await p.locator('.cg-card-heading').evaluate(n=>!!n.querySelector('h3')&&n.querySelector('h3').compareDocumentPosition(n.querySelector('.cg-priority'))&Node.DOCUMENT_POSITION_FOLLOWING),width+' content heading precedes secondary priority');
+  check(await p.locator('.cg-swap-row').evaluateAll(ns=>ns.length===2&&ns.every(n=>n.scrollWidth<=n.clientWidth&&n.querySelector('b').textContent.includes('→'))),width+' both multi-swap directions wrap without clipping');
+  check(await p.locator('.cg-sources a').evaluateAll(ns=>ns.every(n=>n.getBoundingClientRect().height>=44)),width+' source links retain comfortable touch targets');
+
+  {const file=path.join(out,'companion-swap-portraits-'+width+'.png');await p.locator('.cg-card').scrollIntoViewIfNeeded();await p.screenshot({path:file});screenshots.push(file);await p.locator('.cg-current-party').scrollIntoViewIfNeeded();const setup=path.join(out,'companion-party-portraits-'+width+'.png');await p.screenshot({path:setup});screenshots.push(setup);}
 
   const notes=p.locator('[data-cg-action="research"]');await notes.click();check(await p.locator('.cg-notes').count()===1,width+' search-focus first disclosure click');await notes.press('Enter');check(await p.locator('.cg-notes').count()===0,width+' Enter disclosure');await notes.press('Space');check(await p.locator('.cg-notes').count()===1,width+' Space disclosure');
   check(await notes.evaluate(n=>getComputedStyle(n).outlineStyle!=='none'),width+' visible keyboard focus');
@@ -76,6 +92,10 @@ try{
   await control(p,'search').fill('Zorru');check(await p.locator('.cg-route-group').count()===1,width+' route filters omit empty groups');check(!(await p.locator('.cg-route-overview').innerText()).includes('Mountain Pass'),width+' route overview limited to displayed groups');check(await p.locator('.cg-next').count()===0,width+' next-stop limited to displayed records');
   await button(p,'browse').click();await control(p,'search').fill('no-match-public-qa');check((await p.locator('[data-cg-content]').innerText()).includes('No entries match'),width+' empty results');await control(p,'search').fill('');
   check(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),width+' Full no horizontal overflow');
+  // Check every original record at each width, not only the pictured recommendations.
+  let recordCount=0;for(const a of ['1','2','3']){await control(p,'act').selectOption(a);recordCount+=await p.locator('.cg-card').count();check(await p.locator('.cg-card').evaluateAll(ns=>ns.every(n=>n.scrollWidth<=n.clientWidth)),width+' Act '+a+' all cards contain their content');}
+  check(recordCount===51,width+' all 51 original records remain renderable');await control(p,'act').selectOption('1');
+
   await button(p,'return').click();check(await p.evaluate(()=>__qaTracker.body===document.querySelector('#body')&&__qaTracker.first===document.querySelector('#body tr')&&__qaTracker.cards===document.querySelector('#cards')&&__qaTracker.records===storyRecords&&__qaTracker.review===document.querySelector('#versionedReviewItems')),width+' pure guide navigation preserves Tracker nodes/references');check(JSON.stringify(await snapshot(p))===JSON.stringify(before),width+' pure guide browsing preserves all Tracker state');check(await p.evaluate(()=>__guideStorageWrites===0),width+' guide causes zero storage writes');await open(p);
   for(const mode of ['light','minimal']){
    await selectMode(p,mode);check(await control(p,'act').inputValue()==='1',width+' '+mode+' inherited mode preserves explicit Act');await control(p,'act').selectOption('1');check(await p.locator('.cg-exact,.cg-sources a,.cg-notes,.cg-priority,.cg-advice').count()===0,width+' '+mode+' zero concealed detail DOM');
@@ -89,8 +109,8 @@ try{
   }
   await selectMode(p,'full');await control(p,'act').selectOption('3');await control(p,'search').fill('Voss');check(await p.locator('.cg-card').count()===1,width+' returning Full restores utility');
   check((await p.locator('.cg-exact').innerText()).includes('player report'),width+' evidence marker retained');
-  await control(p,'search').fill('');await control(p,'companion').selectOption('Jaheira');check(await p.locator('.cg-card').count()>1,width+' Full companion filter');await control(p,'companion').selectOption('');await control(p,'type').selectOption('romance');check(await p.locator('.cg-card').count()===0,width+' unset romance has no fake slot');await control(p,'romance').selectOption('Shadowheart');check(await p.locator('.cg-card').count()>0,width+' romance resolves');await control(p,'type').selectOption('');
-  if(width===390||width===1280){await control(p,'search').fill('Voss');await p.locator('.cg-card').scrollIntoViewIfNeeded();const file=path.join(out,'companion-full-'+width+'.png');await p.screenshot({path:file});screenshots.push(file);await control(p,'search').fill('');}
+  await control(p,'search').fill('');await filters(p);await control(p,'companion').selectOption('Jaheira');check(await p.locator('.cg-card').count()>1,width+' Full companion filter');check(await p.locator('[data-cg-filter-count]').innerText()==='· 1 active',width+' collapsed-filter summary reports active narrowing');await control(p,'companion').selectOption('');await control(p,'type').selectOption('romance');check(await p.locator('.cg-card').count()===0,width+' unset romance has no fake slot');await control(p,'romance').selectOption('Shadowheart');check(await p.locator('.cg-card').count()>0,width+' romance resolves');await control(p,'type').selectOption('');
+  {await control(p,'search').fill('Voss');await p.locator('.cg-card').scrollIntoViewIfNeeded();const file=path.join(out,'companion-full-'+width+'.png');await p.screenshot({path:file});screenshots.push(file);await control(p,'search').fill('');}
   // Return without any explicit Tracker mutation during the guide session.
   await button(p,'return').click();check(await p.locator('#companionGuide').evaluate(n=>n.childElementCount===0),width+' closed guide has no serializable content or selections');check(await p.locator('#openCompanionGuide').evaluate(n=>n===document.activeElement),width+' return focus');check(Math.abs((await p.evaluate(()=>scrollY))-scrollBefore)<=1,width+' return scroll');
   const after=await snapshot(p);check(JSON.stringify(after)===JSON.stringify(before),width+' Tracker filters/progress/pending/storage unchanged');
@@ -108,6 +128,13 @@ try{
   await control(p,'act').selectOption('3');await button(p,'reveal').first().click();await p.evaluate(()=>{explicitSignOut=true;authGeneration++;renderStorySelect();});check(await control(p,'act').inputValue()===''&&await p.locator('.cg-exact').count()===0,width+' sign-out clears context-sensitive presentation');
   check(await p.evaluate(()=>!VERSIONED_PROGRESS_CONFIG.enabled),width+' versioned transport remains off');await c.close();
  }
+
+ // Stress realistic long titles/unbroken labels without changing shipped records.
+ for(const width of [320,390,768,1280]){
+  const long=await context(width,async(route,url)=>{if(url.pathname==='/data/companion-guide.v1.json'){const data=JSON.parse(fs.readFileSync(path.join(dist,'data/companion-guide.v1.json')));data.entries[0].location='A very long reviewed destination with an unusually extended sublocation '+ 'LongDestination'.repeat(5);data.entries[0].encounter='A lengthy conversation and optional follow-up encounter across multiple places';await route.fulfill({body:JSON.stringify(data),contentType:'application/json'});return true;}return false;});
+  await long.p.locator('#spoilerMode').selectOption('full');await open(long.p);await party(long.p);await control(long.p,'act').selectOption('1');
+  check(await long.p.locator('.cg-card').evaluateAll(ns=>ns.every(n=>n.scrollWidth<=n.clientWidth)),width+' long content titles wrap inside cards');check(await long.p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),width+' long-title stress has no horizontal overflow');await long.c.close();
+ }
  // Missing-image fallback stays local, non-interactive and keyboard-operable.
  const missingPortrait=await context(390,async(route,url)=>{if(url.pathname==='/assets/portraits/gale.webp'){await route.fulfill({status:404,body:'missing portrait',contentType:'text/plain'});return true;}return false;});
  await open(missingPortrait.p);const missingPick=missingPortrait.p.getByRole('button',{name:'Gale',exact:true});
@@ -120,11 +147,11 @@ try{
  await missingPortrait.p.screenshot({path:path.join(out,'companion-missing-portrait-390.png')});screenshots.push(path.join(out,'companion-missing-portrait-390.png'));await missingPortrait.c.close();
  let moduleRequests=0;const moduleFailure=await context(390,async(route,url)=>{if(url.pathname==='/assets/companion-guide.js'&&moduleRequests++===0){await route.fulfill({status:404,body:'missing module',contentType:'text/javascript'});return true;}return false;});await moduleFailure.p.locator('#openCompanionGuide').click();await moduleFailure.p.getByRole('button',{name:'Retry guide',exact:true}).click();await moduleFailure.p.locator('#cgHeading').waitFor();await loaded(moduleFailure.p);check(moduleRequests===2,'module retry recovers using a fresh import URL');await button(moduleFailure.p,'return').click();check(await moduleFailure.p.locator('#companionGuide').evaluate(n=>n.childElementCount===0),'retry return leaves no guide DOM for offline export');await moduleFailure.c.close();
  // Missing data/retry and stale context response paths use fresh disposable contexts.
- let requests=0;const failure=await context(390,async(route,url)=>{if(url.pathname==='/data/companion-guide.v1.json'&&requests++===0){await route.fulfill({status:404,body:'not found'});return true;}return false;});await failure.p.locator('#openCompanionGuide').click();await failure.p.getByText('Could not load Companion Content Guide data. Tracker state is unchanged.').waitFor();check(await failure.p.getByRole('radio').count()===4,'mode control available during data error');await guideMode(failure.p,'light');await party(failure.p);await control(failure.p,'act').selectOption('1');await button(failure.p,'retry').click();await loaded(failure.p);check(await failure.p.locator('.cg-card').count()===8,'missing data retry preserves selections/Act');check(await failure.p.getByRole('radio',{name:'Light',exact:true}).isChecked(),'retry preserves local override');await failure.c.close();
+ let requests=0;const failure=await context(390,async(route,url)=>{if(url.pathname==='/data/companion-guide.v1.json'&&requests++===0){await route.fulfill({status:404,body:'not found'});return true;}return false;});await failure.p.locator('#openCompanionGuide').click();await failure.p.getByText('Could not load Companion Content Guide data. Tracker state is unchanged.').waitFor();check(await failure.p.getByRole('radio').count()===4,'mode control available during data error');await failure.p.locator('[data-cg-load]').scrollIntoViewIfNeeded();await failure.p.screenshot({path:path.join(out,'guide-error-390.png')});screenshots.push(path.join(out,'guide-error-390.png'));await guideMode(failure.p,'light');await party(failure.p);await control(failure.p,'act').selectOption('1');await button(failure.p,'retry').click();await loaded(failure.p);check(await failure.p.locator('.cg-card').count()===8,'missing data retry preserves selections/Act');check(await failure.p.getByRole('radio',{name:'Light',exact:true}).isChecked(),'retry preserves local override');await failure.c.close();
  const held=[];const stale=await context(1280,async(route,url)=>{if(url.pathname==='/data/companion-guide.v1.json'){held.push(route);return true;}return false;});await stale.p.locator('#spoilerMode').selectOption('full');await stale.p.locator('#openCompanionGuide').click();await stale.p.waitForFunction(()=>document.querySelector('[data-cg-load]')?.textContent.includes('Loading'));
- while(!held.length)await new Promise(r=>setTimeout(r,10));check(await stale.p.getByRole('radio').count()===4,'mode control available during data loading');await guideMode(stale.p,'minimal');while(held.length<2)await new Promise(r=>setTimeout(r,10));
+ while(!held.length)await new Promise(r=>setTimeout(r,10));check(await stale.p.getByRole('radio').count()===4,'mode control available during data loading');await stale.p.screenshot({path:path.join(out,'guide-loading-1280.png')});screenshots.push(path.join(out,'guide-loading-1280.png'));await guideMode(stale.p,'minimal');while(held.length<2)await new Promise(r=>setTimeout(r,10));
  const data=fs.readFileSync(path.join(dist,'data/companion-guide.v1.json'));await held[0].fulfill({body:data,contentType:'application/json'}).catch(()=>{});await held[1].fulfill({body:data,contentType:'application/json'});await loaded(stale.p);await party(stale.p);await control(stale.p,'act').selectOption('3');check(await stale.p.locator('.cg-exact,.cg-sources a').count()===0,'late Full load cannot restore stale context details');check((await stale.p.locator('[data-cg-mode]').innerText()).includes('Minimal'),'late load retains current Minimal mode');await stale.c.close();
  check(errors.length===0,'zero runtime errors');check(unexpected.length===0,'zero Supabase/unexpected requests or network writes');
- const report={passed:checks.length,checks,errors,unexpected,screenshots,artifact:hostedOrigin||'dist only',profile:'fresh disposable contexts; no existing profile or real account'};fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+ const report={passed:checks.length,checks,errors,unexpected,screenshots,layout,artifact:hostedOrigin||'dist only',profile:'fresh disposable contexts; no existing profile or real account'};fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
 }finally{if(browser)await browser.close();if(server)await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e.stack);process.exitCode=1;});

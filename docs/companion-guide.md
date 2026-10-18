@@ -221,3 +221,33 @@ The SDK/analytics scripts are neutralized and catalogue input is the local fixtu
 no real account/profile or Supabase/external writes are used. Data, runtime JS/CSS
 and portraits are loaded from the selected origin. Hosted verification does not
 change deployment configuration.
+
+## Mobile-first presentation
+
+The guide uses two component breakpoints (620px and 960px), with a two-column
+portrait grid on phones, four columns on tablets and five on desktop. Every
+choice retains its visible name, decorative local portrait, native button and
+pressed state; the visual selection check is hidden from accessibility output.
+The selected-party line is a lighter summary, rather than a second set of tiles.
+Act and optional romance controls precede party selection.
+
+The always-visible native spoiler radios and effective-mode status keep the same
+controller and invalidation rules. The introduction is concise; the complete
+research limitations remain reachable in the native “About this guide” disclosure.
+Search stays visible. Secondary filters use a native “Filters” disclosure, whose
+summary reports active non-search filters using the existing safe filter state.
+These disclosures add no persistent preference or storage writes.
+
+Cards lead with region, location and encounter, then show the editorial priority,
+party advice and companion reasons. Out/In direction labels and decorative arrows
+remain separate for multi-swaps. Sources and intentionally revealed research are
+visually grouped below the primary content. Desktop companion reasons share two
+columns; phone content flows in one column with bounded, readable line lengths.
+No reviewed facts, source links, evidence markers or recommendation logic change.
+
+`tests/guide-polish.test.cjs` guards factual/source preservation and presentation
+semantics. Native browser QA covers all four widths, all 51 records, compact setup,
+44px targets, native filter/about disclosure keyboard behavior, decorative checks,
+long-content wrapping, portrait fallback and the existing spoiler/state/focus/
+loading/retry paths. Screenshots are reviewed visually before shipping. Public
+packaging remains the same 27-file allowlist.
