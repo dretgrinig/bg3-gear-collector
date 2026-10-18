@@ -23,11 +23,28 @@ inferred from Story progress. Party and romance inputs live in memory only.
 
 ## Spoiler boundary
 
-The adapter consumes existing `spoilerMode()` and does not change defaults or
-preferences. Only an opaque identity, revision and effective mode reach the guide.
-Story/account/backend/auth/mode presentation changes invalidate results, Act,
-filters, research and reveals; user-entered party/romance selections may remain.
-There is no polling, backend patching or new storage listener.
+The adapter consumes existing `spoilerMode()` without changing defaults or
+preferences. Its opaque scope identity changes for Story/account/sign-out/backend
+namespace changes; auth/backend invalidation revisions are separate. Preference-only
+updates change inherited mode, not scope identity or security revision. No raw
+account/Story identifiers reach the guide. Notification placement and existing
+preference-cache warming stay unchanged.
+
+The native segmented control offers Story (default), Minimal, Light and Full.
+Overrides live only in the guide controller's memory, survive navigation,
+close/reopen and retry, and never write Tracker preferences or storage. Reload
+starts with Story. Without a valid Story, following uses Minimal; explicit guide
+choices remain usable. Logical scope changes reset the choice to Story; returning
+to a previous Story does not restore an override. Same-scope security revisions
+retain the choice but preserve existing broader view/reveal invalidation.
+
+One effective mode feeds the original projection and every downstream permission
+gate. Effective changes synchronously clear reveals, notes and discovery filters,
+preserve explicit Act/party/romance, discard stale async work and leave Route for
+Browse when entering a protected mode. Equivalent effective modes retain browsing
+state. Inherited preference changes under an override are remembered without
+rerendering guide results or stealing focus; selecting Story uses the latest value.
+No polling, backend patching or additional storage listener is introduced.
 
 Every entry and original route was reviewed. Original `why_spoiler_free` and low
 spoiler labels often name encounters, quest progression, outcomes or recruitment.
@@ -186,3 +203,21 @@ and fan-content terms. These are provenance links, not runtime image dependencie
 | Minthara | `assets/portraits/minthara.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Minthara.png) |
 | Shadowheart | `assets/portraits/shadowheart.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Shadowheart.png) |
 | Wyll | `assets/portraits/wyll.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Wyll.png) |
+
+## Guide-local spoiler control verification
+
+`tests/guide-spoiler-mode.test.cjs` covers the inherited-mode/choice matrix,
+invalid values, scope/security transitions, equivalent modes, clear/reset behavior,
+retry/close/reopen and stale completions. Shared adapter tests guard opaque scope
+and revision semantics. Historical guards still compare every original Tracker
+byte after exact fixture-checked shell additions; portrait guards use that same
+boundary for the intentionally changed adapter.
+
+Native QA includes keyboard radio semantics, 44px segments, mode transitions,
+ignored Tracker preference updates preserving focused nodes, Story reset and
+zero guide-caused writes. Set `BG3_QA_ORIGIN` to a verified hosted origin to run
+that same script against deployed runtime assets in fresh disposable contexts.
+The SDK/analytics scripts are neutralized and catalogue input is the local fixture;
+no real account/profile or Supabase/external writes are used. Data, runtime JS/CSS
+and portraits are loaded from the selected origin. Hosted verification does not
+change deployment configuration.

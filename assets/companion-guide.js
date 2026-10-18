@@ -15,18 +15,20 @@ const defaults=()=>({search:'',region:'',companion:'',priority:'',type:'',switch
 const label=p=>new Map([['must','Must · guide priority'],['strong','Strong'],['contextual','Contextual'],['flavor','Flavor'],['none','No need to switch']]).get(p)||'Context concealed';
 export function createGuideController({load,onChange=()=>{}}){
  let data=null,status='idle',context={identity:'absent',revision:0,mode:'minimal'},party=[],romance='',act=null,mode='browse',filters=defaults(),active=false,sequence=0,aborter=null;
+ let guideChoice='story';
+ const effectiveMode=()=>guideChoice==='story'?context.mode:guideChoice;
  const reveals=new Set(),notes=new Set();
  const changed=()=>onChange();
  function view(){
-  const projection=data?project(data,context.mode):{entries:[],routes:null},eligible=projection.entries.filter(e=>e.act===act);
+  const effective=effectiveMode(),projection=data?project(data,effective):{entries:[],routes:null},eligible=projection.entries.filter(e=>e.act===act);
   // Compute plans from the complete mode-safe context BEFORE display filtering.
   const plans=new Map(eligible.map(e=>[e.id,recommend(e,party,romance,eligible)]));
   const entries=filterEntries(eligible,filters,romance).sort((a,b)=>a.location.localeCompare(b.location)||a.encounter.localeCompare(b.encounter));
   const raw=new Map(data?.entries.map((e,i)=>['cg-'+i,e])||[]);
-  return {status,context:{...context},party:[...party],romance,act,mode,filters:{...filters},ready:party.length===3&&!!act,
+  return {status,context:{...context,mode:effective},inheritedMode:context.mode,guideChoice,effectiveMode:effective,party:[...party],romance,act,mode,filters:{...filters},ready:party.length===3&&!!act,
    regions:[...new Set(eligible.map(e=>e.region).filter(Boolean))].sort(),types:[...new Set(eligible.flatMap(e=>e.companions.flatMap(c=>c.content_types)))].sort(),
    entries,plans,groups:routeGroups(projection,act,entries),
-   detail(token){return context.mode==='full'||reveals.has(token)?raw.get(token):null;},
+   detail(token){return effectiveMode()==='full'||reveals.has(token)?raw.get(token):null;},
    research(token){return notes.has(token)?raw.get(token)?.notes:null;},revealed(token){return reveals.has(token);},researched(token){return notes.has(token);}
   };
  }
@@ -36,17 +38,34 @@ export function createGuideController({load,onChange=()=>{}}){
   catch{if(request!==sequence||!active)return;status='error';}
   changed();
  }
+ function invalidate(resetAct=false){
+  reveals.clear();notes.clear();filters=defaults();if(resetAct)act=null;
+  if(resetAct||effectiveMode()!=='full')mode='browse';
+  ++sequence;aborter?.abort();if(status==='loading')status='idle';
+  changed();if(active&&!data)void reload();
+ }
  return Object.freeze({view,retry:reload,
+  setGuideChoice(value){
+   if(!['story','minimal','light','full'].includes(value)||value===guideChoice)return false;
+   const before=effectiveMode();guideChoice=value;
+   if(before!==effectiveMode())invalidate();else changed();return true;
+  },
   setOpen(value){active=!!value;if(!active){++sequence;aborter?.abort();if(status==='loading')status='idle';}else if(!data&&status!=='loading')void reload();changed();},
   setContext(next){const safe={identity:String(next?.identity||'absent'),revision:Number.isSafeInteger(next?.revision)?next.revision:0,mode:['minimal','light','full'].includes(next?.mode)?next.mode:'minimal'};
-   if(JSON.stringify(safe)===JSON.stringify(context))return;context=safe;reveals.clear();notes.clear();filters=defaults();act=null;mode='browse';++sequence;aborter?.abort();if(status==='loading')status='idle';changed();if(active&&!data)void reload();},
+   if(JSON.stringify(safe)===JSON.stringify(context))return false;
+   const before=effectiveMode(),scopeChanged=safe.identity!==context.identity,securityChanged=safe.revision!==context.revision;
+   context=safe;if(scopeChanged)guideChoice='story';
+   if(scopeChanged||securityChanged){invalidate(true);return true;}
+   if(before!==effectiveMode()){invalidate();return true;}
+   // Preference-only updates under an override do not rerender or move focus.
+   return false;},
   toggleParty(name){if(!COMPANIONS.includes(name))return;party=party.includes(name)?party.filter(n=>n!==name):party.length<3?[...party,name]:party;changed();},
   setRomance(name){if(name!==''&&!COMPANIONS.includes(name))return;romance=name;changed();},
   setAct(value){act=[1,2,3].includes(Number(value))?Number(value):null;reveals.clear();notes.clear();filters=defaults();changed();},
   setView(value){mode=value==='route'?'route':'browse';changed();},
-  filter(key,value){if(!Object.hasOwn(filters,key))return;if(context.mode!=='full'&&['companion','priority','type','switchOnly'].includes(key))return;filters={...filters,[key]:key==='switchOnly'?!!value:String(value)};changed();},
-  reveal(token){if(!data||!project(data,context.mode).entries.some(e=>e.token===token&&e.act===act))return;reveals.has(token)?reveals.delete(token):reveals.add(token);if(!reveals.has(token))notes.delete(token);},
-  research(token){if(!data||context.mode!=='full'&&!reveals.has(token))return;notes.has(token)?notes.delete(token):notes.add(token);}
+  filter(key,value){if(!Object.hasOwn(filters,key))return;if(effectiveMode()!=='full'&&['companion','priority','type','switchOnly'].includes(key))return;filters={...filters,[key]:key==='switchOnly'?!!value:String(value)};changed();},
+  reveal(token){if(!data||!project(data,effectiveMode()).entries.some(e=>e.token===token&&e.act===act))return;reveals.has(token)?reveals.delete(token):reveals.add(token);if(!reveals.has(token))notes.delete(token);},
+  research(token){if(!data||effectiveMode()!=='full'&&!reveals.has(token))return;notes.has(token)?notes.delete(token):notes.add(token);}
  });
 }
 function advice(v,e){
@@ -70,7 +89,7 @@ function card(v,e,next=''){
 export function renderResults(v){
  if(v.status!=='ready')return '';
  if(!v.ready)return '<p class="cg-empty">Select three companions and choose an Act to begin. Nothing is inferred from Story progress.</p>';
- if(v.mode==='route'&&v.context.mode!=='full')return '<p class="cg-empty">Route geography is concealed in this spoiler mode. Browse safe guidance, reveal an individual entry, or return to Tracker to change the Story’s spoiler setting.</p>';
+ if(v.mode==='route'&&v.context.mode!=='full')return '<p class="cg-empty">Route geography is concealed in this spoiler mode. Browse safe guidance, reveal an individual entry, or select Full above for route details.</p>';
  if(!v.entries.length)return '<p class="cg-empty">No entries match these visible filters.</p>';
  if(v.mode!=='route')return v.entries.map(e=>card(v,e)).join('');
  const ordered=v.groups.flatMap(g=>g.entries),next=new Map(ordered.map((e,i)=>[e.id,ordered[i+1]?ordered[i+1].location+' — '+ordered[i+1].encounter:'']));
@@ -78,7 +97,7 @@ export function renderResults(v){
 }
 export function mountCompanionGuide(root,{context,onReturn,load}={}){
  const $=selector=>root.querySelector(selector);let visible=false;
- const shell=`<div class="cg-shell"><div class="cg-heading"><div><p class="cg-eyebrow">Read-only companion guidance</p><h2 id="cgHeading" tabindex="-1">Companion Content Guide</h2></div><button type="button" data-cg-action="return">Return to Tracker</button></div><p>Find companion conversations and story content, separate from combat optimization. Select three companions, optionally a romance companion, then explicitly choose an Act.</p><p class="cg-limit">51 original research records; targeted verification, not exhaustive coverage. Availability, recruitment, Origin-player context and quest conditions are not modeled. Suggested swaps are not guaranteed to be available. Priorities are guide judgments, not requirements.</p><p class="cg-mode" role="status" data-cg-mode></p><p class="cg-small">Change this Story’s spoiler mode using the existing Tracker control. Guide selections and reveals stay in memory only.</p><fieldset class="cg-party"><legend>Your three companions <span data-cg-party-count></span></legend><div class="cg-picks">${COMPANIONS.map(n=>`<button type="button" data-cg-action="party" data-name="${esc(n)}" aria-pressed="false">${renderCompanion(n)}</button>`).join('')}</div></fieldset><div class="cg-current-party" role="group" aria-label="Selected party"><p class="cg-small">Selected party</p><div class="cg-companion-list" data-cg-selected-party></div></div><div class="cg-setup"><label>Romance companion (optional)<select data-cg-control="romance"><option value="">None / not set</option>${COMPANIONS.map(n=>`<option>${esc(n)}</option>`).join('')}</select></label><label>Act (choose explicitly)<select data-cg-control="act"><option value="">Choose an Act</option><option value="1">Act 1</option><option value="2">Act 2</option><option value="3">Act 3</option></select></label></div><div class="cg-view-buttons"><button type="button" data-cg-action="browse" aria-pressed="true">Browse</button><button type="button" data-cg-action="route" aria-pressed="false">Route</button></div><div class="cg-filters"><label>Search guide<input type="search" data-cg-control="search" placeholder="Visible guidance only"></label><label>Region<select data-cg-control="region"></select></label><label>Companion<select data-cg-control="companion"><option value="">All companions</option>${COMPANIONS.map(n=>`<option>${esc(n)}</option>`).join('')}</select></label><label>Priority<select data-cg-control="priority"><option value="">All priorities</option>${PRIORITIES.map(n=>`<option value="${n}">${esc(label(n))}</option>`).join('')}</select></label><label>Content type<select data-cg-control="type"></select></label><label class="cg-check"><input type="checkbox" data-cg-control="switchOnly">Only worth switching for</label></div><p class="cg-small" data-cg-policy></p><div data-cg-load role="status"></div><p class="cg-count" data-cg-count role="status" aria-live="polite" aria-atomic="true"></p><div class="cg-content" data-cg-content></div></div>`;
+ const shell=`<div class="cg-shell"><div class="cg-heading"><div><p class="cg-eyebrow">Read-only companion guidance</p><h2 id="cgHeading" tabindex="-1">Companion Content Guide</h2></div><button type="button" data-cg-action="return">Return to Tracker</button></div><fieldset class="cg-spoilers"><legend>Guide spoiler mode</legend><div class="cg-segments">${[['story','Story'],['minimal','Minimal'],['light','Light'],['full','Full']].map(([value,name])=>`<label class="cg-segment"><input type="radio" name="cg-guide-spoiler" data-cg-control="guideChoice" value="${value}"><span>${name}</span></label>`).join('')}</div></fieldset><p class="cg-mode" role="status" data-cg-mode></p><p class="cg-small">Other choices affect this guide only. Guide selections and reveals stay in memory only.</p><p>Find companion conversations and story content, separate from combat optimization. Select three companions, optionally a romance companion, then explicitly choose an Act.</p><p class="cg-limit">51 original research records; targeted verification, not exhaustive coverage. Availability, recruitment, Origin-player context and quest conditions are not modeled. Suggested swaps are not guaranteed to be available. Priorities are guide judgments, not requirements.</p><fieldset class="cg-party"><legend>Your three companions <span data-cg-party-count></span></legend><div class="cg-picks">${COMPANIONS.map(n=>`<button type="button" data-cg-action="party" data-name="${esc(n)}" aria-pressed="false">${renderCompanion(n)}</button>`).join('')}</div></fieldset><div class="cg-current-party" role="group" aria-label="Selected party"><p class="cg-small">Selected party</p><div class="cg-companion-list" data-cg-selected-party></div></div><div class="cg-setup"><label>Romance companion (optional)<select data-cg-control="romance"><option value="">None / not set</option>${COMPANIONS.map(n=>`<option>${esc(n)}</option>`).join('')}</select></label><label>Act (choose explicitly)<select data-cg-control="act"><option value="">Choose an Act</option><option value="1">Act 1</option><option value="2">Act 2</option><option value="3">Act 3</option></select></label></div><div class="cg-view-buttons"><button type="button" data-cg-action="browse" aria-pressed="true">Browse</button><button type="button" data-cg-action="route" aria-pressed="false">Route</button></div><div class="cg-filters"><label>Search guide<input type="search" data-cg-control="search" placeholder="Visible guidance only"></label><label>Region<select data-cg-control="region"></select></label><label>Companion<select data-cg-control="companion"><option value="">All companions</option>${COMPANIONS.map(n=>`<option>${esc(n)}</option>`).join('')}</select></label><label>Priority<select data-cg-control="priority"><option value="">All priorities</option>${PRIORITIES.map(n=>`<option value="${n}">${esc(label(n))}</option>`).join('')}</select></label><label>Content type<select data-cg-control="type"></select></label><label class="cg-check"><input type="checkbox" data-cg-control="switchOnly">Only worth switching for</label></div><p class="cg-small" data-cg-policy></p><div data-cg-load role="status"></div><p class="cg-count" data-cg-count role="status" aria-live="polite" aria-atomic="true"></p><div class="cg-content" data-cg-content></div></div>`;
  root.innerHTML=shell;
  const loading=load||(async({signal})=>{const response=await fetch(new URL('../data/companion-guide.v1.json',import.meta.url),{signal,credentials:'omit',cache:'no-store'});if(!response.ok)throw Error('Guide data unavailable');const text=await response.text();if(text.length>300000)throw Error('Guide data too large');return JSON.parse(text);});
  function options(node,values,label){const markup=`<option value="">${label}</option>`+values.map(x=>`<option value="${esc(x)}">${esc(x.replaceAll('_',' '))}</option>`).join('');if(node.innerHTML!==markup)node.innerHTML=markup;}
@@ -86,7 +105,8 @@ export function mountCompanionGuide(root,{context,onReturn,load}={}){
   if(!visible){root.replaceChildren();return;}
   if(!$('.cg-shell'))root.innerHTML=shell;
   const v=c.view(),full=v.context.mode==='full';
-  $('[data-cg-mode]').textContent='Inherited Story spoiler mode: '+(full?'Full details':v.context.mode==='light'?'Light':'Minimal');
+  $('[data-cg-mode]').textContent=(v.guideChoice==='story'?'Following Story':'Guide only')+' · '+(full?'Full':v.effectiveMode==='light'?'Light':'Minimal');
+  for(const radio of root.querySelectorAll('[data-cg-control="guideChoice"]'))radio.checked=radio.value===v.guideChoice;
   $('[data-cg-party-count]').textContent=`· ${v.party.length} / 3 selected`;
   for(const b of root.querySelectorAll('[data-cg-action="party"]')){const selected=v.party.includes(b.dataset.name);b.setAttribute('aria-pressed',String(selected));b.disabled=v.party.length===3&&!selected;}
   const selected=companionList(v.party)||'<span class="cg-small">No companions selected yet.</span>';
@@ -113,7 +133,7 @@ export function mountCompanionGuide(root,{context,onReturn,load}={}){
    else $(`[data-cg-notes="${token}"]`).innerHTML=v.research(token)?'<p class="cg-notes">'+esc(v.research(token))+'</p>':'';
   }
  });
- root.addEventListener('change',event=>{const key=event.target.dataset.cgControl;if(!key||key==='search')return;if(key==='act')c.setAct(event.target.value);else if(key==='romance')c.setRomance(event.target.value);else c.filter(key,key==='switchOnly'?event.target.checked:event.target.value);});
+ root.addEventListener('change',event=>{const key=event.target.dataset.cgControl;if(!key||key==='search')return;if(key==='guideChoice')c.setGuideChoice(event.target.value);else if(key==='act')c.setAct(event.target.value);else if(key==='romance')c.setRomance(event.target.value);else c.filter(key,key==='switchOnly'?event.target.checked:event.target.value);});
  root.addEventListener('input',event=>{if(event.target.dataset.cgControl==='search')c.filter('search',event.target.value);});
- c.setContext(context);return Object.freeze({setOpen(value){visible=!!value;c.setOpen(value);},setContext(next){const hadContentFocus=$('[data-cg-content]')?.contains(document.activeElement);c.setContext(next);if(hadContentFocus)$('#cgHeading').focus({preventScroll:true});},focus(){ $('#cgHeading').focus({preventScroll:true}); }});
+ c.setContext(context);return Object.freeze({setOpen(value){visible=!!value;c.setOpen(value);},setContext(next){const hadContentFocus=$('[data-cg-content]')?.contains(document.activeElement);const invalidated=c.setContext(next);if(invalidated&&hadContentFocus)$('#cgHeading')?.focus({preventScroll:true});},focus(){ $('#cgHeading').focus({preventScroll:true}); }});
 }

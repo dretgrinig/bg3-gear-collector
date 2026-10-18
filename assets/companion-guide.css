@@ -62,3 +62,13 @@
 #companionGuide .cg-swap-row>.cg-companion-list{flex:1}
 #companionGuide .cg-companion-detail .cg-companion{margin-bottom:4px}
 @media(max-width:600px){#companionGuide .cg-picks .cg-companion{flex-direction:column;gap:6px;text-align:center;width:100%}#companionGuide .cg-picks .cg-companion-name{font-size:14px}}
+
+/* Native, persistent guide-local radio controls. No Tracker preference control is touched. */
+#companionGuide .cg-spoilers{border:0;padding:0;margin:12px 0 16px;min-width:0}
+#companionGuide .cg-spoilers legend{font-size:14px;font-weight:650;margin-bottom:8px}
+#companionGuide .cg-segments{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;max-width:480px}
+#companionGuide .cg-segment{display:block;position:relative;min-width:0;font-size:14px}
+#companionGuide .cg-segment input{position:absolute;opacity:0;width:1px;height:1px;min-height:0;margin:0;padding:0;border:0}
+#companionGuide .cg-segment span{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 4px;border:1px solid var(--line,#343a40);border-radius:8px;background:var(--cg-surface);cursor:pointer}
+#companionGuide .cg-segment input:checked+span{border-color:var(--cg-accent);background:#273343;box-shadow:inset 0 0 0 1px var(--cg-accent)}
+#companionGuide .cg-segment input:focus-visible+span{outline:3px solid var(--gold,#d4af37);outline-offset:2px}
