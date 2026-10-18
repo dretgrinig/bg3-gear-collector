@@ -1,0 +1,155 @@
+[
+  {
+    "file": "assets/guide-v2/bg-desktop.webp",
+    "source": "bg-desktop.png",
+    "sourceSha256": "2e1e0d96e5973c5a7c38e1ff7c95a00553c351a8049978f6c0232280b3a0058e",
+    "transformation": "Original dimensions; WebP quality 90; metadata stripped",
+    "width": 1672,
+    "height": 941,
+    "bytes": 81424,
+    "sha256": "5f02816b3cebc5653b51a0bf711651176b34b1d0c27de4d71bb7b0d177c34c2e",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/bg-mobile.webp",
+    "source": "bg-mobile.png",
+    "sourceSha256": "178e8c2bc5e2fe36dc9b6a34b4bceea7be6d54f38fa241363b8afdf39f164c95",
+    "transformation": "Original dimensions; WebP quality 90; metadata stripped",
+    "width": 1086,
+    "height": 1448,
+    "bytes": 104180,
+    "sha256": "7a45bdeaefdfd626aa344e9c07ff8046278867d37526850a989b6b712eeb91b4",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/anonymous-companion.webp",
+    "source": "anonymous-companion.png",
+    "sourceSha256": "789560c31efcd131d9bd685c37bb07e62d3c0664a241085c6e174d87b969f9a2",
+    "transformation": "Proportional downscale to 128px; lossless WebP; metadata stripped",
+    "width": 128,
+    "height": 128,
+    "bytes": 15550,
+    "sha256": "4869880ce736a279bde5f1ce79a8c67cb266095344283c8d7b0e31fb31e0962e",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/back.webp",
+    "source": "back.png",
+    "sourceSha256": "41c58b8c64e1ab9465aa051f444c237a908794470f68bc18d825e244e0f5d8b0",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 1586,
+    "sha256": "c54d24c2df1e9c38424ff50f4aa8768e7a8b956a37861a586c3869067ef763f4",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/lock.webp",
+    "source": "lock.png",
+    "sourceSha256": "6f8783f1ad90d7bb8391d2f049a39beed194d1975e48e793ccc84dbc81ceeb09",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 2758,
+    "sha256": "35b2662f2b41f15b8e0425479600ae08828ac0664357f53cc233293d0171309e",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/party.webp",
+    "source": "party.png",
+    "sourceSha256": "d886e6ad645a7e9243d23f8fe466937376bef233dbf3a8a5f373bae8afd466ea",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 2456,
+    "sha256": "2c7cd5c67f87c9c5f4d9e82589771bf73030f79e3804e647f07679c6a847e848",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/romance.webp",
+    "source": "romance.png",
+    "sourceSha256": "8e97b76f7f38734c41639e2c604f7b14570dc8c725ca12f963a028184ed3d932",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 2332,
+    "sha256": "5b4aaaf59ebd4e69b3835b40b613d71d79b0445cc30549ef784ff73f6827ef3f",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/search.webp",
+    "source": "search.png",
+    "sourceSha256": "61d42e2278452a98e8aea90bcdef6f6b2c9f0d0b109c5a3549bee44247f01d98",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 2356,
+    "sha256": "7710ca96952b779cbc69da27c3fd2af8a6048abdbd37a2b26f7e1e6a27eb4798",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/filter.webp",
+    "source": "filter.png",
+    "sourceSha256": "b7a4a489928ef290d83e5e1580a4d56be593d892d0ebe63c67dec5ac264cc3a4",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 2078,
+    "sha256": "35a847534a2dfc3dc924244029d1bd2d7681b7fccd0e8e0a5396630244ba7e66",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/browse.webp",
+    "source": "browse.png",
+    "sourceSha256": "ecb3b57abf9666da67c5094f327eeb6d6eeb7fa0632c32bacbc006cd16136743",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 3102,
+    "sha256": "4655ae986387e8e3aea220371a33605bc0d79cd13e137b06ccd8de51763a954e",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/route.webp",
+    "source": "route.png",
+    "sourceSha256": "4c2881268656b676b45d12245d96740352d4ba8134dfde1dc5a3e0d182672c5f",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 2966,
+    "sha256": "72302e89ba7f73b61fe5ae8e97d0deac42582c4df8d6f0374b81cc381babf350",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/swap.webp",
+    "source": "swap.png",
+    "sourceSha256": "208aade97c65f32adf22743f2cc8d48bbc516fd44999667b9b803ef35f309d96",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 2288,
+    "sha256": "ae8ee254ff246a72cb9c588f985c83cf5275092cacb931889f79e291b2a4ba0b",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/selected.webp",
+    "source": "selected.png",
+    "sourceSha256": "074ebc04a3da87b9efa33a7eae011031e0f2ae46ae6958f4f8b47b5aff18c070",
+    "transformation": "Proportional downscale to 48px; lossless WebP; metadata stripped",
+    "width": 48,
+    "height": 48,
+    "bytes": 2756,
+    "sha256": "b9dd91b56e00b970e7d7b178ebd31f4acd8bc7acce75af54fd0b85219514bd98",
+    "hasMetadata": false
+  },
+  {
+    "file": "assets/guide-v2/panel-texture.webp",
+    "source": "panel-texture.webp",
+    "transformation": "Copied supplied optimized WebP unchanged",
+    "width": 1200,
+    "height": 464,
+    "bytes": 29636,
+    "sha256": "5a143445d0be0e9a846c1a4b1729cbd5b8f569b0257a01c78fcd0ab5c0f8722d",
+    "hasMetadata": false
+  }
+]

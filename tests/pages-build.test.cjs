@@ -11,6 +11,7 @@ const root = path.resolve(__dirname, '..');
 // Independent public-artifact contract. Never derive expectations from the
 // packager's allowlist or by listing everything in the repository root.
 const expected = [
+  'assets/companion-guide-visibility.js', 'assets/guide-v2/bg-desktop.webp', 'assets/guide-v2/bg-mobile.webp', 'assets/guide-v2/anonymous-companion.webp', 'assets/guide-v2/back.webp', 'assets/guide-v2/lock.webp', 'assets/guide-v2/party.webp', 'assets/guide-v2/romance.webp', 'assets/guide-v2/search.webp', 'assets/guide-v2/filter.webp', 'assets/guide-v2/browse.webp', 'assets/guide-v2/route.webp', 'assets/guide-v2/swap.webp', 'assets/guide-v2/selected.webp', 'assets/guide-v2/panel-texture.webp',
   '404.html', 'assets/acquisition-pilot.js', 'assets/bg.jpg',
   'assets/companion-guide.js', 'assets/companion-guide-model.js', 'assets/companion-guide.css', 'config.js',
   'assets/portraits/astarion.webp',
@@ -173,6 +174,6 @@ test('Pages CLI builds from the repository root regardless of the calling direct
   fs.mkdirSync(path.join(source, 'scripts'));
   fs.copyFileSync(path.join(root, 'scripts/build-pages.cjs'), path.join(source, 'scripts/build-pages.cjs'));
   const output = execFileSync(process.execPath, [path.join(source, 'scripts/build-pages.cjs')], { cwd: os.tmpdir(), encoding: 'utf8' });
-  assert.match(output, /Packaged 27 files into dist/);
+  assert.match(output, /Packaged 42 files into dist/);
   assert.deepEqual(inventory(path.join(source, 'dist')), expected);
 });

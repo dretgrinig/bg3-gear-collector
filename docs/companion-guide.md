@@ -18,7 +18,7 @@ and is not upgraded to a confirmed claim.
 
 Availability, recruitment, Origin-player context and quest conditions are not
 modeled. A suggested swap may be unavailable. Priorities are editorial, not game
-requirements. The user chooses three companions and an Act explicitly; no Act is
+requirements. The user explicitly chooses an Act before three companions; no Act is
 inferred from Story progress. Party and romance inputs live in memory only.
 
 ## Spoiler boundary
@@ -55,7 +55,7 @@ is withheld. This conservative fallback avoids manufacturing safe recommendation
 Both protected modes withhold route mode because original route order/group names
 contain exact geography and progression. The UI explains this limitation.
 
-Projection precedes filters, search, counts and planning. Full recommendations
+Projection is followed by the explicit Act reveal gate before filters, search, counts and planning. Full recommendations
 use the original whole-party enumeration and ALL eligible Act records before
 display filtering. Independent prototype-produced regression fixtures retain its
 must/strong scoring, romance, retention and multi-swap behavior.
@@ -251,3 +251,33 @@ semantics. Native browser QA covers all four widths, all 51 records, compact set
 long-content wrapping, portrait fallback and the existing spoiler/state/focus/
 loading/retry paths. Screenshots are reviewed visually before shipping. Public
 packaging remains the same 27-file allowlist.
+
+
+## Anonymous start gate and V2 art
+
+Before explicit Act selection, the controller publishes no companion identities,
+selected party, romance, filters, results, route groups, plans or detail/research
+access. The shell constructs only three uniform anonymous party-slot graphics;
+real buttons/options/portraits are not constructed and then hidden. Romance and
+search/filter/view controls fail closed. No real portrait requests occur.
+
+A separate reviewed identity-display roster is shared by all effective modes,
+as explicitly approved for this checkpoint. It is independent of encounter
+mentions and is **not** a recruitment, survival, romance or live availability
+model. Minimal/Light still conceal content associations through the unchanged
+projection. See [reviewed policy and art provenance](companion-guide-visibility.md).
+
+Act changes prune invalid party/romance selections and clear reveals, notes and
+filters. Cleared Act and Story/account/security resets restore anonymity; former
+choices do not resurrect. Still-safe choices retain their nodes and effective
+mode changes retain the explicit Act and safe roster selections. Late async data
+cannot bypass the current gate. Detail/research access checks current Act even
+when a caller retains an older view. The model, 51 records and algorithm are intact.
+
+Runtime art is limited to fourteen final WebP images and the reviewed visibility
+module. This intentionally expands public packaging from 27 to 42 files; source
+PNGs, the zip, reference boards and generation reports stay outside public assets.
+The art uses dedicated mobile/desktop backgrounds at the existing 960px wide
+layout breakpoint, subtle card texture and ten supplied decorative UI icons.
+The fixed background layer stays below the shared header and preserves source
+aspect ratio with cover; returning to Tracker removes this guide-only artwork.
