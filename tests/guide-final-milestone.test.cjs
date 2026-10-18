@@ -27,3 +27,5 @@ test('same-scope security refresh keeps validated setup/draft but revokes transi
  c.setContext({identity:scope,revision:2,mode:'full'});const v=c.view();assert.equal(v.act,1);assert.deepEqual(v.party,['Gale','Astarion','Shadowheart']);assert.equal(v.romance,'Shadowheart');assert.equal(v.mode,'route');assert.equal(v.guideChoice,'full');assert.equal(v.filters.search,'');assert.equal(v.researched('cg-0'),false);assert.equal(s.m.get('bg3-companion-guide-draft-v1'),before);
  const fresh=await guide('minimal',s);assert.equal(fresh.c.view().act,1);assert.equal(fresh.c.view().mode,'route');assert.doesNotMatch(U.renderResults(fresh.c.view()),/cg-exact|cg-sources/);
 });
+
+test('Light exact-location reveal never exposes event timing embedded in a raw location label',async()=>{const {c}=await ready('light');c.setAct(2);c.reveal('cg-21');const html=U.renderExact(c.view(),'cg-21');assert.match(html,/Moonrise Towers/);assert.doesNotMatch(html,/assault|rooftop|Ketheric/i);assert.equal(raw.entries[21].location,'Moonrise Towers assault');});

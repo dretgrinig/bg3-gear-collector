@@ -107,7 +107,7 @@ standard evidence caveat only, never the preserved raw notes.
 | a2-gauntlet-general | Act 2 area (parentage withheld) | Gauntlet of Shar | Explore the Gauntlet with Shadowheart; this is an area-wide recommendation. |
 | a2-gauntlet-yurgir | Act 2 area (parentage withheld) | Yurgir's Lair | Bring Astarion when following Raphael's request at Yurgir's Lair. |
 | a2-shadowfell | Act 2 area (parentage withheld) | Shadowfell | Bring Shadowheart before entering this area. |
-| a2-assault-jaheira | Shadow-Cursed Lands | Moonrise Towers assault | Check Jaheira's involvement at Moonrise Towers; she may be an attached follower. Minthara is an optional choice. |
+| a2-assault-jaheira | Shadow-Cursed Lands | Moonrise Towers | Check Jaheira's involvement at Moonrise Towers; she may be an attached follower. Minthara is an optional choice. |
 | a2-colony-mizora | Act 2 area (parentage withheld) | Tadpoling Centre | Bring Wyll before entering the Colony; party changes are unavailable inside. Check Mizora's pod with him present. |
 | a2-colony-gale | Act 2 area (parentage withheld) | Mind Flayer Colony | Bring Gale for the Colony sequence if you want to check his companion content. |
 | a2-colony-minthara | Act 2 area (parentage withheld) | Mind Flayer Colony | Consider Minthara while exploring the Colony. |
