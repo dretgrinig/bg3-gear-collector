@@ -1,74 +1,119 @@
-/* Companion Content Guide only; Tracker and semantic item colors are untouched. */
-#companionGuide{--cg-accent:var(--story-accent,#adc7dc);--cg-surface:rgba(24,27,31,.98);color:var(--text,#f1f3f5);min-width:0}
+/* Mobile-first Companion Content Guide. Every selector is confined to this view. */
+#companionGuide{--cg-accent:var(--story-accent,#adc7dc);--cg-surface:rgba(24,27,31,.97);--cg-line:var(--line,#343a40);color:var(--text,#f1f3f5);min-width:0}
 #companionGuide[hidden]{display:none!important}
-#companionGuide .cg-shell{max-width:1120px;margin:auto;padding:20px 24px 64px;line-height:1.55;overflow-wrap:anywhere}
-#companionGuide .cg-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-#companionGuide h2{font-size:clamp(24px,4vw,34px);line-height:1.2;margin:4px 0 12px;letter-spacing:-.025em}
-#companionGuide h3{font-size:20px;line-height:1.3;margin:10px 0 6px}
-#companionGuide h4{font-size:17px;line-height:1.35;margin:6px 0}
-#companionGuide p{margin:8px 0 14px}
-#companionGuide .cg-eyebrow{color:var(--cg-accent);font-size:12px;font-weight:650;letter-spacing:.06em;margin:0}
-#companionGuide .cg-limit{color:var(--muted,#abb2ba);font-size:13px;max-width:85ch}
-#companionGuide .cg-small,#companionGuide .cg-muted{color:var(--muted,#abb2ba);font-size:13px}
-#companionGuide .cg-mode{display:inline-block;border:1px solid var(--line,#343a40);border-radius:8px;background:var(--cg-surface);padding:6px 10px;font-size:13px}
-#companionGuide button,#companionGuide input,#companionGuide select{font:inherit;color:inherit;background:var(--cg-surface);border:1px solid var(--line,#343a40);border-radius:8px;min-height:44px;padding:9px 12px;max-width:100%;min-width:0}
+#companionGuide .cg-shell{max-width:1000px;margin:auto;padding:18px 12px 48px;line-height:1.5;overflow-wrap:anywhere}
+#companionGuide .cg-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+#companionGuide .cg-heading>div{min-width:0}
+#companionGuide h2{font-size:clamp(22px,3vw,30px);line-height:1.15;margin:4px 0 0;letter-spacing:-.025em}
+#companionGuide h3{font-size:19px;line-height:1.3;margin:0;letter-spacing:-.015em}
+#companionGuide h4{font-size:17px;line-height:1.35;margin:0}
+#companionGuide p{margin:8px 0 12px}
+#companionGuide .cg-eyebrow{color:var(--cg-accent);font-size:12px;font-weight:600;line-height:1.4;margin:0}
+#companionGuide .cg-small,#companionGuide .cg-muted,#companionGuide .cg-limit,#companionGuide .cg-mode-help{color:var(--muted,#abb2ba);font-size:13px}
+#companionGuide .cg-limit{max-width:75ch;margin:0 0 12px}
+#companionGuide .cg-intro{font-size:15px;margin:14px 0 12px;max-width:65ch}
+#companionGuide button,#companionGuide input,#companionGuide select{font:inherit;color:inherit;background:var(--cg-surface);border:1px solid var(--cg-line);border-radius:8px;min-height:44px;padding:9px 12px;max-width:100%;min-width:0}
 #companionGuide button{cursor:pointer;white-space:normal;text-align:left}
 #companionGuide button:hover:not(:disabled){border-color:var(--cg-accent);background:#252d37}
 #companionGuide button[aria-pressed=true]{border-color:var(--cg-accent);background:#273343;box-shadow:inset 0 0 0 1px var(--cg-accent)}
-#companionGuide button:disabled,#companionGuide select:disabled,#companionGuide input:disabled{opacity:.55;cursor:default}
+#companionGuide button:disabled,#companionGuide select:disabled,#companionGuide input:disabled{opacity:.65;cursor:default}
 #companionGuide button:focus-visible,#companionGuide input:focus-visible,#companionGuide select:focus-visible,#companionGuide a:focus-visible,#companionGuide summary:focus-visible,#companionGuide h2:focus-visible{outline:3px solid var(--gold,#d4af37);outline-offset:3px}
-#companionGuide .cg-party{border:1px solid var(--line,#343a40);border-radius:12px;padding:12px 16px;margin:20px 0;min-width:0;background:var(--cg-surface)}
-#companionGuide .cg-party legend{font-weight:650;padding:0 6px}
-#companionGuide .cg-picks{display:flex;flex-wrap:wrap;gap:8px}
-#companionGuide .cg-setup,#companionGuide .cg-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
-#companionGuide .cg-filters{grid-template-columns:repeat(3,minmax(0,1fr))}
+#companionGuide :is(button,input,select,summary,a,h2,.cg-card){scroll-margin-top:80px}
+#companionGuide .cg-return{flex:0 0 auto;font-size:14px;white-space:nowrap;padding:9px 10px}
+/* Persistent native radio nodes: compact status and helper, no extra status box. */
+#companionGuide .cg-spoilers{border:0;padding:0;margin:0 0 6px;min-width:0}
+#companionGuide .cg-spoilers legend{font-size:13px;font-weight:650;margin-bottom:6px}
+#companionGuide .cg-segments{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;max-width:460px;padding:3px;border:1px solid var(--cg-line);border-radius:10px;background:var(--cg-surface)}
+#companionGuide .cg-segment{display:block;position:relative;min-width:0;font-size:14px}
+#companionGuide .cg-segment input{position:absolute;opacity:0;width:1px;height:1px;min-height:0;margin:0;padding:0;border:0}
+#companionGuide .cg-segment span{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 4px;border:1px solid transparent;border-radius:6px;cursor:pointer}
+#companionGuide .cg-segment input:checked+span{border-color:var(--cg-accent);background:#273343;box-shadow:inset 0 0 0 1px var(--cg-accent);font-weight:650}
+#companionGuide .cg-segment input:focus-visible+span{outline:3px solid var(--gold,#d4af37);outline-offset:1px}
+#companionGuide .cg-mode{font-size:13px;font-weight:650;color:var(--cg-accent);margin:6px 0 2px}
+#companionGuide .cg-mode-help{margin:0;max-width:65ch}
+/* Setup: two compact preferences and ten equal portrait choices. */
+#companionGuide .cg-setup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0 16px}
 #companionGuide label{display:flex;flex-direction:column;gap:5px;font-size:13px;min-width:0}
 #companionGuide select,#companionGuide input[type=search]{width:100%}
-#companionGuide .cg-check{flex-direction:row;align-items:center;gap:10px}
-#companionGuide .cg-check input{width:20px;min-height:20px;flex:0 0 auto}
-#companionGuide .cg-view-buttons{display:flex;gap:8px;margin-top:18px}
-#companionGuide .cg-count{font-weight:650;color:var(--cg-accent)}
-#companionGuide .cg-card{background:var(--cg-surface);border:1px solid var(--line,#343a40);border-radius:14px;padding:18px 20px;margin:14px 0;min-width:0}
-#companionGuide .cg-priority{display:inline-flex;background:#263242;color:#c6d8eb;border:1px solid #4b6078;border-radius:20px;padding:2px 9px;font-size:12px;font-weight:650}
-#companionGuide .cg-region{color:var(--muted,#abb2ba);font-size:13px}
-#companionGuide .cg-advice{border-left:3px solid var(--cg-accent);padding:8px 12px;background:#202832;border-radius:0 7px 7px 0;font-size:14px;margin:12px 0}
-#companionGuide .cg-advice p{margin:5px 0}
-#companionGuide .cg-explanation{font-size:13px;margin:12px 0}
-#companionGuide summary{cursor:pointer;min-height:44px;padding:10px 0}
-#companionGuide .cg-exact{border-top:1px solid var(--line,#343a40);margin-top:14px;padding-top:12px;font-size:14px}
-#companionGuide .cg-exact:empty{display:none}
-#companionGuide .cg-sources{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:10px}
-#companionGuide a{color:#b2d9f8;display:inline-flex;align-items:center;min-height:44px;text-underline-offset:3px}
-#companionGuide .cg-notes{color:var(--muted,#abb2ba);border-left:2px solid var(--line,#343a40);padding-left:12px}
-#companionGuide .cg-empty,#companionGuide .cg-route-overview{border:1px solid var(--line,#343a40);background:var(--cg-surface);border-radius:12px;padding:18px}
-#companionGuide .cg-route-group{margin:28px 0}
-#companionGuide .cg-next{font-size:12px;color:var(--cg-accent);border-top:1px solid var(--line,#343a40);padding-top:12px}
-@media(max-width:600px){#companionGuide .cg-shell{padding:16px 12px 40px}#companionGuide .cg-filters,#companionGuide .cg-setup{grid-template-columns:minmax(0,1fr)}#companionGuide .cg-card{padding:14px}#companionGuide .cg-picks button{flex:1 0 42%}#companionGuide .cg-heading{gap:8px}}
-
-/* Shared portrait presentation, confined to the guide. Fixed boxes prevent layout shifts. */
-#companionGuide .cg-companion{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%;vertical-align:middle;text-align:left}
-#companionGuide .cg-avatar{position:relative;display:inline-grid;place-items:center;width:32px;height:32px;flex:0 0 32px;overflow:hidden;border-radius:50%;border:1px solid #637185;background:#273343;color:var(--text,#f1f3f5)}
+#companionGuide .cg-romance{color:var(--muted,#abb2ba)}
+#companionGuide .cg-party{border:0;border-top:1px solid var(--cg-line);padding:10px 0 0;margin:0;min-width:0}
+#companionGuide .cg-party legend{font-size:14px;font-weight:650;padding:0 8px 0 0}
+#companionGuide [data-cg-party-count]{font-size:13px;font-weight:400;color:var(--muted,#abb2ba)}
+#companionGuide .cg-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+#companionGuide .cg-picks button{display:flex;align-items:center;padding:7px;min-height:52px;position:relative;font-size:14px}
+#companionGuide .cg-checkmark{display:none}
+#companionGuide .cg-picks button[aria-pressed=true] .cg-checkmark{display:block;position:absolute;right:4px;top:1px;font-size:10px;line-height:1.2;color:var(--cg-accent)}
+#companionGuide .cg-companion{display:inline-flex;align-items:center;gap:7px;min-width:0;max-width:100%;vertical-align:middle;text-align:left}
+#companionGuide .cg-avatar{position:relative;display:inline-grid;place-items:center;width:28px;height:28px;flex:0 0 28px;overflow:hidden;border-radius:50%;border:1px solid #637185;background:#273343;color:var(--text,#f1f3f5)}
 #companionGuide .cg-initial{font-size:14px;font-weight:650;line-height:1}
 #companionGuide .cg-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 #companionGuide .cg-companion-name{min-width:0;overflow-wrap:anywhere}
-#companionGuide .cg-picks button{display:flex;align-items:center}
-#companionGuide .cg-picks .cg-avatar{width:40px;height:40px;flex-basis:40px}
-#companionGuide .cg-current-party{margin:14px 0 18px}
-#companionGuide .cg-current-party>p{margin-bottom:8px}
-#companionGuide .cg-companion-list{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;min-width:0}
-#companionGuide .cg-current-party .cg-companion{border:1px solid var(--line,#343a40);border-radius:24px;padding:4px 10px 4px 4px;background:var(--cg-surface);font-size:14px}
-#companionGuide .cg-swap-row{display:flex;align-items:center;gap:8px;margin:8px 0}
-#companionGuide .cg-swap-row>b{flex:0 0 34px}
-#companionGuide .cg-swap-row>.cg-companion-list{flex:1}
-#companionGuide .cg-companion-detail .cg-companion{margin-bottom:4px}
-@media(max-width:600px){#companionGuide .cg-picks .cg-companion{flex-direction:column;gap:6px;text-align:center;width:100%}#companionGuide .cg-picks .cg-companion-name{font-size:14px}}
-
-/* Native, persistent guide-local radio controls. No Tracker preference control is touched. */
-#companionGuide .cg-spoilers{border:0;padding:0;margin:12px 0 16px;min-width:0}
-#companionGuide .cg-spoilers legend{font-size:14px;font-weight:650;margin-bottom:8px}
-#companionGuide .cg-segments{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;max-width:480px}
-#companionGuide .cg-segment{display:block;position:relative;min-width:0;font-size:14px}
-#companionGuide .cg-segment input{position:absolute;opacity:0;width:1px;height:1px;min-height:0;margin:0;padding:0;border:0}
-#companionGuide .cg-segment span{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 4px;border:1px solid var(--line,#343a40);border-radius:8px;background:var(--cg-surface);cursor:pointer}
-#companionGuide .cg-segment input:checked+span{border-color:var(--cg-accent);background:#273343;box-shadow:inset 0 0 0 1px var(--cg-accent)}
-#companionGuide .cg-segment input:focus-visible+span{outline:3px solid var(--gold,#d4af37);outline-offset:2px}
+#companionGuide .cg-current-party{display:flex;align-items:baseline;gap:8px;margin:10px 0 0;font-size:13px}
+#companionGuide .cg-current-party>p{flex:0 0 auto;margin:0}
+#companionGuide .cg-companion-list{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;min-width:0}
+#companionGuide .cg-current-party .cg-avatar{width:22px;height:22px;flex-basis:22px}
+#companionGuide .cg-current-party .cg-companion{gap:5px}
+#companionGuide summary{cursor:pointer;min-height:44px;padding:11px 2px;font-size:14px}
+#companionGuide .cg-about{margin:4px 0 14px;color:var(--muted,#abb2ba)}
+/* Search is always visible. Secondary filters use native progressive disclosure. */
+#companionGuide .cg-results-controls{border-top:1px solid var(--cg-line);padding-top:16px}
+#companionGuide .cg-view-buttons{display:flex;gap:6px;margin:0 0 12px}
+#companionGuide .cg-view-buttons button{flex:1;text-align:center;font-size:14px}
+#companionGuide .cg-search{font-weight:600}
+#companionGuide .cg-search input{font-weight:400;font-size:16px}
+#companionGuide .cg-filter-panel{margin-top:6px;border-bottom:1px solid var(--cg-line)}
+#companionGuide .cg-filter-panel summary{font-weight:600}
+#companionGuide .cg-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px;padding:6px 0 14px}
+#companionGuide .cg-check{grid-column:1/-1;flex-direction:row;align-items:center;gap:10px;min-height:44px;cursor:pointer}
+#companionGuide .cg-check input{width:20px;min-height:20px;flex:0 0 auto;padding:0;accent-color:var(--cg-accent)}
+#companionGuide [data-cg-policy]{max-width:70ch;margin:8px 0 14px}
+#companionGuide .cg-count{font-size:14px;font-weight:650;color:var(--cg-accent);margin:14px 0 10px}
+#companionGuide .cg-count:empty,#companionGuide [data-cg-load]:empty{display:none}
+/* Cards put location/content first, priority second and optional evidence last. */
+#companionGuide .cg-card{background:var(--cg-surface);border:1px solid var(--cg-line);border-radius:12px;padding:14px;margin:10px 0 16px;min-width:0}
+#companionGuide .cg-card-heading{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+#companionGuide .cg-card-title{min-width:0;flex:1 1 220px}
+#companionGuide .cg-region{color:var(--muted,#abb2ba);font-size:12px;margin:0 0 4px}
+#companionGuide .cg-encounter{font-size:15px;margin:5px 0 0}
+#companionGuide .cg-priority{display:inline-flex;align-items:center;background:#263242;color:#c6d8eb;border:1px solid #4b6078;border-radius:6px;padding:3px 8px;font-size:12px;font-weight:650;max-width:100%}
+#companionGuide .cg-advice{border-left:3px solid var(--cg-accent);padding:10px 12px;background:#202832;border-radius:0 6px 6px 0;font-size:14px;margin:10px 0}
+#companionGuide .cg-advice> b{display:block;margin-bottom:8px}
+#companionGuide .cg-advice p{font-size:13px;color:var(--muted,#abb2ba);margin:8px 0 0;max-width:70ch}
+#companionGuide .cg-swap-row{display:flex;align-items:flex-start;gap:8px;margin:8px 0}
+#companionGuide .cg-swap-row>b{flex:0 0 38px;line-height:28px;font-size:12px;font-weight:650}
+#companionGuide .cg-swap-row>.cg-companion-list{flex:1;gap:6px 10px}
+#companionGuide .cg-explanation{font-size:14px;margin:0 0 10px}
+#companionGuide .cg-explanation p{max-width:70ch}
+#companionGuide .cg-exact{border-top:1px solid var(--cg-line);margin-top:12px;padding-top:12px;font-size:14px;line-height:1.55}
+#companionGuide .cg-exact:empty{display:none}
+#companionGuide .cg-companion-detail{max-width:70ch;margin:0 0 14px}
+#companionGuide .cg-companion-detail .cg-companion{margin-bottom:5px}
+#companionGuide .cg-evidence{border-top:1px solid var(--cg-line);padding-top:10px;margin-top:4px}
+#companionGuide .cg-evidence>.cg-small{max-width:70ch;margin:0 0 4px}
+#companionGuide .cg-sources{display:flex;flex-wrap:wrap;gap:4px 16px;margin-bottom:6px}
+#companionGuide a{color:#b2d9f8;display:inline-flex;align-items:center;min-height:44px;text-underline-offset:3px;max-width:100%}
+#companionGuide [data-cg-action=research],#companionGuide [data-cg-action=reveal]{font-size:14px;line-height:1.5}
+#companionGuide .cg-notes{color:var(--muted,#abb2ba);border-left:2px solid var(--cg-line);padding-left:12px;max-width:75ch}
+#companionGuide .cg-empty,#companionGuide .cg-route-overview{border:1px solid var(--cg-line);background:var(--cg-surface);border-radius:10px;padding:16px;font-size:14px;max-width:75ch}
+#companionGuide .cg-route-group{margin:24px 0}
+#companionGuide .cg-route-group>h3{margin-bottom:6px}
+#companionGuide .cg-next{font-size:13px;color:var(--cg-accent);border-top:1px solid var(--cg-line);padding-top:12px;margin-top:14px;max-width:75ch}
+/* Two component breakpoints: tablet setup, then balanced desktop rows. */
+@media(min-width:620px){
+ #companionGuide .cg-shell{padding:24px 24px 64px}
+ #companionGuide .cg-picks{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ #companionGuide .cg-picks .cg-avatar{width:32px;height:32px;flex-basis:32px}
+ #companionGuide .cg-setup{max-width:600px}
+ #companionGuide .cg-results-controls{display:grid;grid-template-columns:minmax(180px,.6fr) minmax(0,1fr);gap:8px 20px;align-items:end}
+ #companionGuide .cg-view-buttons{margin:0}
+ #companionGuide .cg-filter-panel,#companionGuide [data-cg-policy]{grid-column:1/-1}
+ #companionGuide .cg-filters{grid-template-columns:repeat(4,minmax(0,1fr))}
+ #companionGuide .cg-card{padding:20px 24px}
+}
+@media(min-width:960px){
+ #companionGuide .cg-picks{grid-template-columns:repeat(5,minmax(0,1fr))}
+ #companionGuide .cg-picks button{padding:9px}
+ #companionGuide .cg-exact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}
+ #companionGuide .cg-exact> :not(.cg-companion-detail){grid-column:1/-1}
+ #companionGuide .cg-evidence{margin-top:0}
+}
