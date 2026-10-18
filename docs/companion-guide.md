@@ -142,7 +142,7 @@ It serves dist only, uses fresh disposable contexts at 320/390/768/1280, blocks
 Supabase/external writes, and supplies a local catalogue fixture. It checks pure
 guide storage effects separately from explicit Tracker preference/Story actions.
 Captures and reports default to an OS temporary directory. No real account or
-existing browser profile is used. The exact 17-file public inventory is tested;
+existing browser profile is used. The exact 27-file public inventory is tested;
 prototype/research/docs/tests/QA scripts remain excluded. Nothing is deployed by
 these checks.
 
@@ -152,3 +152,37 @@ guide selections/reveals. Reopening reconstructs the guide without duplicating
 root event handlers. Standalone Tracker offline HTML does not embed the guide’s
 modules/JSON; unavailable assets use the recoverable loading/return path. Tracker
 export logic itself is unchanged.
+
+## Local companion portraits
+
+The ten WebP portraits are copied byte-for-byte from the supplied
+`companion-guide-v0.3 4/assets/portraits/` folder. Only those images are added to
+public assets; the supplied prototype code and research are not shipped.
+`companion-guide.js` maps exact supported companion names to fixed local files,
+including `Lae'zel` → `laezel.webp`; there is no fuzzy matching or image service.
+The model, original 51 records and recommendation algorithm are unchanged.
+
+The same labelled portrait is used in party choice buttons, the selected party,
+Full card companion rows, Out/In suggestions and companion explanation rows.
+Minimal/Light card associations remain absent until deliberate local reveal.
+Images are decorative (`alt=""`, avatar hidden from accessibility), with visible
+names providing the label. Fixed avatar boxes retain an initial underneath; a
+captured image error removes only the failed image. No remote fallback, storage,
+backend call or automatic party action is introduced. Styles stay guide-scoped.
+
+Provenance from the supplied `portrait-sources.json`: portraits are Larian Studios
+assets; the supplied manifest refers to these BG3 Wiki file pages for attribution
+and fan-content terms. These are provenance links, not runtime image dependencies.
+
+| Companion | Local file | Supplied source |
+|---|---|---|
+| Astarion | `assets/portraits/astarion.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Astarion.png) |
+| Gale | `assets/portraits/gale.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Gale.png) |
+| Halsin | `assets/portraits/halsin.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Halsin.png) |
+| Jaheira | `assets/portraits/jaheira.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Jaheira.png) |
+| Karlach | `assets/portraits/karlach.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Karlach.png) |
+| Lae'zel | `assets/portraits/laezel.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Lae%27zel.png) |
+| Minsc | `assets/portraits/minsc.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Minsc.png) |
+| Minthara | `assets/portraits/minthara.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Minthara.png) |
+| Shadowheart | `assets/portraits/shadowheart.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Shadowheart.png) |
+| Wyll | `assets/portraits/wyll.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Wyll.png) |

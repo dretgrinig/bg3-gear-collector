@@ -13,6 +13,16 @@ const root = path.resolve(__dirname, '..');
 const expected = [
   '404.html', 'assets/acquisition-pilot.js', 'assets/bg.jpg',
   'assets/companion-guide.js', 'assets/companion-guide-model.js', 'assets/companion-guide.css', 'config.js',
+  'assets/portraits/astarion.webp',
+  'assets/portraits/gale.webp',
+  'assets/portraits/halsin.webp',
+  'assets/portraits/jaheira.webp',
+  'assets/portraits/karlach.webp',
+  'assets/portraits/laezel.webp',
+  'assets/portraits/minsc.webp',
+  'assets/portraits/minthara.webp',
+  'assets/portraits/shadowheart.webp',
+  'assets/portraits/wyll.webp',
   'data/acquisition.v1.json', 'data/companion-guide.v1.json', 'icons/icon-180.png', 'icons/icon-192.png',
   'icons/icon-32.png', 'icons/icon-512.png', 'index.html', 'manifest.json',
   'service-worker.js', 'versioned-progress.js'
@@ -163,6 +173,6 @@ test('Pages CLI builds from the repository root regardless of the calling direct
   fs.mkdirSync(path.join(source, 'scripts'));
   fs.copyFileSync(path.join(root, 'scripts/build-pages.cjs'), path.join(source, 'scripts/build-pages.cjs'));
   const output = execFileSync(process.execPath, [path.join(source, 'scripts/build-pages.cjs')], { cwd: os.tmpdir(), encoding: 'utf8' });
-  assert.match(output, /Packaged 17 files into dist/);
+  assert.match(output, /Packaged 27 files into dist/);
   assert.deepEqual(inventory(path.join(source, 'dist')), expected);
 });

@@ -37,6 +37,16 @@ assets/bg.jpg
 assets/companion-guide.css
 assets/companion-guide-model.js
 assets/companion-guide.js
+assets/portraits/astarion.webp
+assets/portraits/gale.webp
+assets/portraits/halsin.webp
+assets/portraits/jaheira.webp
+assets/portraits/karlach.webp
+assets/portraits/laezel.webp
+assets/portraits/minsc.webp
+assets/portraits/minthara.webp
+assets/portraits/shadowheart.webp
+assets/portraits/wyll.webp
 config.js
 data/acquisition.v1.json
 data/companion-guide.v1.json
@@ -88,7 +98,7 @@ checks, deployment verification and the v0.9.1 release gate remain pending.
 
 ## Companion Content Guide
 
-The 17-file artifact includes the isolated guide ES modules/CSS and its explicit
+The 27-file artifact includes the isolated guide ES modules/CSS and its explicit
 reviewed JSON input. The guide is a view in the Tracker shell, not a pathname
 route. Open it from the start area and verify return focus/scroll, Full utility,
 Minimal/Light projection, local reveals, retry, and context invalidation at

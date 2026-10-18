@@ -6,7 +6,7 @@ const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),http
 const {chromium}=require(process.env.BG3_PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'..'),dist=path.join(root,'dist'),out=process.env.BG3_QA_OUTPUT_DIR||path.join(os.tmpdir(),'bg3-companion-qa');
 const catalogue=fs.readFileSync(path.join(root,'tests/fixtures/vendor-catalogue.json')),checks=[],errors=[],unexpected=[],screenshots=[];
-const mime=p=>p.endsWith('.js')?'text/javascript':p.endsWith('.css')?'text/css':p.endsWith('.json')?'application/json':p.endsWith('.png')?'image/png':p.endsWith('.jpg')?'image/jpeg':'text/html';
+const mime=p=>p.endsWith('.js')?'text/javascript':p.endsWith('.css')?'text/css':p.endsWith('.json')?'application/json':p.endsWith('.png')?'image/png':p.endsWith('.jpg')?'image/jpeg':p.endsWith('.webp')?'image/webp':'text/html';
 const check=(value,message)=>{assert.ok(value,message);checks.push(message);};
 const control=(page,key)=>page.locator(`[data-cg-control="${key}"]`);
 const button=(page,action)=>page.locator(`[data-cg-action="${action}"]`);
@@ -28,9 +28,23 @@ try{
   await p.evaluate(()=>{window.__guideStorageWrites=0;for(const key of ['setItem','removeItem','clear']){const original=Storage.prototype[key];Storage.prototype[key]=function(...args){window.__guideStorageWrites++;return original.apply(this,args)}}syncPending=true;window.__qaTracker={body:document.querySelector('#body'),first:document.querySelector('#body tr'),cards:document.querySelector('#cards'),records:storyRecords,review:document.querySelector('#versionedReviewItems')};});
   await p.evaluate(()=>scrollTo(0,300));const scrollBefore=await p.evaluate(()=>scrollY),before=await snapshot(p);
   await open(p);check(await p.locator('#trackerView').evaluate(n=>n.hidden),width+' Tracker inactive');check(await p.getByRole('searchbox',{name:'Search gear'}).count()===0,width+' inactive Tracker absent from accessibility tree');check(await p.locator('#cgHeading').evaluate(n=>n===document.activeElement),width+' guide heading focus');await p.keyboard.press('Tab');check(await button(p,'return').evaluate(n=>n===document.activeElement),width+' logical initial Tab order');
-  check(await control(p,'act').inputValue()==='',width+' no inferred/default Act');await party(p);await control(p,'act').selectOption('1');check(await p.locator('.cg-card').count()===8,width+' Full Act 1 records');
+  check(await control(p,'act').inputValue()==='',width+' no inferred/default Act');
+  await p.waitForFunction(()=>[...document.querySelectorAll('.cg-picks img')].length===10&&[...document.querySelectorAll('.cg-picks img')].every(n=>n.complete&&n.naturalWidth>0));
+  check(await p.locator('.cg-picks img').count()===10,width+' all ten local choice portraits decoded');
+  check(await p.locator('.cg-picks .cg-companion-name').evaluateAll(nodes=>nodes.every(n=>{const range=document.createRange();range.selectNodeContents(n);return range.getClientRects().length===1})),width+' all choice names stay on one line');
+  check(await p.locator('.cg-picks img').evaluateAll(nodes=>nodes.every(n=>n.alt===''&&n.parentElement.getAttribute('aria-hidden')==='true'&&new URL(n.src).origin===location.origin)),width+' decorative local images keep button names accessible');
+  const galePick=p.getByRole('button',{name:'Gale',exact:true});await galePick.locator('img').click();check(await p.locator('[data-cg-selected-party] img').count()===1,width+' clicking portrait selects companion');
+  await galePick.press('Enter');check(await p.locator('[data-cg-selected-party] img').count()===0,width+' Enter deselects portrait choice');await galePick.press('Space');check(await p.locator('[data-cg-selected-party] img').count()===1,width+' Space selects portrait choice');await galePick.press('Space');
+  check(await galePick.evaluate(n=>n===document.activeElement),width+' portrait choice retains keyboard focus');
+  await party(p);check(await p.locator('[data-cg-selected-party] img').count()===3,width+' current party has three portraits');
+  await p.evaluate(()=>window.__qaSelectedPortrait=document.querySelector('[data-cg-selected-party] img'));await control(p,'act').selectOption('1');check(await p.locator('.cg-card').count()===8,width+' Full Act 1 records');
   check(await p.locator('.cg-advice').filter({hasText:'Suggested swap'}).count()>0,width+' Full multi-swap utility');
   await control(p,'search').fill('Karlach + Paladins');check(await p.locator('.cg-card').count()===1,width+' Full search');const advice=await p.locator('.cg-advice').innerText();check(advice.includes('Wyll')&&advice.includes('Karlach'),width+' multiple incoming companions');
+  check(await p.locator('[data-cg-swap="out"] img').count()===2&&await p.locator('[data-cg-swap="in"] img').count()===2,width+' both multi-swap directions show portraits');
+  check(await p.locator('.cg-companion-detail img').count()===2,width+' guide card companion portraits');
+  check(await p.evaluate(()=>__qaSelectedPortrait===document.querySelector('[data-cg-selected-party] img')),width+' selected party portrait nodes survive filtering');
+  if(width===390||width===1280){const file=path.join(out,'companion-swap-portraits-'+width+'.png');await p.locator('.cg-card').scrollIntoViewIfNeeded();await p.screenshot({path:file});screenshots.push(file);await p.locator('.cg-current-party').scrollIntoViewIfNeeded();const setup=path.join(out,'companion-party-portraits-'+width+'.png');await p.screenshot({path:setup});screenshots.push(setup);}
+
   const notes=p.locator('[data-cg-action="research"]');await notes.click();check(await p.locator('.cg-notes').count()===1,width+' search-focus first disclosure click');await notes.press('Enter');check(await p.locator('.cg-notes').count()===0,width+' Enter disclosure');await notes.press('Space');check(await p.locator('.cg-notes').count()===1,width+' Space disclosure');
   check(await notes.evaluate(n=>getComputedStyle(n).outlineStyle!=='none'),width+' visible keyboard focus');
   await control(p,'search').fill('');await button(p,'route').click();check(await p.locator('.cg-route-group').count()===4,width+' Full route');
@@ -40,10 +54,11 @@ try{
   await button(p,'return').click();check(await p.evaluate(()=>__qaTracker.body===document.querySelector('#body')&&__qaTracker.first===document.querySelector('#body tr')&&__qaTracker.cards===document.querySelector('#cards')&&__qaTracker.records===storyRecords&&__qaTracker.review===document.querySelector('#versionedReviewItems')),width+' pure guide navigation preserves Tracker nodes/references');check(JSON.stringify(await snapshot(p))===JSON.stringify(before),width+' pure guide browsing preserves all Tracker state');check(await p.evaluate(()=>__guideStorageWrites===0),width+' guide causes zero storage writes');await open(p);
   for(const mode of ['light','minimal']){
    await selectMode(p,mode);check(await control(p,'act').inputValue()==='',width+' '+mode+' context Act reset');await control(p,'act').selectOption('1');check(await p.locator('.cg-exact,.cg-sources a,.cg-notes,.cg-priority,.cg-advice').count()===0,width+' '+mode+' zero concealed detail DOM');
+   check(await p.locator('.cg-card img').count()===0,width+' '+mode+' no hidden companion portrait associations');
    const markup=await p.locator('#companionGuide').innerHTML();check(!/Zorru|Githyanki|Paladins|Grymforge|Crèche|Thay|Gandrel/.test(markup),width+' '+mode+' DOM/attribute isolation');
    check(await control(p,'companion').isDisabled()&&await control(p,'priority').isDisabled(),width+' '+mode+' hidden filters suspended');
    await control(p,'search').fill('Zorru');check(await p.locator('.cg-card').count()===0,width+' '+mode+' concealed search cannot match');await control(p,'search').fill('');
-   const reveal=button(p,'reveal').first();await reveal.click();check(await p.locator('.cg-exact').count()===1,width+' '+mode+' deliberate local reveal');check(!(await p.locator('#companionGuide').innerHTML()).includes('Good early example'),width+' '+mode+' research requires separate intent');await reveal.click();check(await p.locator('.cg-exact').count()===0,width+' '+mode+' hide local reveal');
+   const reveal=button(p,'reveal').first();await reveal.click();check(await p.locator('.cg-exact').count()===1,width+' '+mode+' deliberate local reveal');check(await p.locator('.cg-exact img').count()>0,width+' '+mode+' portrait only after explicit reveal');check(!(await p.locator('#companionGuide').innerHTML()).includes('Good early example'),width+' '+mode+' research requires separate intent');await reveal.click();check(await p.locator('.cg-exact').count()===0,width+' '+mode+' hide local reveal');
    await button(p,'route').click();check(await p.locator('.cg-route-group,.cg-next').count()===0,width+' '+mode+' route geography withheld');await button(p,'browse').click();
    check(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),width+' '+mode+' no horizontal overflow');
   }
@@ -61,6 +76,16 @@ try{
   await control(p,'act').selectOption('3');await button(p,'reveal').first().click();await p.evaluate(()=>{explicitSignOut=true;authGeneration++;renderStorySelect();});check(await control(p,'act').inputValue()===''&&await p.locator('.cg-exact').count()===0,width+' sign-out clears context-sensitive presentation');
   check(await p.evaluate(()=>!VERSIONED_PROGRESS_CONFIG.enabled),width+' versioned transport remains off');await c.close();
  }
+ // Missing-image fallback stays local, non-interactive and keyboard-operable.
+ const missingPortrait=await context(390,async(route,url)=>{if(url.pathname==='/assets/portraits/gale.webp'){await route.fulfill({status:404,body:'missing portrait',contentType:'text/plain'});return true;}return false;});
+ await open(missingPortrait.p);const missingPick=missingPortrait.p.getByRole('button',{name:'Gale',exact:true});
+ await missingPortrait.p.waitForFunction(()=>document.querySelector('[data-cg-action="party"][data-name="Gale"] .cg-avatar')&&!document.querySelector('[data-cg-action="party"][data-name="Gale"] img'));
+ check(await missingPick.locator('.cg-initial').isVisible(),'missing portrait uses visible initial fallback');
+ await missingPick.press('Space');check(await missingPick.getAttribute('aria-pressed')==='true','missing portrait choice remains keyboard-operable');
+ await missingPortrait.p.waitForFunction(()=>document.querySelector('[data-cg-selected-party] .cg-avatar')&&!document.querySelector('[data-cg-selected-party] img'));
+ check(await missingPortrait.p.locator('[data-cg-selected-party] .cg-initial').isVisible(),'selected party also falls back for missing image');
+ check(await missingPortrait.p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'missing portrait fallback has no overflow');
+ await missingPortrait.p.screenshot({path:path.join(out,'companion-missing-portrait-390.png')});screenshots.push(path.join(out,'companion-missing-portrait-390.png'));await missingPortrait.c.close();
  let moduleRequests=0;const moduleFailure=await context(390,async(route,url)=>{if(url.pathname==='/assets/companion-guide.js'&&moduleRequests++===0){await route.fulfill({status:404,body:'missing module',contentType:'text/javascript'});return true;}return false;});await moduleFailure.p.locator('#openCompanionGuide').click();await moduleFailure.p.getByRole('button',{name:'Retry guide',exact:true}).click();await moduleFailure.p.locator('#cgHeading').waitFor();await loaded(moduleFailure.p);check(moduleRequests===2,'module retry recovers using a fresh import URL');await button(moduleFailure.p,'return').click();check(await moduleFailure.p.locator('#companionGuide').evaluate(n=>n.childElementCount===0),'retry return leaves no guide DOM for offline export');await moduleFailure.c.close();
  // Missing data/retry and stale context response paths use fresh disposable contexts.
  let requests=0;const failure=await context(390,async(route,url)=>{if(url.pathname==='/data/companion-guide.v1.json'&&requests++===0){await route.fulfill({status:404,body:'not found'});return true;}return false;});await failure.p.locator('#openCompanionGuide').click();await failure.p.getByText('Could not load Companion Content Guide data. Tracker state is unchanged.').waitFor();await party(failure.p);await control(failure.p,'act').selectOption('1');await button(failure.p,'retry').click();await loaded(failure.p);check(await failure.p.locator('.cg-card').count()===8,'missing data retry preserves selections/Act');await failure.c.close();

@@ -44,3 +44,21 @@
 #companionGuide .cg-route-group{margin:28px 0}
 #companionGuide .cg-next{font-size:12px;color:var(--cg-accent);border-top:1px solid var(--line,#343a40);padding-top:12px}
 @media(max-width:600px){#companionGuide .cg-shell{padding:16px 12px 40px}#companionGuide .cg-filters,#companionGuide .cg-setup{grid-template-columns:minmax(0,1fr)}#companionGuide .cg-card{padding:14px}#companionGuide .cg-picks button{flex:1 0 42%}#companionGuide .cg-heading{gap:8px}}
+
+/* Shared portrait presentation, confined to the guide. Fixed boxes prevent layout shifts. */
+#companionGuide .cg-companion{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%;vertical-align:middle;text-align:left}
+#companionGuide .cg-avatar{position:relative;display:inline-grid;place-items:center;width:32px;height:32px;flex:0 0 32px;overflow:hidden;border-radius:50%;border:1px solid #637185;background:#273343;color:var(--text,#f1f3f5)}
+#companionGuide .cg-initial{font-size:14px;font-weight:650;line-height:1}
+#companionGuide .cg-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+#companionGuide .cg-companion-name{min-width:0;overflow-wrap:anywhere}
+#companionGuide .cg-picks button{display:flex;align-items:center}
+#companionGuide .cg-picks .cg-avatar{width:40px;height:40px;flex-basis:40px}
+#companionGuide .cg-current-party{margin:14px 0 18px}
+#companionGuide .cg-current-party>p{margin-bottom:8px}
+#companionGuide .cg-companion-list{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;min-width:0}
+#companionGuide .cg-current-party .cg-companion{border:1px solid var(--line,#343a40);border-radius:24px;padding:4px 10px 4px 4px;background:var(--cg-surface);font-size:14px}
+#companionGuide .cg-swap-row{display:flex;align-items:center;gap:8px;margin:8px 0}
+#companionGuide .cg-swap-row>b{flex:0 0 34px}
+#companionGuide .cg-swap-row>.cg-companion-list{flex:1}
+#companionGuide .cg-companion-detail .cg-companion{margin-bottom:4px}
+@media(max-width:600px){#companionGuide .cg-picks .cg-companion{flex-direction:column;gap:6px;text-align:center;width:100%}#companionGuide .cg-picks .cg-companion-name{font-size:14px}}
