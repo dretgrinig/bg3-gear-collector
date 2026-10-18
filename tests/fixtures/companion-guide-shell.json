@@ -1,0 +1,30 @@
+[
+  [
+    "\n// Companion Content Guide shell adapter: presentation snapshots, no Story mutations.\nlet companionGuideView=null,companionGuideImport=null,companionGuideImportAttempt=0,companionGuideContextKey='',companionGuideRevision=0;\nlet companionGuideContext=Object.freeze({identity:'companion-context-0',revision:0,mode:'minimal'}),companionGuideScroll={x:0,y:0};\nfunction notifyCompanionGuideContext(){\n const mode=spoilerMode(),key=JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,authGeneration,backendGeneration,explicitSignOut,mode]);\n if(key!==companionGuideContextKey){\n  companionGuideContextKey=key;companionGuideRevision++;\n  companionGuideContext=Object.freeze({identity:'companion-context-'+companionGuideRevision,revision:companionGuideRevision,mode});\n  companionGuideView?.setContext(companionGuideContext);\n }\n return companionGuideContext;\n}\nfunction returnFromCompanionGuide(){\n const tracker=$(\"trackerView\"),guide=$(\"companionGuide\");if(!tracker||!guide)return;\n companionGuideView?.setOpen(false);guide.hidden=true;tracker.hidden=false;\n $(\"openCompanionGuide\")?.focus({preventScroll:true});window.scrollTo(companionGuideScroll.x,companionGuideScroll.y);\n}\nasync function loadCompanionGuideView(){\n const guide=$(\"companionGuide\");if(!guide||guide.hidden)return;\n if(companionGuideView){companionGuideView.setContext(notifyCompanionGuideContext());companionGuideView.setOpen(true);companionGuideView.focus();return;}\n if(companionGuideImport)return companionGuideImport;\n guide.replaceChildren();\n const message=document.createElement('p');message.textContent='Loading Companion Content Guide\u2026';message.setAttribute('role','status');\n const back=document.createElement('button');back.type='button';back.textContent='Return to Tracker';back.onclick=returnFromCompanionGuide;\n guide.append(message,back);back.focus({preventScroll:true});\n const path='./assets/companion-guide.js'+(companionGuideImportAttempt?'?attempt='+companionGuideImportAttempt:'');companionGuideImportAttempt++;\n companionGuideImport=import(path).then(module=>{\n  companionGuideView=module.mountCompanionGuide(guide,{context:notifyCompanionGuideContext(),onReturn:returnFromCompanionGuide});\n  companionGuideView.setOpen(!guide.hidden);if(!guide.hidden)companionGuideView.focus();\n }).catch(()=>{\n  guide.replaceChildren();const text=document.createElement('p');text.textContent='Could not load Companion Content Guide. Tracker state is unchanged.';text.setAttribute('role','status');\n  const retry=document.createElement('button');retry.type='button';retry.textContent='Retry guide';retry.onclick=()=>loadCompanionGuideView();\n  guide.append(text,retry,back);if(!guide.hidden)retry.focus({preventScroll:true});\n }).finally(()=>{companionGuideImport=null;});\n return companionGuideImport;\n}\nfunction openCompanionContentGuide(){\n const tracker=$(\"trackerView\"),guide=$(\"companionGuide\");if(!tracker||!guide||tracker.hidden)return;\n companionGuideScroll={x:window.scrollX||0,y:window.scrollY||0};notifyCompanionGuideContext();\n tracker.hidden=true;guide.hidden=false;window.scrollTo(0,0);void loadCompanionGuideView();\n}\n// End Companion Content Guide shell adapter.\n",
+    ""
+  ],
+  [
+    "\n<link rel=\"stylesheet\" href=\"assets/companion-guide.css\">",
+    ""
+  ],
+  [
+    "<div id=\"trackerView\">\n",
+    ""
+  ],
+  [
+    "<div class=\"wrap\"><button type=\"button\" id=\"openCompanionGuide\" class=\"smallbtn\" onclick=\"openCompanionContentGuide()\">Companion Content Guide</button></div>\n",
+    ""
+  ],
+  [
+    "</div></main>\n</div>\n<section id=\"companionGuide\" aria-label=\"Companion Content Guide\" hidden></section>",
+    "</div></main>"
+  ],
+  [
+    "  if(typeof notifyCompanionGuideContext===\"function\")notifyCompanionGuideContext();\n",
+    ""
+  ],
+  [
+    " if(typeof notifyCompanionGuideContext===\"function\")notifyCompanionGuideContext();\n",
+    ""
+  ]
+]

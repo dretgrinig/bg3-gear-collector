@@ -11,8 +11,9 @@ const root = path.resolve(__dirname, '..');
 // Independent public-artifact contract. Never derive expectations from the
 // packager's allowlist or by listing everything in the repository root.
 const expected = [
-  '404.html', 'assets/acquisition-pilot.js', 'assets/bg.jpg', 'config.js',
-  'data/acquisition.v1.json', 'icons/icon-180.png', 'icons/icon-192.png',
+  '404.html', 'assets/acquisition-pilot.js', 'assets/bg.jpg',
+  'assets/companion-guide.js', 'assets/companion-guide-model.js', 'assets/companion-guide.css', 'config.js',
+  'data/acquisition.v1.json', 'data/companion-guide.v1.json', 'icons/icon-180.png', 'icons/icon-192.png',
   'icons/icon-32.png', 'icons/icon-512.png', 'index.html', 'manifest.json',
   'service-worker.js', 'versioned-progress.js'
 ].sort();
@@ -162,6 +163,6 @@ test('Pages CLI builds from the repository root regardless of the calling direct
   fs.mkdirSync(path.join(source, 'scripts'));
   fs.copyFileSync(path.join(root, 'scripts/build-pages.cjs'), path.join(source, 'scripts/build-pages.cjs'));
   const output = execFileSync(process.execPath, [path.join(source, 'scripts/build-pages.cjs')], { cwd: os.tmpdir(), encoding: 'utf8' });
-  assert.match(output, /Packaged 13 files into dist/);
+  assert.match(output, /Packaged 17 files into dist/);
   assert.deepEqual(inventory(path.join(source, 'dist')), expected);
 });

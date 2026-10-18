@@ -10,6 +10,7 @@
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
 <title>BG3 Gear Tracker</title>
+<link rel="stylesheet" href="assets/companion-guide.css">
 <style>
 :root{--bg:#0d0f11;--panel:#181b1f;--panel2:#21252a;--line:#343a40;--text:#f1f3f5;--muted:#abb2ba;--gold:#d4af37;--green:#37b24d;--red:#e8590c;--blue:#4dabf7}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b0d0f,#15181b);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -79,6 +80,8 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
 </script>
 <p class=sub>Your gear. Your Story.</p>
 </div></header>
+<div id="trackerView">
+<div class="wrap"><button type="button" id="openCompanionGuide" class="smallbtn" onclick="openCompanionContentGuide()">Companion Content Guide</button></div>
 <section class="wrap dashboard" aria-label="Story, progress and filters">
 <div class=storybar id=storyBar>
  <div>
@@ -179,6 +182,8 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
 <div id=mobileCount class=mobilecount></div><div id=cards class=mobilecards></div><div id=empty class=empty hidden>No items match the filters.</div>
 <footer>BG3 Gear Tracker · Act 1–3</footer>
 </div></main>
+</div>
+<section id="companionGuide" aria-label="Companion Content Guide" hidden></section>
 <script>
 window.BG3_CLOUD_CONFIG = {
   supabaseUrl: "https://xpcnbloizronlbilcbxf.supabase.co",
@@ -988,6 +993,7 @@ function requireCloudWrite(storyId=null){
   if(!canWriteCloud(storyId))throw new Error("Cloud writing blocked · session, backend and Story must be verified. Try Sync now.");
 }
 function renderBackendState(){
+  if(typeof notifyCompanionGuideContext==="function")notifyCompanionGuideContext();
   const label=$("backendStateLabel");
   if(label){
     if(!currentUser)label.textContent="Local/offline · no verified cloud session";
@@ -1090,6 +1096,49 @@ function readSpoilerPreference(scope,storedResult){
  return spoilerPreferences.get(key);
 }
 function spoilerMode(){const scope=spoilerScope();return scope?readSpoilerPreference(scope).mode:"minimal"}
+// Companion Content Guide shell adapter: presentation snapshots, no Story mutations.
+let companionGuideView=null,companionGuideImport=null,companionGuideImportAttempt=0,companionGuideContextKey='',companionGuideRevision=0;
+let companionGuideContext=Object.freeze({identity:'companion-context-0',revision:0,mode:'minimal'}),companionGuideScroll={x:0,y:0};
+function notifyCompanionGuideContext(){
+ const mode=spoilerMode(),key=JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,authGeneration,backendGeneration,explicitSignOut,mode]);
+ if(key!==companionGuideContextKey){
+  companionGuideContextKey=key;companionGuideRevision++;
+  companionGuideContext=Object.freeze({identity:'companion-context-'+companionGuideRevision,revision:companionGuideRevision,mode});
+  companionGuideView?.setContext(companionGuideContext);
+ }
+ return companionGuideContext;
+}
+function returnFromCompanionGuide(){
+ const tracker=$("trackerView"),guide=$("companionGuide");if(!tracker||!guide)return;
+ companionGuideView?.setOpen(false);guide.hidden=true;tracker.hidden=false;
+ $("openCompanionGuide")?.focus({preventScroll:true});window.scrollTo(companionGuideScroll.x,companionGuideScroll.y);
+}
+async function loadCompanionGuideView(){
+ const guide=$("companionGuide");if(!guide||guide.hidden)return;
+ if(companionGuideView){companionGuideView.setContext(notifyCompanionGuideContext());companionGuideView.setOpen(true);companionGuideView.focus();return;}
+ if(companionGuideImport)return companionGuideImport;
+ guide.replaceChildren();
+ const message=document.createElement('p');message.textContent='Loading Companion Content Guide…';message.setAttribute('role','status');
+ const back=document.createElement('button');back.type='button';back.textContent='Return to Tracker';back.onclick=returnFromCompanionGuide;
+ guide.append(message,back);back.focus({preventScroll:true});
+ const path='./assets/companion-guide.js'+(companionGuideImportAttempt?'?attempt='+companionGuideImportAttempt:'');companionGuideImportAttempt++;
+ companionGuideImport=import(path).then(module=>{
+  companionGuideView=module.mountCompanionGuide(guide,{context:notifyCompanionGuideContext(),onReturn:returnFromCompanionGuide});
+  companionGuideView.setOpen(!guide.hidden);if(!guide.hidden)companionGuideView.focus();
+ }).catch(()=>{
+  guide.replaceChildren();const text=document.createElement('p');text.textContent='Could not load Companion Content Guide. Tracker state is unchanged.';text.setAttribute('role','status');
+  const retry=document.createElement('button');retry.type='button';retry.textContent='Retry guide';retry.onclick=()=>loadCompanionGuideView();
+  guide.append(text,retry,back);if(!guide.hidden)retry.focus({preventScroll:true});
+ }).finally(()=>{companionGuideImport=null;});
+ return companionGuideImport;
+}
+function openCompanionContentGuide(){
+ const tracker=$("trackerView"),guide=$("companionGuide");if(!tracker||!guide||tracker.hidden)return;
+ companionGuideScroll={x:window.scrollX||0,y:window.scrollY||0};notifyCompanionGuideContext();
+ tracker.hidden=true;guide.hidden=false;window.scrollTo(0,0);void loadCompanionGuideView();
+}
+// End Companion Content Guide shell adapter.
+
 function initializeStorySpoilers(story){
  const scope=spoilerScopeFor(story);if(!scope)return;
  const key=spoilerPreferenceKey(scope),stored=storageJSON(key,value=>SPOILER_MODES.includes(value));
@@ -1121,6 +1170,7 @@ function renderSpoilerControl(){
   if(records!==storyRecords||auth!==authGeneration||backend!==backendGeneration||JSON.stringify(scope)!==JSON.stringify(spoilerScope()))return;
   setSpoilerMode(event.target.value,scope);
  };
+ if(typeof notifyCompanionGuideContext==="function")notifyCompanionGuideContext();
 }
 
 // Presentation only: fixed tuple hashing and cool HSL bounds, no collection or state.
@@ -1712,6 +1762,7 @@ function hydrateAcquisitionDetails(){
 }
 
 function render(presentationOnly=false){
+ if(typeof notifyCompanionGuideContext==="function")notifyCompanionGuideContext();
  const mode=syncSpoilerFilters(),full=mode==="full";
  const list=view(),b=$("body"),cards=$("cards");b.innerHTML="";cards.innerHTML="";$("empty").hidden=!!list.length;
  $("mobileCount").textContent=`Showing ${list.length} item${list.length===1?"":"s"}`;

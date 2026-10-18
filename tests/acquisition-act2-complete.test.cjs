@@ -1,5 +1,6 @@
 /* Independent Work-plan facts exercise the real validator, resolver and tracker DOM. */
 'use strict';
+const withoutGuide=require('./helpers/companion-guide-boundary.cjs');
 const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
@@ -103,7 +104,7 @@ test('Act 2 complete cached catalogue and v5/v6 import/export keep exact keys an
  const cached=itemHarness(facts.items.map(itemFor),{dataset:data,cached:true});for(const i of cached.app.items())assert.ok(resolver.resolve(i));
 });
 test('Act 2 complete protected application/runtime/deployment files are byte-identical',()=>{
- for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):readFileSync(join(root,file),'utf8'),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8'}),file);
+ for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):withoutGuide(file,readFileSync(join(root,file),'utf8')),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8'}),file);
 });
 
 test('Act 2 complete special Lann stock gate is not imposed on ordinary stock',()=>{

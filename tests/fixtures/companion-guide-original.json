@@ -1,0 +1,1755 @@
+{
+  "meta": {
+    "title": "BG3 Companion Area Guide content seed",
+    "version": "0.3",
+    "generated_date": "2026-10-17",
+    "design_principles": {
+      "priority_levels": {
+        "must": "Real companion quest/cutscene/reward/permanent consequence; worth changing party for.",
+        "strong": "Meaningful unique content or major personal context; usually worth a switch.",
+        "contextual": "Quest-relevant but active presence is not required; switch only if you want continuity.",
+        "flavor": "Unique remarks/banter/lore only; do not create FOMO.",
+        "none": "No meaningful companion-specific reason to change party."
+      },
+      "switch_worth_it": "True only when the player should seriously consider going to camp to swap companions.",
+      "evidence_rule": "Do not upgrade a recommendation merely because a companion has a location remark or approval change.",
+      "spoiler_rule": "Default UI copy should explain why a companion matters without revealing outcomes; exact consequences go behind an expand/spoiler control."
+    },
+    "recommended_ui_filters": [
+      "Act",
+      "Region",
+      "Companion",
+      "Only worth switching party for",
+      "Content type",
+      "Romance companion",
+      "Spoiler-safe / detailed"
+    ],
+    "recommended_badges": [
+      "⭐ Must bring",
+      "◆ Strong unique content",
+      "❤️ Romance",
+      "🎁 Unique reward",
+      "⚠️ Missable",
+      "💬 Flavor only",
+      "✓ No need to switch"
+    ],
+    "primary_sources": [
+      "https://bg3.wiki/",
+      "Selected r/BaldursGate3 community threads for flavor/banter consensus"
+    ],
+    "research_status": "51 original seed records retained; targeted verification only. Karlach at Devil’s Den is player-observed, not independently confirmed."
+  },
+  "entries": [
+    {
+      "id": "a1-grove-zorru",
+      "act": 1,
+      "region": "Wilderness",
+      "location": "Druid Grove",
+      "encounter": "Zorru / Find the Githyanki Crèche",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Lae'zel",
+          "rank": "strong",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "Directly advances her search for the githyanki crèche and changes the Zorru conversation."
+        }
+      ],
+      "notes": "Good early example of real companion-specific quest dialogue, not just approval.",
+      "sources": [
+        "https://bg3.wiki/wiki/Find_the_Githyanki_Cr%C3%A8che"
+      ],
+      "location_group": "Druid Grove"
+    },
+    {
+      "id": "a1-swamp-gandrel",
+      "act": 1,
+      "region": "Sunlit Wetlands",
+      "location": "Riverside Teahouse area",
+      "encounter": "Gandrel",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Astarion",
+          "rank": "strong",
+          "content_types": [
+            "unique_dialogue",
+            "companion_story"
+          ],
+          "why_spoiler_free": "Gandrel is directly tied to Astarion and the encounter has substantially different dialogue with him present."
+        }
+      ],
+      "notes": "Choices can have permanent consequences for Astarion; worth a clear warning badge.",
+      "sources": [
+        "https://bg3.wiki/wiki/Gandrel",
+        "https://bg3.wiki/wiki/Astarion"
+      ],
+      "location_group": "Riverside Teahouse area"
+    },
+    {
+      "id": "a1-blighted-necromancy",
+      "act": 1,
+      "region": "Wilderness",
+      "location": "Blighted Village",
+      "encounter": "Necromancy of Thay",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Astarion",
+          "rank": "strong",
+          "content_types": [
+            "unique_interaction",
+            "camp_followup"
+          ],
+          "why_spoiler_free": "He has a distinctive interaction if given the tome, with later companion content."
+        },
+        {
+          "name": "Gale",
+          "rank": "optional",
+          "content_types": [
+            "unique_interaction"
+          ],
+          "why_spoiler_free": "He can interact with the tome in a different way, but it is not his main quest route."
+        }
+      ],
+      "notes": "Do not present Gale and Astarion as equivalent; Astarion is the more story-relevant companion here.",
+      "sources": [
+        "https://bg3.wiki/wiki/Necromancy_of_Thay",
+        "https://bg3.wiki/wiki/Unlock_the_Ancient_Tome"
+      ],
+      "location_group": "Blighted Village"
+    },
+    {
+      "id": "a1-risen-karlach-wyll",
+      "act": 1,
+      "region": "Risen Road",
+      "location": "Risen Road / Toll House",
+      "encounter": "Karlach + Paladins of Tyr",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Wyll",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_cutscene"
+          ],
+          "why_spoiler_free": "Karlach is the target of Wyll's active companion quest, and their confrontation is major character content."
+        },
+        {
+          "name": "Karlach",
+          "rank": "must",
+          "content_types": [
+            "companion_quest"
+          ],
+          "why_spoiler_free": "The Paladins of Tyr are directly tied to her recruitment and personal story."
+        }
+      ],
+      "notes": "A real party-switch event.",
+      "sources": [
+        "https://bg3.wiki/wiki/The_Blade_of_Frontiers",
+        "https://bg3.wiki/wiki/Our_Fiery_Friend"
+      ],
+      "location_group": "Risen Road"
+    },
+    {
+      "id": "a1-waukeens-wyll",
+      "act": 1,
+      "region": "Risen Road",
+      "location": "Waukeen's Rest",
+      "encounter": "Florrick / Grand Duke lead",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Wyll",
+          "rank": "strong",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "Florrick recognises Wyll and the Grand Duke lead becomes personal companion-story content."
+        }
+      ],
+      "notes": "Location itself is time-sensitive once triggered; separate from companion recommendation.",
+      "sources": [
+        "https://bg3.wiki/wiki/Waukeen%27s_Rest",
+        "https://bg3.wiki/wiki/The_Grand_Duke"
+      ],
+      "location_group": "Waukeen's Rest"
+    },
+    {
+      "id": "a1-gith-patrol",
+      "act": 1,
+      "region": "Risen Road",
+      "location": "Mountain Pass approach",
+      "encounter": "Githyanki Patrol / Kith'rak Voss",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Lae'zel",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue",
+            "major_character_arc"
+          ],
+          "why_spoiler_free": "The encounter is part of her personal quest and plays very differently with her present."
+        }
+      ],
+      "notes": "One of the clearest Act 1 must-bring moments.",
+      "sources": [
+        "https://bg3.wiki/wiki/Find_the_Githyanki_Cr%C3%A8che",
+        "https://bg3.wiki/wiki/Travel_through_the_Mountain_Pass"
+      ],
+      "location_group": "Mountain Pass approach"
+    },
+    {
+      "id": "a1-creche",
+      "act": 1,
+      "region": "Mountain Pass",
+      "location": "Crèche Y'llek",
+      "encounter": "Crèche exploration / Zaith'isk / Inquisitor",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Lae'zel",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "major_character_arc",
+            "unique_cutscenes"
+          ],
+          "why_spoiler_free": "The crèche is the core Act 1 location for Lae'zel's personal story."
+        }
+      ],
+      "notes": "Treat the entire crèche as a Lae'zel hotspot, not a single room.",
+      "sources": [
+        "https://bg3.wiki/wiki/Cr%C3%A8che_Y%27llek",
+        "https://bg3.wiki/wiki/The_Githyanki_Warrior"
+      ],
+      "location_group": "Crèche Y'llek"
+    },
+    {
+      "id": "a1-grymforge",
+      "act": 1,
+      "region": "Underdark",
+      "location": "Grymforge",
+      "encounter": "General exploration",
+      "switch_worth_it": false,
+      "priority": "flavor",
+      "spoiler_level": "none",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Shadowheart",
+          "rank": "flavor",
+          "content_types": [
+            "location_remarks",
+            "lore_flavor"
+          ],
+          "why_spoiler_free": "She has Sharran-adjacent environmental reactions, but no major companion scene requires her here."
+        }
+      ],
+      "notes": "Important negative example: don't label as a must-bring just because remarks exist.",
+      "sources": [
+        "https://bg3.wiki/wiki/Shadowheart/Location_Remarks"
+      ],
+      "location_group": "Grymforge"
+    },
+    {
+      "id": "a2-entry-shadowheart",
+      "act": 2,
+      "region": "Shadow-Cursed Lands",
+      "location": "Shadowlands entry",
+      "encounter": "First exploration",
+      "switch_worth_it": false,
+      "priority": "flavor",
+      "spoiler_level": "none",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Shadowheart",
+          "rank": "flavor",
+          "content_types": [
+            "location_remarks",
+            "lore_flavor"
+          ],
+          "why_spoiler_free": "She is thematically tied to the region and has extensive reactivity, but the entry itself is not a required companion scene."
+        }
+      ],
+      "notes": "Good default-party suggestion, not a hard switch.",
+      "sources": [
+        "https://bg3.wiki/wiki/Shadowheart/Location_Remarks"
+      ],
+      "location_group": "Shadowlands entry"
+    },
+    {
+      "id": "a2-lastlight-dammon",
+      "act": 2,
+      "region": "Shadow-Cursed Lands",
+      "location": "Last Light Inn",
+      "encounter": "Dammon",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Karlach",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_scene"
+          ],
+          "why_spoiler_free": "Dammon directly progresses Karlach's personal engine quest."
+        }
+      ],
+      "notes": "High-value, easy-to-miss if Karlach is parked in camp.",
+      "sources": [
+        "https://bg3.wiki/wiki/Our_Fiery_Friend",
+        "https://bg3.wiki/wiki/Camp_Events/Act_One"
+      ],
+      "location_group": "Last Light Inn"
+    },
+    {
+      "id": "a2-lastlight-raphael",
+      "act": 2,
+      "region": "Shadow-Cursed Lands",
+      "location": "Last Light Inn",
+      "encounter": "Raphael",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Astarion",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_cutscene"
+          ],
+          "why_spoiler_free": "Raphael can advance Astarion's investigation into the scars on his back."
+        }
+      ],
+      "notes": "If missed here, the thread can still be picked up at the Grand Mausoleum entrance.",
+      "sources": [
+        "https://bg3.wiki/wiki/The_Pale_Elf",
+        "https://bg3.wiki/wiki/Astarion"
+      ],
+      "location_group": "Last Light Inn"
+    },
+    {
+      "id": "a2-lastlight-isobel",
+      "act": 2,
+      "region": "Shadow-Cursed Lands",
+      "location": "Last Light Inn",
+      "encounter": "Isobel",
+      "switch_worth_it": false,
+      "priority": "flavor",
+      "spoiler_level": "none",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Shadowheart",
+          "rank": "flavor",
+          "content_types": [
+            "thematic_dialogue",
+            "approval"
+          ],
+          "why_spoiler_free": "The Shar/Selûne contrast makes her a good thematic pick, but there is no must-have Shadowheart quest scene here."
+        }
+      ],
+      "notes": "Explicitly prevent overrating this encounter.",
+      "sources": [
+        "https://bg3.wiki/wiki/Shadowheart/Location_Remarks",
+        "https://bg3.wiki/wiki/Act_Two"
+      ],
+      "location_group": "Last Light Inn"
+    },
+    {
+      "id": "a2-lastlight-art",
+      "act": 2,
+      "region": "Shadow-Cursed Lands",
+      "location": "Last Light Inn",
+      "encounter": "Art Cullagh / Thaniel lead",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Halsin",
+          "rank": "must",
+          "content_types": [
+            "companion_recruitment",
+            "quest_progression"
+          ],
+          "why_spoiler_free": "This is the core route for lifting the Shadow Curse and for making Halsin a full companion."
+        }
+      ],
+      "notes": "Halsin may still be a camp follower at the start; the guide should say 'talk to Halsin' rather than imply he must already occupy a party slot.",
+      "sources": [
+        "https://bg3.wiki/wiki/Lift_the_Shadow_Curse",
+        "https://bg3.wiki/wiki/Thaniel"
+      ],
+      "location_group": "Last Light Inn"
+    },
+    {
+      "id": "a2-reithwin-halsin",
+      "act": 2,
+      "region": "Reithwin Town",
+      "location": "Reithwin / Tollhouse / House of Healing",
+      "encounter": "General exploration",
+      "switch_worth_it": false,
+      "priority": "flavor",
+      "spoiler_level": "none",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Halsin",
+          "rank": "flavor",
+          "content_types": [
+            "historical_lore",
+            "location_remarks"
+          ],
+          "why_spoiler_free": "He remembers the old Harper/druid fighting around Reithwin and comments on several Thorm locations."
+        }
+      ],
+      "notes": "Strong lore flavor, but not worth forcing a party swap if the user only cares about major scenes.",
+      "sources": [
+        "https://bg3.wiki/wiki/Halsin/Location_Remarks"
+      ],
+      "location_group": "Reithwin"
+    },
+    {
+      "id": "a2-moonrise-araj",
+      "act": 2,
+      "region": "Moonrise Towers",
+      "location": "Moonrise Towers",
+      "encounter": "Araj Oblodra",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Astarion",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_scene",
+            "romance_impact"
+          ],
+          "why_spoiler_free": "Araj triggers substantial Astarion character content and can affect his romance progression."
+        }
+      ],
+      "notes": "A top-tier 'worth switching' entry.",
+      "sources": [
+        "https://bg3.wiki/wiki/The_Pale_Elf",
+        "https://bg3.wiki/wiki/Astarion"
+      ],
+      "location_group": "Moonrise Towers"
+    },
+    {
+      "id": "a2-moonrise-balthazar-room",
+      "act": 2,
+      "region": "Moonrise Towers",
+      "location": "Balthazar's Room",
+      "encounter": "Balthazar's Experiment",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Gale",
+          "rank": "must",
+          "content_types": [
+            "unique_interaction",
+            "unique_reward"
+          ],
+          "why_spoiler_free": "Gale can uniquely interact with the ritual and unlock a special reward path."
+        }
+      ],
+      "notes": "This is the exact type of entry that justified the feature: one room, one companion, real payoff.",
+      "sources": [
+        "https://bg3.wiki/wiki/Gale",
+        "https://bg3.wiki/wiki/Balthazar%27s_Experiment"
+      ],
+      "location_group": "Balthazar's Room"
+    },
+    {
+      "id": "a2-moonrise-prison",
+      "act": 2,
+      "region": "Moonrise Towers",
+      "location": "Moonrise Towers Prison",
+      "encounter": "Rescue the Tieflings / Wulbren",
+      "switch_worth_it": false,
+      "priority": "none",
+      "spoiler_level": "none",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Wyll",
+          "rank": "flavor",
+          "content_types": [
+            "location_remarks"
+          ],
+          "why_spoiler_free": "Has prison-related comments, but no major companion scene."
+        },
+        {
+          "name": "Karlach",
+          "rank": "flavor",
+          "content_types": [
+            "location_remarks"
+          ],
+          "why_spoiler_free": "Has prison-related comments, but no major companion scene."
+        },
+        {
+          "name": "Astarion",
+          "rank": "flavor",
+          "content_types": [
+            "location_remarks"
+          ],
+          "why_spoiler_free": "Has prison-related comments, but no major companion scene."
+        }
+      ],
+      "notes": "Critical anti-FOMO entry: use whoever you enjoy; no need to run back to camp.",
+      "sources": [
+        "https://bg3.wiki/wiki/Karlach/Location_Remarks",
+        "https://bg3.wiki/wiki/Wyll/Location_Remarks",
+        "https://bg3.wiki/wiki/Astarion/Location_Remarks"
+      ],
+      "location_group": "Moonrise Towers Prison"
+    },
+    {
+      "id": "a2-mausoleum-raphael",
+      "act": 2,
+      "region": "Reithwin Town",
+      "location": "Grand Mausoleum entrance",
+      "encounter": "Raphael's old enemy quest",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Astarion",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "Raphael's request directly intersects Astarion's scar investigation."
+        },
+        {
+          "name": "Karlach",
+          "rank": "flavor",
+          "content_types": [
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "She has a small infernal-lore contribution, but it is not important enough to force a switch."
+        }
+      ],
+      "notes": "If the Astarion/Raphael thread was already started at Last Light, this is the next key step.",
+      "sources": [
+        "https://bg3.wiki/wiki/Grand_Mausoleum",
+        "https://bg3.wiki/wiki/Kill_Raphael%27s_Old_Enemy"
+      ],
+      "location_group": "Grand Mausoleum entrance"
+    },
+    {
+      "id": "a2-gauntlet-general",
+      "act": 2,
+      "region": "Gauntlet of Shar",
+      "location": "Gauntlet of Shar",
+      "encounter": "General exploration / trials",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Shadowheart",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "major_character_arc",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "The Gauntlet is a central location in Shadowheart's personal quest."
+        }
+      ],
+      "notes": "Treat as a zone-wide recommendation.",
+      "sources": [
+        "https://bg3.wiki/wiki/Act_Two",
+        "https://bg3.wiki/wiki/Shadowheart"
+      ],
+      "location_group": "Gauntlet of Shar"
+    },
+    {
+      "id": "a2-gauntlet-yurgir",
+      "act": 2,
+      "region": "Gauntlet of Shar",
+      "location": "Yurgir's Lair",
+      "encounter": "Yurgir",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Astarion",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_followup"
+          ],
+          "why_spoiler_free": "Resolving Raphael's request here progresses Astarion's personal quest and leads to a later reveal."
+        }
+      ],
+      "notes": "Choices around Yurgir can affect Astarion approval and quest flow.",
+      "sources": [
+        "https://bg3.wiki/wiki/Kill_Raphael%27s_Old_Enemy"
+      ],
+      "location_group": "Yurgir's Lair"
+    },
+    {
+      "id": "a2-shadowfell",
+      "act": 2,
+      "region": "Gauntlet of Shar",
+      "location": "Shadowfell",
+      "encounter": "Nightsong",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Shadowheart",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "major_character_arc",
+            "permanent_consequence"
+          ],
+          "why_spoiler_free": "This is a defining moment in Shadowheart's story; proceeding without her can have permanent consequences."
+        }
+      ],
+      "notes": "Hard warning badge; this is not merely flavor.",
+      "sources": [
+        "https://bg3.wiki/wiki/Shadowheart",
+        "https://bg3.wiki/wiki/Act_Two"
+      ],
+      "location_group": "Shadowfell"
+    },
+    {
+      "id": "a2-assault-jaheira",
+      "act": 2,
+      "region": "Moonrise Towers",
+      "location": "Moonrise Towers assault",
+      "encounter": "Harper assault / rooftop",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Jaheira",
+          "rank": "strong",
+          "content_types": [
+            "recruitment",
+            "attached_follower",
+            "historical_lore"
+          ],
+          "why_spoiler_free": "She can join the assault as an attached follower and this is part of the route to recruiting her."
+        },
+        {
+          "name": "Minthara",
+          "rank": "flavor",
+          "content_types": [
+            "lore_flavor"
+          ],
+          "why_spoiler_free": "Strong personal context with Ketheric and the Absolute, but no required scene."
+        }
+      ],
+      "notes": "Jaheira is mechanically/recruitment relevant; Minthara is thematic.",
+      "sources": [
+        "https://bg3.wiki/wiki/Companions",
+        "https://bg3.wiki/wiki/Minthara/Location_Remarks"
+      ],
+      "location_group": "Moonrise Towers assault"
+    },
+    {
+      "id": "a2-colony-mizora",
+      "act": 2,
+      "region": "Mind Flayer Colony",
+      "location": "Tadpoling Centre",
+      "encounter": "Mizora's pod",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Wyll",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_reward",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "Wyll must be in the active party if you want the unique Infernal Rapier reward when resolving Mizora's pod."
+        }
+      ],
+      "notes": "Cannot change party once inside the Colony, so warn BEFORE entry.",
+      "sources": [
+        "https://bg3.wiki/wiki/Mind_Flayer_Colony",
+        "https://bg3.wiki/wiki/Infernal_Rapier",
+        "https://bg3.wiki/wiki/Mizora"
+      ],
+      "location_group": "Tadpoling Centre"
+    },
+    {
+      "id": "a2-colony-gale",
+      "act": 2,
+      "region": "Mind Flayer Colony",
+      "location": "Mind Flayer Colony",
+      "encounter": "Final Colony sequence",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Gale",
+          "rank": "strong",
+          "content_types": [
+            "companion_quest",
+            "unique_scene",
+            "alternate_resolution"
+          ],
+          "why_spoiler_free": "Gale has unique Orb-related content during the Act 2 finale."
+        }
+      ],
+      "notes": "Mark as 'unique but optional'; the outcome can be extremely consequential.",
+      "sources": [
+        "https://bg3.wiki/wiki/Gale",
+        "https://bg3.wiki/wiki/Mind_Flayer_Colony"
+      ],
+      "location_group": "Mind Flayer Colony"
+    },
+    {
+      "id": "a2-colony-minthara",
+      "act": 2,
+      "region": "Mind Flayer Colony",
+      "location": "Mind Flayer Colony",
+      "encounter": "General exploration",
+      "switch_worth_it": false,
+      "priority": "flavor",
+      "spoiler_level": "none",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Minthara",
+          "rank": "flavor",
+          "content_types": [
+            "location_remarks",
+            "absolute_lore"
+          ],
+          "why_spoiler_free": "She has multiple unique observations about Ketheric, Balthazar and the Colony, but no must-have reward or quest scene."
+        }
+      ],
+      "notes": "Good 'flavor companion' example.",
+      "sources": [
+        "https://bg3.wiki/wiki/Minthara/Location_Remarks"
+      ],
+      "location_group": "Mind Flayer Colony"
+    },
+    {
+      "id": "a3-rivington-orin",
+      "act": 3,
+      "region": "Rivington",
+      "location": "Rivington",
+      "encounter": "Orin disguise encounters",
+      "switch_worth_it": false,
+      "priority": "flavor",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Minthara",
+          "rank": "flavor",
+          "content_types": [
+            "unique_remark",
+            "personal_history"
+          ],
+          "why_spoiler_free": "Minthara has specific reactions to Orin's disguise games and a personal stake in Orin's story."
+        }
+      ],
+      "notes": "Real unique remarks, but do not call this a must-bring scene.",
+      "sources": [
+        "https://bg3.wiki/wiki/Minthara/Location_Remarks",
+        "https://bg3.wiki/wiki/Minthara"
+      ],
+      "location_group": "Rivington"
+    },
+    {
+      "id": "a3-circus-zethino",
+      "act": 3,
+      "region": "Rivington",
+      "location": "Circus of the Last Days",
+      "encounter": "Zethino's love test",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "none",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Active romance companion",
+          "rank": "strong",
+          "content_types": [
+            "romance",
+            "unique_scene"
+          ],
+          "why_spoiler_free": "The test has companion-specific relationship dialogue; bring the partner whose scene you want to see."
+        }
+      ],
+      "notes": "Dynamic companion slot: should resolve from user's selected romance if the tracker stores one.",
+      "sources": [
+        "https://bg3.wiki/wiki/Zethino"
+      ],
+      "location_group": "Circus of the Last Days"
+    },
+    {
+      "id": "a3-openhand-tara",
+      "act": 3,
+      "region": "Rivington",
+      "location": "Open Hand Temple roof",
+      "encounter": "Tara / Missing Letters",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Gale",
+          "rank": "strong",
+          "content_types": [
+            "unique_dialogue",
+            "personal_lore"
+          ],
+          "why_spoiler_free": "Gale has unique interactions with Tara and additional personal dialogue afterward."
+        }
+      ],
+      "notes": "For the temple murder investigation itself, no companion is mandatory; this recommendation is specifically for the roof/Tara.",
+      "sources": [
+        "https://bg3.wiki/wiki/Gale"
+      ],
+      "location_group": "Open Hand Temple roof"
+    },
+    {
+      "id": "a3-gur-camp",
+      "act": 3,
+      "region": "Rivington",
+      "location": "Gur Camp",
+      "encounter": "Ulma / Gur",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Astarion",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "The Gur conversation directly advances Astarion's Cazador storyline and changes significantly with him present."
+        }
+      ],
+      "notes": "Clear must-bring recommendation.",
+      "sources": [
+        "https://bg3.wiki/wiki/Gur_Camp",
+        "https://bg3.wiki/wiki/Investigate_Cazador%27s_Palace"
+      ],
+      "location_group": "Gur Camp"
+    },
+    {
+      "id": "a3-ferg",
+      "act": 3,
+      "region": "Rivington",
+      "location": "Refugee area",
+      "encounter": "Ferg Drogher",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Shadowheart",
+          "rank": "strong",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "Ferg recognises Shadowheart and points her Act 3 personal quest forward."
+        }
+      ],
+      "notes": "If Shadowheart rejected Shar, Ferg leaves after their confrontation. Merchant-minded users may want to shop/steal his special stock first without her nearby.",
+      "sources": [
+        "https://bg3.wiki/wiki/Shadowheart/Approval",
+        "https://bg3.wiki/wiki/Shadowheart"
+      ],
+      "location_group": "Refugee area"
+    },
+    {
+      "id": "a3-danthelon",
+      "act": 3,
+      "region": "Wyrm's Crossing",
+      "location": "Danthelon's Dancing Axe",
+      "encounter": "Harper safehouse",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Jaheira",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_scene"
+          ],
+          "why_spoiler_free": "This is a key step in Jaheira's High Harper quest and is built around her Harper contacts."
+        }
+      ],
+      "notes": "One of Jaheira's first major Act 3 hotspots.",
+      "sources": [
+        "https://bg3.wiki/wiki/Danthelon%27s_Dancing_Axe",
+        "https://bg3.wiki/wiki/The_High_Harper"
+      ],
+      "location_group": "Danthelon's Dancing Axe"
+    },
+    {
+      "id": "a3-western-beach",
+      "act": 3,
+      "region": "Rivington",
+      "location": "Western Beach",
+      "encounter": "Guild vs Stone Lord skirmish",
+      "switch_worth_it": false,
+      "priority": "none",
+      "spoiler_level": "none",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Jaheira",
+          "rank": "flavor",
+          "content_types": [
+            "thematic_lore"
+          ],
+          "why_spoiler_free": "She fits the larger Underduke/Stone Lord thread, but there is no major companion scene on the beach itself."
+        }
+      ],
+      "notes": "Another anti-FOMO row: party choice barely matters here.",
+      "sources": [
+        "https://bg3.wiki/wiki/Act_Three"
+      ],
+      "location_group": "Western Beach"
+    },
+    {
+      "id": "a3-flophouse",
+      "act": 3,
+      "region": "Wyrm's Crossing",
+      "location": "Fraygo's Flophouse",
+      "encounter": "Petras and Dalyria",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Astarion",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_scene"
+          ],
+          "why_spoiler_free": "Two of Cazador's spawn are here, and Astarion has a direct confrontation that advances his quest."
+        }
+      ],
+      "notes": "Warn users to disable active sunlight effects before approaching the spawn.",
+      "sources": [
+        "https://bg3.wiki/wiki/Fraygo%27s_Flophouse",
+        "https://bg3.wiki/wiki/The_Pale_Elf"
+      ],
+      "location_group": "Fraygo's Flophouse"
+    },
+    {
+      "id": "a3-sharess-drow",
+      "act": 3,
+      "region": "Wyrm's Crossing",
+      "location": "Sharess' Caress",
+      "encounter": "Drow twins",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Active romance companion",
+          "rank": "strong",
+          "content_types": [
+            "romance",
+            "unique_scene"
+          ],
+          "why_spoiler_free": "The scene changes depending on your partner and the state of the romance."
+        }
+      ],
+      "notes": "For a Shadowheart romance, she has specific relationship-dependent responses. Do not imply all companions have equally substantial content elsewhere in Sharess.",
+      "sources": [
+        "https://bg3.wiki/wiki/Astarion",
+        "https://bg3.wiki/wiki/Shadowheart/Romance"
+      ],
+      "location_group": "Sharess' Caress"
+    },
+    {
+      "id": "a3-sharess-voss",
+      "act": 3,
+      "region": "Wyrm's Crossing",
+      "location": "Sharess' Caress / Devil's Den",
+      "encounter": "Voss + Raphael",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Lae'zel",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue",
+            "approval"
+          ],
+          "why_spoiler_free": "Voss, Raphael and the Orphic Hammer are central to Lae'zel's Act 3 personal arc."
+        },
+        {
+          "name": "Karlach",
+          "rank": "flavor",
+          "content_types": [
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "Optional comments reported by the player at this stop; retain her when practical. Independent confirmation pending.",
+          "evidence": "player_observed"
+        }
+      ],
+      "notes": "Excellent 'swap her in just before this room' entry. Karlach flavor is player-observed; the wiki confirms the setting but the precise companion reaction has not been independently verified. Must bring is a guide priority, not a claim that the encounter requires Lae’zel.",
+      "sources": [
+        "https://bg3.wiki/wiki/Help_Kith%27rak_Voss",
+        "https://bg3.wiki/wiki/Devil%27s_Den",
+        "https://bg3.wiki/wiki/Karlach/Location_Remarks"
+      ],
+      "location_group": "Sharess' Caress"
+    },
+    {
+      "id": "a3-coronation",
+      "act": 3,
+      "region": "Wyrm's Crossing",
+      "location": "Wyrm's Rock Fortress",
+      "encounter": "Gortash's coronation",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Karlach",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_scene",
+            "major_character_arc"
+          ],
+          "why_spoiler_free": "Gortash is central to Karlach's history and she has a direct confrontation at the coronation."
+        },
+        {
+          "name": "Wyll",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue",
+            "family_story"
+          ],
+          "why_spoiler_free": "Duke Ravengard is present and Wyll receives specific dialogue tied to his father and Gortash."
+        }
+      ],
+      "notes": "One of the strongest dual-companion recommendations in Act 3.",
+      "sources": [
+        "https://bg3.wiki/wiki/Our_Fiery_Friend",
+        "https://bg3.wiki/wiki/Wyrm%27s_Rock"
+      ],
+      "location_group": "Wyrm's Rock Fortress"
+    },
+    {
+      "id": "a3-guildhall",
+      "act": 3,
+      "region": "Lower City",
+      "location": "Guildhall",
+      "encounter": "Nine-Fingers Keene",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Jaheira",
+          "rank": "strong",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue",
+            "legacy_lore"
+          ],
+          "why_spoiler_free": "Nine-Fingers has direct history/dialogue with Jaheira and this advances the High Harper/Stone Lord thread."
+        }
+      ],
+      "notes": "Wyll/Astarion can add banter, but that is lower-tier flavor.",
+      "sources": [
+        "https://bg3.wiki/wiki/Nine-Fingers",
+        "https://bg3.wiki/wiki/The_High_Harper"
+      ],
+      "location_group": "Guildhall"
+    },
+    {
+      "id": "a3-counting-house",
+      "act": 3,
+      "region": "Lower City",
+      "location": "The Counting House",
+      "encounter": "Stone Lord sequence",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Jaheira",
+          "rank": "strong",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue",
+            "major_character_arc"
+          ],
+          "why_spoiler_free": "This is a major step in Jaheira's search for Minsc, with unique reactions if she is present."
+        }
+      ],
+      "notes": "The doppelganger scene explicitly changes with the real Jaheira in the party.",
+      "sources": [
+        "https://bg3.wiki/wiki/Jaheira_%28doppelganger%29",
+        "https://bg3.wiki/wiki/The_High_Harper"
+      ],
+      "location_group": "The Counting House"
+    },
+    {
+      "id": "a3-cistern",
+      "act": 3,
+      "region": "Lower City Sewers",
+      "location": "Abandoned Cistern",
+      "encounter": "Minsc / Stone Lord",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Jaheira",
+          "rank": "strong",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue",
+            "recruitment_support"
+          ],
+          "why_spoiler_free": "She has major unique involvement in the Minsc confrontation and strongly contextualises his recruitment."
+        }
+      ],
+      "notes": "Jaheira must be alive/recruited for Minsc to be recruitable, but she does not strictly have to occupy an active slot; mark as 'strongly recommended', not 'mechanically required active'.",
+      "sources": [
+        "https://bg3.wiki/wiki/Abandoned_Cistern",
+        "https://bg3.wiki/wiki/Jaheira",
+        "https://bg3.wiki/wiki/Minsc"
+      ],
+      "location_group": "Abandoned Cistern"
+    },
+    {
+      "id": "a3-jaheira-home",
+      "act": 3,
+      "region": "Lower City",
+      "location": "Elerrathin's Home",
+      "encounter": "Jaheira's family",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Jaheira",
+          "rank": "must",
+          "content_types": [
+            "unique_cutscene",
+            "personal_lore",
+            "family_story"
+          ],
+          "why_spoiler_free": "The house is Jaheira's home and its family scenes are built around her presence."
+        },
+        {
+          "name": "Minsc",
+          "rank": "strong",
+          "content_types": [
+            "legacy_lore",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "If already recruited, his presence changes several family interactions."
+        }
+      ],
+      "notes": "Very high-value lore stop for returning BG characters.",
+      "sources": [
+        "https://bg3.wiki/wiki/Elerrathin%27s_Home"
+      ],
+      "location_group": "Elerrathin's Home"
+    },
+    {
+      "id": "a3-sorcerous",
+      "act": 3,
+      "region": "Lower City",
+      "location": "Sorcerous Sundries / Sorcerous Vault",
+      "encounter": "Annals of Karsus",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Gale",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue",
+            "major_character_arc"
+          ],
+          "why_spoiler_free": "The Annals of Karsus are the core Act 3 progression point for Gale's personal quest."
+        }
+      ],
+      "notes": "Gale can interrupt/ask to read the book even if another character obtains it, but bringing him gives the intended context.",
+      "sources": [
+        "https://bg3.wiki/wiki/Sorcerous_Sundries",
+        "https://bg3.wiki/wiki/Gale"
+      ],
+      "location_group": "Sorcerous Sundries"
+    },
+    {
+      "id": "a3-stormshore-gale",
+      "act": 3,
+      "region": "Lower City",
+      "location": "Stormshore Tabernacle",
+      "encounter": "Mystra",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Gale",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_scene",
+            "major_character_arc"
+          ],
+          "why_spoiler_free": "After the Annals, this is where Gale can receive his direct audience with Mystra."
+        }
+      ],
+      "notes": "Real quest scene, not flavor.",
+      "sources": [
+        "https://bg3.wiki/wiki/Stormshore_Tabernacle",
+        "https://bg3.wiki/wiki/The_Wizard_of_Waterdeep"
+      ],
+      "location_group": "Stormshore Tabernacle"
+    },
+    {
+      "id": "a3-house-grief",
+      "act": 3,
+      "region": "Lower City",
+      "location": "House of Grief / Cloister of Sombre Embrace",
+      "encounter": "Shadowheart's Act 3 finale",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Shadowheart",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_cutscenes",
+            "major_character_arc"
+          ],
+          "why_spoiler_free": "This is the focal point of Shadowheart's personal quest."
+        },
+        {
+          "name": "Jaheira",
+          "rank": "strong",
+          "content_types": [
+            "legacy_lore",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "Has special interactions with Viconia."
+        },
+        {
+          "name": "Minsc",
+          "rank": "strong",
+          "content_types": [
+            "legacy_lore",
+            "unique_dialogue"
+          ],
+          "why_spoiler_free": "Has special interactions with Viconia."
+        }
+      ],
+      "notes": "Shadowheart is the must-bring; Jaheira/Minsc are bonus legacy-content if party slots allow.",
+      "sources": [
+        "https://bg3.wiki/wiki/House_of_Grief",
+        "https://bg3.wiki/wiki/Investigate_the_House_of_Grief"
+      ],
+      "location_group": "House of Grief"
+    },
+    {
+      "id": "a3-cazador",
+      "act": 3,
+      "region": "Lower City",
+      "location": "Cazador's Palace",
+      "encounter": "Cazador / ritual",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Astarion",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_cutscenes",
+            "major_character_arc"
+          ],
+          "why_spoiler_free": "This is the climax of Astarion's personal quest and contains extensive unique content."
+        }
+      ],
+      "notes": "Hard must-bring for companion-story players.",
+      "sources": [
+        "https://bg3.wiki/wiki/The_Pale_Elf",
+        "https://bg3.wiki/wiki/Investigate_Cazador%27s_Palace"
+      ],
+      "location_group": "Cazador's Palace"
+    },
+    {
+      "id": "a3-iron-throne",
+      "act": 3,
+      "region": "Lower City",
+      "location": "Iron Throne",
+      "encounter": "Rescue Duke Ravengard",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Wyll",
+          "rank": "strong",
+          "content_types": [
+            "companion_quest",
+            "family_story"
+          ],
+          "why_spoiler_free": "The Duke rescue is central to Wyll's personal quest, though Wyll does not have to be in the active party for the rescue to work."
+        }
+      ],
+      "notes": "Do NOT mark Wyll as mechanically required active; recommend for story context.",
+      "sources": [
+        "https://bg3.wiki/wiki/Iron_Throne",
+        "https://bg3.wiki/wiki/The_Grand_Duke"
+      ],
+      "location_group": "Iron Throne"
+    },
+    {
+      "id": "a3-wyrmway",
+      "act": 3,
+      "region": "Wyrm's Rock",
+      "location": "The Wyrmway / Ansur",
+      "encounter": "Wyrmway trials + Ansur",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Wyll",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "unique_dialogue",
+            "trial_hints",
+            "major_character_arc"
+          ],
+          "why_spoiler_free": "The Wyrmway is a subquest of Wyll's personal quest, and his upbringing gives unique input during the trials."
+        }
+      ],
+      "notes": "Wyll's post-Ansur future is also part of this chain.",
+      "sources": [
+        "https://bg3.wiki/wiki/Wyrmway_%28quest%29",
+        "https://bg3.wiki/wiki/Wyll"
+      ],
+      "location_group": "The Wyrmway"
+    },
+    {
+      "id": "a3-house-hope",
+      "act": 3,
+      "region": "Lower City",
+      "location": "House of Hope",
+      "encounter": "Orphic Hammer route",
+      "switch_worth_it": false,
+      "priority": "contextual",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Lae'zel",
+          "rank": "contextual",
+          "content_types": [
+            "companion_quest_context",
+            "approval"
+          ],
+          "why_spoiler_free": "The Hammer is central to her Orpheus route, but the House itself does not require her active presence for the quest to function."
+        }
+      ],
+      "notes": "Recommend if the user wants thematic continuity, but don't force a switch solely for mechanics.",
+      "sources": [
+        "https://bg3.wiki/wiki/Orphic_Hammer",
+        "https://bg3.wiki/wiki/Help_Kith%27rak_Voss",
+        "https://bg3.wiki/wiki/Lae%27zel/Approval"
+      ],
+      "location_group": "House of Hope"
+    },
+    {
+      "id": "a3-murder-tribunal",
+      "act": 3,
+      "region": "Lower City",
+      "location": "Murder Tribunal",
+      "encounter": "Sarevok",
+      "switch_worth_it": true,
+      "priority": "strong",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Jaheira",
+          "rank": "strong",
+          "content_types": [
+            "unique_scene",
+            "legacy_lore"
+          ],
+          "why_spoiler_free": "Sarevok recognises her and the Tribunal scene changes substantially."
+        },
+        {
+          "name": "Minsc",
+          "rank": "strong",
+          "content_types": [
+            "unique_scene",
+            "legacy_lore"
+          ],
+          "why_spoiler_free": "Sarevok recognises him and the Tribunal scene changes substantially."
+        }
+      ],
+      "notes": "Especially valuable for BG1/BG2 lore. Their presence can alter how the Tribunal encounter opens.",
+      "sources": [
+        "https://bg3.wiki/wiki/Impress_the_Murder_Tribunal",
+        "https://bg3.wiki/wiki/Jaheira/Approval",
+        "https://bg3.wiki/wiki/Minsc/Approval"
+      ],
+      "location_group": "Murder Tribunal"
+    },
+    {
+      "id": "a3-bhaal-orin",
+      "act": 3,
+      "region": "Undercity",
+      "location": "Temple of Bhaal",
+      "encounter": "Orin",
+      "switch_worth_it": false,
+      "priority": "flavor",
+      "spoiler_level": "low",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Minthara",
+          "rank": "flavor",
+          "content_types": [
+            "personal_history",
+            "unique_remarks"
+          ],
+          "why_spoiler_free": "Minthara has a deeply personal history with Orin and special reactions around the Bhaal Temple, but she is not required for the main confrontation."
+        }
+      ],
+      "notes": "If Minthara is the kidnapped victim, this naturally changes. Keep kidnapping-state logic separate from general recommendation.",
+      "sources": [
+        "https://bg3.wiki/wiki/Minthara",
+        "https://bg3.wiki/wiki/Minthara/Location_Remarks",
+        "https://bg3.wiki/wiki/Rescue_Orin%27s_Victim"
+      ],
+      "location_group": "Temple of Bhaal"
+    },
+    {
+      "id": "a3-gortash-final",
+      "act": 3,
+      "region": "Lower City / Wyrm's Rock",
+      "location": "Gortash confrontation",
+      "encounter": "Final confrontation with Gortash",
+      "switch_worth_it": true,
+      "priority": "must",
+      "spoiler_level": "low",
+      "missable": true,
+      "companions": [
+        {
+          "name": "Karlach",
+          "rank": "must",
+          "content_types": [
+            "companion_quest",
+            "major_character_arc",
+            "unique_followup"
+          ],
+          "why_spoiler_free": "Karlach's personal quest explicitly asks her to confront Gortash and later see the outcome up close."
+        }
+      ],
+      "notes": "Wyll is relevant to the broader Gortash/Ravengard plot, but Karlach is the true must-bring for this confrontation.",
+      "sources": [
+        "https://bg3.wiki/wiki/Our_Fiery_Friend"
+      ],
+      "location_group": "Gortash confrontation"
+    },
+    {
+      "id": "a3-lowercity-general",
+      "act": 3,
+      "region": "Lower City",
+      "location": "Lower City general exploration",
+      "encounter": "Ambient city exploration",
+      "switch_worth_it": false,
+      "priority": "flavor",
+      "spoiler_level": "none",
+      "missable": false,
+      "companions": [
+        {
+          "name": "Jaheira",
+          "rank": "flavor",
+          "content_types": [
+            "banter",
+            "legacy_lore",
+            "city_lore"
+          ],
+          "why_spoiler_free": "Community consensus strongly favours her for Act 3 city flavor and she has many city-specific interactions."
+        },
+        {
+          "name": "Minsc",
+          "rank": "flavor",
+          "content_types": [
+            "banter",
+            "legacy_lore"
+          ],
+          "why_spoiler_free": "Once recruited, he adds substantial late-game banter and classic Baldur's Gate flavor."
+        }
+      ],
+      "notes": "Community-flavor recommendation rather than a specific quest trigger.",
+      "sources": [
+        "https://www.reddit.com/r/BaldursGate3/comments/18wtg1v",
+        "https://www.reddit.com/r/BaldursGate3/comments/179tbck"
+      ],
+      "location_group": "Lower City general exploration"
+    }
+  ],
+  "routes": {
+    "1": [
+      {
+        "name": "Wilderness",
+        "note": "Early surface route",
+        "ids": [
+          "a1-grove-zorru",
+          "a1-blighted-necromancy",
+          "a1-swamp-gandrel"
+        ]
+      },
+      {
+        "name": "Risen Road",
+        "note": "North / north-west surface",
+        "ids": [
+          "a1-risen-karlach-wyll",
+          "a1-waukeens-wyll",
+          "a1-gith-patrol"
+        ]
+      },
+      {
+        "name": "Underdark → Grymforge",
+        "note": "Optional branch before Act 2",
+        "ids": [
+          "a1-grymforge"
+        ]
+      },
+      {
+        "name": "Mountain Pass → Crèche",
+        "note": "Optional branch before Act 2",
+        "ids": [
+          "a1-creche"
+        ]
+      }
+    ],
+    "2": [
+      {
+        "name": "Shadowlands Entry",
+        "note": "First arrival",
+        "ids": [
+          "a2-entry-shadowheart"
+        ]
+      },
+      {
+        "name": "Last Light Inn",
+        "note": "Early Act 2 hub",
+        "ids": [
+          "a2-lastlight-dammon",
+          "a2-lastlight-raphael",
+          "a2-lastlight-isobel",
+          "a2-lastlight-art"
+        ]
+      },
+      {
+        "name": "Moonrise — First Visit",
+        "note": "Explore before the finale",
+        "ids": [
+          "a2-moonrise-araj",
+          "a2-moonrise-balthazar-room",
+          "a2-moonrise-prison"
+        ]
+      },
+      {
+        "name": "Reithwin → Grand Mausoleum",
+        "note": "Town exploration into the mausoleum",
+        "ids": [
+          "a2-reithwin-halsin",
+          "a2-mausoleum-raphael"
+        ]
+      },
+      {
+        "name": "Gauntlet of Shar",
+        "note": "Major companion-story zone",
+        "ids": [
+          "a2-gauntlet-general",
+          "a2-gauntlet-yurgir",
+          "a2-shadowfell"
+        ]
+      },
+      {
+        "name": "Moonrise Assault",
+        "note": "Act 2 endgame begins",
+        "ids": [
+          "a2-assault-jaheira"
+        ]
+      },
+      {
+        "name": "Mind Flayer Colony",
+        "note": "Party is locked once you enter",
+        "ids": [
+          "a2-colony-mizora",
+          "a2-colony-gale",
+          "a2-colony-minthara"
+        ]
+      }
+    ],
+    "3": [
+      {
+        "name": "Rivington",
+        "note": "Outer city",
+        "ids": [
+          "a3-rivington-orin",
+          "a3-circus-zethino",
+          "a3-openhand-tara",
+          "a3-gur-camp",
+          "a3-ferg",
+          "a3-western-beach"
+        ]
+      },
+      {
+        "name": "Wyrm's Crossing",
+        "note": "Bridge district",
+        "ids": [
+          "a3-danthelon",
+          "a3-flophouse",
+          "a3-sharess-drow",
+          "a3-sharess-voss"
+        ]
+      },
+      {
+        "name": "Wyrm's Rock",
+        "note": "Fortress / city gate",
+        "ids": [
+          "a3-coronation",
+          "a3-wyrmway"
+        ]
+      },
+      {
+        "name": "Lower City",
+        "note": "Many branches — order becomes flexible",
+        "ids": [
+          "a3-lowercity-general",
+          "a3-guildhall",
+          "a3-counting-house",
+          "a3-jaheira-home",
+          "a3-sorcerous",
+          "a3-stormshore-gale",
+          "a3-house-grief",
+          "a3-cazador",
+          "a3-iron-throne",
+          "a3-house-hope",
+          "a3-gortash-final",
+          "a3-murder-tribunal"
+        ]
+      },
+      {
+        "name": "Sewers / Undercity",
+        "note": "Underground branches",
+        "ids": [
+          "a3-cistern",
+          "a3-bhaal-orin"
+        ]
+      }
+    ]
+  }
+}

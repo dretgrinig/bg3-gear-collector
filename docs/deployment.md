@@ -34,8 +34,12 @@ Current output:
 404.html
 assets/acquisition-pilot.js
 assets/bg.jpg
+assets/companion-guide.css
+assets/companion-guide-model.js
+assets/companion-guide.js
 config.js
 data/acquisition.v1.json
+data/companion-guide.v1.json
 icons/icon-180.png
 icons/icon-192.png
 icons/icon-32.png
@@ -81,3 +85,12 @@ Output exclusion applies to new builds; it does not remove existing immutable
 historical deployments. Any historical-artifact cleanup is a separate action.
 Until the actual Pages settings and a dist-based develop deployment pass these
 checks, deployment verification and the v0.9.1 release gate remain pending.
+
+## Companion Content Guide
+
+The 17-file artifact includes the isolated guide ES modules/CSS and its explicit
+reviewed JSON input. The guide is a view in the Tracker shell, not a pathname
+route. Open it from the start area and verify return focus/scroll, Full utility,
+Minimal/Light projection, local reveals, retry, and context invalidation at
+320/390/768/1280 px. Guide browsing must cause no persistence/backend writes.
+The original prototype, test fixtures, docs and research remain outside dist.
