@@ -1,5 +1,6 @@
 /* Batch 3: literal reviewed identities and points; production resolver/render/import paths. */
 'use strict';
+const withoutGuide=require('./helpers/companion-guide-boundary.cjs');
 const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
@@ -1150,7 +1151,7 @@ for(const mode of ['full','minimal','light'])test('Batch 3 '+mode+' discovery/fi
  for(const act of ['ACT 1','ACT 2','ACT 3','ACT 1']){after.act(act);before.act(act);assert.deepEqual(clone(discovery(after)),clone(discovery(before)));}after.search('ring');before.search('ring');assert.deepEqual(clone(discovery(after)),clone(discovery(before)));after.mode('full');after.mode(mode);assert.equal(after.app.progress(),progress);
 });
 test('Batch 3 protected runtime/schema/resolver/renderer/catalogue/PWA/transport/build files are byte-identical',()=>{
- for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):readFileSync(join(root,file),'utf8'),execFileSync('git',['show',base+':'+file],{cwd:root,encoding:'utf8'}),file);
+ for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):withoutGuide(file,readFileSync(join(root,file),'utf8')),execFileSync('git',['show',base+':'+file],{cwd:root,encoding:'utf8'}),file);
 });
 test('Batch 3 deterministic generated bundle contains canonical data and unchanged executable logic',()=>{
  assert.equal(generateBundle(),generateBundle());const current=readFileSync(join(root,'assets/acquisition-pilot.js'),'utf8');assert.equal(generateBundle(),current);const embedded=current.match(/  const dataset = (\{[^\n]*\});/);assert.ok(embedded);assert.deepEqual(JSON.parse(embedded[1]),data);

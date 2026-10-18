@@ -184,15 +184,15 @@ const compressedZstdPayload = () => text('Synthetic Globals structural payload: 
 const compressedZstdVector = () => new Uint8Array(Buffer.from('KLUv/WDQEBUCAJQDU3ludGhldGljIEdsb2JhbHMgc3RydWN0dXJhbCBwYXlsb2FkOiBib3VuZGVkIGRhdGEgb25seS4gAQBJGbxXUA==', 'base64'));
 const checksumZstdVector = () => new Uint8Array(Buffer.from('KLUv/WTQEBUCAJQDU3ludGhldGljIEdsb2JhbHMgc3RydWN0dXJhbCBwYXlsb2FkOiBib3VuZGVkIGRhdGEgb25seS4gAQBJGbxXUAXeGBM=', 'base64'));
 
-test('lsv spike explicitly rejects a valid independently encoded Zstandard compressed block', async () => {
+test('lsv spike decodes the independent compressed Zstandard vector exactly', async () => {
   const { inspectPackage, readMember, decompress } = parser();
   const encoded = compressedZstdVector(), data = compressedZstdPayload();
   const blockHeader = encoded[7] | encoded[8] << 8 | encoded[9] << 16;
   assert.equal((blockHeader >>> 1) & 3, 2, 'Golden vector must contain a real compressed block');
-  const unsupported = error => error.code === 'unsupported-codec' && /compressed block type 2/.test(error.message);
+  const matches = output => equalBytes(output, data);
   const pkg = await inspectPackage(makePackage([{ name: 'Globals.lsf', codec: 3, data, encoded }]));
-  await assert.rejects(() => readMember(pkg, 'Globals.lsf'), unsupported);
-  await assert.rejects(() => decompress('zstd', encoded, data.length), unsupported);
+  matches(await readMember(pkg, 'Globals.lsf'));
+  matches(await decompress('zstd', encoded, data.length));
 });
 
 function nonSingleZstdBlock(type, size) {
@@ -204,11 +204,22 @@ function nonSingleZstdBlock(type, size) {
   ]);
 }
 
+for (const [label,hex,expected] of [
+ ['invalid history','28b52ffd00004500000841015400020004',4],
+ ['clipped overproduction','28b52ffd000055000008410154010234000004',1024]
+]) test('lsv spike checked decoder rejects review '+label,async()=>{
+ const encoded=Uint8Array.from(Buffer.from(hex,'hex')),before=encoded.slice();
+ const pkg=await parser().inspectPackage(makePackage([{name:'Globals.lsf',codec:3,data:new Uint8Array(expected),encoded}]));
+ for(const run of [()=>parser().decompress('zstd',encoded,expected),()=>parser().readMember(pkg,'Globals.lsf')])
+  await assert.rejects(run,e=>['invalid-structure','size-limit','truncated'].includes(e.code));
+ equalBytes(encoded,before);
+});
+test('lsv spike valid compressed blocks are supported through the selected member path',async()=>{
+ const data=compressedZstdPayload(),pkg=await parser().inspectPackage(makePackage([{name:'Globals.lsf',codec:3,data,encoded:compressedZstdVector()}]));
+ equalBytes(await parser().readMember(pkg,'Globals.lsf'),data);
+});
+
 const zstdPreflightCases = [
-  // Fixed Work-review reproductions: invalid history and clipped overproduction.
-  ['malformed compressed block with invalid history', () => new Uint8Array(Buffer.from('28b52ffd00004500000841015400020004', 'hex')), 4, /compressed block type 2|unsupported/i, 'unsupported-codec'],
-  ['malformed compressed block with excessive regenerated output', () => new Uint8Array(Buffer.from('28b52ffd000055000008410154010234000004', 'hex')), 1024, /compressed block type 2|unsupported/i, 'unsupported-codec'],
-  ['a valid compressed block outside the supported subset', compressedZstdVector, 4560, /compressed block type 2|unsupported/i, 'unsupported-codec'],
   ['raw-block underproduction without a frame content size', () => nonSingleZstdBlock(0, 3), 4, /length|manifest|declared/i, 'invalid-structure'],
   ['raw-block overproduction without a frame content size', () => nonSingleZstdBlock(0, 4), 3, /output|size|declared/i, 'size-limit'],
   ['RLE overproduction without a frame content size', () => nonSingleZstdBlock(1, 4), 3, /output|size|declared/i, 'size-limit'],
@@ -244,25 +255,24 @@ const zstdPreflightCases = [
 for (const [label, fixture, expandedSize, message, code] of zstdPreflightCases) {
   test(`lsv spike rejects ${label} before entering the Zstandard decoder`, async () => {
     const { inspectPackage, readMember } = parser();
-    const dependency = require('../experiments/lsv/vendor/fzstd-0.1.1.js');
-    const original = dependency.Decompress;
-    let decoderEntries = 0;
-    dependency.Decompress = class ForbiddenDecoder {
-      constructor() { decoderEntries++; throw new Error('Decoder must not run before preflight rejection'); }
-    };
-    try {
+    const checked=require('../experiments/lsv/zstd-bounded.cjs');
+    let decoderEntries=0;
+    const context={module:{exports:{}},require:()=>({inspect:checked.inspect,decode(){decoderEntries++;throw new Error('Preflight must reject before decode')}}),Uint8Array,DataView,Blob,TextEncoder,TextDecoder,setTimeout,Error};
+    require('node:vm').runInNewContext(readFileSync(parserPath,'utf8'),context);
+    const preflightParser=context.module.exports;
+    {
       const encoded = fixture(), originalBytes = encoded.slice();
-      const pkg = await inspectPackage(makePackage([{ name: 'Globals.lsf', codec: 3, data: new Uint8Array(expandedSize), encoded }]));
+      const pkg = await preflightParser.inspectPackage(makePackage([{ name: 'Globals.lsf', codec: 3, data: new Uint8Array(expandedSize), encoded }]));
       const diagnostic = error => {
         assert.equal(error.code, code);
         assert.match(error.message, message);
         return true;
       };
-      await assert.rejects(() => readMember(pkg, 'Globals.lsf'), diagnostic);
-      await assert.rejects(() => parser().decompress('zstd', encoded, expandedSize), diagnostic);
+      await assert.rejects(() => preflightParser.readMember(pkg, 'Globals.lsf'), diagnostic);
+      await assert.rejects(() => preflightParser.decompress('zstd', encoded, expandedSize), diagnostic);
       equalBytes(encoded, originalBytes);
       assert.equal(decoderEntries, 0, 'Invalid or unsupported frames must fail before decoder construction');
-    } finally { dependency.Decompress = original; }
+    }
   });
 }
 

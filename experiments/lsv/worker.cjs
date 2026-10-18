@@ -2,7 +2,7 @@
   'use strict';
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else {
-    root.importScripts('./vendor/fzstd-0.1.1.js', './parser.cjs', './resource.cjs');
+    root.importScripts('./zstd-bounded.cjs', './parser.cjs', './lz4-frame-bounded.cjs', './resource.cjs');
     const api = factory();
     const handler = api.createWorkerHandler({ parser: root.BG3LsvParser, resource: root.BG3LsvResource, postMessage: (message, transfer) => root.postMessage(message, transfer) });
     root.addEventListener('message', event => handler.handleMessage(event));
@@ -70,6 +70,30 @@
     if (result.kind === 'lsf' && result.structure) return boundedReport({ kind: 'lsf', status: 'decoded', version: safeInteger(result.version), sectionCount: Array.isArray(result.sections) ? result.sections.length : 0, structure: { nodeCount: safeInteger(result.structure.nodeCount), attributeCount: safeInteger(result.structure.attributeCount) }, ecs: { status: 'opaque' } }, limits);
     fail('unsupported-resource');
   }
+  function framingSummary(result,limits) {
+    if (!result || result.kind!=='lsf-framing' || result.status!=='framing-validated' || result.version!==7 || result.metadataFormat!==0 || result.sectionDecoding!=='not-attempted') fail('invalid-resource');
+    const names=['strings','nodes','attributes','values','keys'];
+    if (!Array.isArray(result.sections) || result.sections.length!==5 || !Array.isArray(result.compressionFlags) || result.compressionFlags.length!==4) fail('invalid-resource');
+    const sections=result.sections.map((section,index)=>{
+      if (section.name!==names[index] || !['none','lz4'].includes(section.codec)) fail('invalid-resource');
+      const row={name:names[index],offset:safeInteger(section.offset),compressedSize:safeInteger(section.compressedSize),expandedSize:safeInteger(section.expandedSize),codec:section.codec,
+        framing:section.codec==='none'?'uncompressed':index===0?'raw-lz4-not-inspected':'standard-lz4-frame'};
+      if (section.frame) {
+        const f=section.frame;
+        if (f.status!=='framing-validated' || f.payloadValidation!=='not-attempted' || !Array.isArray(f.blocks) || f.blocks.length>4096 || f.blockCount!==f.blocks.length || f.headerChecksumValid!==true || f.endMark!==true || f.trailingBytes!==false || f.dictionary!==false || f.blockChecksum!==false || f.contentChecksum!==false) fail('invalid-resource');
+        const frame={status:'framing-validated',payloadValidation:'not-attempted'};
+        for(const key of ['magic','version','flg','bd','blockMaximum','expectedExpandedBytes','frameBytes','blockCount','storedBlocks','compressedBlocks','encodedPayloadBytes']) frame[key]=safeInteger(f[key]);
+        for(const key of ['independent','dependent','contentSizePresent']) {if(typeof f[key]!=='boolean')fail('invalid-resource');frame[key]=f[key];}
+        frame.contentSize=f.contentSize===null?null:safeInteger(f.contentSize);
+        Object.assign(frame,{dictionary:false,blockChecksum:false,contentChecksum:false,headerChecksumValid:true,endMark:true,trailingBytes:false});
+        frame.blocks=f.blocks.map((b,index)=>{if(typeof b.stored!=='boolean' || b.index!==index)fail('invalid-resource');return {index,stored:b.stored,storedBytes:safeInteger(b.storedBytes),payloadOffset:safeInteger(b.payloadOffset)};});
+        row.frame=frame;
+      } else if (section.codec==='lz4' && index!==0) fail('invalid-resource');
+      return row;
+    });
+    const flags=result.compressionFlags.map(n=>{safeInteger(n);if(n>255)fail('invalid-resource');return n;});
+    return boundedReport({kind:'lsf-framing',status:'framing-validated',version:7,metadataFormat:0,compressionFlags:flags,physicalSectionOrder:names,sectionExpansionBytes:safeInteger(result.sectionExpansionBytes),sectionDecoding:'not-attempted',sections},limits);
+  }
   function createWorkerHandler(options) {
     const { parser, resource, postMessage } = options;
     if (!parser || typeof parser.inspectPackage !== 'function' || typeof parser.readMember !== 'function' || typeof postMessage !== 'function') throw new Error('Worker dependencies are unavailable.');
@@ -80,7 +104,7 @@
       const message = event && event.data;
       if (!message || typeof message.attemptId !== 'string' || message.attemptId.length < 1 || message.attemptId.length > 128 || !Number.isSafeInteger(message.requestId) || message.requestId < 1) return;
       if (attemptId !== null && message.attemptId !== attemptId) return;
-      if (message.type !== 'inspect' && message.type !== 'read-member') return;
+      if (message.type !== 'inspect' && message.type !== 'read-member' && message.type !== 'inspect-resource-frames') return;
       if (attemptId === null && message.type !== 'inspect') return;
       if (attemptId === null) attemptId = message.attemptId;
       const envelope = { attemptId, requestId: message.requestId };
@@ -101,10 +125,19 @@
           postMessage({ ...envelope, type: 'inspection', result }, []);
         } else {
           if (!pkg || typeof message.memberName !== 'string' || !pkg.entries.some(entry => entry.name === message.memberName)) fail('member-not-found');
+          const framingOnly=message.type==='inspect-resource-frames';
+          if (framingOnly && message.memberName!=='Globals.lsf') fail('unsupported-resource');
           const entry = pkg.entries.find(candidate => candidate.name === message.memberName), started = now();
           const bytes = await parser.readMember(pkg, message.memberName, { signal, budget });
           if (!(bytes instanceof Uint8Array) || !(bytes.buffer instanceof ArrayBuffer) || bytes.byteLength > limits.memberBytes) fail('size-limit');
           const readMs = Math.max(0, now() - started), base = entry.name.replace(/\\/g, '/').split('/').pop().toLowerCase();
+          if (framingOnly) {
+            if (!resource || typeof resource.inspectResourceFrames!=='function') fail('unsupported-resource');
+            const result=await resource.inspectResourceFrames(bytes,{limits,signal,budget});
+            const report=boundedReport({byteLength:bytes.byteLength,codec:entry.codec,resource:framingSummary(result,limits),metrics:{readMs,totalMs:Math.max(0,now()-started),cumulativeExpandedBytes:safeInteger(budget.expandedBytes)}},limits);
+            postMessage({...envelope,type:'resource-framing',result:report},[]);
+            return;
+          }
           let decoded = { status: 'not-attempted' };
           if (base === 'saveinfo.json' || base === 'meta.lsf' || base === 'globals.lsf') {
             try {

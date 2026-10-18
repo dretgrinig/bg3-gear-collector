@@ -199,18 +199,19 @@ test('LSV real browser worker path transfers actual synthetic selected bytes wit
     context.postMessage = (message, transfer) => { worker.outputTransfers.push(transfer.length); const copied = structuredClone(message, { transfer }); if (!worker.terminated) parentListeners.get('message')?.({ data: copied }); };
     context.addEventListener = (type, fn) => { listeners[type] = fn; };
     context.importScripts = (...scripts) => {
-      assert.deepEqual(scripts, ['./vendor/fzstd-0.1.1.js', './parser.cjs', './resource.cjs']);
+      assert.deepEqual(scripts, ['./zstd-bounded.cjs', './parser.cjs', './lz4-frame-bounded.cjs', './resource.cjs']);
       for (const script of scripts) vm.runInContext(fs.readFileSync(path.join(sourceRoot, script), 'utf8'), context);
     };
     vm.createContext(context);
     vm.runInContext(fs.readFileSync(path.join(sourceRoot, 'worker.cjs'), 'utf8'), context);
     workers.push(worker); return worker;
   } });
-  const data = makePackage([{ name: 'SaveInfo.json', data: '{"synthetic":true}' }, { name: 'StorySave.bin', data: 'opaque', codec: 2 }, { name: 'meta.lsf', data: makeLsf(), codec: 1 }, { name: 'LevelCache/Synthetic.bin', data: 'opaque-zstd', codec: 3 }]);
+  const compressedFixture=require('./helpers/lsv-zstd-fixtures.cjs'),lz4Fixture=require('./helpers/lsv-lz4-frame-fixtures.cjs');
+  const data = makePackage([{ name: 'SaveInfo.json', data: '{"synthetic":true}' }, { name: 'StorySave.bin', data: 'opaque', codec: 2 }, { name: 'meta.lsf', data: makeLsf(), codec: 1 }, { name: 'LevelCache/Synthetic.bin', data: 'opaque-zstd', codec: 3 }, {name:'Synthetic/compressed.bin',codec:3,data:compressedFixture.recipe('golden'),encoded:compressedFixture.golden()}, {name:'Synthetic/meta.lsf',codec:3,data:lz4Fixture.lsf(),encoded:lz4Fixture.outerZstd()}]);
   const buffer = data.buffer;
   const result = await controller.inspect(buffer);
   assert.equal(buffer.byteLength, 0, 'The selected input ownership is transferred to its worker');
-  assert.equal(result.version, 18); assert.equal(result.entries.length, 4);
+  assert.equal(result.version, 18); assert.equal(result.entries.length, 6);
   assert.deepEqual(workers[0].outputTransfers, [0], 'Inspection does not emit selected payload bytes');
   const read = await controller.readMember('SaveInfo.json');
   assert.equal(new TextDecoder().decode(read.bytes), '{"synthetic":true}');
@@ -223,14 +224,109 @@ test('LSV real browser worker path transfers actual synthetic selected bytes wit
   assert.equal(metadata.resource.ecs.status, 'opaque'); assert.equal(metadata.resource.structure.nodeCount, 0);
   const cache = await controller.readMember('LevelCache/Synthetic.bin');
   assert.equal(cache.codec, 'zstd'); assert.equal(new TextDecoder().decode(cache.bytes), 'opaque-zstd');
-  assert.equal(cache.metrics.cumulativeExpandedBytes, 4 * 272 + new TextEncoder().encode('{"synthetic":true}').length + 6 + makeLsf().length + 4 + 11);
+  assert.equal(cache.metrics.cumulativeExpandedBytes, 6 * 272 + new TextEncoder().encode('{"synthetic":true}').length + 6 + makeLsf().length + 4 + 11);
+  const compressed=await controller.readMember('Synthetic/compressed.bin');
+  assert.deepEqual(new Uint8Array(compressed.bytes),compressedFixture.recipe('golden'));
+  assert.equal(compressed.resource.status,'not-attempted');
+  const framed = await controller.readMember('Synthetic/meta.lsf');
+  assert.deepEqual(new Uint8Array(framed.bytes),lz4Fixture.lsf());
+  assert.equal(framed.resource.status,'decoded'); assert.equal(framed.resource.version,7);
+  assert.equal(framed.resource.structure.nodeCount,1); assert.equal(framed.resource.structure.attributeCount,1);
   const reselected = await controller.inspect(new Blob([makePackage()]));
   assert.equal(workers[0].terminated, true); assert.equal(reselected.entries.length, 1);
   assert.deepEqual(workers[1].inputTransfers, [0], 'Blob inputs are structured-cloned, not transferred');
   assert.equal((await controller.readMember('SaveInfo.json')).resource.status, 'decoded');
   controller.dispose(); assert.equal(workers[1].terminated, true);
   assert.deepEqual(effects, []);
+  await controller.inspect(makePackage([{name:'Globals.lsf',codec:3,data:lz4Fixture.inspectionLsf()}]).buffer);
+  const envelope=await controller.inspectResourceFrames('Globals.lsf');
+  assert.equal(envelope.resource.status,'framing-validated');assert.equal(envelope.resource.sections[1].frame.blockCount,2);
+  assert.equal(envelope.bytes,undefined);assert.deepEqual(workers[2].outputTransfers,[0,0], 'Classic Worker inspection transfers no selected or decoded payload');
+  assert.doesNotMatch(JSON.stringify(envelope),/SyntheticRoot|SyntheticAttribute|proof|decoded/);
+  controller.dispose();assert.deepEqual(effects,[]);
   const html = fs.readFileSync(path.join(sourceRoot, 'workbench.html'), 'utf8');
   assert.doesNotMatch(html, /innerHTML|supabase|localStorage|sessionStorage|indexedDB|showDirectoryPicker/);
   assert.match(html, /textContent/); assert.match(html, /connect-src 'none'/);
+});
+test('actual Worker handler shares outer-Zstd and inner-LZ4 expansion accounting',async()=>{
+ const f=require('./helpers/lsv-lz4-frame-fixtures.cjs'),{makePackage}=require('./helpers/lsv-fixtures.cjs'),p=require('../experiments/lsv/parser.cjs'),r=require('../experiments/lsv/resource.cjs');
+ const plain=f.lsf(),input=makePackage([{name:'meta.lsf',codec:3,data:plain,encoded:f.outerZstd()}]),expanded=Object.values(f.sections()).reduce((n,b)=>n+b.length,0),posts=[];
+ const w=createWorkerHandler({parser:p,resource:r,postMessage:m=>posts.push(m)});
+ await w.handleMessage(request('inspect',1,{input:input.buffer}));await w.handleMessage(request('read-member',2,{memberName:'meta.lsf'}));
+ assert.equal(posts[1].type,'member');assert.equal(posts[1].result.resource.status,'decoded');assert.equal(posts[1].result.metrics.cumulativeExpandedBytes,272+plain.length+expanded);
+});
+test('actual Worker handler rejects budget exhaustion and reports inner-LZ4 structural failure separately',async()=>{
+ const f=require('./helpers/lsv-lz4-frame-fixtures.cjs'),{makePackage,rawZstd}=require('./helpers/lsv-fixtures.cjs'),p=require('../experiments/lsv/parser.cjs'),r=require('../experiments/lsv/resource.cjs');
+ for(const bad of [false,true]){
+  const plain=f.lsf(bad?{mutateSection(d){d.values=d.values.slice();d.values[6]^=1;}}:{}),input=makePackage([{name:'meta.lsf',codec:3,data:plain,encoded:rawZstd(plain)}]),posts=[];
+  const expanded=Object.values(f.sections()).reduce((n,b)=>n+b.length,0),w=createWorkerHandler({parser:p,resource:r,postMessage:m=>posts.push(m)});
+  await w.handleMessage(request('inspect',1,{input:input.buffer,limits:bad?undefined:{cumulativeBytes:272+plain.length+expanded-1}}));await w.handleMessage(request('read-member',2,{memberName:'meta.lsf'}));
+  if(bad){assert.equal(posts[1].type,'member');assert.equal(posts[1].result.resource.status,'invalid');assert.equal(posts[1].result.resource.code,'invalid-structure');}
+  else{assert.equal(posts[1].type,'error');assert.equal(posts[1].error.code,'size-limit');assert.equal(posts[1].result,undefined);}
+ }
+});
+
+function globalsInspection(){return {...inspection(),entries:[{...inspection().entries[0],name:'Globals.lsf',kind:'globals'},{...inspection().entries[0],name:'meta.lsf'}]};}
+test('framing controller operation is explicit, Globals-only, and requires its exact response envelope',async()=>{
+ const h=controllerHarness();assert.equal((await rejected(h.controller.inspectResourceFrames('Globals.lsf'))).code,'no-active-package');
+ const inspected=h.controller.inspect(new ArrayBuffer(4));response(h.workers[0],'inspection',globalsInspection());await inspected;
+ assert.equal((await rejected(h.controller.inspectResourceFrames('missing'))).code,'member-not-found');
+ assert.equal((await rejected(h.controller.inspectResourceFrames('meta.lsf'))).code,'unsupported-resource');
+ let done=false;const p=h.controller.inspectResourceFrames('Globals.lsf').then(r=>{done=true;return r;});
+ assert.equal(h.workers[0].sent.at(-1).message.type,'inspect-resource-frames');assert.deepEqual(h.workers[0].sent.at(-1).transfer,[]);
+ response(h.workers[0],'member',{bytes:new ArrayBuffer(1)});await tick();assert.equal(done,false);
+ assert.equal((await rejected(h.controller.readMember('Globals.lsf'))).code,'busy');
+ response(h.workers[0],'resource-framing',{resource:{status:'framing-validated'}});assert.equal((await p).resource.status,'framing-validated');h.controller.dispose();
+});
+test('framing controller cancellation terminates the pending operation and ignores late results',async()=>{
+ const h=controllerHarness(),initial=h.controller.inspect(new ArrayBuffer(4));response(h.workers[0],'inspection',globalsInspection());await initial;
+ const late=h.workers[0].captureMessageHandler(),p=rejected(h.controller.inspectResourceFrames('Globals.lsf')),m=h.workers[0].sent.at(-1).message;
+ h.controller.cancel();assert.equal((await p).code,'aborted');assert.equal(h.workers[0].terminated,true);
+ late({data:{...m,type:'resource-framing',result:{resource:{status:'framing-validated'}}}});assert.equal(h.controller.getState().status,'cancelled');
+});
+test('framing controller shares the original cumulative active deadline including timer-race rejection',async()=>{
+ for(const race of [false,true]){
+  const h=controllerHarness(),initial=h.controller.inspect(new ArrayBuffer(4));h.timers.advance(20000);response(h.workers[0],'inspection',globalsInspection());await initial;
+  h.timers.advance(60000);const p=rejected(h.controller.inspectResourceFrames('Globals.lsf'));
+  if(race){h.timers.elapseWithoutCallbacks(10000);response(h.workers[0],'resource-framing',{});}else h.timers.advance(10000);
+  assert.equal((await p).code,'timeout');assert.equal(h.workers[0].terminated,true);
+ }
+});
+async function inspectGlobalsFixture(options={}){
+ const f=require('./helpers/lsv-lz4-frame-fixtures.cjs'),{makePackage}=require('./helpers/lsv-fixtures.cjs'),p=require('../experiments/lsv/parser.cjs'),r=require('../experiments/lsv/resource.cjs');
+ const plain=options.plain||f.inspectionLsf(),input=makePackage([{name:options.name||'Globals.lsf',codec:3,data:plain}]),posts=[];
+ let sectionCalls=0,reads=0;
+ const w=createWorkerHandler({parser:{...p,async readMember(...args){reads++;return p.readMember(...args);}},resource:{...r,decodeResource(){sectionCalls++;throw Error('Must not decode');},...options.resource},postMessage:(m,t)=>posts.push({message:m,transfer:t})});
+ await w.handleMessage(request('inspect',1,{input:input.buffer,limits:options.limits}));
+ await w.handleMessage(request('inspect-resource-frames',2,{memberName:options.name||'Globals.lsf'}));
+ return {w,posts,plain,reads,sectionCalls};
+}
+test('actual framing Worker extracts outer Zstd and returns sanitized framing metadata with zero payload transfers',async()=>{
+ const h=await inspectGlobalsFixture(),m=h.posts[1];assert.equal(m.message.type,'resource-framing');assert.deepEqual(m.transfer,[]);
+ const r=m.message.result;assert.equal(r.bytes,undefined);assert.equal(r.resource.status,'framing-validated');assert.equal(r.resource.sections[1].frame.blockCount,2);
+ assert.equal(r.metrics.cumulativeExpandedBytes,272+h.plain.length);assert.equal(h.sectionCalls,0);
+ assert.doesNotMatch(JSON.stringify(r),/SyntheticRoot|SyntheticAttribute|proof|rootNames|engineVersion|decoded/);
+ await h.w.handleMessage(request('inspect-resource-frames',3,{memberName:'Globals.lsf'}));assert.equal(h.posts[2].message.result.metrics.cumulativeExpandedBytes,272+2*h.plain.length);
+});
+test('framing Worker refuses other listed members before extraction',async()=>{
+ const h=await inspectGlobalsFixture({name:'meta.lsf'});assert.equal(h.reads,0);assert.equal(h.posts[1].message.error.code,'unsupported-resource');
+});
+test('framing Worker rejects malformed later frame without returning payload bytes',async()=>{
+ const f=require('./helpers/lsv-lz4-frame-fixtures.cjs'),h=await inspectGlobalsFixture({plain:f.inspectionLsf({mutateSection(d){d.values=d.values.slice();d.values[6]^=1;}})});
+ assert.equal(h.posts[1].message.type,'error');assert.equal(h.posts[1].message.error.code,'invalid-structure');assert.equal(h.posts[1].message.result,undefined);assert.deepEqual(h.posts[1].transfer,[]);assert.equal(h.sectionCalls,0);
+});
+test('framing Worker enforces small report cap without leaking unbounded resource fields',async()=>{
+ const h=await inspectGlobalsFixture({limits:{reportBytes:1000}});assert.equal(h.posts[1].message.type,'error');assert.equal(h.posts[1].message.error.code,'report-limit');assert.deepEqual(h.posts[1].transfer,[]);
+});
+test('framing Worker enforces projected section budget and does not enter section decoding',async()=>{
+ const f=require('./helpers/lsv-lz4-frame-fixtures.cjs'),plain=f.inspectionLsf();
+ const h=await inspectGlobalsFixture({plain,limits:{cumulativeBytes:272+plain.length+10}});assert.equal(h.posts[1].message.type,'error');assert.equal(h.posts[1].message.error.code,'size-limit');assert.equal(h.sectionCalls,0);
+});
+test('framing Worker allowlist drops injected private report properties',async()=>{
+ const r=require('../experiments/lsv/resource.cjs');
+ const h=await inspectGlobalsFixture({resource:{async inspectResourceFrames(...args){const out=await r.inspectResourceFrames(...args);out.privateValue='PRIVATE_SENTINEL';out.sections[1].frame.privateValue='PRIVATE_SENTINEL';out.sections[1].frame.blocks[0].privateValue='PRIVATE_SENTINEL';return out;}}});
+ assert.equal(h.posts[1].message.type,'resource-framing');assert.doesNotMatch(JSON.stringify(h.posts[1]),/PRIVATE_SENTINEL|privateValue/);
+});
+test('framing Worker preserves stale-attempt isolation',async()=>{
+ const h=await inspectGlobalsFixture();await h.w.handleMessage(request('inspect-resource-frames',3,{attemptId:'stale',memberName:'Globals.lsf'}));assert.equal(h.posts.length,2);
 });

@@ -1,5 +1,6 @@
 /* Independent reviewed fact table; real validator, resolver, tracker and renderer paths. */
 'use strict';
+const withoutGuide=require('./helpers/companion-guide-boundary.cjs');
 const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
@@ -151,5 +152,5 @@ test('Batch 4C cached ingestion and v5/v6 import/export preserve identities and 
  const h=storyHarness({userId:null,stories:[{id:'A',name:'Local A',local:true},{id:'B',name:'Local B',local:true}]});h.seed('A',{});h.seed('B',{'other-story':record('skipped')});await h.app.activate('A',{sync:false});for(const version of [5,6]){const output=Object.fromEntries(facts.items.map((f,i)=>[f.progressKey,version===5?'found':i%2?'skipped':'found']));const input=version===5?{progress:Object.fromEntries(facts.items.map(f=>['ACT 1|'+f.name,true]))}:{formatVersion:2,items:output};await h.app.import(input,'merge');assert.deepEqual((await h.exportPayload()).items,output);assert.equal(h.cached('B')['other-story'].status,'skipped');}
 });
 test('Batch 4C leaves product, schema, resolver, renderer and deployment files byte-identical',()=>{
- for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):readFileSync(join(root,file),'utf8'),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8'}),file);
+ for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):withoutGuide(file,readFileSync(join(root,file),'utf8')),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8'}),file);
 });

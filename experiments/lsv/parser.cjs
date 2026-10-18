@@ -1,5 +1,5 @@
 /* Phase A research spike: independent bounded LSPK v18 reader. No product integration. */
-(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./vendor/fzstd-0.1.1.js'):root.fzstd);if(typeof module==='object'&&module.exports)module.exports=api;else root.BG3LsvParser=api})(typeof globalThis==='object'?globalThis:this,function(zstd){
+(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./zstd-bounded.cjs'):root.BG3ZstdBounded);if(typeof module==='object'&&module.exports)module.exports=api;else root.BG3LsvParser=api})(typeof globalThis==='object'?globalThis:this,function(zstd){
 'use strict';
 const MiB=1024*1024;
 const LIMITS=Object.freeze({fileBytes:128*MiB,entries:512,memberBytes:128*MiB,cumulativeBytes:512*MiB,stringBytes:MiB,depth:64,timeoutMs:30000,reportBytes:10*MiB});
@@ -14,16 +14,48 @@ function boundedBigInt(value,max){if(value<0n||value>BigInt(max))fail('invalid-o
 function bytes(input){if(!(input instanceof Uint8Array))fail('invalid-structure','Expected bytes.');return input}
 function reserve(budget,size,limits){if(!budget)return;if(!Number.isSafeInteger(budget.expandedBytes)||budget.expandedBytes<0)fail('invalid-structure','Invalid expansion budget.');if(size>limits.cumulativeBytes-budget.expandedBytes)fail('size-limit','Cumulative expansion limit exceeded.');budget.expandedBytes+=size}
 const yieldTask=()=>new Promise(resolve=>setTimeout(resolve,0));
-async function lz4Block(data,expected,signal){
- const output=new Uint8Array(expected);let i=0,o=0,lastYield=0;
- function length(base){let n=base;if(base===15){let b;do{if(i>=data.length)fail('truncated','Truncated LZ4 length.');b=data[i++];if(n>expected-b)fail('size-limit','LZ4 output exceeds declared size.');n+=b}while(b===255)}return n}
- while(i<data.length){abort(signal);const token=data[i++],literals=length(token>>>4);if(literals>data.length-i)fail('truncated','Truncated LZ4 literals.');if(literals>expected-o)fail('size-limit','LZ4 output exceeds declared size.');output.set(data.subarray(i,i+literals),o);i+=literals;o+=literals;
-  if(i===data.length)break;
-  if(data.length-i<2)fail('truncated','Truncated LZ4 offset.');const distance=data[i]+data[i+1]*256;i+=2;if(distance===0||distance>o)fail('invalid-structure','Invalid LZ4 match offset.');const matches=length(token&15)+4;if(matches>expected-o)fail('size-limit','LZ4 match exceeds declared size.');if(i===data.length)fail('invalid-structure','LZ4 terminal match must be followed by a final literal sequence.');
-  for(let end=o+matches;o<end;o++){output[o]=output[o-distance];if(o-lastYield>=65536){lastYield=o;await yieldTask();abort(signal)}}
-  if(o-lastYield>=65536){lastYield=o;await yieldTask();abort(signal)}
+const viewBuffer=Object.getOwnPropertyDescriptor(Object.getPrototypeOf(Uint8Array.prototype),'buffer').get;
+const arrayBufferLength=Object.getOwnPropertyDescriptor(ArrayBuffer.prototype,'byteLength').get;
+// Bounded research primitive: history is only the caller-proven written prefix.
+// No allocation or expansion-budget charge occurs here.
+async function decodeLz4BlockInto(input,output,outputOffset,outputLimit,historyStart,options={}){
+ const limits=mergeLimits(options.limits),data=bytes(input);abort(options.signal);
+ if(!(output instanceof Uint8Array))fail('invalid-structure','Expected a byte destination.');
+ let inputBuffer,outputBuffer;
+ try{inputBuffer=viewBuffer.call(data);outputBuffer=viewBuffer.call(output);arrayBufferLength.call(outputBuffer);
+  // Zero-length views reject detached buffers without reading, copying or writing bytes.
+  new Uint8Array(inputBuffer,0,0);new Uint8Array(outputBuffer,0,0);
+ }catch{fail('invalid-structure','Expected attached byte buffers and a nonshared destination.');}
+ number(data.length,limits.fileBytes);number(output.length,limits.memberBytes);
+ for(const value of [historyStart,outputOffset,outputLimit])number(value,output.length);
+ if(historyStart>outputOffset||outputOffset>outputLimit)fail('invalid-offset','Invalid LZ4 output/history bounds.');
+ if(inputBuffer===outputBuffer)fail('invalid-structure','LZ4 input and destination must not alias.');
+ let i=0,o=outputOffset,lastYield=o;const capacity=outputLimit-outputOffset,inputLength=data.length,outputLength=output.length;
+ function liveBounds(){if(data.length!==inputLength||output.length!==outputLength)fail('invalid-structure','LZ4 buffers changed during decoding.');}
+ function length(base){let n=base;if(base===15){let b;do{if(i>=data.length)fail('truncated','Truncated LZ4 length.');b=data[i++];if(n>capacity-b)fail('size-limit','LZ4 output exceeds its bound.');n+=b}while(b===255)}return n}
+ async function checkpoint(){if(o-lastYield>=65536){lastYield=o;await yieldTask();abort(options.signal);liveBounds()}}
+ while(i<data.length){abort(options.signal);liveBounds();const token=data[i++],literals=length(token>>>4);
+  if(literals>data.length-i)fail('truncated','Truncated LZ4 literals.');
+  if(literals>outputLimit-o)fail('size-limit','LZ4 output exceeds its bound.');
+  output.set(data.subarray(i,i+literals),o);i+=literals;o+=literals;
+  if(i===data.length){if(o-lastYield>=65536)await checkpoint();break;}
+  if(data.length-i<2)fail('truncated','Truncated LZ4 offset.');
+  const distance=data[i]+data[i+1]*256;i+=2;
+  if(distance===0||distance>65535||distance>o-Math.max(historyStart,o-65535))fail('invalid-structure','Invalid LZ4 match offset.');
+  const matches=length(token&15)+4;
+  if(matches>outputLimit-o)fail('size-limit','LZ4 match exceeds its bound.');
+  if(i===data.length)fail('invalid-structure','LZ4 terminal match must be followed by a final literal sequence.');
+  // The whole write range and initial history reference are proved above.
+  // Progressive copying permits overlap without ever reading unwritten bytes.
+  for(let end=o+matches;o<end;o++){output[o]=output[o-distance];if(o-lastYield>=65536){lastYield=o;await yieldTask();abort(options.signal);liveBounds()}}
+  if(o-lastYield>=65536)await checkpoint();
  }
- if(o!==expected)fail('invalid-structure','Decoded length does not match the manifest.');return output;
+ liveBounds();if(i!==data.length)fail('invalid-structure','LZ4 block input was not fully consumed.');
+ abort(options.signal);return o;
+}
+async function lz4Block(data,expected,options){
+ const output=new Uint8Array(expected),end=await decodeLz4BlockInto(data,output,0,expected,0,options);
+ if(end!==expected)fail('invalid-structure','Decoded length does not match the manifest.');return output;
 }
 async function zlibStream(data,expected,signal){
  if(typeof DecompressionStream!=='function')fail('unsupported-codec','This runtime has no bounded zlib decoder.');
@@ -33,29 +65,15 @@ async function zlibStream(data,expected,signal){
  catch(error){if(error instanceof SpikeError)throw error;fail('invalid-structure','Invalid zlib stream.')}
  finally{signal?.removeEventListener('abort',onAbort);await reader.cancel().catch(()=>{});reader.releaseLock()}
 }
-// Preflight every frame/block before giving data to the vendored decoder. A narrow
-// single-frame raw/RLE subset rejects compressed blocks, dictionaries, checksums
-// and concatenation. Raw/RLE headers prove exact output sizes before decoding.
-async function zstdPreflight(data,expected,limits,signal){
- if(data.length<5)fail('truncated','Truncated Zstandard frame.');const dv=new DataView(data.buffer,data.byteOffset,data.byteLength);if(dv.getUint32(0,true)!==0xfd2fb528)fail('unsupported-codec','Only a single standard Zstandard frame is supported.');
- const flags=data[4];if(flags&0x18)fail('invalid-structure','Reserved Zstandard flags are set.');if(flags&4)fail('unsupported-codec','Zstandard checksummed frames are not supported in Phase A.');if(flags&3)fail('unsupported-codec','Zstandard dictionaries are not supported in Phase A.');
- const single=!!(flags&32),contentFlag=flags>>>6;let at=5,window=0;
- if(!single){if(at>=data.length)fail('truncated','Truncated Zstandard window.');const wd=data[at++],base=2**(10+(wd>>>3));window=base+(base/8)*(wd&7);number(window,limits.memberBytes)}
- const count=contentFlag?2**contentFlag:(single?1:0);if(count>data.length-at)fail('truncated','Truncated Zstandard content size.');let content=0n;for(let n=0;n<count;n++)content|=BigInt(data[at+n])<<BigInt(8*n);at+=count;if(contentFlag===1)content+=256n;
- if(count){if(content>BigInt(limits.memberBytes))fail('size-limit','Zstandard content size exceeds the cap.');if(content!==BigInt(expected))fail('invalid-structure','Zstandard content size disagrees with the manifest.');if(single)window=Number(content)}
- number(window,limits.memberBytes);let last=false,blockCount=0,decodedSize=0;
- while(!last){abort(signal);if(data.length-at<3)fail('truncated','Truncated Zstandard block.');const header=data[at]+data[at+1]*256+data[at+2]*65536;at+=3;last=!!(header&1);const type=(header>>>1)&3,size=header>>>3;if(type===3)fail('invalid-structure','Reserved Zstandard block type.');if(type===2)fail('unsupported-codec','Zstandard compressed block type 2 is unsupported in Phase A.');if(size>Math.min(window,131072))fail('size-limit','Zstandard block exceeds its frame window.');const stored=type===1?1:size;if(stored>data.length-at)fail('truncated','Truncated Zstandard payload.');if(size>expected-decodedSize)fail('size-limit','Zstandard block output exceeds declared size.');decodedSize+=size;at+=stored;if(++blockCount%1024===0){await yieldTask();abort(signal)}}
- if(at!==data.length)fail('unsupported-codec','Concatenated or trailing Zstandard data is unsupported.');if(decodedSize!==expected)fail('invalid-structure','Zstandard block output length disagrees with the manifest.');
-}
 async function decompress(codec,input,expected,options={}){
  const limits=mergeLimits(options.limits),data=bytes(input);abort(options.signal);number(data.length,limits.fileBytes);number(expected,limits.memberBytes);if(!CODECS.includes(codec))fail('unsupported-codec','Unsupported compression method.');reserve(options.budget,expected,limits);
  if(codec==='none'){if(data.length!==expected)fail('invalid-structure','Uncompressed length does not match the manifest.');return Uint8Array.from(data)}
- if(codec==='lz4')return lz4Block(data,expected,options.signal);
+ if(codec==='lz4')return lz4Block(data,expected,options);
  if(codec==='zlib')return zlibStream(data,expected,options.signal);
- await zstdPreflight(data,expected,limits,options.signal);abort(options.signal);
- if(!zstd?.Decompress)fail('unsupported-codec','Zstandard decoder is unavailable.');const output=new Uint8Array(expected);let offset=0;
- try{const decoder=new zstd.Decompress((chunk)=>{abort(options.signal);if(chunk.length>expected-offset)fail('size-limit','Zstandard output exceeds declared size.');output.set(chunk,offset);offset+=chunk.length});decoder.push(data,true);if(offset!==expected)fail('invalid-structure','Decoded length does not match the manifest.');return output}
- catch(error){if(error instanceof SpikeError)throw error;fail('invalid-structure','Invalid Zstandard stream.')}
+ if(!zstd||typeof zstd.inspect!=='function'||typeof zstd.decode!=='function')fail('unsupported-codec','Checked Zstandard decoder is unavailable.');
+ try{await zstd.inspect(data,expected,{limits,signal:options.signal});return await zstd.decode(data,expected,{limits,signal:options.signal})}
+ catch(error){if(error instanceof SpikeError)throw error;if(error&&['unsupported-codec','invalid-structure','truncated','size-limit','aborted'].includes(error.code))fail(error.code,error.message);fail('invalid-structure','Invalid Zstandard stream.')}
+
 }
 function classify(name){if(name==='SaveInfo.json')return 'save-info';if(name==='meta.lsf')return 'metadata';if(name==='Globals.lsf')return 'globals';if(name==='StorySave.bin')return 'story';if(name.startsWith('LevelCache/'))return 'level-cache';if(/\.webp$/i.test(name))return 'thumbnail';return 'other'}
 function validateName(raw,limits){const zero=raw.indexOf(0);if(zero<0)fail('invalid-structure','Manifest name is not terminated.');if(zero===0||zero>limits.stringBytes)fail('size-limit','Invalid manifest name length.');for(let i=zero+1;i<raw.length;i++)if(raw[i]!==0)fail('invalid-structure','Manifest name padding is invalid.');let name;try{name=new TextDecoder('utf-8',{fatal:true}).decode(raw.subarray(0,zero))}catch{fail('invalid-structure','Manifest name is not valid UTF-8.')}
@@ -85,5 +103,5 @@ async function readMember(pkg,name,options={}){
  const state=STATES.get(pkg);if(!state)fail('invalid-structure','Unknown package inspection.');abort(options.signal);const requested=mergeLimits(options.limits),limits=Object.freeze(Object.fromEntries(Object.keys(LIMITS).map(k=>[k,Math.min(requested[k],state.limits[k])]))),entry=pkg.entries.find(e=>e.name===name);if(!entry)fail('invalid-structure','Select a listed member.');if(!entry.supported)fail('unsupported-codec','Selected member uses an unsupported codec.');number(entry.expandedSize,limits.memberBytes);reserve(state.budget,entry.expandedSize,limits);if(options.budget&&options.budget!==state.budget)reserve(options.budget,entry.expandedSize,limits);abort(options.signal);
  return decompress(entry.codec,await state.read(entry.offset,entry.compressedSize),entry.expandedSize,{limits,signal:options.signal});
 }
-return Object.freeze({LIMITS,SpikeError,mergeLimits,inspectPackage,readMember,decompress,classify});
+return Object.freeze({LIMITS,SpikeError,mergeLimits,inspectPackage,readMember,decompress,decodeLz4BlockInto,classify});
 });

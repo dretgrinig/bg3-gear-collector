@@ -1,5 +1,6 @@
 /* Act 1 Batch 1: independent reviewed bindings and literal primary-source points. */
 'use strict';
+const withoutGuide=require('./helpers/companion-guide-boundary.cjs');
 const withoutAct2Continuations=require('./helpers/acquisition-checkpoint.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
@@ -445,7 +446,7 @@ for(const mode of ['full','minimal','light'])test('Batch 1 '+mode+' data does no
  after.search('curing');before.search('curing');assert.deepEqual(clone(discovery(after)),clone(discovery(before)));after.mode('full');after.mode(mode);assert.equal(after.app.progress(),progress);
 });
 test('Batch 1 leaves runtime, source catalogue, schema, resolver, renderer, PWA and transport files byte-identical',()=>{
- for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):readFileSync(join(root,file),'utf8'),execFileSync('git',['show',base+':'+file],{cwd:root,encoding:'utf8'}),file);
+ for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(file==='acquisition-metadata.js'?withoutAct2Continuations.withoutSourceAliases(readFileSync(join(root,file),'utf8')):withoutGuide(file,readFileSync(join(root,file),'utf8')),execFileSync('git',['show',base+':'+file],{cwd:root,encoding:'utf8'}),file);
 });
 test('Batch 1 canonical bundle is deterministic and matches the validated dataset without side effects',()=>{
  assert.equal(generateBundle(),generateBundle());assert.equal(generateBundle(),readFileSync(join(root,'assets/acquisition-pilot.js'),'utf8'));

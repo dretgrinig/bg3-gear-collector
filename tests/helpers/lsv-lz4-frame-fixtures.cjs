@@ -1,0 +1,126 @@
+'use strict';
+// Independent synthetic recipes, not outputs of the decoder under test.
+// XXH32 short-input reference uses BigInt modular arithmetic from xxhash_spec.md.
+const { concat, text, literalLz4 } = require('./lsv-fixtures.cjs');
+const mask = 0xffffffffn, p1 = 0x9e3779b1n, p2 = 0x85ebca77n, p3 = 0xc2b2ae3dn, p4 = 0x27d4eb2fn, p5 = 0x165667b1n;
+const rotate = (x,n) => ((x << BigInt(n)) | ((x & mask) >> BigInt(32-n))) & mask;
+function checksum(bytes) {
+  if (bytes.length >= 16) throw Error('Synthetic descriptor must be short');
+  let h = (p5 + BigInt(bytes.length)) & mask, at = 0;
+  while (at + 4 <= bytes.length) {
+    let lane = 0n; for (let j=0;j<4;j++) lane |= BigInt(bytes[at+j]) << BigInt(8*j);
+    h = (rotate((h + lane*p3)&mask,17)*p4)&mask; at+=4;
+  }
+  while(at<bytes.length) h=(rotate((h+BigInt(bytes[at++])*p5)&mask,11)*p1)&mask;
+  h=((h^(h>>15n))*p2)&mask; h=((h^(h>>13n))*p3)&mask; h^=h>>16n;
+  return Number((h>>8n)&255n);
+}
+function u32(n) { const a=new Uint8Array(4);new DataView(a.buffer).setUint32(0,n,true);return a; }
+function header({dependent=false,contentSize,flg,bd=0x40}={}) {
+  flg=flg ?? (0x40+(dependent?0:0x20)+(contentSize===undefined?0:8));
+  const parts=[Uint8Array.of(flg,bd)];
+  if(flg&8) { const n=new Uint8Array(8);new DataView(n.buffer).setBigUint64(0,BigInt(contentSize??0),true);parts.push(n); }
+  if(flg&1) parts.push(u32(0));
+  const descriptor=concat(parts);
+  return concat([Uint8Array.of(4,34,77,24),descriptor,Uint8Array.of(checksum(descriptor))]);
+}
+function frame(plain,options={}) {
+  const h=header(options);if(options.empty)return concat([h,u32(0)]);
+  const encoded=options.encoded ?? (options.stored?plain:literalLz4(plain));
+  return concat([h,u32(encoded.length+(options.stored?0x80000000:0)),encoded,u32(0)]);
+}
+// Authored real-match block; 17 As followed by TAIL!. Standard 60/40 header HC=82.
+const golden=()=>Uint8Array.from(Buffer.from('04224d186040820a0000001c410100505441494c2100000000','hex'));
+const goldenPlain=()=>text('A'.repeat(17)+'TAIL!');
+function sections({empty=false,format=0}={}) {
+  if(empty)return {strings:u32(0),nodes:new Uint8Array(),attributes:new Uint8Array(),values:new Uint8Array(),keys:new Uint8Array()};
+  const names=['SyntheticRoot','SyntheticAttribute'].map(text),strings=concat([u32(1),Uint8Array.of(2,0),...names.flatMap(n=>[Uint8Array.of(n.length,0),n])]);
+  const long=format===1,nodes=new Uint8Array(long?16:12),nv=new DataView(nodes.buffer);
+  nv.setUint32(0,0,true);nv.setInt32(4,long?-1:0,true);nv.setInt32(8,-1,true);if(long)nv.setInt32(12,0,true);
+  const attributes=new Uint8Array(long?16:12),av=new DataView(attributes.buffer),values=text('proof\0');
+  av.setUint32(0,1,true);av.setUint32(4,values.length*64+20,true);av.setInt32(8,long?-1:0,true);if(long)av.setUint32(12,0,true);
+  return {strings,nodes,attributes,values,keys:new Uint8Array()};
+}
+function lsf(options={}) {
+  const format=options.format??0,version=options.version??7,s=sections({...options,format}),names=['strings','nodes','attributes','values','keys'];
+  const disk=Object.fromEntries(names.map(name=>[name,name==='keys'?s[name]:name==='strings'||options.rawNonStrings?literalLz4(s[name]):frame(s[name],{...options.frameOptions,stored:options.stored,empty:options.empty})]));
+  if(options.mutateSection) options.mutateSection(disk,s);
+  const h=new Uint8Array(64),v=new DataView(h.buffer);h.set(text('LSOF'));v.setUint32(4,version,true);v.setBigUint64(8,(4n<<55n)|(1n<<47n)|(2n<<31n)|3n,true);
+  ['strings','keys','nodes','attributes','values'].forEach((n,i)=>{v.setUint32(16+i*8,s[n].length,true);v.setUint32(20+i*8,disk[n].length,true);});h[56]=2;v.setUint32(60,format,true);
+  if(options.mutateHeader)options.mutateHeader(h,v);
+  return concat([h,...names.map(n=>disk[n])]);
+}
+module.exports={header,frame,u32,golden,goldenPlain,lsf,sections,checksum};
+
+// Fixed outer compressed-Zstd vector: Node v24.19.0 / Zstandard 1.5.7, from lsf().
+const outerZstd = () => Uint8Array.from(Buffer.from('KLUv/SC55QMAEkYXJZArjQG/urtT/X+/bqGO3LsMb05by+6Q0tJ0qfh7Rf8EMgjZMgX/TzKfheHmx91dzq80CkZwHKCml4h7qguBZkIkThtFK5i1wkIn/YM/MvyBEz8incH/+QGMx2oECwApEwAUUBRRPxm0LDkGwsjcFbONotxZiRoMmg==','base64'));
+module.exports.outerZstd=outerZstd;
+module.exports.outerPlainSha256='1e32716c72442cc1c447dedb85c3c15f8b075947327b452b0aa8b7f3250403dd';
+
+// Structural envelopes authored independently of the production inspector.
+function multiFrame(blocks,options={}) {
+  return concat([header(options),...blocks.flatMap(b=>{
+    const data=b.encoded ?? (b.stored?b.plain:literalLz4(b.plain));
+    return [u32(data.length+(b.stored?0x80000000:0)),data];
+  }),u32(0)]);
+}
+function inspectionLsf(options={}) {
+  return lsf({...options,mutateSection(d,s){
+    for(const name of ['nodes','attributes','values']){
+      const plain=options.large?new Uint8Array(70000):s[name],at=Math.floor(plain.length/2);
+      d[name]=multiFrame([{plain:plain.subarray(0,at),stored:!!options.large},{plain:plain.subarray(at),stored:!!options.large}],{dependent:true});
+    }
+    options.mutateSection?.(d,s);
+  },mutateHeader(h,v){
+    if(options.large)for(const i of [2,3,4])v.setUint32(16+i*8,70000,true);
+    options.mutateHeader?.(h,v);
+  }});
+}
+module.exports.multiFrame=multiFrame;
+module.exports.inspectionLsf=inspectionLsf;
+
+// Public, independently authored LZ4 match recipes. No decoder-generated output.
+function matchBlock({distance=1,matchLength=16,literals=new Uint8Array(),tail=text('AAAAA')}={}) {
+  const ext=n=>{const a=[];while(n>=255){a.push(255);n-=255;}a.push(n);return Uint8Array.from(a);};
+  const ll=literals.length,ml=matchLength-4;
+  return concat([Uint8Array.of((Math.min(ll,15)<<4)|Math.min(ml,15)),...(ll>=15?[ext(ll-15)]:[]),literals,Uint8Array.of(distance&255,distance>>>8),...(ml>=15?[ext(ml-15)]:[]),Uint8Array.of(tail.length<<4),tail]);
+}
+function linkedFixture(kind='compressed-compressed') {
+  const seed=text('A'.repeat(32)),second=text('A'.repeat(21)),linked={plain:second,encoded:matchBlock()};
+  let blocks;
+  if(kind==='stored-compressed')blocks=[{plain:seed,stored:true},linked];
+  else if(kind==='compressed-stored-compressed')blocks=[{plain:seed},{plain:seed,stored:true},linked];
+  else if(kind==='maximum-distance'){
+    const prior=new Uint8Array(65536).fill(65);prior[0]=66;
+    blocks=[{plain:prior,stored:true},{plain:second,encoded:matchBlock({distance:65535})}];
+  } else if(kind==='exact-block'){
+    const plain=new Uint8Array(65536).fill(65);
+    blocks=[{plain,encoded:matchBlock({literals:text('A'),matchLength:65530})},linked];
+  } else blocks=[{plain:seed},linked];
+  return {blocks,plain:concat(blocks.map(b=>b.plain)),encoded:multiFrame(blocks,{dependent:true})};
+}
+function performanceFrames() {
+  // These sizes/counts mirror public structural measurements, not private bytes.
+  return [2361408,3631656,11853092].map((size,index)=>{
+    const blocks=[];let remaining=size;
+    while(remaining){const n=Math.min(65536,remaining),i=blocks.length,plain=new Uint8Array(n).fill(65),stored=index===2&&(i===0||i===120);
+      blocks.push(stored?{plain,stored:true}:{plain,encoded:matchBlock({literals:i===0?text('A'):new Uint8Array(),matchLength:n-5-(i===0?1:0)})});remaining-=n;
+    }
+    return {encoded:multiFrame(blocks,{dependent:true}),size,blockCount:blocks.length,storedBlocks:blocks.filter(b=>b.stored).length};
+  });
+}
+function multiResource(options={}) {
+  return lsf({...options,mutateSection(d,s){
+    for(const name of ['nodes','attributes','values']){
+      const plain=options.oversizedTables&&name==='nodes'?new Uint8Array(65537*12):s[name];
+      const blocks=[];for(let at=0;at<plain.length;at+=32768)blocks.push({plain:plain.subarray(at,Math.min(plain.length,at+32768)),stored:true});
+      if(blocks.length===1){const at=Math.floor(plain.length/2);blocks.splice(0,1,{plain:plain.subarray(0,at)},{plain:plain.subarray(at)});}
+      d[name]=multiFrame(blocks,{dependent:true});
+    }
+    options.mutateSection?.(d,s);
+  },mutateHeader(h,v){if(options.oversizedTables)v.setUint32(32,65537*12,true);options.mutateHeader?.(h,v);}});
+}
+module.exports.matchBlock=matchBlock;
+module.exports.linkedFixture=linkedFixture;
+module.exports.performanceFrames=performanceFrames;
+module.exports.multiResource=multiResource;

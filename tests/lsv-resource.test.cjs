@@ -132,3 +132,14 @@ test('LSF validates translated-string structure and rejects excessive nesting', 
   await rejects(resource.decodeResource(fixture({type:33,value:formatted(2)}),{limits:{depth:2}}),'RESOURCE_LIMIT');
 });
 test('SaveInfo enforces a numeric token cap while scanning', () => throws(() => resource.parseSaveInfo(bytes('{"x":'+ '1'.repeat(20) + '}'),{limits:{stringBytes:10}}),'RESOURCE_LIMIT'));
+test('v7 format-0 framed LZ4 validates every section range before decompression',async()=>{
+ const f=require('./helpers/lsv-lz4-frame-fixtures.cjs');
+ for(const mutateHeader of [(_,v)=>v.setUint32(44,0xffffffff,true),(_,v)=>v.setUint32(48,0xffffffff,true)])
+  await assert.rejects(()=>resource.decodeResource(f.lsf({mutateHeader})),e=>['RESOURCE_LIMIT','INVALID_LSF_STRUCTURE'].includes(e.code));
+ const data=f.lsf(),tail=new Uint8Array(data.length+1);tail.set(data);await rejects(resource.decodeResource(tail),'INVALID_LSF_STRUCTURE');
+});
+test('v7 format-0 LZ4 rejects unknown layouts and nonempty key sections',async()=>{
+ const f=require('./helpers/lsv-lz4-frame-fixtures.cjs');
+ await rejects(resource.decodeResource(f.lsf({format:99})),'UNSUPPORTED_LSF_LAYOUT');
+ await rejects(resource.decodeResource(f.lsf({mutateHeader(_,v){v.setUint32(24,8,true);}})),'UNSUPPORTED_LSF_LAYOUT');
+});

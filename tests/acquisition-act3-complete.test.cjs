@@ -1,5 +1,6 @@
 /* Independent approved Act 3 oracle; real canonical validator, resolver and tracker DOM. */
 'use strict';
+const withoutGuide=require('./helpers/companion-guide-boundary.cjs');
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {readFileSync}=require('node:fs'),{join}=require('node:path'),{execFileSync}=require('node:child_process');
 const metadata=require('../acquisition-metadata.js'),{createAcquisitionUI}=require('../acquisition-ui.js'),{generateBundle}=require('../scripts/build-acquisition-bundle.cjs');
@@ -123,6 +124,6 @@ test('Act 3 cached catalogue and v5/v6 imports preserve original keys and Story 
  const cached=itemHarness(facts.items.map(itemFor),{dataset:data,cached:true});assert.ok(Array.from(cached.app.items()).every(i=>resolver.resolve(i)));
 });
 test('Act 3 product/renderer/catalogue/build/PWA/transport/deployment files remain byte-identical',()=>{
- for(const file of ['index.html','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(readFileSync(join(root,file),'utf8'),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024}),file);
+ for(const file of ['index.html','acquisition-ui.js','versioned-progress.js','service-worker.js','manifest.json','tests/fixtures/vendor-catalogue.json','tests/fixtures/vendor-membership.json','scripts/build-acquisition-bundle.cjs'])assert.equal(withoutGuide(file,readFileSync(join(root,file),'utf8')),execFileSync('git',['show',facts.baseline+':'+file],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024}),file);
  const current=readFileSync(join(root,'acquisition-metadata.js'),'utf8'),previous=execFileSync('git',['show',facts.baseline+':acquisition-metadata.js'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024});const section=(s,a,b)=>s.slice(s.indexOf(a),s.indexOf(b,s.indexOf(a)));for(const [a,b] of [['function wikiIdentity(','function gameIdsValid('],['function gameIdsValid(','function validateDataset('],['function validateDataset(','function field(']])assert.equal(section(current,a,b),section(previous,a,b),'Strict URL, ID and schema validation remain unchanged');
 });

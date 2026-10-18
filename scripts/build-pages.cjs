@@ -8,7 +8,7 @@ const path = require('node:path');
 // manifest/retirement endpoint retain their existing public paths unchanged.
 const files = Object.freeze([
   'index.html', 'versioned-progress.js', 'config.js',
-  'data/acquisition.v1.json', 'manifest.json', 'service-worker.js', '404.html'
+  'data/acquisition.v1.json', 'data/companion-guide.v1.json', 'manifest.json', 'service-worker.js', '404.html'
 ]);
 const directories = Object.freeze(['assets', 'icons']);
 
