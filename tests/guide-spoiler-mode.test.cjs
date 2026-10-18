@@ -4,7 +4,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const root=path.resolve(__dirname,'..'),raw=JSON.parse(fs.readFileSync(path.join(root,'data/companion-guide.v1.json')));
 let U;test.before(async()=>{U=await import('../assets/companion-guide.js');});
 const tick=()=>new Promise(r=>setImmediate(r)),modes=['minimal','light','full'],choices=['story',...modes];
-async function controller(inherited='full',load=async()=>raw){let changes=0;const c=U.createGuideController({load,onChange:()=>changes++});c.setContext({identity:'scope-a',revision:1,mode:inherited});c.setOpen(true);await tick();for(const n of ['Gale','Astarion','Shadowheart'])c.toggleParty(n);c.setRomance('Shadowheart');c.setAct(3);return {c,get changes(){return changes}};}
+async function controller(inherited='full',load=async()=>raw){let changes=0;const c=U.createGuideController({load,onChange:()=>changes++});c.setContext({identity:'scope-a',revision:1,mode:inherited});c.setOpen(true);await tick();c.setAct(3);for(const n of ['Gale','Astarion','Shadowheart'])c.toggleParty(n);c.setRomance('Shadowheart');c.setAct(3);return {c,get changes(){return changes}};}
 for(const inherited of modes)for(const choice of choices)test(inherited+' inherited / '+choice+' local choice',async()=>{
  const {c}=await controller(inherited);assert.equal(c.view().guideChoice,'story');c.setGuideChoice(choice);const v=c.view(),effective=choice==='story'?inherited:choice;
  assert.equal(v.effectiveMode,effective);assert.equal(v.context.mode,effective);assert.equal(v.inheritedMode,inherited);assert.equal(v.guideChoice,choice);

@@ -29,7 +29,7 @@ test('portrait mapping is exact and unknown/prototype-sensitive names never sele
  assert.match(U.renderCompanion('<img>'),/&lt;img&gt;/);
 });
 async function guide(mode='full'){
- const c=U.createGuideController({load:async()=>data});c.setContext({identity:'portrait-test',revision:1,mode});c.setOpen(true);await new Promise(r=>setImmediate(r));for(const name of ['Gale','Astarion','Shadowheart'])c.toggleParty(name);c.setAct(1);return c;
+ const c=U.createGuideController({load:async()=>data});c.setContext({identity:'portrait-test',revision:1,mode});c.setOpen(true);await new Promise(r=>setImmediate(r));c.setAct(1);for(const name of ['Gale','Astarion','Shadowheart'])c.toggleParty(name);c.setAct(1);return c;
 }
 test('Full cards and both multi-swap directions use the shared portrait mapping',async()=>{
  const c=await guide();c.filter('search','Karlach + Paladins');const v=c.view(),html=U.renderResults(v),e=v.entries[0],plan=v.plans.get(e.id);
