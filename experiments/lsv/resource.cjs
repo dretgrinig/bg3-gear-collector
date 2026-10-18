@@ -202,8 +202,8 @@
     // Preflight all framed sections before allocating any decoded section buffer.
     for (const section of sections) if (section.codec==='lz4' && section.name!=='strings') {
       check(); const frame=getLz4Frame();
-      if (!frame || typeof frame.inspect!=='function' || typeof frame.decode!=='function') fail('UNSUPPORTED_LSF_CODEC','Bounded LZ4 frame decoder is unavailable.');
-      frame.inspect(bytes.subarray(section.offset,section.offset+section.compressedSize),section.expandedSize,{limits,signal:options.signal});
+      if (!frame || typeof frame.inspectForDecode!=='function' || typeof frame.decode!=='function') fail('UNSUPPORTED_LSF_CODEC','Bounded LZ4 frame decoder is unavailable.');
+      await frame.inspectForDecode(bytes.subarray(section.offset,section.offset+section.compressedSize),section.expandedSize,{limits,signal:options.signal});
     }
     sectionBudget(options,limits,cumulative,true);
     const decoded=Object.create(null); for (const section of sections) { check(); const data=bytes.subarray(section.offset,section.offset+section.compressedSize); decoded[section.name]=section.codec==='none'?data:section.codec==='lz4'&&section.name!=='strings'?await getLz4Frame().decode(data,section.expandedSize,{limits,signal:options.signal}):await getParser().decompress(section.codec,data,section.expandedSize,{limits,signal:options.signal}); if (decoded[section.name].length!==section.expandedSize) fail('INVALID_LSF_STRUCTURE','LSF decoded section length does not match its header.'); }

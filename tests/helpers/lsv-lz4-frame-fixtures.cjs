@@ -78,3 +78,49 @@ function inspectionLsf(options={}) {
 }
 module.exports.multiFrame=multiFrame;
 module.exports.inspectionLsf=inspectionLsf;
+
+// Public, independently authored LZ4 match recipes. No decoder-generated output.
+function matchBlock({distance=1,matchLength=16,literals=new Uint8Array(),tail=text('AAAAA')}={}) {
+  const ext=n=>{const a=[];while(n>=255){a.push(255);n-=255;}a.push(n);return Uint8Array.from(a);};
+  const ll=literals.length,ml=matchLength-4;
+  return concat([Uint8Array.of((Math.min(ll,15)<<4)|Math.min(ml,15)),...(ll>=15?[ext(ll-15)]:[]),literals,Uint8Array.of(distance&255,distance>>>8),...(ml>=15?[ext(ml-15)]:[]),Uint8Array.of(tail.length<<4),tail]);
+}
+function linkedFixture(kind='compressed-compressed') {
+  const seed=text('A'.repeat(32)),second=text('A'.repeat(21)),linked={plain:second,encoded:matchBlock()};
+  let blocks;
+  if(kind==='stored-compressed')blocks=[{plain:seed,stored:true},linked];
+  else if(kind==='compressed-stored-compressed')blocks=[{plain:seed},{plain:seed,stored:true},linked];
+  else if(kind==='maximum-distance'){
+    const prior=new Uint8Array(65536).fill(65);prior[0]=66;
+    blocks=[{plain:prior,stored:true},{plain:second,encoded:matchBlock({distance:65535})}];
+  } else if(kind==='exact-block'){
+    const plain=new Uint8Array(65536).fill(65);
+    blocks=[{plain,encoded:matchBlock({literals:text('A'),matchLength:65530})},linked];
+  } else blocks=[{plain:seed},linked];
+  return {blocks,plain:concat(blocks.map(b=>b.plain)),encoded:multiFrame(blocks,{dependent:true})};
+}
+function performanceFrames() {
+  // These sizes/counts mirror public structural measurements, not private bytes.
+  return [2361408,3631656,11853092].map((size,index)=>{
+    const blocks=[];let remaining=size;
+    while(remaining){const n=Math.min(65536,remaining),i=blocks.length,plain=new Uint8Array(n).fill(65),stored=index===2&&(i===0||i===120);
+      blocks.push(stored?{plain,stored:true}:{plain,encoded:matchBlock({literals:i===0?text('A'):new Uint8Array(),matchLength:n-5-(i===0?1:0)})});remaining-=n;
+    }
+    return {encoded:multiFrame(blocks,{dependent:true}),size,blockCount:blocks.length,storedBlocks:blocks.filter(b=>b.stored).length};
+  });
+}
+function multiResource(options={}) {
+  return lsf({...options,mutateSection(d,s){
+    for(const name of ['nodes','attributes','values']){
+      const plain=options.oversizedTables&&name==='nodes'?new Uint8Array(65537*12):s[name];
+      const blocks=[];for(let at=0;at<plain.length;at+=32768)blocks.push({plain:plain.subarray(at,Math.min(plain.length,at+32768)),stored:true});
+      if(blocks.length===1){const at=Math.floor(plain.length/2);blocks.splice(0,1,{plain:plain.subarray(0,at)},{plain:plain.subarray(at)});}
+      d[name]=multiFrame(blocks,{dependent:true});
+    }
+    options.mutateSection?.(d,s);
+  },mutateHeader(h,v){if(options.oversizedTables)v.setUint32(32,65537*12,true);options.mutateHeader?.(h,v);}});
+}
+module.exports.matchBlock=matchBlock;
+module.exports.linkedFixture=linkedFixture;
+module.exports.performanceFrames=performanceFrames;
+module.exports.multiResource=multiResource;

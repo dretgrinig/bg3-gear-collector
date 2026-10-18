@@ -415,3 +415,101 @@ Work approved the inspection-only checkpoint and its unchanged framing rerun.
 Multi-block decoding, further resource support, another private measurement and
 Phase C require separate authorization. Research remains excluded from the
 unchanged public artifact.
+
+## Bounded multi-block LZ4 decoder checkpoint — awaiting Work review
+
+This checkpoint adds decoding only for the measured multi-block profile: standard
+frame, FLG `0x40`, BD `0x40`, dependent blocks, 64 KiB block maximum, no content
+size/dictionary/block checksum/content checksum. Mixed stored/compressed blocks
+are supported. Other multi-block FLG/BD profiles remain unsupported. Existing
+single-block profiles retain their prior policy, including independent mode and
+optional content size. Header checksum, EndMark, exact consumption, excluded
+variants and the fixed 4,096-block limit remain enforced.
+
+### Shared bounded raw-block primitive
+
+`parser.decodeLz4BlockInto(input, destination, outputOffset, outputLimit,
+historyStart, options)` validates safe integer ranges, fixed byte caps and
+non-aliasing before writing, checks every literal/offset/extension read and
+literal/match write bound, preserves progressive overlapping matches and terminal
+sequence validation, and returns the actual output cursor. It allocates no output
+and charges no budget. Buffer lengths are rechecked after yields so caller-side
+detachment/resizing cannot silently clip subsequent writes. Shared destinations
+are rejected because distinct shared-buffer wrappers may alias; the raw wrapper
+still accepts shared input into its own nonshared destination. Existing raw LZ4
+`decompress()` still allocates its exact output, starts with empty history and
+requires the final cursor to equal the declared size.
+
+For each dependent block, the frame decoder supplies
+`historyStart = max(0, blockStart - 65535)`. Every match must have a nonzero 16-bit
+distance within both available written history and the 65,535-byte maximum.
+Previously copied stored bytes and regenerated compressed bytes become history;
+no separate history buffer is allocated. Existing independent single-block
+handling starts with empty history. No independent multi-block support is added.
+
+### Frame/resource integration and budgets
+
+`inspectForDecode()` reuses the same bounded framing walker as public
+`inspectFraming()`, then applies decode policy. Public inspection keeps its report
+limits, metadata-only status and zero-section-decode behavior. Private decode
+plans are count-bounded and do not serialize public per-block reports. No
+caller-supplied inspection result is trusted as validation; decoding rechecks its
+own envelope. Resource parsing preflights all framed sections before allocation,
+then reserves total section expansion once through the existing shared budget.
+
+Multi-block output uses one exact section destination. Each compressed block
+writes directly into it, with an output limit of
+`cursor + min(blockMaximum, sectionLength - cursor)` and an actual returned
+cursor. Stored blocks copy only after payload/output-capacity checks. Final output
+must equal the LSF declaration; block lengths are never inferred from position.
+Direct frame callers may supply a checked expansion budget; the primitive does
+not charge per block, and the resource path does not double-charge sections.
+
+Cancellation remains checked during tokens/long matches and between blocks.
+The raw primitive yields after 64 KiB of progress; frame processing also yields
+for stored/short-block runs, at most 16 short blocks between scheduling points,
+without duplicating a full compressed block's yield. The existing cumulative
+30-second controller deadline and all byte/report/string/depth limits remain
+unchanged. No larger timeout or allocation cap is introduced.
+
+### Synthetic verification and performance
+
+Independent recipes cover compressed-to-compressed, stored-to-compressed and
+compressed-to-stored-to-compressed history, distance 65,535, overlap, exact 64 KiB
+output and short final blocks. Negative cases assert rejection for missing
+history, invalid bounds/offsets, aliasing/detachment, malformed later blocks,
+truncated extensions, block/section overproduction, underproduction, unsupported
+profiles, excessive blocks, budget exhaustion, cancellation and deadlines.
+Allocation probes prove one multi-block section destination and no decoded output
+before envelope/budget rejection. Nested Zstandard/resource/Worker tests verify
+byte parity and exactly-once expansion accounting. Existing raw/one-block tests
+remain active. Of the initial 50 regressions, 32 failed against the prior
+checkpoint; an additional destination-detachment regression failed before its
+liveness guard. The final checkpoint adds 56 regressions.
+
+The focused research suite passes 439 checks; packaging passes 15. A fresh
+disposable Chrome run passes 47 checks, with zero runtime errors or unexpected
+requests, no reused profile, blocked storage/cookies and allowlisted loopback GETs
+only. A public uniform-byte workload uses 37/56/181 dependent blocks, including two
+stored blocks, with exact independently calculated output hashes. Its 17,846,156
+framed output bytes decoded in about 1.83 seconds total including hash/report
+work; individual frame decode times were approximately 194/346/1,220 ms. This
+synthetic workload does not reproduce the real save's entropy or establish its
+end-to-end timing. The unchanged 30-second deadline remains decisive.
+
+### Unchanged later boundary and next gate
+
+The 65,536-record structural table cap is unchanged. A permanent regression
+successfully decompresses an oversized synthetic nodes table and still receives
+`RESOURCE_LIMIT` from table validation. The declared real Globals tables imply
+196,784 nodes and 302,638 attributes, so successful section decoding alone cannot
+produce complete resource compatibility under this policy. No structural-cap
+bypass or general resource-support change is included.
+
+No private save was reread during implementation. Stop for focused Work review
+before a separately authorized Globals-only structural measurement. That run must
+stop at the first malformed/unsupported feature, length disagreement, limit,
+timeout, cancellation or source change; the known table cap remains a valid stop.
+No implementation changes or semantic interpretation are authorized by that
+measurement. Phase C, product integration, deployment, Supabase and persistence
+remain outside this checkpoint. Research stays excluded from the public artifact.

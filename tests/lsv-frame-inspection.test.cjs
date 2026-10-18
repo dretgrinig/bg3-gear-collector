@@ -91,7 +91,7 @@ test('LSF inspection rejects report overflow and malformed late frames',async()=
 });
 test('LSF framing API performs zero section-decoder calls and zero decoded-buffer allocations',async()=>{
  let calls=0;const allocations=[],U=new Proxy(Uint8Array,{construct(t,args){if(typeof args[0]==='number')allocations.push(args[0]);return Reflect.construct(t,args);}});
- const context={module:{exports:{}},require:n=>n==='./parser.cjs'?{...parser,decompress(){calls++;throw Error('forbidden');}}:{...frame,decode(){calls++;throw Error('forbidden');}},Uint8Array:U,ArrayBuffer,DataView,TextEncoder,TextDecoder,Map,Set,Date};
+ const context={module:{exports:{}},require:n=>n==='./parser.cjs'?{...parser,decompress(){calls++;throw Error('forbidden');},decodeLz4BlockInto(){calls++;throw Error('forbidden');}}:{...frame,decode(){calls++;throw Error('forbidden');}},Uint8Array:U,ArrayBuffer,DataView,TextEncoder,TextDecoder,Map,Set,Date};
  vm.runInNewContext(fs.readFileSync(path.join(root,'experiments/lsv/resource.cjs'),'utf8'),context);
  const input=F.inspectionLsf(),before=input.slice();assert.equal((await context.module.exports.inspectResourceFrames(input)).status,'framing-validated');assert.equal(calls,0);assert.deepEqual(allocations,[]);assert.deepEqual(input,before);
 });

@@ -1,7 +1,7 @@
 /* Research-only, restricted standard LZ4 frame reader. No product integration.
  * Independently authored against LZ4 frame format v1.6.4 and XXH32 specification
  * v0.2.0. Only the short (<16-byte) descriptor checksum is needed here.
- * Raw block decoding remains the unchanged bounded parser implementation. */
+ * Raw block decoding shares the bounded parser block-into-destination primitive. */
 (function(root,factory){
   if(typeof module==='object'&&module.exports)module.exports=factory(()=>require('./parser.cjs'));
   else root.BG3Lz4FrameBounded=factory(()=>root.BG3LsvParser);
@@ -61,9 +61,9 @@
     return Object.freeze({empty:false,stored,size,payloadOffset,blockMaximum,independent:!!(flags&32)});
   }
   // Envelope validation only: compressed payloads and regenerated sizes are
-  // deliberately not decoded or certified. This does not widen inspect/decode.
+  // deliberately not decoded or certified. Decode policy is checked separately.
   const MAX_FRAME_BLOCKS=4096;
-  async function inspectFraming(data,expected,options={}){
+  async function walkFraming(data,expected,options,reporting){
     const started=Date.now(),header=descriptor(data,expected,options,false),{flags,bd,blockMaximum,limits}=header;
     const tick=()=>{check(options.signal);if(Date.now()-started>=limits.timeoutMs)fail('timeout','LZ4 framing inspection exceeded its execution budget.');};
     const report={status:'framing-validated',payloadValidation:'not-attempted',magic:0x184d2204,version:1,flg:flags,bd,
@@ -73,8 +73,8 @@
       blockCount:0,storedBlocks:0,compressedBlocks:0,encodedPayloadBytes:0,blocks:[],endMark:false,trailingBytes:false};
     // All report fields are fixed ASCII labels, booleans and bounded integers.
     // Charge each small descriptor before retaining it; no payload bytes enter it.
-    let reportSize=JSON.stringify(report).length,at=header.at;
-    if(reportSize>limits.reportBytes)fail('report-limit','LZ4 framing report exceeds its byte limit.');
+    let reportSize=reporting?JSON.stringify(report).length:0,at=header.at;
+    if(reporting&&reportSize>limits.reportBytes)fail('report-limit','LZ4 framing report exceeds its byte limit.');
     while(true){
       tick();const tag=u32(data,at);at+=4;
       if(tag===0){report.endMark=true;break;}
@@ -83,17 +83,17 @@
       if(size>blockMaximum)fail('size-limit','LZ4 block exceeds its declared maximum.');
       need(data,at,size);
       const block={index:report.blockCount,stored,storedBytes:size,payloadOffset:at};
-      reportSize+=JSON.stringify(block).length+1;
-      if(reportSize>limits.reportBytes)fail('report-limit','LZ4 framing report exceeds its byte limit.');
+      if(reporting){reportSize+=JSON.stringify(block).length+1;
+        if(reportSize>limits.reportBytes)fail('report-limit','LZ4 framing report exceeds its byte limit.');}
       report.blocks.push(block);report.blockCount++;report[stored?'storedBlocks':'compressedBlocks']++;
       report.encodedPayloadBytes+=size;at+=size;
       if(report.blockCount%64===0){await new Promise(resolve=>setTimeout(resolve,0));tick();}
     }
     if(at!==data.length)fail('unsupported-codec','Trailing/concatenated LZ4 data remains unsupported.');
-    tick();if(JSON.stringify(report).length>limits.reportBytes)fail('report-limit','LZ4 framing report exceeds its byte limit.');
+    tick();if(reporting&&JSON.stringify(report).length>limits.reportBytes)fail('report-limit','LZ4 framing report exceeds its byte limit.');
     tick();return report;
   }
-  async function decode(data,expected,options={}){
+  async function decodeSingle(data,expected,options={}){
     const frame=inspect(data,expected,options);check(options.signal);
     if(frame.empty)return new Uint8Array(0);
     const payload=data.subarray(frame.payloadOffset,frame.payloadOffset+frame.size);
@@ -102,5 +102,48 @@
     check(options.signal);if(output.length!==expected)fail('invalid-structure','Decoded LZ4 frame length disagrees with section size.');
     return output;
   }
-  return Object.freeze({inspect,decode,inspectFraming});
+  async function inspectFraming(data,expected,options={}){
+    return walkFraming(data,expected,options,true);
+  }
+  function decodePolicy(data,expected,options,frame){
+    if(frame.blockCount<=1){inspect(data,expected,options);return;}
+    if(frame.flg!==0x40||frame.bd!==0x40)fail('unsupported-codec','Multi-block LZ4 is restricted to dependent FLG 40 / BD 40.');
+  }
+  async function inspectForDecode(data,expected,options={}){
+    const frame=await walkFraming(data,expected,options,false);decodePolicy(data,expected,options,frame);
+  }
+  function reserveFrame(budget,expected,limits){
+    if(budget===undefined)return;
+    const d=budget&&typeof budget==='object'&&Object.getOwnPropertyDescriptor(budget,'expandedBytes');
+    if(!d||!Object.hasOwn(d,'value')||!d.writable||!Number.isSafeInteger(d.value)||d.value<0)fail('invalid-structure','Invalid LZ4 expansion budget.');
+    if(expected>limits.cumulativeBytes-d.value)fail('size-limit','LZ4 expansion exceeds the attempt budget.');
+    budget.expandedBytes=d.value+expected;
+  }
+  async function decode(data,expected,options={}){
+    const started=Date.now(),limits=getParser().mergeLimits(options.limits);
+    const tick=()=>{check(options.signal);if(Date.now()-started>=limits.timeoutMs)fail('timeout','LZ4 frame decoding exceeded its execution budget.');};
+    const frame=await walkFraming(data,expected,options,false);decodePolicy(data,expected,options,frame);tick();
+    reserveFrame(options.budget,expected,limits);
+    if(frame.blockCount<=1)return decodeSingle(data,expected,options);
+    const parser=getParser();if(typeof parser.decodeLz4BlockInto!=='function')fail('unsupported-codec','Bounded LZ4 block primitive is unavailable.');
+    const output=new Uint8Array(expected);let cursor=0,lastYield=0,blocksSinceYield=0;
+    for(const block of frame.blocks){
+      tick();need(data,block.payloadOffset,block.storedBytes);
+      const start=cursor,limit=cursor+Math.min(frame.blockMaximum,expected-cursor);
+      if(block.stored){
+        if(block.storedBytes>limit-cursor)fail('size-limit','Stored LZ4 block exceeds remaining output.');
+        output.set(data.subarray(block.payloadOffset,block.payloadOffset+block.storedBytes),cursor);cursor+=block.storedBytes;
+      }else{
+        cursor=await parser.decodeLz4BlockInto(data.subarray(block.payloadOffset,block.payloadOffset+block.storedBytes),output,cursor,limit,Math.max(0,cursor-65535),{limits,signal:options.signal});
+        if(!Number.isSafeInteger(cursor)||cursor<start||cursor>limit)fail('invalid-structure','Invalid LZ4 block output cursor.');
+      }
+      tick();blocksSinceYield++;
+      // A full compressed block already yielded inside the shared primitive.
+      if(!block.stored&&cursor-start>=65536){lastYield=cursor;blocksSinceYield=0;}
+      else if(cursor-lastYield>=65536||blocksSinceYield>=16){await new Promise(resolve=>setTimeout(resolve,0));tick();lastYield=cursor;blocksSinceYield=0;}
+    }
+    if(cursor!==expected)fail('invalid-structure','Decoded LZ4 frame length disagrees with the section.');
+    tick();return output;
+  }
+  return Object.freeze({inspect,decode,inspectFraming,inspectForDecode});
 });
