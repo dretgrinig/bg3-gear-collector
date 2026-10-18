@@ -7,7 +7,10 @@
 })(typeof globalThis === 'object' ? globalThis : self, function (getParser, getLz4Frame) {
   'use strict';
   const CAPS = Object.freeze({fileBytes:128*1024*1024,entries:512,memberBytes:128*1024*1024,cumulativeBytes:512*1024*1024,stringBytes:1024*1024,depth:64,timeoutMs:30000,reportBytes:10*1024*1024});
-  const TABLE_CAP = 65536; // Extra conservative probe bound, independent of manifest entries.
+  const TABLE_CAP = 65536; // JSON/name/key bounds remain unchanged.
+  // ~2x observed 196,784 nodes / 302,638 attributes; fixed typed indexes <32 MiB.
+  const STRUCTURAL_CAPS=Object.freeze({nodes:400000,attributes:655360,indexBytes:32*1024*1024,nameBytes:8*1024*1024,attributesPerNode:4096,traversalSteps:12000000});
+  function structuralLimitsFor(input){const result={...STRUCTURAL_CAPS};if(input!==undefined){if(!input||typeof input!=='object'||Array.isArray(input))fail('RESOURCE_LIMIT','Invalid structural limits.');for(const key of Object.keys(input)){const d=Object.getOwnPropertyDescriptor(input,key);if(!Object.hasOwn(result,key)||!d||!Object.hasOwn(d,'value')||!Number.isSafeInteger(d.value)||d.value<1||d.value>result[key])fail('RESOURCE_LIMIT','Structural limits may only be lowered.');result[key]=d.value;}}return result;}
   const utf8 = new TextDecoder('utf-8', {fatal:true, ignoreBOM:true});
   const encode = new TextEncoder();
   function fail(code, message) { const error = new Error(message); error.code = code; throw error; }
@@ -113,12 +116,12 @@
     end() { if (this.position!==this.bytes.length) fail('INVALID_LSF_STRUCTURE','LSF section has trailing data.'); }
   }
   function ref(index, count) { if (!Number.isSafeInteger(index) || index < -1 || index>=count) fail('INVALID_LSF_STRUCTURE','LSF contains an invalid table reference.'); }
-  function namesFrom(bytes,limits,check) {
+  function namesFrom(bytes,limits,check,structural=STRUCTURAL_CAPS) {
     const reader=new Reader(bytes), count=reader.u32(); if (count>TABLE_CAP || count>Math.floor((bytes.length-4)/2)) fail('RESOURCE_LIMIT','LSF name-table count exceeds the probe bound.');
     const names=[]; let total=0, stringBytes=0;
     for (let i=0;i<count;i++) {
       check(); const chain=reader.u16(), bucket=[]; total+=chain; if (total>TABLE_CAP) fail('RESOURCE_LIMIT','LSF name count exceeds the probe bound.');
-      for (let j=0;j<chain;j++) { const length=reader.u16(); stringBytes+=length; if (stringBytes>limits.reportBytes) fail('RESOURCE_LIMIT','LSF names exceed the probe string-table bound.'); const name=textFor(reader.take(length),limits.stringBytes); if (!name || name.includes('\0')) fail('INVALID_LSF_STRUCTURE','LSF name table contains an invalid name.'); bucket.push(name); }
+      for (let j=0;j<chain;j++) { const length=reader.u16(); stringBytes+=length; if (stringBytes>Math.min(limits.reportBytes,structural.nameBytes)) fail('RESOURCE_LIMIT','LSF names exceed the probe string-table bound.'); const name=textFor(reader.take(length),limits.stringBytes); if (!name || name.includes('\0')) fail('INVALID_LSF_STRUCTURE','LSF name table contains an invalid name.'); bucket.push(name); }
       names.push(bucket);
     }
     reader.end(); return hash => { const bucket=names[hash>>>16]; const name=bucket && bucket[hash&65535]; if (name===undefined) fail('INVALID_LSF_STRUCTURE','LSF references an absent name.'); return name; };
@@ -196,38 +199,66 @@
     }
     check();return report;
   }
-  async function decodeResource(input,options={}) {
-    const limits=limitsFor(options.limits),check=guard(limits,options.signal); check(); const bytes=bytesFor(input,limits);
-    const {version,engineVersion,format,sections,cumulative}=resourceLayout(bytes,limits);
-    // Preflight all framed sections before allocating any decoded section buffer.
-    for (const section of sections) if (section.codec==='lz4' && section.name!=='strings') {
-      check(); const frame=getLz4Frame();
-      if (!frame || typeof frame.inspectForDecode!=='function' || typeof frame.decode!=='function') fail('UNSUPPORTED_LSF_CODEC','Bounded LZ4 frame decoder is unavailable.');
+  async function openResource(input,options={}) {
+    const limits=limitsFor(options.limits),structural=structuralLimitsFor(options.structuralLimits),check=guard(limits,options.signal),started=Date.now();check();
+    let work=0,indexBytes=0;
+    const tick=()=>{if(++work>structural.traversalSteps)fail('RESOURCE_LIMIT','LSF traversal work exceeds its limit.');if((work&511)===0)check();};
+    const checkpoint=async i=>{if((i&4095)===0){check();await new Promise(resolve=>setTimeout(resolve,0));check();}};
+    const bytes=bytesFor(input,limits),{version,engineVersion,format,sections,cumulative}=resourceLayout(bytes,limits),long=format===1;
+    const countFor=(name,size,cap)=>{const sizeBytes=sections.find(s=>s.name===name).expandedSize;if(sizeBytes%size)fail('INVALID_LSF_STRUCTURE','LSF table has a truncated record.');const count=sizeBytes/size;if(count>cap)fail('RESOURCE_LIMIT','LSF table count exceeds the structural limit.');return count;};
+    const nc=countFor('nodes',long?16:12,structural.nodes),ac=countFor('attributes',long?16:12,structural.attributes);countFor('keys',8,TABLE_CAP);
+    // All index/scratch allocations are deterministic and preflighted separately
+    // from decoded byte budgets. No per-record JS object tree is retained.
+    if(27*nc+22*ac+4>structural.indexBytes)fail('RESOURCE_LIMIT','LSF structural index exceeds its byte limit.');
+    for(const section of sections)if(section.codec==='lz4'&&section.name!=='strings'){
+      check();const frame=getLz4Frame();if(!frame||typeof frame.inspectForDecode!=='function'||typeof frame.decode!=='function')fail('UNSUPPORTED_LSF_CODEC','Bounded LZ4 frame decoder is unavailable.');
       await frame.inspectForDecode(bytes.subarray(section.offset,section.offset+section.compressedSize),section.expandedSize,{limits,signal:options.signal});
     }
     sectionBudget(options,limits,cumulative,true);
-    const decoded=Object.create(null); for (const section of sections) { check(); const data=bytes.subarray(section.offset,section.offset+section.compressedSize); decoded[section.name]=section.codec==='none'?data:section.codec==='lz4'&&section.name!=='strings'?await getLz4Frame().decode(data,section.expandedSize,{limits,signal:options.signal}):await getParser().decompress(section.codec,data,section.expandedSize,{limits,signal:options.signal}); if (decoded[section.name].length!==section.expandedSize) fail('INVALID_LSF_STRUCTURE','LSF decoded section length does not match its header.'); }
-    const resolveName=namesFrom(decoded.strings,limits,check),long=format===1,nodeReader=tableReader(decoded.nodes,long?16:12),nodes=[];
-    while (nodeReader.position<nodeReader.bytes.length) { check(); const name=resolveName(nodeReader.u32()); const parent=long?nodeReader.i32():null, first=long?null:nodeReader.i32(), sibling=long?nodeReader.i32():-1; nodes.push({name,parent:long?parent:nodeReader.i32(),first:long?nodeReader.i32():first,sibling}); }
-    const attrReader=tableReader(decoded.attributes,long?16:12),attrs=[],previousByOwner=new Map(); let valueOffset=0;
-    while (attrReader.position<attrReader.bytes.length) {
-      check(); const name=resolveName(attrReader.u32()),typeLength=attrReader.u32(),ownerOrNext=attrReader.i32(),length=typeLength>>>6,offset=long?attrReader.u32():valueOffset; valueOffset+=length;
-      if (length>limits.memberBytes || offset>decoded.values.length || length>decoded.values.length-offset) fail('INVALID_LSF_STRUCTURE','LSF attribute value exceeds its section.');
-      const attribute={name,next:long?ownerOrNext:-1,offset,length};
-      if (!long) { if (ownerOrNext < -1) fail('INVALID_LSF_STRUCTURE','LSF attribute owner is invalid.'); const previous=previousByOwner.get(ownerOrNext); if (previous!==undefined) attrs[previous].next=attrs.length; previousByOwner.set(ownerOrNext,attrs.length); }
-      validateValue(typeLength&63,decoded.values.subarray(offset,offset+length),limits,check); attrs.push(attribute);
+    const decoded=Object.create(null),decodeStarted=Date.now();
+    for(const section of sections){check();const data=bytes.subarray(section.offset,section.offset+section.compressedSize);decoded[section.name]=section.codec==='none'?data:section.codec==='lz4'&&section.name!=='strings'?await getLz4Frame().decode(data,section.expandedSize,{limits,signal:options.signal}):await getParser().decompress(section.codec,data,section.expandedSize,{limits,signal:options.signal});if(decoded[section.name].length!==section.expandedSize)fail('INVALID_LSF_STRUCTURE','LSF decoded section length does not match its header.');}
+    const sectionDecodeMs=Date.now()-decodeStarted,structuralStarted=Date.now(),resolveName=namesFrom(decoded.strings,limits,check,structural);
+    function alloc(Type,count){const bytes=count*Type.BYTES_PER_ELEMENT;if(bytes>structural.indexBytes-indexBytes)fail('RESOURCE_LIMIT','LSF structural index exceeds its byte limit.');indexBytes+=bytes;return new Type(count);}
+    const nodeNames=alloc(Uint32Array,nc),parents=alloc(Int32Array,nc),first=alloc(Int32Array,nc),siblings=alloc(Int32Array,nc),depths=alloc(Uint8Array,nc),state=alloc(Uint8Array,nc),siblingState=alloc(Uint8Array,nc),stack=alloc(Int32Array,nc),previous=alloc(Int32Array,nc+1);previous.fill(-1);
+    const attrNames=alloc(Uint32Array,ac),next=alloc(Int32Array,ac),offsets=alloc(Uint32Array,ac),lengths=alloc(Uint32Array,ac),owners=alloc(Int32Array,ac),types=alloc(Uint8Array,ac),used=alloc(Uint8Array,ac);owners.fill(-1);next.fill(-1);
+    const nr=new Reader(decoded.nodes);for(let i=0;i<nc;i++){tick();if((i&4095)===0)await checkpoint(i);nodeNames[i]=nr.u32();resolveName(nodeNames[i]);if(long){parents[i]=nr.i32();siblings[i]=nr.i32();first[i]=nr.i32();}else{first[i]=nr.i32();parents[i]=nr.i32();siblings[i]=-1;}}
+    const ar=new Reader(decoded.attributes);let valueOffset=0;
+    for(let i=0;i<ac;i++){
+      tick();if((i&4095)===0)await checkpoint(i);attrNames[i]=ar.u32();resolveName(attrNames[i]);const tl=ar.u32(),ownerOrNext=ar.i32(),length=tl>>>6,offset=long?ar.u32():valueOffset;valueOffset+=length;
+      if(length>limits.memberBytes||offset>decoded.values.length||length>decoded.values.length-offset)fail('INVALID_LSF_STRUCTURE','LSF attribute value exceeds its section.');
+      lengths[i]=length;offsets[i]=offset;types[i]=tl&63;
+      if(long)next[i]=ownerOrNext;else{ref(ownerOrNext,nc);owners[i]=ownerOrNext;const p=previous[ownerOrNext+1];if(p!==-1)next[p]=i;previous[ownerOrNext+1]=i;}
+      validateValue(types[i],decoded.values.subarray(offset,offset+length),limits,check);
     }
-    if (!long && valueOffset!==decoded.values.length) fail('INVALID_LSF_STRUCTURE','LSF compact values have trailing bytes.');
-    const rootNames=[],roots=new Set(),depths=new Uint8Array(nodes.length),state=new Uint8Array(nodes.length);
-    for (const node of nodes) { ref(node.parent,nodes.length); ref(node.sibling,nodes.length); ref(node.first,attrs.length); if (node.parent===-1) { if (roots.has(node.name)) fail('INVALID_LSF_STRUCTURE','LSF contains duplicate root names.'); roots.add(node.name); rootNames.push(node.name); } if (node.sibling!==-1 && nodes[node.sibling].parent!==node.parent) fail('INVALID_LSF_STRUCTURE','LSF sibling references a different parent.'); }
-    // Iterative parent walk detects cycles and proves depth without traversing a JS object tree.
-    for (let i=0;i<nodes.length;i++) { check(); if (state[i]===2) continue; let cursor=i; const chain=[]; while (cursor!==-1 && state[cursor]!==2) { if (state[cursor]===1) fail('INVALID_LSF_STRUCTURE','LSF node parent cycle detected.'); state[cursor]=1; chain.push(cursor); if (chain.length>limits.depth) fail('RESOURCE_LIMIT','LSF node nesting exceeds the depth limit.'); cursor=nodes[cursor].parent; } let depth=cursor===-1?0:depths[cursor]; while (chain.length) { const node=chain.pop(); if (++depth>limits.depth) fail('RESOURCE_LIMIT','LSF node nesting exceeds the depth limit.'); depths[node]=depth; state[node]=2; } }
-    const siblingState=new Uint8Array(nodes.length); for (let i=0;i<nodes.length;i++) { check(); let cursor=i; const chain=[]; while (cursor!==-1 && siblingState[cursor]!==2) { if (siblingState[cursor]===1) fail('INVALID_LSF_STRUCTURE','LSF sibling cycle detected.'); siblingState[cursor]=1; chain.push(cursor); cursor=nodes[cursor].sibling; } for (const item of chain) siblingState[item]=2; }
-    const usedAttrs=new Uint8Array(attrs.length); for (const attr of attrs) ref(attr.next,attrs.length);
-    for (const node of nodes) { check(); const names=new Set(); let cursor=node.first; while (cursor!==-1) { if (usedAttrs[cursor]) fail('INVALID_LSF_STRUCTURE','LSF attribute cycle or shared attribute detected.'); usedAttrs[cursor]=1; if (names.has(attrs[cursor].name)) fail('INVALID_LSF_STRUCTURE','LSF node has duplicate attribute names.'); names.add(attrs[cursor].name); cursor=attrs[cursor].next; } }
-    if (usedAttrs.some(value=>value!==1)) fail('INVALID_LSF_STRUCTURE','LSF contains unreachable attributes.');
-    const keyReader=tableReader(decoded.keys,8),keyNodes=new Set(); while (keyReader.position<keyReader.bytes.length) { check(); const index=keyReader.u32(),name=resolveName(keyReader.u32()); if (index>=nodes.length || keyNodes.has(index)) fail('INVALID_LSF_STRUCTURE','LSF key references are invalid or duplicated.'); keyNodes.add(index); let cursor=nodes[index].first,found=false; while (cursor!==-1) { if (attrs[cursor].name===name) found=true; cursor=attrs[cursor].next; } if (!found) fail('INVALID_LSF_STRUCTURE','LSF key does not name an attribute on its node.'); }
-    check(); return checkedReport({kind:'lsf',status:'decoded',version,engineVersion,sections,structure:{nodeCount:nodes.length,attributeCount:attrs.length,rootNames},ecs:{status:'opaque'}},limits);
+    if(!long&&valueOffset!==decoded.values.length)fail('INVALID_LSF_STRUCTURE','LSF compact values have trailing bytes.');
+    const roots=new Set(),rootNames=[];
+    for(let i=0;i<nc;i++){tick();if((i&4095)===0)await checkpoint(i);ref(parents[i],nc);ref(siblings[i],nc);ref(first[i],ac);if(parents[i]===-1){const name=resolveName(nodeNames[i]);if(roots.has(name))fail('INVALID_LSF_STRUCTURE','LSF contains duplicate root names.');roots.add(name);rootNames.push(name);}if(siblings[i]!==-1&&parents[siblings[i]]!==parents[i])fail('INVALID_LSF_STRUCTURE','LSF sibling references a different parent.');}
+    for(let i=0;i<nc;i++){
+      tick();if((i&4095)===0)await checkpoint(i);if(state[i]===2)continue;let cursor=i,count=0;
+      while(cursor!==-1&&state[cursor]!==2){tick();if(state[cursor]===1)fail('INVALID_LSF_STRUCTURE','LSF node parent cycle detected.');state[cursor]=1;stack[count++]=cursor;if(count>limits.depth)fail('RESOURCE_LIMIT','LSF node nesting exceeds the depth limit.');cursor=parents[cursor];}
+      let depth=cursor===-1?0:depths[cursor];while(count){tick();const node=stack[--count];if(++depth>limits.depth)fail('RESOURCE_LIMIT','LSF node nesting exceeds the depth limit.');depths[node]=depth;state[node]=2;}
+    }
+    for(let i=0;i<nc;i++){tick();if((i&4095)===0)await checkpoint(i);let cursor=i,count=0;while(cursor!==-1&&siblingState[cursor]!==2){tick();if(siblingState[cursor]===1)fail('INVALID_LSF_STRUCTURE','LSF sibling cycle detected.');siblingState[cursor]=1;stack[count++]=cursor;cursor=siblings[cursor];}while(count)siblingState[stack[--count]]=2;}
+    for(let i=0;i<ac;i++){tick();ref(next[i],ac);}
+    for(let i=0;i<nc;i++){
+      tick();if((i&4095)===0)await checkpoint(i);if(first[i]===-1)continue;const names=new Set();let cursor=first[i],count=0;
+      while(cursor!==-1){tick();if(++count>structural.attributesPerNode)fail('RESOURCE_LIMIT','LSF node attribute count exceeds its limit.');if(used[cursor])fail('INVALID_LSF_STRUCTURE','LSF attribute cycle or shared attribute detected.');if(!long&&owners[cursor]!==i)fail('INVALID_LSF_STRUCTURE','LSF attribute owner disagrees with its node.');used[cursor]=1;owners[cursor]=i;const name=resolveName(attrNames[cursor]);if(names.has(name))fail('INVALID_LSF_STRUCTURE','LSF node has duplicate attribute names.');names.add(name);cursor=next[cursor];}
+    }
+    if(used.some(v=>v!==1))fail('INVALID_LSF_STRUCTURE','LSF contains unreachable attributes.');
+    const kr=new Reader(decoded.keys),keyNodes=new Set();while(kr.position<kr.bytes.length){tick();const index=kr.u32(),name=resolveName(kr.u32());if(index>=nc||keyNodes.has(index))fail('INVALID_LSF_STRUCTURE','LSF key references are invalid or duplicated.');keyNodes.add(index);let cursor=first[index],found=false;while(cursor!==-1){tick();if(resolveName(attrNames[cursor])===name)found=true;cursor=next[cursor];}if(!found)fail('INVALID_LSF_STRUCTURE','LSF key does not name an attribute on its node.');}
+    check();const summary=checkedReport({kind:'lsf',status:'decoded',version,engineVersion,sections,structure:{nodeCount:nc,attributeCount:ac,rootNames},ecs:{status:'opaque'}},limits);
+    const nodeIndex=i=>{if(!Number.isSafeInteger(i)||i<0||i>=nc)fail('INVALID_LSF_STRUCTURE','Invalid node index.');};
+    const attributeIndex=i=>{if(!Number.isSafeInteger(i)||i<0||i>=ac)fail('INVALID_LSF_STRUCTURE','Invalid attribute index.');};
+    return Object.freeze({summary,metadataFormat:format,metrics:Object.freeze({sectionDecodeMs,structuralMs:Date.now()-structuralStarted,totalMs:Date.now()-started,indexBytes,decodedSectionBytes:cumulative,traversalSteps:work}),structuralLimits:Object.freeze(structural),
+      node(i){check();tick();nodeIndex(i);return {index:i,name:resolveName(nodeNames[i]),parent:parents[i],depth:depths[i]};},
+      attributes(i){check();nodeIndex(i);const result=[];let cursor=first[i];while(cursor!==-1){tick();result.push({index:cursor,name:resolveName(attrNames[cursor]),type:types[cursor],byteLength:lengths[cursor]});cursor=next[cursor];}return result;},
+      scalar(i){check();tick();attributeIndex(i);const type=types[i],data=decoded.values.subarray(offsets[i],offsets[i]+lengths[i]),v=new DataView(data.buffer,data.byteOffset,data.length);
+        if([20,21,22,23,29,30].includes(type))return textFor(data.subarray(0,data.length-1),limits.stringBytes);
+        if(type===31){const h=Array.from(data,b=>b.toString(16).padStart(2,'0'));return h.slice(0,4).reverse().join('')+'-'+h.slice(4,6).reverse().join('')+'-'+h.slice(6,8).reverse().join('')+'-'+h.slice(8,10).join('')+'-'+h.slice(10).join('');}
+        if(type===4)return v.getInt32(0,true);if(type===5)return v.getUint32(0,true);if(type===19)return !!v.getUint8(0);return null;
+      }
+    });
   }
-  return Object.freeze({parseSaveInfo,decodeResource,inspectResourceFrames});
+  async function decodeResource(input,options={}) {return (await openResource(input,options)).summary;}
+  return Object.freeze({parseSaveInfo,decodeResource,openResource,inspectResourceFrames,STRUCTURAL_LIMITS:STRUCTURAL_CAPS});
 });

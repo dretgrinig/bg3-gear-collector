@@ -20,7 +20,8 @@ export function validateDataset(input){
   if(!list(e.sources,24)||!e.sources.length||!e.sources.every(safeSource)||!list(e.companions,12)||!e.companions.length)fail();
   for(const c of e.companions){if(!object(c)||![...COMPANIONS,'Active romance companion'].includes(c.name)||!ranks.has(c.rank)||!text(c.why_spoiler_free)||!list(c.content_types,24)||!c.content_types.every(t=>text(t,80)&&/^[a-z_]+$/.test(t))||c.evidence!==undefined&&!['player_observed'].includes(c.evidence))fail();}
   const p=e.presentation;
-  if(!object(p)||p.review!=='conservative-v1'||p.title!=='Companion content'||p.guidance!=='Exact context is optional to reveal. No party swap is recommended from concealed information.'||!regions.get(e.act).has(p.broadRegion))fail();
+  if(!object(p)||p.review!=='practical-v2'||p.title!=='Companion content'||p.guidance!=='Exact context is optional to reveal. No party swap is recommended from concealed information.'||!regions.get(e.act).has(p.broadRegion))fail();
+  if(!['exactLocation','practical','access','fullRegion','group','routeLabel','sourceNote'].every(k=>own(p,k)&&text(p[k],1000))||!p.practical||!list(p.safeTypes,12)||!p.safeTypes.every(t=>['unique_dialogue','unique_scene','location_remarks','banter','romance'].includes(t)))fail();
   ids.set(e.id,e);
  }
  for(const key of Object.keys(input.routes))if(!['1','2','3'].includes(key))fail();
@@ -33,14 +34,26 @@ export function validateDataset(input){
  // JSON data is the boundary; return a private frozen copy and preserve source objects.
  return freeze(JSON.parse(JSON.stringify(input)));
 }
-export function project(dataset,mode){
+export function project(dataset,mode,{reveals=new Set()}={}){
  const full=mode==='full',light=mode==='light';
- const entries=dataset.entries.map((e,index)=>full?{...e,token:'cg-'+index,mode:'full'}:{
-  id:'cg-'+index,token:'cg-'+index,act:e.act,mode:light?'light':'minimal',location:e.presentation.title,encounter:'',
-  region:light?e.presentation.broadRegion:'',location_group:'',guidance:e.presentation.guidance,
-  priority:null,switch_worth_it:false,companions:[],sources:[],notes:'',missable:false
+ const entries=dataset.entries.map((e,index)=>{
+  const token='cg-'+index,p=e.presentation,identityVisible=full||light||reveals.has(token),exact=full||light&&reveals.has(token);
+  return {id:full?e.id:token,token,act:e.act,mode:full?'full':light?'light':'minimal',
+   location:exact?(p.exactLocation||'Exact location not specified'):light?'Companion content':'Companion content hidden',
+   encounter:full?p.practical:'',region:full?p.fullRegion:p.broadRegion||'Act '+e.act+' area',location_group:full?p.group:'',
+   guidance:full?p.practical:exact?p.access:'',priority:full?e.priority:null,switch_worth_it:full?e.switch_worth_it:false,
+   companions:identityVisible?e.companions.map(c=>({name:c.name,rank:full?c.rank:null,content_types:full?c.content_types.filter(t=>p.safeTypes.includes(t)):[],why_spoiler_free:full?(c.name==='Active romance companion'?'Bring your selected romance companion.':'Suggested companion: '+c.name+'.'):'',...(full&&c.evidence?{evidence:c.evidence}:{})})):[],
+   sources:full?[...e.sources]:[],notes:'',sourceNote:full?p.sourceNote:'',missable:false};
  });
- return {entries,routes:full?dataset.routes:null};
+ // Protected ordering depends only on reviewed broad geography and opaque tokens.
+ // Raw route labels/order and exact fields cannot influence this projection.
+ let routes={};
+ if(full){for(const [act,groups]of Object.entries(dataset.routes))routes[act]=groups.map(g=>({name:dataset.entries.find(e=>e.id===g.ids[0]).presentation.routeLabel,note:'',ids:[...g.ids]}));}
+ else for(const act of [1,2,3]){
+  const order=[...regions.get(act)].filter(Boolean).concat('Act '+act+' area');
+  routes[act]=order.map(name=>({name,note:'Broad area planning; exact encounter order is not implied.',ids:entries.filter(e=>e.act===act&&e.region===name).map(e=>e.id)})).filter(g=>g.ids.length);
+ }
+ return {entries,routes};
 }
 export function resolveCompanions(entry,romance=''){
  return entry.companions.filter(c=>c.name!=='Active romance companion'||romance).map(c=>({...c,name:c.name==='Active romance companion'?romance:c.name}));
@@ -71,8 +84,8 @@ export function filterEntries(entries,filters={},romance=''){
  const q=String(filters.search||'').trim().toLowerCase();
  return entries.filter(e=>{
   const cs=resolveCompanions(e,romance),full=e.mode==='full';
-  const hay=full?[e.location,e.encounter,e.region,e.notes,...cs.flatMap(c=>[c.name,c.why_spoiler_free,...c.content_types])]:[e.location,e.region,e.guidance,'Act '+e.act];
-  return (!q||hay.join(' ').toLowerCase().includes(q))&&(!filters.region||e.region===filters.region)&&(!full||(!filters.companion||cs.some(c=>c.name===filters.companion))&&(!filters.priority||e.priority===filters.priority)&&(!filters.type||cs.some(c=>c.content_types.includes(filters.type)))&&(!filters.switchOnly||e.switch_worth_it));
+  const hay=[e.location,e.encounter,e.region,e.guidance,...cs.map(c=>c.name),...(full?cs.flatMap(c=>[c.why_spoiler_free,...c.content_types]):[]),'Act '+e.act];
+  return (!q||hay.join(' ').toLowerCase().includes(q))&&(!filters.region||e.region===filters.region)&&(!filters.companion||cs.some(c=>c.name===filters.companion))&&(!full||(!filters.priority||e.priority===filters.priority)&&(!filters.type||cs.some(c=>c.content_types.includes(filters.type)))&&(!filters.switchOnly||e.switch_worth_it));
  });
 }
 export function routeGroups(projection,act,displayed){

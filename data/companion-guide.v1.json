@@ -67,10 +67,20 @@
       ],
       "location_group": "Druid Grove",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wilderness"
+        "broadRegion": "Wilderness",
+        "exactLocation": "Druid Grove",
+        "practical": "Talk to Zorru with Lae'zel in your party.",
+        "access": "",
+        "fullRegion": "Wilderness",
+        "group": "Druid Grove",
+        "routeLabel": "Wilderness",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -101,10 +111,20 @@
       ],
       "location_group": "Riverside Teahouse area",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wilderness"
+        "broadRegion": "Wilderness",
+        "exactLocation": "Riverside Teahouse area",
+        "practical": "Bring Astarion when approaching Gandrel in the Riverside Teahouse area.",
+        "access": "",
+        "fullRegion": "Sunlit Wetlands",
+        "group": "Riverside Teahouse area",
+        "routeLabel": "Wilderness",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -143,10 +163,18 @@
       ],
       "location_group": "Blighted Village",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wilderness"
+        "broadRegion": "Wilderness",
+        "exactLocation": "Blighted Village",
+        "practical": "Check the Necromancy of Thay with Astarion; Gale is an alternative companion for this stop.",
+        "access": "",
+        "fullRegion": "Wilderness",
+        "group": "Blighted Village",
+        "routeLabel": "Wilderness",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -185,10 +213,18 @@
       ],
       "location_group": "Risen Road",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wilderness"
+        "broadRegion": "Wilderness",
+        "exactLocation": "Risen Road / Toll House",
+        "practical": "Bring Wyll and Karlach when visiting the Paladins of Tyr at the Toll House.",
+        "access": "",
+        "fullRegion": "Risen Road",
+        "group": "Risen Road",
+        "routeLabel": "Risen Road",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -219,10 +255,20 @@
       ],
       "location_group": "Waukeen's Rest",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wilderness"
+        "broadRegion": "Wilderness",
+        "exactLocation": "Waukeen's Rest",
+        "practical": "Bring Wyll when speaking with Florrick. Check this stop promptly once the situation is triggered.",
+        "access": "",
+        "fullRegion": "Risen Road",
+        "group": "Waukeen's Rest",
+        "routeLabel": "Risen Road",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -254,10 +300,20 @@
       ],
       "location_group": "Mountain Pass approach",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wilderness"
+        "broadRegion": "Wilderness",
+        "exactLocation": "Mountain Pass approach",
+        "practical": "Bring Lae'zel when approaching the githyanki patrol.",
+        "access": "",
+        "fullRegion": "Risen Road",
+        "group": "Mountain Pass approach",
+        "routeLabel": "Risen Road",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -289,10 +345,18 @@
       ],
       "location_group": "Crèche Y'llek",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Mountain Pass"
+        "broadRegion": "Mountain Pass",
+        "exactLocation": "Crèche Y'llek",
+        "practical": "Explore the crèche with Lae'zel; this recommendation covers several stops in the area.",
+        "access": "",
+        "fullRegion": "Mountain Pass",
+        "group": "Crèche Y'llek",
+        "routeLabel": "Mountain Pass / Crèche",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -322,10 +386,20 @@
       ],
       "location_group": "Grymforge",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Underdark"
+        "broadRegion": "Underdark",
+        "exactLocation": "Grymforge",
+        "practical": "Consider Shadowheart for exploration. No party swap is needed solely for this stop.",
+        "access": "",
+        "fullRegion": "Underdark",
+        "group": "Grymforge",
+        "routeLabel": "Underdark / Grymforge",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "location_remarks"
+        ]
       }
     },
     {
@@ -355,10 +429,20 @@
       ],
       "location_group": "Shadowlands entry",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Shadowlands entry",
+        "practical": "Consider Shadowheart while exploring the region. No party swap is required at the entry.",
+        "access": "",
+        "fullRegion": "Shadow-Cursed Lands",
+        "group": "Shadowlands entry",
+        "routeLabel": "Shadowlands Entry",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "location_remarks"
+        ]
       }
     },
     {
@@ -389,10 +473,20 @@
       ],
       "location_group": "Last Light Inn",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Last Light Inn",
+        "practical": "Bring Karlach when visiting Dammon at Last Light Inn.",
+        "access": "",
+        "fullRegion": "Shadow-Cursed Lands",
+        "group": "Last Light Inn",
+        "routeLabel": "Last Light Inn",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_scene"
+        ]
       }
     },
     {
@@ -423,10 +517,18 @@
       ],
       "location_group": "Last Light Inn",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Last Light Inn",
+        "practical": "Bring Astarion when speaking with Raphael at Last Light Inn.",
+        "access": "",
+        "fullRegion": "Shadow-Cursed Lands",
+        "group": "Last Light Inn",
+        "routeLabel": "Last Light Inn",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -457,10 +559,18 @@
       ],
       "location_group": "Last Light Inn",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Last Light Inn",
+        "practical": "Consider Shadowheart when speaking with Isobel; this is an optional party choice.",
+        "access": "",
+        "fullRegion": "Shadow-Cursed Lands",
+        "group": "Last Light Inn",
+        "routeLabel": "Last Light Inn",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -491,10 +601,18 @@
       ],
       "location_group": "Last Light Inn",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Last Light Inn",
+        "practical": "Follow the Art Cullagh lead and speak with Halsin. He may still be a camp follower rather than an active party companion.",
+        "access": "",
+        "fullRegion": "Shadow-Cursed Lands",
+        "group": "Last Light Inn",
+        "routeLabel": "Last Light Inn",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -524,10 +642,20 @@
       ],
       "location_group": "Reithwin",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Reithwin / Tollhouse / House of Healing",
+        "practical": "Consider Halsin while exploring Reithwin and the nearby Thorm locations.",
+        "access": "",
+        "fullRegion": "Reithwin Town",
+        "group": "Reithwin",
+        "routeLabel": "Reithwin → Grand Mausoleum",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "location_remarks"
+        ]
       }
     },
     {
@@ -559,10 +687,20 @@
       ],
       "location_group": "Moonrise Towers",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Moonrise Towers",
+        "practical": "Bring Astarion when speaking with Araj Oblodra.",
+        "access": "",
+        "fullRegion": "Moonrise Towers",
+        "group": "Moonrise Towers",
+        "routeLabel": "Moonrise Towers",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_scene"
+        ]
       }
     },
     {
@@ -593,10 +731,18 @@
       ],
       "location_group": "Balthazar's Room",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Balthazar's Room",
+        "practical": "Bring Gale when examining the experiment in Balthazar's Room.",
+        "access": "",
+        "fullRegion": "Moonrise Towers",
+        "group": "Balthazar's Room",
+        "routeLabel": "Moonrise Towers",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -643,10 +789,20 @@
       ],
       "location_group": "Moonrise Towers Prison",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Moonrise Towers Prison",
+        "practical": "Use your preferred party for the prison. Wyll, Karlach and Astarion are optional choices.",
+        "access": "",
+        "fullRegion": "Moonrise Towers",
+        "group": "Moonrise Towers Prison",
+        "routeLabel": "Moonrise Towers",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "location_remarks"
+        ]
       }
     },
     {
@@ -685,10 +841,20 @@
       ],
       "location_group": "Grand Mausoleum entrance",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Grand Mausoleum entrance",
+        "practical": "Bring Astarion when speaking with Raphael at the Grand Mausoleum entrance. Karlach is an optional additional choice.",
+        "access": "",
+        "fullRegion": "Reithwin Town",
+        "group": "Grand Mausoleum entrance",
+        "routeLabel": "Reithwin → Grand Mausoleum",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -720,10 +886,20 @@
       ],
       "location_group": "Gauntlet of Shar",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "Gauntlet of Shar",
+        "practical": "Explore the Gauntlet with Shadowheart; this is an area-wide recommendation.",
+        "access": "",
+        "fullRegion": "Gauntlet of Shar",
+        "group": "Gauntlet of Shar",
+        "routeLabel": "Gauntlet of Shar",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -753,10 +929,18 @@
       ],
       "location_group": "Yurgir's Lair",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "Yurgir's Lair",
+        "practical": "Bring Astarion when following Raphael's request at Yurgir's Lair.",
+        "access": "",
+        "fullRegion": "Gauntlet of Shar",
+        "group": "Yurgir's Lair",
+        "routeLabel": "Gauntlet of Shar",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -788,10 +972,18 @@
       ],
       "location_group": "Shadowfell",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "Shadowfell",
+        "practical": "Bring Shadowheart before entering this area.",
+        "access": "",
+        "fullRegion": "Gauntlet of Shar",
+        "group": "Shadowfell",
+        "routeLabel": "Gauntlet of Shar",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -831,10 +1023,18 @@
       ],
       "location_group": "Moonrise Towers assault",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Shadow-Cursed Lands"
+        "broadRegion": "Shadow-Cursed Lands",
+        "exactLocation": "Moonrise Towers",
+        "practical": "Check Jaheira's involvement at Moonrise Towers; she may be an attached follower. Minthara is an optional choice.",
+        "access": "",
+        "fullRegion": "Moonrise Towers",
+        "group": "Moonrise Towers assault",
+        "routeLabel": "Moonrise Towers",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -867,10 +1067,20 @@
       ],
       "location_group": "Tadpoling Centre",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "Tadpoling Centre",
+        "practical": "Bring Wyll before entering the Colony; party changes are unavailable inside. Check Mizora's pod with him present.",
+        "access": "",
+        "fullRegion": "Mind Flayer Colony",
+        "group": "Tadpoling Centre",
+        "routeLabel": "Mind Flayer Colony",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -902,10 +1112,20 @@
       ],
       "location_group": "Mind Flayer Colony",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "Mind Flayer Colony",
+        "practical": "Bring Gale for the Colony sequence if you want to check his companion content.",
+        "access": "",
+        "fullRegion": "Mind Flayer Colony",
+        "group": "Mind Flayer Colony",
+        "routeLabel": "Mind Flayer Colony",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_scene"
+        ]
       }
     },
     {
@@ -935,10 +1155,20 @@
       ],
       "location_group": "Mind Flayer Colony",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "Mind Flayer Colony",
+        "practical": "Consider Minthara while exploring the Colony.",
+        "access": "",
+        "fullRegion": "Mind Flayer Colony",
+        "group": "Mind Flayer Colony",
+        "routeLabel": "Mind Flayer Colony",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "location_remarks"
+        ]
       }
     },
     {
@@ -969,10 +1199,18 @@
       ],
       "location_group": "Rivington",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Rivington"
+        "broadRegion": "Rivington",
+        "exactLocation": "Rivington",
+        "practical": "Consider Minthara when exploring Rivington.",
+        "access": "",
+        "fullRegion": "Rivington",
+        "group": "Rivington",
+        "routeLabel": "Rivington",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -1002,10 +1240,21 @@
       ],
       "location_group": "Circus of the Last Days",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Rivington"
+        "broadRegion": "Rivington",
+        "exactLocation": "Circus of the Last Days",
+        "practical": "Bring your selected romance companion when speaking with Zethino.",
+        "access": "",
+        "fullRegion": "Rivington",
+        "group": "Circus of the Last Days",
+        "routeLabel": "Rivington",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "romance",
+          "unique_scene"
+        ]
       }
     },
     {
@@ -1035,10 +1284,20 @@
       ],
       "location_group": "Open Hand Temple roof",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Rivington"
+        "broadRegion": "Rivington",
+        "exactLocation": "Open Hand Temple roof",
+        "practical": "Bring Gale when visiting Tara on the Open Hand Temple roof.",
+        "access": "",
+        "fullRegion": "Rivington",
+        "group": "Open Hand Temple roof",
+        "routeLabel": "Rivington",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1069,10 +1328,20 @@
       ],
       "location_group": "Gur Camp",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Rivington"
+        "broadRegion": "Rivington",
+        "exactLocation": "Gur Camp",
+        "practical": "Bring Astarion when speaking with Ulma at the Gur Camp.",
+        "access": "",
+        "fullRegion": "Rivington",
+        "group": "Gur Camp",
+        "routeLabel": "Rivington",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1103,10 +1372,20 @@
       ],
       "location_group": "Refugee area",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Rivington"
+        "broadRegion": "Rivington",
+        "exactLocation": "Refugee area",
+        "practical": "Bring Shadowheart when speaking with Ferg Drogher. Complete any desired shopping beforehand.",
+        "access": "",
+        "fullRegion": "Rivington",
+        "group": "Refugee area",
+        "routeLabel": "Rivington",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1137,10 +1416,20 @@
       ],
       "location_group": "Danthelon's Dancing Axe",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wyrm's Crossing"
+        "broadRegion": "Wyrm's Crossing",
+        "exactLocation": "Danthelon's Dancing Axe",
+        "practical": "Bring Jaheira when visiting the Harper safehouse at Danthelon's Dancing Axe.",
+        "access": "",
+        "fullRegion": "Wyrm's Crossing",
+        "group": "Danthelon's Dancing Axe",
+        "routeLabel": "Wyrm's Crossing",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_scene"
+        ]
       }
     },
     {
@@ -1169,10 +1458,18 @@
       ],
       "location_group": "Western Beach",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Rivington"
+        "broadRegion": "Rivington",
+        "exactLocation": "Western Beach",
+        "practical": "Use your preferred party at the Western Beach. Jaheira is an optional choice.",
+        "access": "",
+        "fullRegion": "Rivington",
+        "group": "Western Beach",
+        "routeLabel": "Rivington",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -1203,10 +1500,20 @@
       ],
       "location_group": "Fraygo's Flophouse",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wyrm's Crossing"
+        "broadRegion": "Wyrm's Crossing",
+        "exactLocation": "Fraygo's Flophouse",
+        "practical": "Bring Astarion when meeting Petras and Dalyria. Disable active sunlight effects before approaching.",
+        "access": "",
+        "fullRegion": "Wyrm's Crossing",
+        "group": "Fraygo's Flophouse",
+        "routeLabel": "Wyrm's Crossing",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_scene"
+        ]
       }
     },
     {
@@ -1237,10 +1544,21 @@
       ],
       "location_group": "Sharess' Caress",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wyrm's Crossing"
+        "broadRegion": "Wyrm's Crossing",
+        "exactLocation": "Sharess' Caress",
+        "practical": "Bring your selected romance companion when visiting the drow twins.",
+        "access": "",
+        "fullRegion": "Wyrm's Crossing",
+        "group": "Sharess' Caress",
+        "routeLabel": "Wyrm's Crossing",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "romance",
+          "unique_scene"
+        ]
       }
     },
     {
@@ -1282,10 +1600,20 @@
       ],
       "location_group": "Sharess' Caress",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wyrm's Crossing"
+        "broadRegion": "Wyrm's Crossing",
+        "exactLocation": "Sharess' Caress / Devil's Den",
+        "practical": "Bring Lae'zel before visiting Voss and Raphael in the Devil's Den. Karlach is an optional, player-reported choice.",
+        "access": "",
+        "fullRegion": "Wyrm's Crossing",
+        "group": "Sharess' Caress",
+        "routeLabel": "Wyrm's Crossing",
+        "sourceNote": "Player-reported companion detail; independent confirmation is pending.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1327,10 +1655,21 @@
       ],
       "location_group": "Wyrm's Rock Fortress",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Wyrm's Crossing"
+        "broadRegion": "Wyrm's Crossing",
+        "exactLocation": "Wyrm's Rock Fortress",
+        "practical": "Bring Karlach and Wyll when attending the coronation.",
+        "access": "",
+        "fullRegion": "Wyrm's Crossing",
+        "group": "Wyrm's Rock Fortress",
+        "routeLabel": "Wyrm's Rock",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue",
+          "unique_scene"
+        ]
       }
     },
     {
@@ -1362,10 +1701,20 @@
       ],
       "location_group": "Guildhall",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "Guildhall",
+        "practical": "Bring Jaheira when speaking with Nine-Fingers Keene.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "Guildhall",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1397,10 +1746,20 @@
       ],
       "location_group": "The Counting House",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "The Counting House",
+        "practical": "Bring Jaheira when following the Stone Lord lead at the Counting House.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "The Counting House",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1433,10 +1792,20 @@
       ],
       "location_group": "Abandoned Cistern",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "Abandoned Cistern",
+        "practical": "Consider Jaheira for the Abandoned Cistern. This recommendation does not claim she must occupy an active party slot.",
+        "access": "",
+        "fullRegion": "Lower City Sewers",
+        "group": "Abandoned Cistern",
+        "routeLabel": "Sewers / Undercity",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1476,10 +1845,20 @@
       ],
       "location_group": "Elerrathin's Home",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "Elerrathin's Home",
+        "practical": "Bring Jaheira to Elerrathin's Home. Minsc is an additional choice if already recruited.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "Elerrathin's Home",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1511,10 +1890,20 @@
       ],
       "location_group": "Sorcerous Sundries",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "Sorcerous Sundries / Sorcerous Vault",
+        "practical": "Bring Gale when looking for the Annals of Karsus in the Sorcerous Vault.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "Sorcerous Sundries",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1546,10 +1935,20 @@
       ],
       "location_group": "Stormshore Tabernacle",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "Stormshore Tabernacle",
+        "practical": "Follow Gale's quest lead to Stormshore Tabernacle after the Annals of Karsus.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "Stormshore Tabernacle",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_scene"
+        ]
       }
     },
     {
@@ -1599,10 +1998,20 @@
       ],
       "location_group": "House of Grief",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "House of Grief / Cloister of Sombre Embrace",
+        "practical": "Bring Shadowheart when visiting the House of Grief. Jaheira and Minsc are additional choices if available.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "House of Grief",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1634,10 +2043,18 @@
       ],
       "location_group": "Cazador's Palace",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "Cazador's Palace",
+        "practical": "Bring Astarion when visiting Cazador's Palace.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "Cazador's Palace",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -1668,10 +2085,18 @@
       ],
       "location_group": "Iron Throne",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "Iron Throne",
+        "practical": "Consider Wyll for the Iron Throne. His active presence is not a mechanical requirement.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "Iron Throne",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -1704,10 +2129,20 @@
       ],
       "location_group": "The Wyrmway",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "The Wyrmway",
+        "practical": "Bring Wyll for the Wyrmway trials.",
+        "access": "",
+        "fullRegion": "Wyrm's Rock",
+        "group": "The Wyrmway",
+        "routeLabel": "Wyrm's Rock",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_dialogue"
+        ]
       }
     },
     {
@@ -1739,10 +2174,18 @@
       ],
       "location_group": "House of Hope",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "House of Hope",
+        "practical": "Consider Lae'zel for the House of Hope; a party swap is not mechanically required.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "House of Hope",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -1783,10 +2226,20 @@
       ],
       "location_group": "Murder Tribunal",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "Murder Tribunal",
+        "practical": "Consider Jaheira and Minsc when visiting the Murder Tribunal.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "Murder Tribunal",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "unique_scene"
+        ]
       }
     },
     {
@@ -1818,10 +2271,18 @@
       ],
       "location_group": "Temple of Bhaal",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "Temple of Bhaal",
+        "practical": "Consider Minthara when visiting the Temple of Bhaal.",
+        "access": "",
+        "fullRegion": "Undercity",
+        "group": "Temple of Bhaal",
+        "routeLabel": "Sewers / Undercity",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -1852,10 +2313,18 @@
       ],
       "location_group": "Gortash confrontation",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": ""
+        "broadRegion": "",
+        "exactLocation": "",
+        "practical": "Bring Karlach when following her quest lead to Gortash.",
+        "access": "",
+        "fullRegion": "Lower City / Wyrm's Rock",
+        "group": "Gortash confrontation",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": []
       }
     },
     {
@@ -1896,10 +2365,20 @@
       ],
       "location_group": "Lower City general exploration",
       "presentation": {
-        "review": "conservative-v1",
+        "review": "practical-v2",
         "title": "Companion content",
         "guidance": "Exact context is optional to reveal. No party swap is recommended from concealed information.",
-        "broadRegion": "Lower City"
+        "broadRegion": "Lower City",
+        "exactLocation": "Lower City general exploration",
+        "practical": "Consider Jaheira and, if already recruited, Minsc for general Lower City exploration.",
+        "access": "",
+        "fullRegion": "Lower City",
+        "group": "Lower City general exploration",
+        "routeLabel": "Lower City",
+        "sourceNote": "Original research sources are retained. Source pages may contain story spoilers.",
+        "safeTypes": [
+          "banter"
+        ]
       }
     }
   ],

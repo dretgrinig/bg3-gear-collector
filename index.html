@@ -1098,13 +1098,30 @@ function readSpoilerPreference(scope,storedResult){
 function spoilerMode(){const scope=spoilerScope();return scope?readSpoilerPreference(scope).mode:"minimal"}
 // Companion Content Guide shell adapter: presentation snapshots, no Story mutations.
 let companionGuideView=null,companionGuideImport=null,companionGuideImportAttempt=0,companionGuideContextKey='',companionGuideScopeKey='',companionGuideScopeRevision=0,companionGuideSecurityKey='',companionGuideRevision=0;
+let companionGuideStableScope='',companionGuideHadScope=false;
 let companionGuideContext=Object.freeze({identity:'companion-context-0',revision:0,mode:'minimal'}),companionGuideScroll={x:0,y:0};
 function notifyCompanionGuideContext(){
  const mode=spoilerMode(),scopeKey=JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,explicitSignOut,CLOUD_CONFIG.supabaseUrl||null]);
- if(scopeKey!==companionGuideScopeKey){companionGuideScopeKey=scopeKey;companionGuideScopeRevision++;}
+ if(scopeKey!==companionGuideScopeKey){
+  if(companionGuideHadScope){try{localStorage.removeItem('bg3-companion-guide-draft-v1')}catch(_){}}
+  companionGuideScopeKey=scopeKey;const ticket=++companionGuideScopeRevision;
+  companionGuideStableScope='companion-scope-session-'+ticket;
+  if(spoilerScope()){
+   companionGuideHadScope=true;
+   if(globalThis.crypto?.subtle&&typeof TextEncoder==='function'){
+    companionGuideStableScope='companion-scope-pending-'+ticket;
+    // Sign-out transitions revoke the draft, but this session-only flag is not a reload identity.
+    const draftScopeKey=JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,CLOUD_CONFIG.supabaseUrl||null]);
+    globalThis.crypto.subtle.digest('SHA-256',new TextEncoder().encode(draftScopeKey)).then(bytes=>{
+     if(ticket!==companionGuideScopeRevision)return;
+     companionGuideStableScope='companion-scope-sha256-'+Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('');notifyCompanionGuideContext();
+    }).catch(()=>{if(ticket===companionGuideScopeRevision){companionGuideStableScope='companion-scope-session-'+ticket;notifyCompanionGuideContext();}});
+   }
+  }
+ }
  const securityKey=JSON.stringify([scopeKey,authGeneration,backendGeneration]);
  if(securityKey!==companionGuideSecurityKey){companionGuideSecurityKey=securityKey;companionGuideRevision++;}
- const identity='companion-scope-'+companionGuideScopeRevision,key=JSON.stringify([identity,companionGuideRevision,mode]);
+ const identity=companionGuideStableScope,key=JSON.stringify([identity,companionGuideRevision,mode]);
  if(key!==companionGuideContextKey){
   companionGuideContextKey=key;
   companionGuideContext=Object.freeze({identity,revision:companionGuideRevision,mode});

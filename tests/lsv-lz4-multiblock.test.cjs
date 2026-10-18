@@ -62,8 +62,8 @@ test('later unsupported frame rejects before strings or section decoding',async(
  vm.runInNewContext(fs.readFileSync(path.resolve(__dirname,'../experiments/lsv/resource.cjs'),'utf8'),c);
  const b=F.multiResource({mutateSection(d){d.values=F.multiFrame([{plain:text('a')},{plain:text('b')}]);}});await reject(c.module.exports.decodeResource(b));assert.equal(calls,0);
 });
-test('65,536 structural-record cap still rejects successfully decompressed oversized tables',async()=>{
- await assert.rejects(R.decodeResource(F.multiResource({oversizedTables:true})),e=>e.code==='RESOURCE_LIMIT'&&/table count/.test(e.message));
+test('lowered 65,536 structural-record cap still rejects oversized declarations',async()=>{
+ await assert.rejects(R.decodeResource(F.multiResource({oversizedTables:true}),{structuralLimits:{nodes:65536}}),e=>e.code==='RESOURCE_LIMIT'&&/table count/.test(e.message));
 });
 test('existing raw LZ4 exact-length wrapper and one-block meta behavior remain intact',async()=>{
  const plain=text('original raw contract');assert.deepEqual(await P.decompress('lz4',literalLz4(plain),plain.length),plain);

@@ -513,3 +513,22 @@ timeout, cancellation or source change; the known table cap remains a valid stop
 No implementation changes or semantic interpretation are authorized by that
 measurement. Phase C, product integration, deployment, Supabase and persistence
 remain outside this checkpoint. Research stays excluded from the public artifact.
+
+## Structural scaling and unscoped item identities — uncommitted research
+
+The separately authorized continuation replaces the historical uniform table cap
+with bounded typed indexing, without codec changes. See
+[structural limits, measured paths and identity scope](lsv-structural-identities.md)
+for exact limits and the read-only Worker operation.
+
+Globals now validates 196,784 nodes / 302,638 attributes. Its ItemFactory pool can
+produce exact Stats matches against canonical catalogue identities, but inventory
+ownership is **not established**. Cached-template definitions are excluded;
+NewAge/ECS remains opaque. No positional/Flags/name heuristic is used. CurrentTemplate
+is retained as unscoped evidence, not assumed to be a static template or an owner
+link. Every candidate remains unknown ownership, and absence never means unowned.
+
+This checkpoint requires Work review and remains uncommitted/unpushed. The next
+ownership-preview milestone is blocked on separately proven explicit inventory
+relations, not on further relaxation of structural/codec limits. Research stays
+outside the unchanged public artifact; no UI/Story/progress/backend changes occur.

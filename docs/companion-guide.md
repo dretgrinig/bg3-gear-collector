@@ -1,283 +1,143 @@
-# Companion Content Guide
+# Companion Content Guide — final information and draft contract
 
-Read-only view inside the Tracker shell. No pathname routing, new dependency,
-backend integration or persistence. The shared brand/DEV PREVIEW header remains
-visible. Tracker controls and item nodes stay mounted; entry/return only switch
-visibility and restore the entry focus and captured viewport. Existing background
-work is untouched.
+The guide remains a local, read-only companion-content view inside the Tracker.
+All 51 original research records, IDs, source URLs, evidence markers, raw notes,
+metadata and route definitions are preserved. `presentation` is separately
+reviewed output metadata; raw `why_spoiler_free`, encounter summaries and notes
+are not rendered, even behind Sources & notes. This is presentation review against
+existing research, not new factual verification or a recruitment/availability model.
 
-## Source and review boundary
+## Information levels
 
-Source: reviewed `companion-guide-v0.3 2.zip`, version 0.3, 51 original research
-records. `tests/fixtures/companion-guide-original.json` independently preserves
-all original metadata, IDs, routes, evidence markers, copy and source URLs.
-`data/companion-guide.v1.json` adds schema 1 and per-record presentation metadata;
-original research is not rewritten. This is spoiler-presentation review, not
-exhaustive factual reverification. The player-observed evidence remains labelled
-and is not upgraded to a confirmed claim.
+| Mode | Direct output | Entry-local disclosure |
+|---|---|---|
+| Minimal | Reviewed broad area, neutral content label | Reveal companion: names/portraits only |
+| Light | Companions/portraits, reviewed broad area, neutral guidance | Reveal exact location: reviewed exact site and neutral access copy only |
+| Full | Exact site, practical trigger/timing, party recommendations | Sources & notes: original source links and a reviewed evidence caveat |
 
-Availability, recruitment, Origin-player context and quest conditions are not
-modeled. A suggested swap may be unavailable. Priorities are editorial, not game
-requirements. The user explicitly chooses an Act before three companions; no Act is
-inferred from Story progress. Party and romance inputs live in memory only.
+Dialogue results, approval results, scene outcomes, consequences and twists are
+excluded from every level. Full is practical guidance, not a scene summary.
+Unknown exact sites and unreviewed broad parentage remain withheld rather than
+inferred. Original research remains inspectable in shipped JSON; UI safety is
+not an attempt to prevent source inspection. Raw research is never destructively
+rewritten. Player-observed evidence is not upgraded to independent confirmation.
 
-## Spoiler boundary
+One reviewed projection feeds Act gating, per-entry reveal, search, filters,
+counts, grouping, recommendations and DOM. Minimal reveal cannot expose exact
+geography. Light reveals cannot expose raw encounter text. Each reveal is local;
+revealed safe fields may participate in search, but unrevealed fields cannot.
+Mode changes clear reveals, optional sources and search synchronously.
 
-The adapter consumes existing `spoilerMode()` without changing defaults or
-preferences. Its opaque scope identity changes for Story/account/sign-out/backend
-namespace changes; auth/backend invalidation revisions are separate. Preference-only
-updates change inherited mode, not scope identity or security revision. No raw
-account/Story identifiers reach the guide. Notification placement and existing
-preference-cache warming stay unchanged.
+Route is available in all modes. Minimal/Light group by reviewed broad areas in
+fixed broad-area order and opaque token order within each area. Concealed exact
+fields and original route order/labels cannot change this ordering. Unreviewed
+broad areas are labelled only by Act. Full uses reviewed geographic route labels,
+with plot/progression notes withheld. The original recommendation algorithm and
+its independent prototype fixtures are unchanged. Only Full supplies its reviewed
+practical context; protected modes cannot derive swaps from concealed ranks.
 
-The native segmented control offers Story (default), Minimal, Light and Full.
-Overrides live only in the guide controller's memory, survive navigation,
-close/reopen and retry, and never write Tracker preferences or storage. Reload
-starts with Story. Without a valid Story, following uses Minimal; explicit guide
-choices remain usable. Logical scope changes reset the choice to Story; returning
-to a previous Story does not restore an override. Same-scope security revisions
-retain the choice but preserve existing broader view/reveal invalidation.
+The existing explicitly selected Act gate remains first: no names, portraits,
+romance options or results before an Act choice. The reviewed 6/9/10 identity
+roster remains shared by modes and makes no claim about live recruitment. A
+stricter mode hides associations and prunes any restored selection outside the
+current Act roster; it does not invent a new mode-specific recruitment roster.
 
-One effective mode feeds the original projection and every downstream permission
-gate. Effective changes synchronously clear reveals, notes and discovery filters,
-preserve explicit Act/party/romance, discard stale async work and leave Route for
-Browse when entering a protected mode. Equivalent effective modes retain browsing
-state. Inherited preference changes under an override are remembered without
-rerendering guide results or stealing focus; selecting Story uses the latest value.
-No polling, backend patching or additional storage listener is introduced.
+## One local UI draft
 
-Every entry and original route was reviewed. Original `why_spoiler_free` and low
-spoiler labels often name encounters, quest progression, outcomes or recruitment.
-They are NOT treated as safe. Minimal deliberately uses fixed neutral guidance
-with no companion associations, priorities, geography or recommendation. Light
-adds only explicitly reviewed broad regions below; sensitive/ambiguous parentage
-is withheld. This conservative fallback avoids manufacturing safe recommendations.
-Both protected modes withhold route mode because original route order/group names
-contain exact geography and progression. The UI explains this limitation.
+Key: `bg3-companion-guide-draft-v1`.
 
-Projection is followed by the explicit Act reveal gate before filters, search, counts and planning. Full recommendations
-use the original whole-party enumeration and ALL eligible Act records before
-display filtering. Independent prototype-produced regression fixtures retain its
-must/strong scoring, romance, retention and multi-swap behavior.
-
-A protected entry can be deliberately revealed locally. This does not enable
-hidden search/filter/recommendation context or affect other entries. Original
-research notes require a second explicit action in every mode and are not inserted
-in closed DOM. No concealed values occur in protected attributes, options or live
-regions. Stable raw IDs stay in data; protected DOM uses opaque positional tokens.
-Shipped JSON remains inspectable in developer tools: this prevents accidental
-spoilers, not source inspection.
-
-## Per-record safe presentation review
-
-Every row uses the same fixed neutral guidance in Minimal. Light admits only the
-listed broad region. No raw companion/rank/missability field is projected.
-
-| Original stable ID | Act | Light broad region | Protected guidance decision |
-|---|---:|---|---|
-| a1-grove-zorru | 1 | Wilderness | Neutral; exact context/associations withheld |
-| a1-swamp-gandrel | 1 | Wilderness | Neutral; exact context/associations withheld |
-| a1-blighted-necromancy | 1 | Wilderness | Neutral; exact context/associations withheld |
-| a1-risen-karlach-wyll | 1 | Wilderness | Neutral; exact context/associations withheld |
-| a1-waukeens-wyll | 1 | Wilderness | Neutral; exact context/associations withheld |
-| a1-gith-patrol | 1 | Wilderness | Neutral; exact context/associations withheld |
-| a1-creche | 1 | Mountain Pass | Neutral; exact context/associations withheld |
-| a1-grymforge | 1 | Underdark | Neutral; exact context/associations withheld |
-| a2-entry-shadowheart | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-lastlight-dammon | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-lastlight-raphael | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-lastlight-isobel | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-lastlight-art | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-reithwin-halsin | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-moonrise-araj | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-moonrise-balthazar-room | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-moonrise-prison | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-mausoleum-raphael | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-gauntlet-general | 2 | Withheld | Neutral; exact context/associations withheld |
-| a2-gauntlet-yurgir | 2 | Withheld | Neutral; exact context/associations withheld |
-| a2-shadowfell | 2 | Withheld | Neutral; exact context/associations withheld |
-| a2-assault-jaheira | 2 | Shadow-Cursed Lands | Neutral; exact context/associations withheld |
-| a2-colony-mizora | 2 | Withheld | Neutral; exact context/associations withheld |
-| a2-colony-gale | 2 | Withheld | Neutral; exact context/associations withheld |
-| a2-colony-minthara | 2 | Withheld | Neutral; exact context/associations withheld |
-| a3-rivington-orin | 3 | Rivington | Neutral; exact context/associations withheld |
-| a3-circus-zethino | 3 | Rivington | Neutral; exact context/associations withheld |
-| a3-openhand-tara | 3 | Rivington | Neutral; exact context/associations withheld |
-| a3-gur-camp | 3 | Rivington | Neutral; exact context/associations withheld |
-| a3-ferg | 3 | Rivington | Neutral; exact context/associations withheld |
-| a3-danthelon | 3 | Wyrm's Crossing | Neutral; exact context/associations withheld |
-| a3-western-beach | 3 | Rivington | Neutral; exact context/associations withheld |
-| a3-flophouse | 3 | Wyrm's Crossing | Neutral; exact context/associations withheld |
-| a3-sharess-drow | 3 | Wyrm's Crossing | Neutral; exact context/associations withheld |
-| a3-sharess-voss | 3 | Wyrm's Crossing | Neutral; exact context/associations withheld |
-| a3-coronation | 3 | Wyrm's Crossing | Neutral; exact context/associations withheld |
-| a3-guildhall | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-counting-house | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-cistern | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-jaheira-home | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-sorcerous | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-stormshore-gale | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-house-grief | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-cazador | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-iron-throne | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-wyrmway | 3 | Withheld | Neutral; exact context/associations withheld |
-| a3-house-hope | 3 | Withheld | Neutral; exact context/associations withheld |
-| a3-murder-tribunal | 3 | Lower City | Neutral; exact context/associations withheld |
-| a3-bhaal-orin | 3 | Withheld | Neutral; exact context/associations withheld |
-| a3-gortash-final | 3 | Withheld | Neutral; exact context/associations withheld |
-| a3-lowercity-general | 3 | Lower City | Neutral; exact context/associations withheld |
-
-All original route groups/notes remain Full-only. Only nonempty displayed groups
-contribute to the route overview, sequential numbering and next-stop labels.
-No route or next-stop text is built from an excluded record.
-
-## Implementation and QA
-
-- `assets/companion-guide-model.js`: validation, projection and pure original planner.
-- `assets/companion-guide.js`: memory-only controller, stale-load guards and scoped DOM.
-- `assets/companion-guide.css`: selectors scoped to the dedicated guide root.
-- `index.html`: additive shell adapter and presentation notifications only.
-
-Malformed/missing data shows an in-view retry without touching storage. Data fetch
-uses the explicit same-origin JSON asset with omitted credentials. Context changes
-and closing abort guide-only loads; stale responses cannot restore old UI. Inputs
-stay mounted during filtering; search has no change/blur rerender handler. Local
-reveal/research updates preserve their original buttons and focus.
-
-Run focused checks with `node --test tests/companion-guide.test.cjs tests/pages-build.test.cjs`.
-Historical acquisition whole-file guards remove only exact fixture-checked shell
-additions; every original Tracker byte is still compared. A regression proves an
-unrelated renderer edit remains detectable and guide adapter drift is rejected.
-
-Build with `node scripts/build-pages.cjs`. Run the repeatable native QA script:
-
-```sh
-BG3_PLAYWRIGHT_MODULE=/path/to/playwright BG3_CHROME_PATH=/path/to/chrome node scripts/qa-companion-guide.cjs
+```json
+{"version":1,"scope":"companion-scope-sha256-<opaque digest>","act":1,"party":["Gale","Astarion","Shadowheart"],"romance":"Shadowheart","view":"route"}
 ```
 
-It serves dist only, uses fresh disposable contexts at 320/390/768/1280, blocks
-Supabase/external writes, and supplies a local catalogue fixture. It checks pure
-guide storage effects separately from explicit Tracker preference/Story actions.
-Captures and reports default to an OS temporary directory. No real account or
-existing browser profile is used. The exact 27-file public inventory is tested;
-prototype/research/docs/tests/QA scripts remain excluded. Nothing is deployed by
-these checks.
+Only Act, party, romance and Browse/Route persist. Spoiler override returns to
+Story after reload. Reveals, sources, research, search, loading/errors and filters
+are never persisted. Writes happen on relevant selection changes, never unload.
+All storage operations are guarded; unavailable storage leaves an in-memory guide.
 
-Closing the guide empties its generated DOM while retaining only its in-memory
-controller. This also prevents the existing offline-HTML export from serializing
-guide selections/reveals. Reopening reconstructs the guide without duplicating
-root event handlers. Standalone Tracker offline HTML does not embed the guide’s
-modules/JSON; unavailable assets use the recoverable loading/return path. Tracker
-export logic itself is unchanged.
+The stable Story/account/backend scope inputs are digested with WebCrypto SHA-256 into the
+opaque guide identity. Raw Story/account/backend IDs never enter the draft. The
+old session counter alone was not reload-safe. Pending digests cannot restore or
+save drafts; stale digest completion cannot change a newer scope. Environments
+without WebCrypto retain session-only behavior and cannot incorrectly restore a
+counter-colliding draft. Session-only sign-out flags still revoke the previous draft
+but are excluded from its reload identity. This is a scoped pseudonymous key, not an auth token.
 
-## Local companion portraits
+Only the initial resolved scope may restore once. Version, exact field inventory,
+scope, Act, party bounds/uniqueness/current roster, romance and view are checked.
+Invalid versions/JSON/scope/Act fail to an anonymous start. Invalid party/romance
+are pruned; invalid view falls back to Browse. No stored value grants a spoiler
+reveal. A retained Act represents the user's prior deliberate choice in that scope.
 
-The ten WebP portraits are copied byte-for-byte from the supplied
-`companion-guide-v0.3 4/assets/portraits/` folder. Only those images are added to
-public assets; the supplied prototype code and research are not shipped.
-`companion-guide.js` maps exact supported companion names to fixed local files,
-including `Lae'zel` → `laezel.webp`; there is no fuzzy matching or image service.
-The model, original 51 records and recommendation algorithm are unchanged.
+Story/account/backend namespace transitions clear the one current draft and reset
+the guide. A → B → A does not resurrect A. Scope notification clears the draft even
+if the guide module has not been opened. Same-scope auth/backend refresh revisions revoke transient reveals/search but
+retain validated setup and the current draft. No Story preference, auth, backend, sync, progress,
+ownership, acquisition, PWA, transport, research or production configuration change
+is introduced. The explicit public artifact remains exactly 42 files.
 
-The same labelled portrait is used in party choice buttons, the selected party,
-Full card companion rows, Out/In suggestions and companion explanation rows.
-Minimal/Light card associations remain absent until deliberate local reveal.
-Images are decorative (`alt=""`, avatar hidden from accessibility), with visible
-names providing the label. Fixed avatar boxes retain an initial underneath; a
-captured image error removes only the failed image. No remote fallback, storage,
-backend call or automatic party action is introduced. Styles stay guide-scoped.
+## All-record presentation audit
 
-Provenance from the supplied `portrait-sources.json`: portraits are Larian Studios
-assets; the supplied manifest refers to these BG3 Wiki file pages for attribution
-and fan-content terms. These are provenance links, not runtime image dependencies.
+Each row below was reviewed against its preserved research text. The practical
+field is a conservative extraction, never an added outcome or invented prerequisite.
+Minimal uses broad area only; Light adds names and optionally the reviewed site;
+Full adds the listed practical guidance. Sources & notes exposes links and a
+standard evidence caveat only, never the preserved raw notes.
 
-| Companion | Local file | Supplied source |
-|---|---|---|
-| Astarion | `assets/portraits/astarion.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Astarion.png) |
-| Gale | `assets/portraits/gale.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Gale.png) |
-| Halsin | `assets/portraits/halsin.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Halsin.png) |
-| Jaheira | `assets/portraits/jaheira.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Jaheira.png) |
-| Karlach | `assets/portraits/karlach.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Karlach.png) |
-| Lae'zel | `assets/portraits/laezel.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Lae%27zel.png) |
-| Minsc | `assets/portraits/minsc.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Minsc.png) |
-| Minthara | `assets/portraits/minthara.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Minthara.png) |
-| Shadowheart | `assets/portraits/shadowheart.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Shadowheart.png) |
-| Wyll | `assets/portraits/wyll.webp` | [BG3 Wiki](https://bg3.wiki/wiki/File:Portrait_Wyll.png) |
+| Stable ID | Broad area in protected modes | Reviewed Full site | Practical guidance |
+|---|---|---|---|
+| a1-grove-zorru | Wilderness | Druid Grove | Talk to Zorru with Lae'zel in your party. |
+| a1-swamp-gandrel | Wilderness | Riverside Teahouse area | Bring Astarion when approaching Gandrel in the Riverside Teahouse area. |
+| a1-blighted-necromancy | Wilderness | Blighted Village | Check the Necromancy of Thay with Astarion; Gale is an alternative companion for this stop. |
+| a1-risen-karlach-wyll | Wilderness | Risen Road / Toll House | Bring Wyll and Karlach when visiting the Paladins of Tyr at the Toll House. |
+| a1-waukeens-wyll | Wilderness | Waukeen's Rest | Bring Wyll when speaking with Florrick. Check this stop promptly once the situation is triggered. |
+| a1-gith-patrol | Wilderness | Mountain Pass approach | Bring Lae'zel when approaching the githyanki patrol. |
+| a1-creche | Mountain Pass | Crèche Y'llek | Explore the crèche with Lae'zel; this recommendation covers several stops in the area. |
+| a1-grymforge | Underdark | Grymforge | Consider Shadowheart for exploration. No party swap is needed solely for this stop. |
+| a2-entry-shadowheart | Shadow-Cursed Lands | Shadowlands entry | Consider Shadowheart while exploring the region. No party swap is required at the entry. |
+| a2-lastlight-dammon | Shadow-Cursed Lands | Last Light Inn | Bring Karlach when visiting Dammon at Last Light Inn. |
+| a2-lastlight-raphael | Shadow-Cursed Lands | Last Light Inn | Bring Astarion when speaking with Raphael at Last Light Inn. |
+| a2-lastlight-isobel | Shadow-Cursed Lands | Last Light Inn | Consider Shadowheart when speaking with Isobel; this is an optional party choice. |
+| a2-lastlight-art | Shadow-Cursed Lands | Last Light Inn | Follow the Art Cullagh lead and speak with Halsin. He may still be a camp follower rather than an active party companion. |
+| a2-reithwin-halsin | Shadow-Cursed Lands | Reithwin / Tollhouse / House of Healing | Consider Halsin while exploring Reithwin and the nearby Thorm locations. |
+| a2-moonrise-araj | Shadow-Cursed Lands | Moonrise Towers | Bring Astarion when speaking with Araj Oblodra. |
+| a2-moonrise-balthazar-room | Shadow-Cursed Lands | Balthazar's Room | Bring Gale when examining the experiment in Balthazar's Room. |
+| a2-moonrise-prison | Shadow-Cursed Lands | Moonrise Towers Prison | Use your preferred party for the prison. Wyll, Karlach and Astarion are optional choices. |
+| a2-mausoleum-raphael | Shadow-Cursed Lands | Grand Mausoleum entrance | Bring Astarion when speaking with Raphael at the Grand Mausoleum entrance. Karlach is an optional additional choice. |
+| a2-gauntlet-general | Act 2 area (parentage withheld) | Gauntlet of Shar | Explore the Gauntlet with Shadowheart; this is an area-wide recommendation. |
+| a2-gauntlet-yurgir | Act 2 area (parentage withheld) | Yurgir's Lair | Bring Astarion when following Raphael's request at Yurgir's Lair. |
+| a2-shadowfell | Act 2 area (parentage withheld) | Shadowfell | Bring Shadowheart before entering this area. |
+| a2-assault-jaheira | Shadow-Cursed Lands | Moonrise Towers | Check Jaheira's involvement at Moonrise Towers; she may be an attached follower. Minthara is an optional choice. |
+| a2-colony-mizora | Act 2 area (parentage withheld) | Tadpoling Centre | Bring Wyll before entering the Colony; party changes are unavailable inside. Check Mizora's pod with him present. |
+| a2-colony-gale | Act 2 area (parentage withheld) | Mind Flayer Colony | Bring Gale for the Colony sequence if you want to check his companion content. |
+| a2-colony-minthara | Act 2 area (parentage withheld) | Mind Flayer Colony | Consider Minthara while exploring the Colony. |
+| a3-rivington-orin | Rivington | Rivington | Consider Minthara when exploring Rivington. |
+| a3-circus-zethino | Rivington | Circus of the Last Days | Bring your selected romance companion when speaking with Zethino. |
+| a3-openhand-tara | Rivington | Open Hand Temple roof | Bring Gale when visiting Tara on the Open Hand Temple roof. |
+| a3-gur-camp | Rivington | Gur Camp | Bring Astarion when speaking with Ulma at the Gur Camp. |
+| a3-ferg | Rivington | Refugee area | Bring Shadowheart when speaking with Ferg Drogher. Complete any desired shopping beforehand. |
+| a3-danthelon | Wyrm's Crossing | Danthelon's Dancing Axe | Bring Jaheira when visiting the Harper safehouse at Danthelon's Dancing Axe. |
+| a3-western-beach | Rivington | Western Beach | Use your preferred party at the Western Beach. Jaheira is an optional choice. |
+| a3-flophouse | Wyrm's Crossing | Fraygo's Flophouse | Bring Astarion when meeting Petras and Dalyria. Disable active sunlight effects before approaching. |
+| a3-sharess-drow | Wyrm's Crossing | Sharess' Caress | Bring your selected romance companion when visiting the drow twins. |
+| a3-sharess-voss | Wyrm's Crossing | Sharess' Caress / Devil's Den | Bring Lae'zel before visiting Voss and Raphael in the Devil's Den. Karlach is an optional, player-reported choice. |
+| a3-coronation | Wyrm's Crossing | Wyrm's Rock Fortress | Bring Karlach and Wyll when attending the coronation. |
+| a3-guildhall | Lower City | Guildhall | Bring Jaheira when speaking with Nine-Fingers Keene. |
+| a3-counting-house | Lower City | The Counting House | Bring Jaheira when following the Stone Lord lead at the Counting House. |
+| a3-cistern | Lower City | Abandoned Cistern | Consider Jaheira for the Abandoned Cistern. This recommendation does not claim she must occupy an active party slot. |
+| a3-jaheira-home | Lower City | Elerrathin's Home | Bring Jaheira to Elerrathin's Home. Minsc is an additional choice if already recruited. |
+| a3-sorcerous | Lower City | Sorcerous Sundries / Sorcerous Vault | Bring Gale when looking for the Annals of Karsus in the Sorcerous Vault. |
+| a3-stormshore-gale | Lower City | Stormshore Tabernacle | Follow Gale's quest lead to Stormshore Tabernacle after the Annals of Karsus. |
+| a3-house-grief | Lower City | House of Grief / Cloister of Sombre Embrace | Bring Shadowheart when visiting the House of Grief. Jaheira and Minsc are additional choices if available. |
+| a3-cazador | Lower City | Cazador's Palace | Bring Astarion when visiting Cazador's Palace. |
+| a3-iron-throne | Lower City | Iron Throne | Consider Wyll for the Iron Throne. His active presence is not a mechanical requirement. |
+| a3-wyrmway | Act 3 area (parentage withheld) | The Wyrmway | Bring Wyll for the Wyrmway trials. |
+| a3-house-hope | Act 3 area (parentage withheld) | House of Hope | Consider Lae'zel for the House of Hope; a party swap is not mechanically required. |
+| a3-murder-tribunal | Lower City | Murder Tribunal | Consider Jaheira and Minsc when visiting the Murder Tribunal. |
+| a3-bhaal-orin | Act 3 area (parentage withheld) | Temple of Bhaal | Consider Minthara when visiting the Temple of Bhaal. |
+| a3-gortash-final | Act 3 area (parentage withheld) | Withheld: exact site not established | Bring Karlach when following her quest lead to Gortash. |
+| a3-lowercity-general | Lower City | Lower City general exploration | Consider Jaheira and, if already recruited, Minsc for general Lower City exploration. |
 
-## Guide-local spoiler control verification
+## Verification
 
-`tests/guide-spoiler-mode.test.cjs` covers the inherited-mode/choice matrix,
-invalid values, scope/security transitions, equivalent modes, clear/reset behavior,
-retry/close/reopen and stale completions. Shared adapter tests guard opaque scope
-and revision semantics. Historical guards still compare every original Tracker
-byte after exact fixture-checked shell additions; portrait guards use that same
-boundary for the intentionally changed adapter.
-
-Native QA includes keyboard radio semantics, 44px segments, mode transitions,
-ignored Tracker preference updates preserving focused nodes, Story reset and
-zero guide-caused writes. Set `BG3_QA_ORIGIN` to a verified hosted origin to run
-that same script against deployed runtime assets in fresh disposable contexts.
-The SDK/analytics scripts are neutralized and catalogue input is the local fixture;
-no real account/profile or Supabase/external writes are used. Data, runtime JS/CSS
-and portraits are loaded from the selected origin. Hosted verification does not
-change deployment configuration.
-
-## Mobile-first presentation
-
-The guide uses two component breakpoints (620px and 960px), with a two-column
-portrait grid on phones, four columns on tablets and five on desktop. Every
-choice retains its visible name, decorative local portrait, native button and
-pressed state; the visual selection check is hidden from accessibility output.
-The selected-party line is a lighter summary, rather than a second set of tiles.
-Act and optional romance controls precede party selection.
-
-The always-visible native spoiler radios and effective-mode status keep the same
-controller and invalidation rules. The introduction is concise; the complete
-research limitations remain reachable in the native “About this guide” disclosure.
-Search stays visible. Secondary filters use a native “Filters” disclosure, whose
-summary reports active non-search filters using the existing safe filter state.
-These disclosures add no persistent preference or storage writes.
-
-Cards lead with region, location and encounter, then show the editorial priority,
-party advice and companion reasons. Out/In direction labels and decorative arrows
-remain separate for multi-swaps. Sources and intentionally revealed research are
-visually grouped below the primary content. Desktop companion reasons share two
-columns; phone content flows in one column with bounded, readable line lengths.
-No reviewed facts, source links, evidence markers or recommendation logic change.
-
-`tests/guide-polish.test.cjs` guards factual/source preservation and presentation
-semantics. Native browser QA covers all four widths, all 51 records, compact setup,
-44px targets, native filter/about disclosure keyboard behavior, decorative checks,
-long-content wrapping, portrait fallback and the existing spoiler/state/focus/
-loading/retry paths. Screenshots are reviewed visually before shipping. Public
-packaging remains the same 27-file allowlist.
-
-
-## Anonymous start gate and V2 art
-
-Before explicit Act selection, the controller publishes no companion identities,
-selected party, romance, filters, results, route groups, plans or detail/research
-access. The shell constructs only three uniform anonymous party-slot graphics;
-real buttons/options/portraits are not constructed and then hidden. Romance and
-search/filter/view controls fail closed. No real portrait requests occur.
-
-A separate reviewed identity-display roster is shared by all effective modes,
-as explicitly approved for this checkpoint. It is independent of encounter
-mentions and is **not** a recruitment, survival, romance or live availability
-model. Minimal/Light still conceal content associations through the unchanged
-projection. See [reviewed policy and art provenance](companion-guide-visibility.md).
-
-Act changes prune invalid party/romance selections and clear reveals, notes and
-filters. Cleared Act and Story/account/security resets restore anonymity; former
-choices do not resurrect. Still-safe choices retain their nodes and effective
-mode changes retain the explicit Act and safe roster selections. Late async data
-cannot bypass the current gate. Detail/research access checks current Act even
-when a caller retains an older view. The model, 51 records and algorithm are intact.
-
-Runtime art is limited to fourteen final WebP images and the reviewed visibility
-module. This intentionally expands public packaging from 27 to 42 files; source
-PNGs, the zip, reference boards and generation reports stay outside public assets.
-The art uses dedicated mobile/desktop backgrounds at the existing 960px wide
-layout breakpoint, subtle card texture and ten supplied decorative UI icons.
-The fixed background layer stays below the shared header and preserves source
-aspect ratio with cover; returning to Tracker removes this guide-only artwork.
+Permanent sentinel regressions cover all information levels, local reveals, safe Route ordering and scoped draft restore/invalidation. Existing independent recommendation, original research and exact Tracker-byte boundary guards remain active. Disposable native browser QA covers 320/390/768/1280, all records/modes, reload, scope transitions, corrupt/unavailable storage, keyboard/focus, Tracker preservation and blocked backend access. Internal tests/docs/research remain excluded from deployment.

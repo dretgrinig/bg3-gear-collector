@@ -319,7 +319,9 @@ test('theme resolution in the real Story renderer does not mutate collection, pr
   run(h, 'for(const id of themeIds){activeStoryId=id;renderStorySelect()}');
   const after = h.app.state();
   assert.equal(after.stories, state.stories); assert.equal(after.records, state.records); assert.equal(after.progress, state.progress);
-  assert.deepEqual([...h.storage], stored); assert.equal(h.storageCalls.length, calls);
+  assert.deepEqual([...h.storage], stored);
+  // Story switches may discard only the explicitly authorized guide UI draft.
+  assert.ok(h.storageCalls.slice(calls).every(call => call.method === 'removeItem' && call.key === 'bg3-companion-guide-draft-v1'));
   assert.equal(h.calls.length, transport); assert.equal(h.renders.length, renders);
   assert.equal(h.themeUpdates.some(update => !vars.includes(update.name)), false);
 });

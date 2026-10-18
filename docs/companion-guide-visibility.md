@@ -4,7 +4,7 @@
 
 The user approved a separately reviewed Act-based visibility roster shared by
 Story/Minimal/Light/Full. Before a deliberate Act choice, all identities remain
-concealed. Modes continue to control encounter associations and exact content.
+concealed. Minimal conceals record associations; Light permits companion associations and reviewed broad areas. Modes continue to control exact content through the final reviewed projection.
 This roster permits **name display**, never claims a companion is recruited,
 alive, available at this point, romanceable, or compatible with the player's
 choices. It is cumulative and independent of the 51 content records. Missing
@@ -28,8 +28,7 @@ heuristic extraction from prose, remote lookup, or new stored state.
 `assets/companion-guide-visibility.js` uses exact existing companion names, a
 fixed first-display-Act map, strict Act normalization and a projection gate.
 Unknown Acts fail closed. Full records with contradictory future structured
-identities are withheld. Protected projections remain independent of concealed
-associations. Original content, recommendation scoring and source/evidence data
+identities are withheld. Minimal projections remain independent of concealed associations; Light uses only intentionally visible identities. Original content, recommendation scoring and source/evidence data
 are not rewritten.
 
 ## Supplied V2 art provenance

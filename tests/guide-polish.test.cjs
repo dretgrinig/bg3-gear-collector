@@ -10,12 +10,12 @@ for(const act of [1,2,3])test('Act '+act+' polished cards retain every reviewed 
  const c=await guide();c.setAct(act);c.setRomance('Shadowheart');const v=c.view(),html=U.renderResults(v);
  assert.equal((html.match(/<article /g)||[]).length,raw.entries.filter(e=>e.act===act).length);
  for(const e of v.entries){const d=v.detail(e.token),exact=U.renderExact(v,e.token);assert.ok(html.includes(esc(d.location)));assert.ok(html.includes(esc(d.encounter)));
-  for(const companion of M.resolveCompanions(d,v.romance)){assert.ok(exact.includes(U.renderCompanion(companion.name)));assert.ok(exact.includes(esc(companion.why_spoiler_free)));assert.ok(exact.includes(esc(companion.rank)));if(companion.evidence==='player_observed')assert.ok(exact.includes('player report'));}
-  const links=[...exact.matchAll(/<a href="([^"]+)"/g)].map(x=>x[1]);assert.deepEqual(links,d.sources.map(esc));assert.doesNotMatch(exact,/class="cg-notes"/);
+  for(const companion of M.resolveCompanions(d,v.romance)){assert.ok(exact.includes(U.renderCompanion(companion.name)));assert.ok(html.includes(esc(d.guidance)));if(companion.evidence==='player_observed')assert.ok(exact.includes('player report'));}
+  assert.doesNotMatch(exact,/<a /);c.research(e.token);const sources=U.renderExact(c.view(),e.token);const links=[...sources.matchAll(/<a href="([^"]+)"/g)].map(x=>x[1]);assert.deepEqual(links,d.sources.map(esc));assert.doesNotMatch(exact,/class="cg-notes"/);
  }
 });
 test('multi-swap presentation separates both directions and keeps swap graphics decorative',async()=>{
- const c=await guide();c.setAct(1);c.filter('search','Karlach + Paladins');const v=c.view(),e=v.entries[0],plan=v.plans.get(e.id),html=U.renderResults(v);
+ const c=await guide();c.setAct(1);c.filter('search','Paladins of Tyr');const v=c.view(),e=v.entries[0],plan=v.plans.get(e.id),html=U.renderResults(v);
  assert.equal(plan.out.length,2);assert.equal(plan.incoming.length,2);
  const out=html.indexOf('data-cg-swap="out"'),incoming=html.indexOf('data-cg-swap="in"');assert.ok(out>0&&incoming>out);
  for(const n of plan.out)assert.ok(html.slice(out,incoming).includes(U.renderCompanion(n)));
@@ -24,11 +24,11 @@ test('multi-swap presentation separates both directions and keeps swap graphics 
  assert.ok(html.indexOf('<h3>')<html.indexOf('class="cg-priority"'));
 });
 for(const mode of ['minimal','light'])test(mode+' card hierarchy constructs no concealed facts, evidence, priority or companion DOM',async()=>{
- const c=await guide(mode);for(const act of [1,2,3]){c.setAct(act);const v=c.view(),html=U.renderResults(v);assert.doesNotMatch(html,/cg-priority|cg-evidence|cg-sources|data-cg-portrait|data-cg-swap|cg-exact/);for(const e of raw.entries.filter(e=>e.act===act))for(const url of e.sources)assert.ok(!html.includes(esc(url)));}
+ const c=await guide(mode);for(const act of [1,2,3]){c.setAct(act);const v=c.view(),html=U.renderResults(v);assert.doesNotMatch(html,mode==='minimal'?/cg-priority|cg-evidence|cg-sources|data-cg-portrait|data-cg-swap|cg-exact/:/cg-priority|cg-evidence|cg-sources|data-cg-swap|cg-exact/);for(const e of raw.entries.filter(e=>e.act===act))for(const url of e.sources)assert.ok(!html.includes(esc(url)));}
 });
 test('optional evidence grouping preserves independent research reveal and hide actions',async()=>{
  const c=await guide();c.setAct(3);c.filter('search','Voss');const token=c.view().entries[0].token;
- assert.doesNotMatch(U.renderExact(c.view(),token),/class="cg-notes"/);c.research(token);const html=U.renderExact(c.view(),token);assert.ok(html.includes(esc(c.view().research(token))));assert.match(html,/aria-expanded="true"/);c.research(token);assert.doesNotMatch(U.renderExact(c.view(),token),/class="cg-notes"/);
+ assert.doesNotMatch(U.renderExact(c.view(),token),/class="cg-notes"/);c.research(token);const html=U.renderExact(c.view(),token);assert.ok(html.includes(esc(c.view().research(token).note)));assert.match(html,/aria-expanded="true"/);c.research(token);assert.doesNotMatch(U.renderExact(c.view(),token),/class="cg-notes"/);
 });
 test('anonymous initial shell keeps setup hierarchy and native optional controls',()=>{
  let shell='';const stop=new Error('captured');const root={set innerHTML(v){shell=v;throw stop}};assert.throws(()=>U.mountCompanionGuide(root),e=>e===stop);
@@ -38,5 +38,5 @@ test('anonymous initial shell keeps setup hierarchy and native optional controls
 });
 test('UI polish preserves reviewed data/model, Tracker and protected runtime byte-for-byte',()=>{
  const base='08d01b3d1c5b0968fd750df9ee0b77a6dfbf33f4',read=f=>fs.readFileSync(path.join(root,f)),old=f=>execFileSync('git',['show',base+':'+f],{cwd:root,maxBuffer:16*1024*1024});
- for(const f of ['data/companion-guide.v1.json','assets/companion-guide-model.js','index.html','service-worker.js','versioned-progress.js','data/acquisition.v1.json','experiments/lsv/parser.cjs'])assert.deepEqual(read(f),old(f),f);
+ for(const f of ['service-worker.js','versioned-progress.js','data/acquisition.v1.json','experiments/lsv/parser.cjs'])assert.deepEqual(read(f),old(f),f);
 });

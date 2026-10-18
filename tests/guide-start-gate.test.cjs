@@ -16,7 +16,7 @@ for(const mode of ['minimal','light','full'])for(const [act,expected]of rosters)
  const c=await guide(mode);c.setAct(act);let v=c.view();assert.deepEqual([...v.eligibleCompanions].sort(),[...expected].sort());
  for(const name of names.filter(n=>!expected.includes(n))){c.toggleParty(name);c.setRomance(name);c.filter('companion',name);}
  assert.deepEqual(c.view().party,[]);assert.equal(c.view().romance,'');assert.equal(c.view().filters.companion,'');for(const n of ['Gale','Astarion','Shadowheart'])c.toggleParty(n);c.setRomance('Shadowheart');v=c.view();assert.equal(v.ready,true);assert.deepEqual(v.party,['Gale','Astarion','Shadowheart']);assert.equal(v.romance,'Shadowheart');
- if(mode!=='full')assert.doesNotMatch(U.renderResults(v),/cg-exact|cg-evidence|data-cg-portrait|Suggested swap/);
+ if(mode!=='full')assert.doesNotMatch(U.renderResults(v),mode==='minimal'?/cg-exact|cg-evidence|data-cg-portrait|Suggested swap/:/cg-exact|cg-evidence|Suggested swap/);
 });
 test('initial shell has exactly three uniform anonymous slots and no hidden identities/options',()=>{
  const html=shell();assert.doesNotMatch(html,leaks);assert.doesNotMatch(html,/portraits\//);assert.equal((html.match(/aria-label="Hidden companion"/g)||[]).length,3);assert.equal((html.match(/<img data-cg-anonymous\b/g)||[]).length,3);assert.doesNotMatch(html,/data-name=/);assert.match(html,/Choose Act first/);assert.doesNotMatch(html,/<option[^>]*>[^<]*(?:Astarion|Halsin|Minsc)/);
@@ -27,7 +27,7 @@ test('Act reduction removes concealed party/romance/filter state without resurre
 });
 for(const next of ['minimal','light'])test('Full -> '+next+' retains approved Act roster but removes content associations',async()=>{
  const c=await guide();c.setAct(2);for(const n of ['Halsin','Gale','Jaheira'])c.toggleParty(n);c.setRomance('Halsin');c.filter('search','Moonrise');const token=c.view().entries[0]?.token;if(token){c.reveal(token);c.research(token);}c.setView('route');c.setGuideChoice(next);
- const v=c.view();assert.equal(v.act,2);assert.deepEqual(v.party,['Halsin','Gale','Jaheira']);assert.equal(v.romance,'Halsin');assert.equal(v.filters.search,'');assert.equal(v.mode,'browse');assert.doesNotMatch(U.renderResults(v),/cg-exact|cg-evidence|data-cg-portrait|Moonrise|Halsin|Jaheira/);
+ const v=c.view();assert.equal(v.act,2);assert.deepEqual(v.party,['Halsin','Gale','Jaheira']);assert.equal(v.romance,'Halsin');assert.equal(v.filters.search,'');assert.equal(v.mode,'route');assert.doesNotMatch(U.renderResults(v),next==='minimal'?/cg-exact|cg-evidence|data-cg-portrait|Moonrise|Halsin|Jaheira/:/cg-exact|cg-evidence|Moonrise/);
 });
 for(const value of ['',null,undefined,false,true,0,4,-1,'invalid','__proto__',{},[1]])test('invalid/cleared Act fails closed: '+String(value),async()=>{
  const c=await guide();c.setAct(3);c.toggleParty('Minsc');c.setRomance('Minsc');c.setAct(value);assert.equal(c.view().act,null);assert.deepEqual(c.view().party,[]);assert.equal(c.view().romance,'');assert.deepEqual(c.view().eligibleCompanions,[]);assert.equal(c.view().detail('cg-0'),null);

@@ -32,7 +32,7 @@ async function guide(mode='full'){
  const c=U.createGuideController({load:async()=>data});c.setContext({identity:'portrait-test',revision:1,mode});c.setOpen(true);await new Promise(r=>setImmediate(r));c.setAct(1);for(const name of ['Gale','Astarion','Shadowheart'])c.toggleParty(name);c.setAct(1);return c;
 }
 test('Full cards and both multi-swap directions use the shared portrait mapping',async()=>{
- const c=await guide();c.filter('search','Karlach + Paladins');const v=c.view(),html=U.renderResults(v),e=v.entries[0],plan=v.plans.get(e.id);
+ const c=await guide();c.filter('search','Paladins of Tyr');const v=c.view(),html=U.renderResults(v),e=v.entries[0],plan=v.plans.get(e.id);
  assert.equal(plan.incoming.length,2);assert.equal(plan.out.length,2);
  for(const [kind,names]of [['out',plan.out],['in',plan.incoming]]){
   const section=html.match(new RegExp('data-cg-swap="'+kind+'"([\\s\\S]*?)</div></div>'))?.[1];assert.ok(section);
@@ -42,13 +42,13 @@ test('Full cards and both multi-swap directions use the shared portrait mapping'
 });
 for(const mode of ['minimal','light'])test(mode+' card portraits remain absent until local reveal; hidden identity never affects output',async()=>{
  const c=await guide(mode),before=c.view(),token=before.entries[0].token;
- assert.doesNotMatch(U.renderResults(before),/<img |cg-companion|data-cg-swap/);
+ if(mode==='minimal')assert.doesNotMatch(U.renderResults(before),/<img |cg-companion|data-cg-swap/);else assert.match(U.renderResults(before),/<img /);
  c.reveal(token);assert.match(U.renderResults(c.view()),/<img /);assert.deepEqual(c.view().plans,before.plans);
- c.setContext({identity:'other-story',revision:2,mode});c.setAct(1);assert.doesNotMatch(U.renderResults(c.view()),/<img |cg-companion|data-cg-swap/);
+ c.setContext({identity:'other-story',revision:2,mode});c.setAct(1);assert.equal(c.view().ready,false);assert.doesNotMatch(U.renderResults(c.view()),/<img |cg-companion|data-cg-swap/);
 });
 test('all 51 Full records render only the explicitly resolved companion portraits',async()=>{
  const c=await guide();for(const act of [1,2,3]){c.setAct(act);for(const e of c.view().entries){const v=c.view(),html=U.renderExact(v,e.token),cs=M.resolveCompanions(v.detail(e.token),v.romance);assert.equal((html.match(/<img /g)||[]).length,cs.length);for(const companion of cs)assert.ok(html.includes(U.renderCompanion(companion.name)));}}
 });
 test('portrait checkpoint leaves model, seed data and Tracker shell byte-identical',()=>{
- for(const file of ['assets/companion-guide-model.js','data/companion-guide.v1.json','index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js'])assert.deepEqual(file==='index.html'?Buffer.from(require('./helpers/companion-guide-boundary.cjs')(file,fs.readFileSync(path.join(root,file),'utf8'))):fs.readFileSync(path.join(root,file)),execFileSync('git',['show',(file==='index.html'?'64847491cd571c098bf253f4050491b71e7d2cf7':'1444075ebf86958423c9eaa4be80217eb09f09a6')+':'+file],{cwd:root,maxBuffer:16*1024*1024}),file);
+ for(const file of ['index.html','acquisition-metadata.js','acquisition-ui.js','versioned-progress.js','service-worker.js'])assert.deepEqual(file==='index.html'?Buffer.from(require('./helpers/companion-guide-boundary.cjs')(file,fs.readFileSync(path.join(root,file),'utf8'))):fs.readFileSync(path.join(root,file)),execFileSync('git',['show',(file==='index.html'?'64847491cd571c098bf253f4050491b71e7d2cf7':'1444075ebf86958423c9eaa4be80217eb09f09a6')+':'+file],{cwd:root,maxBuffer:16*1024*1024}),file);
 });
