@@ -18,23 +18,33 @@ const partyChoice=name=>`<button type="button" data-cg-action="party" data-name=
 
 const defaults=()=>({search:'',region:'',companion:'',priority:'',type:'',switchOnly:false});
 const label=p=>new Map([['must','Must · guide priority'],['strong','Strong'],['contextual','Contextual'],['flavor','Flavor'],['none','No need to switch']]).get(p)||'Context concealed';
-export function createGuideController({load,onChange=()=>{}}){
+export function createGuideController({load,onChange=()=>{},storage=null}){
  let data=null,status='idle',context={identity:'absent',revision:0,mode:'minimal'},party=[],romance='',act=null,mode='browse',filters=defaults(),active=false,sequence=0,aborter=null;
  let guideChoice='story';
  const effectiveMode=()=>guideChoice==='story'?context.mode:guideChoice;
  const reveals=new Set(),notes=new Set();
+ const draftKey='bg3-companion-guide-draft-v1',stableScope=value=>/^companion-scope-sha256-[a-f0-9]{64}$/.test(value);let draftInitialized=false;
+ function forgetDraft(){try{storage?.removeItem(draftKey);}catch{}}
+ function saveDraft(){if(!draftInitialized||!stableScope(context.identity))return;try{storage?.setItem(draftKey,JSON.stringify({version:1,scope:context.identity,act,party:[...party],romance,view:mode}));}catch{}}
+ function restoreDraft(){
+  try{const text=storage?.getItem(draftKey);if(!text)return;if(text.length>4096)throw Error();const d=JSON.parse(text);
+   if(!d||d.version!==1||d.scope!==context.identity||Object.keys(d).sort().join(',')!=='act,party,romance,scope,version,view'||!normalizeGuideAct(d.act)||!Array.isArray(d.party)||d.party.length>10||typeof d.romance!=='string')throw Error();
+   act=normalizeGuideAct(d.act);const allowed=companionsForAct(act);party=[...new Set(d.party.filter(n=>typeof n==='string'&&allowed.includes(n)))].slice(0,3);romance=allowed.includes(d.romance)?d.romance:'';mode=d.view==='route'?'route':'browse';
+   if(JSON.stringify(party)!==JSON.stringify(d.party)||romance!==d.romance||mode!==d.view)saveDraft();
+  }catch{forgetDraft();}
+ }
+ const safeProjection=()=>gateGuideProjection(data?project(data,effectiveMode(),{reveals}):{entries:[],routes:null},act);
  const changed=()=>onChange();
  function view(){
-  const effective=effectiveMode(),projection=gateGuideProjection(data?project(data,effective):{entries:[],routes:null},act),eligible=projection.entries;
+  const effective=effectiveMode(),projection=safeProjection(),eligible=projection.entries;
   // Compute plans from the complete mode-safe context BEFORE display filtering.
   const plans=new Map(eligible.map(e=>[e.id,recommend(e,party,romance,eligible)]));
-  const entries=filterEntries(eligible,filters,romance).sort((a,b)=>a.location.localeCompare(b.location)||a.encounter.localeCompare(b.encounter));
-  const raw=new Map(data?.entries.map((e,i)=>['cg-'+i,e])||[]);
+  const entries=filterEntries(eligible,filters,romance).sort((a,b)=>effective==='full'?a.location.localeCompare(b.location)||a.encounter.localeCompare(b.encounter):Number(a.token.slice(3))-Number(b.token.slice(3)));
   return {status,context:{...context,mode:effective},inheritedMode:context.mode,guideChoice,effectiveMode:effective,eligibleCompanions:companionsForAct(act),party:[...party],romance,act,mode,filters:{...filters},ready:party.length===3&&!!act,
    regions:[...new Set(eligible.map(e=>e.region).filter(Boolean))].sort(),types:[...new Set(eligible.flatMap(e=>e.companions.flatMap(c=>c.content_types)))].sort(),
    entries,plans,groups:routeGroups(projection,act,entries),
-   detail(token){const entry=raw.get(token);return entryVisibleInAct(entry,act)&&(effectiveMode()==='full'||reveals.has(token))?entry:null;},
-   research(token){const entry=raw.get(token);return entryVisibleInAct(entry,act)&&notes.has(token)?entry.notes:null;},revealed(token){return reveals.has(token);},researched(token){return notes.has(token);}
+   detail(token){const entry=safeProjection().entries.find(e=>e.token===token);return entry&&(effectiveMode()==='full'||reveals.has(token))?entry:null;},
+   research(token){const entry=safeProjection().entries.find(e=>e.token===token);return effectiveMode()==='full'&&entry&&notes.has(token)?{sources:entry.sources,note:entry.sourceNote}:null;},revealed(token){return reveals.has(token);},researched(token){return notes.has(token);}
   };
  }
  async function reload(){
@@ -45,7 +55,7 @@ export function createGuideController({load,onChange=()=>{}}){
  }
  function invalidate(resetAct=false){
   reveals.clear();notes.clear();filters=defaults();if(resetAct){act=null;party=[];romance='';}
-  if(resetAct||effectiveMode()!=='full')mode='browse';
+  if(resetAct)mode='browse';
   ++sequence;aborter?.abort();if(status==='loading')status='idle';
   changed();if(active&&!data)void reload();
  }
@@ -60,21 +70,30 @@ export function createGuideController({load,onChange=()=>{}}){
    if(JSON.stringify(safe)===JSON.stringify(context))return false;
    const before=effectiveMode(),scopeChanged=safe.identity!==context.identity,securityChanged=safe.revision!==context.revision;
    context=safe;if(scopeChanged)guideChoice='story';
-   if(scopeChanged||securityChanged){invalidate(true);return true;}
+   if(scopeChanged){
+    if(draftInitialized)forgetDraft();
+    // Resolve a reload-stable scope before reading any draft. Session-only or
+    // pending identities never restore persistence and cannot collide on reload.
+    const restore=!draftInitialized&&stableScope(safe.identity);
+    reveals.clear();notes.clear();filters=defaults();act=null;party=[];romance='';mode='browse';
+    if(restore){draftInitialized=true;restoreDraft();}
+    ++sequence;aborter?.abort();if(status==='loading')status='idle';changed();if(active&&!data)void reload();return true;
+   }
+   if(securityChanged){invalidate();return true;}
    if(before!==effectiveMode()){invalidate();return true;}
    // Preference-only updates under an override do not rerender or move focus.
    return false;},
-  toggleParty(name){if(!companionsForAct(act).includes(name))return;party=party.includes(name)?party.filter(n=>n!==name):party.length<3?[...party,name]:party;changed();},
-  setRomance(name){if(name!==''&&!companionsForAct(act).includes(name))return;romance=name;changed();},
-  setAct(value){act=normalizeGuideAct(value);const safe=companionsForAct(act);party=party.filter(n=>safe.includes(n));if(!safe.includes(romance))romance='';reveals.clear();notes.clear();filters=defaults();if(!act)mode='browse';changed();},
-  setView(value){if(!act)return;mode=value==='route'?'route':'browse';changed();},
-  filter(key,value){if(!act||!Object.hasOwn(filters,key)||key==='companion'&&value!==''&&!companionsForAct(act).includes(value))return;if(effectiveMode()!=='full'&&['companion','priority','type','switchOnly'].includes(key))return;filters={...filters,[key]:key==='switchOnly'?!!value:String(value)};changed();},
-  reveal(token){if(!data||!gateGuideProjection(project(data,effectiveMode()),act).entries.some(e=>e.token===token))return;reveals.has(token)?reveals.delete(token):reveals.add(token);if(!reveals.has(token))notes.delete(token);},
-  research(token){const entry=data?.entries.find((e,i)=>'cg-'+i===token);if(!entryVisibleInAct(entry,act)||effectiveMode()!=='full'&&!reveals.has(token))return;notes.has(token)?notes.delete(token):notes.add(token);}
+  toggleParty(name){if(!companionsForAct(act).includes(name))return;party=party.includes(name)?party.filter(n=>n!==name):party.length<3?[...party,name]:party;saveDraft();changed();},
+  setRomance(name){if(name!==''&&!companionsForAct(act).includes(name))return;romance=name;saveDraft();changed();},
+  setAct(value){act=normalizeGuideAct(value);const safe=companionsForAct(act);party=party.filter(n=>safe.includes(n));if(!safe.includes(romance))romance='';reveals.clear();notes.clear();filters=defaults();if(!act)mode='browse';saveDraft();changed();},
+  setView(value){if(!act)return;mode=value==='route'?'route':'browse';saveDraft();changed();},
+  filter(key,value){if(!act||!Object.hasOwn(filters,key)||key==='companion'&&value!==''&&!companionsForAct(act).includes(value))return;if(effectiveMode()!=='full'&&['priority','type','switchOnly'].includes(key)||effectiveMode()==='minimal'&&key==='companion')return;filters={...filters,[key]:key==='switchOnly'?!!value:String(value)};changed();},
+  reveal(token){if(!data||!safeProjection().entries.some(e=>e.token===token))return;reveals.has(token)?reveals.delete(token):reveals.add(token);if(!reveals.has(token))notes.delete(token);},
+  research(token){const entry=data?.entries.find((e,i)=>'cg-'+i===token);if(!entryVisibleInAct(entry,act)||effectiveMode()!=='full')return;notes.has(token)?notes.delete(token):notes.add(token);}
  });
 }
 function advice(v,e){
- if(v.context.mode!=='full')return '<p class="cg-guidance">'+esc(e.guidance)+'</p>';
+ if(v.context.mode!=='full')return '<p class="cg-guidance">'+esc(e.guidance||(v.context.mode==='light'?'Explore this broad area with the listed companions.':'Explore this broad area with your party.'))+'</p>';
  const p=v.plans.get(e.id);
  if(!p||v.party.length!==3)return '';
  let result=p.incoming.length?`<div class="cg-advice"><b>${graphic('swap')} Suggested swap</b><div class="cg-swap-row" data-cg-swap="out"><b>Out</b><div class="cg-companion-list">${companionList(p.out)}</div></div><div class="cg-swap-row" data-cg-swap="in"><b>In</b><div class="cg-companion-list">${companionList(p.incoming)}</div></div><p>Check availability before changing your party.</p></div>`:'<p class="cg-advice">Keep your current party · '+(e.switch_worth_it?'recommended companions covered.':'optional content.')+'</p>';
@@ -82,35 +101,37 @@ function advice(v,e){
  if(p.rows.length)result+=`<details class="cg-explanation"><summary>Why this party?</summary>${p.rows.map(r=>`<p>${renderCompanion(r.name)} — ${esc(r.reason)}</p>`).join('')}<p class="cg-small">Encounter must, then strong coverage; then same-location context, romance, capped regional coverage and current-party retention. Ties use alphabetical order. Priorities are editorial, not game requirements.</p></details>`;
  return result;
 }
+function sources(v,token){const note=v.research(token);return note?`<p class="cg-small">${esc(note.note)}</p><div class="cg-sources">${note.sources.map((url,i)=>`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Source ${i+1}</a>`).join('')}</div>`:'';}
+const revealLabel=mode=>mode==='minimal'?'Reveal companion':'Reveal exact location';
 export function renderExact(v,token){
- const e=v.detail(token);if(!e)return '';
- const cs=resolveCompanions(e,v.romance);
- return `<div class="cg-exact">${v.context.mode==='full'?'':`<h4>${esc(e.location)}</h4><p>${esc(e.encounter)}</p><p class="cg-muted">${esc(e.region)}</p>`}${cs.map(c=>`<p class="cg-companion-detail"><b>${renderCompanion(c.name)}</b> · ${esc(c.rank)}${c.evidence==='player_observed'?' · player report':''}<br>${esc(c.why_spoiler_free)}</p>`).join('')}<div class="cg-evidence"><p class="cg-small">Sources may contain spoilers; not every record is independently reverified.</p><div class="cg-sources">${e.sources.map((u,i)=>`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Source ${i+1}</a>`).join('')}</div><button type="button" data-cg-action="research" data-token="${esc(token)}" aria-controls="cg-notes-${esc(token)}" aria-expanded="${v.researched(token)}">${v.researched(token)?'Hide':'Show'} research notes · contains spoilers</button><div id="cg-notes-${esc(token)}" data-cg-notes="${esc(token)}">${v.research(token)?'<p class="cg-notes">'+esc(v.research(token))+'</p>':''}</div></div></div>`;
+ const e=v.detail(token);if(!e)return '';const cs=resolveCompanions(e,v.romance);
+ if(v.context.mode==='minimal')return `<div class="cg-revealed-identity">${companionList(cs.map(c=>c.name))}</div>`;
+ if(v.context.mode==='light')return `<div class="cg-exact"><h4>${esc(e.location)}</h4>${e.guidance?`<p>${esc(e.guidance)}</p>`:''}</div>`;
+ return `<div class="cg-exact">${cs.map(c=>`<p class="cg-companion-detail"><b>${renderCompanion(c.name)}</b>${c.evidence==='player_observed'?' · player report':''}</p>`).join('')}<p>${esc(e.guidance)}</p><div class="cg-evidence"><button type="button" data-cg-action="research" data-token="${esc(token)}" aria-controls="cg-notes-${esc(token)}" aria-expanded="${v.researched(token)}">Sources &amp; notes</button><div id="cg-notes-${esc(token)}" data-cg-notes="${esc(token)}">${sources(v,token)}</div></div></div>`;
 }
 function card(v,e,next=''){
- const full=v.context.mode==='full',heading=v.mode==='route'?'h4':'h3';
- return `<article class="cg-card" data-cg-card="${e.token}"><header class="cg-card-heading"><div class="cg-card-title">${e.region?`<p class="cg-region">${esc(e.region)}</p>`:''}<${heading}>${esc(e.location)}</${heading}>${full?`<p class="cg-encounter">${esc(e.encounter)}</p>`:''}</div>${full?`<span class="cg-priority">${esc(label(e.priority))}</span>`:''}</header>${advice(v,e)}${full?`<div id="cg-details-${e.token}" data-cg-detail="${e.token}">${renderExact(v,e.token)}</div>`:`<button type="button" data-cg-action="reveal" data-token="${e.token}" aria-controls="cg-details-${e.token}" aria-expanded="${v.revealed(e.token)}">${v.revealed(e.token)?'Hide':'Show'} exact details · contains spoilers</button><div id="cg-details-${e.token}" data-cg-detail="${e.token}">${renderExact(v,e.token)}</div>`}${next?`<p class="cg-next">Next displayed stop: ${esc(next)}</p>`:''}</article>`;
+ const full=v.context.mode==='full',light=v.context.mode==='light',heading=v.mode==='route'?'h4':'h3',names=resolveCompanions(e,v.romance).map(c=>c.name);
+ return `<article class="cg-card" data-cg-card="${e.token}"><header class="cg-card-heading"><div class="cg-card-title"><p class="cg-region">${esc(e.region)}</p><${heading}>${light?(companionList(names)||'Companion content'):esc(full?e.location:'Companion content hidden')}</${heading}></div>${full?`<span class="cg-priority">${esc(label(e.priority))}</span>`:''}</header>${advice(v,e)}${full?`<div id="cg-details-${e.token}" data-cg-detail="${e.token}">${renderExact(v,e.token)}</div>`:`<button type="button" data-cg-action="reveal" data-token="${e.token}" aria-controls="cg-details-${e.token}" aria-expanded="${v.revealed(e.token)}">${revealLabel(v.context.mode)}</button><div id="cg-details-${e.token}" data-cg-detail="${e.token}">${renderExact(v,e.token)}</div>`}${next?`<p class="cg-next">Next displayed stop: ${esc(next)}</p>`:''}</article>`;
 }
 export function renderResults(v){
  if(v.status!=='ready')return '';
  if(!v.act)return '';
  if(!v.ready)return '<p class="cg-empty">Select three companions to begin. Nothing is inferred from Story progress.</p>';
- if(v.mode==='route'&&v.context.mode!=='full')return '<p class="cg-empty">Route geography is concealed in this spoiler mode. Browse safe guidance, reveal an individual entry, or select Full above for route details.</p>';
  if(!v.entries.length)return '<p class="cg-empty">No entries match these visible filters.</p>';
  if(v.mode!=='route')return v.entries.map(e=>card(v,e)).join('');
- const ordered=v.groups.flatMap(g=>g.entries),next=new Map(ordered.map((e,i)=>[e.id,ordered[i+1]?ordered[i+1].location+' — '+ordered[i+1].encounter:'']));
+ const ordered=v.groups.flatMap(g=>g.entries),next=new Map(ordered.map((e,i)=>[e.id,v.context.mode==='full'&&ordered[i+1]?ordered[i+1].location:'']));
  return `<p class="cg-route-overview">Displayed route: ${v.groups.map(g=>esc(g.name)).join(' → ')}. Geographic grouping, not a mandatory quest order.</p>`+v.groups.map((g,i)=>`<section class="cg-route-group"><h3>${i+1}. ${esc(g.name)}</h3><p class="cg-muted">${esc(g.note)}</p>${g.entries.map(e=>card(v,e,next.get(e.id))).join('')}</section>`).join('');
 }
 export function mountCompanionGuide(root,{context,onReturn,load}={}){
  const $=selector=>root.querySelector(selector);let visible=false;
  const shell=`<div class="cg-shell">
  <div class="cg-heading"><div><p class="cg-eyebrow">Companion conversations &amp; story content</p><h2 id="cgHeading" tabindex="-1">Companion Content Guide</h2></div><button class="cg-return" type="button" data-cg-action="return" aria-label="Return to Tracker">${graphic('back')} Tracker</button></div>
- <fieldset class="cg-spoilers"><legend>${graphic('lock')} Guide spoiler mode</legend><div class="cg-segments">${[['story','Story'],['minimal','Minimal'],['light','Light'],['full','Full']].map(([value,name])=>`<label class="cg-segment"><input type="radio" name="cg-guide-spoiler" data-cg-control="guideChoice" value="${value}"><span>${name}</span></label>`).join('')}</div></fieldset><p class="cg-mode" role="status" data-cg-mode></p><p class="cg-mode-help">Other choices affect this guide only. Selections stay in memory.</p>
+ <fieldset class="cg-spoilers"><legend>${graphic('lock')} Guide spoiler mode</legend><div class="cg-segments">${[['story','Story'],['minimal','Minimal'],['light','Light'],['full','Full']].map(([value,name])=>`<label class="cg-segment"><input type="radio" name="cg-guide-spoiler" data-cg-control="guideChoice" value="${value}"><span>${name}</span></label>`).join('')}</div></fieldset><p class="cg-mode" role="status" data-cg-mode></p><p class="cg-mode-help">Minimal: areas only · companions hidden. Light: companions + broad areas · exact locations hidden. Full: exact locations + practical guidance · story outcomes hidden.</p>
  <p class="cg-intro" data-cg-intro>Choose an Act to reveal companions.</p>
  <div class="cg-setup"><label>Act<select data-cg-control="act"><option value="">Choose an Act</option><option value="1">Act 1</option><option value="2">Act 2</option><option value="3">Act 3</option></select></label><label class="cg-romance"><span class="cg-label">${graphic('romance')} Romance</span><select data-cg-control="romance" aria-label="Romance companion" disabled><option value="">Choose Act first</option></select></label></div>
  <fieldset class="cg-party"><legend>${graphic('party')} Your party <span data-cg-party-count></span></legend><div class="cg-picks" data-cg-anonymous-grid>${Array.from({length:3},renderAnonymousCompanion).join('')}</div></fieldset>
  <div class="cg-current-party" hidden role="group" aria-label="Selected party"><p class="cg-small">Selected</p><div class="cg-companion-list" data-cg-selected-party></div></div>
- <details class="cg-about"><summary>About this guide</summary><p class="cg-limit">51 original research records; targeted verification, not exhaustive coverage. Availability, recruitment, Origin-player context and quest conditions are not modeled. Suggested swaps are not guaranteed to be available. Priorities are guide judgments, not requirements. Act selection permits identity display, not a claim of recruitment or current availability. This guide covers story content, not combat optimization. Guide selections and reveals stay in memory only.</p></details>
+ <details class="cg-about"><summary>About this guide</summary><p class="cg-limit">51 original research records; targeted verification, not exhaustive coverage. Availability, recruitment, Origin-player context and quest conditions are not modeled. Suggested swaps are not guaranteed to be available. Priorities are guide judgments, not requirements. Act selection permits identity display, not a claim of recruitment or current availability. This guide covers story content, not combat optimization. Act, party, romance and Browse/Route are saved on this device for the current context. Spoiler overrides, reveals and search reset on reload.</p></details>
  <section class="cg-results-controls" hidden aria-label="Guide results and filters"><div class="cg-view-buttons"><button type="button" data-cg-action="browse" aria-pressed="true">${graphic('browse')} Browse</button><button type="button" data-cg-action="route" aria-pressed="false">${graphic('route')} Route</button></div><label class="cg-search"><span class="cg-label">${graphic('search')} Search guide</span><input type="search" data-cg-control="search" placeholder="Search visible guidance"></label>
  <details class="cg-filter-panel"><summary>${graphic('filter')} Filters <span class="cg-small" data-cg-filter-count></span></summary><div class="cg-filters"><label>Region<select data-cg-control="region"></select></label><label>Companion<select data-cg-control="companion"><option value="">Choose Act first</option></select></label><label>Priority<select data-cg-control="priority"><option value="">All priorities</option>${PRIORITIES.map(n=>`<option value="${n}">${esc(label(n))}</option>`).join('')}</select></label><label>Content type<select data-cg-control="type"></select></label><label class="cg-check"><input type="checkbox" data-cg-control="switchOnly">Only worth switching for</label></div></details><p class="cg-small" data-cg-policy></p></section>
  <div data-cg-load role="status"></div><p class="cg-count" data-cg-count role="status" aria-live="polite" aria-atomic="true"></p><div class="cg-content" data-cg-content></div></div>`;
@@ -126,7 +147,7 @@ export function mountCompanionGuide(root,{context,onReturn,load}={}){
   grid.removeAttribute('data-cg-anonymous-grid');
   for(const [index,name]of names.entries()){const node=existing.get(name);if(node){if(grid.children[index]!==node)grid.insertBefore(node,grid.children[index]||null);}else{const template=document.createElement('template');template.innerHTML=partyChoice(name);grid.insertBefore(template.content.firstElementChild,grid.children[index]||null);}}
  }
- const c=createGuideController({load:loading,onChange(){
+ const c=createGuideController({load:loading,storage:{getItem:key=>globalThis.localStorage.getItem(key),setItem:(key,value)=>globalThis.localStorage.setItem(key,value),removeItem:key=>globalThis.localStorage.removeItem(key)},onChange(){
   if(!visible){root.replaceChildren();return;}
   if(!$('.cg-shell'))root.innerHTML=shell;
   const focusedBefore=document.activeElement,v=c.view(),full=v.context.mode==='full',unlocked=!!v.act;
@@ -142,13 +163,13 @@ export function mountCompanionGuide(root,{context,onReturn,load}={}){
   const selected=unlocked?(companionList(v.party)||'<span class="cg-small">No companions selected yet.</span>'):'';
   const selectedRoot=$('[data-cg-selected-party]'),selection=JSON.stringify(v.party);
   if(selectedRoot.dataset.cgSelection!==selection){selectedRoot.innerHTML=selected;selectedRoot.dataset.cgSelection=selection;}
-  for(const key of ['romance','act','search','companion','priority','region','type','switchOnly']){const node=$(`[data-cg-control="${key}"]`);if(key==='region')options(node,v.regions,v.context.mode==='minimal'?'Regions concealed':'All visible regions');if(key==='type')options(node,v.types,'All visible types');if(key==='switchOnly')node.checked=v.filters[key];else node.value=key==='romance'?v.romance:key==='act'?v.act||'':v.filters[key];node.disabled=key==='act'?false:!unlocked||(['companion','priority','type','switchOnly'].includes(key)?!full:key==='region'?v.context.mode==='minimal':false);}
+  for(const key of ['romance','act','search','companion','priority','region','type','switchOnly']){const node=$(`[data-cg-control="${key}"]`);if(key==='region')options(node,v.regions,'All visible regions');if(key==='type')options(node,v.types,'All visible types');if(key==='switchOnly')node.checked=v.filters[key];else node.value=key==='romance'?v.romance:key==='act'?v.act||'':v.filters[key];node.disabled=key==='act'?v.context.identity.startsWith('companion-scope-pending-'):!unlocked||(['priority','type','switchOnly'].includes(key)?!full:key==='companion'?v.context.mode==='minimal':false);}
   const filterCount=Object.entries(v.filters).filter(([key,value])=>key!=='search'&&value).length;
   $('[data-cg-filter-count]').textContent=filterCount?`· ${filterCount} active`:'';
-  $('[data-cg-policy]').textContent=full?'Filters narrow results, not the context used for recommendations.':'Exact context is concealed. Companion, priority and content filters are unavailable.';
+  $('[data-cg-policy]').textContent=full?'Filters narrow results, not the context used for recommendations.':'Only information visible in this mode and entry-local reveals can affect results. Priority and content filters are unavailable.';
   for(const name of ['browse','route']){const node=$(`[data-cg-action="${name}"]`);node.setAttribute('aria-pressed',String(v.mode===name));node.disabled=!unlocked;}
   const loadNode=$('[data-cg-load]');loadNode.innerHTML=v.status==='error'?'<p>Could not load Companion Content Guide data. Tracker state is unchanged.</p><button type="button" data-cg-action="retry">Retry guide data</button>':v.status==='loading'?'<p>Loading guide data…</p>':'';
-  $('[data-cg-count]').textContent=v.status==='ready'&&v.ready?(v.mode==='route'&&!full?'Route concealed':`${v.entries.length} guide result${v.entries.length===1?'':'s'} · Act ${v.act}`):'';
+  $('[data-cg-count]').textContent=v.status==='ready'&&v.ready?`${v.entries.length} guide result${v.entries.length===1?'':'s'} · Act ${v.act}`:'';
   $('[data-cg-content]').innerHTML=renderResults(v);
   if(focusedBefore&&focusedBefore!==document.body&&!root.contains(focusedBefore))$('[data-cg-control=act]').focus({preventScroll:true});
  }});
@@ -161,9 +182,10 @@ export function mountCompanionGuide(root,{context,onReturn,load}={}){
   else if(action==='reveal'||action==='research'){
    const token=b.dataset.token;if(action==='reveal')c.reveal(token);else c.research(token);const v=c.view();
    b.setAttribute('aria-expanded',String(action==='reveal'?v.revealed(token):v.researched(token)));
-   b.textContent=action==='reveal'?(v.revealed(token)?'Hide':'Show')+' exact details · contains spoilers':(v.researched(token)?'Hide':'Show')+' research notes · contains spoilers';
+   b.textContent=action==='reveal'?revealLabel(v.context.mode):'Sources & notes';
    if(action==='reveal')$(`[data-cg-detail="${token}"]`).innerHTML=renderExact(v,token);
-   else $(`[data-cg-notes="${token}"]`).innerHTML=v.research(token)?'<p class="cg-notes">'+esc(v.research(token))+'</p>':'';
+   else $(`[data-cg-notes="${token}"]`).innerHTML=sources(v,token);
+   if(!v.entries.some(e=>e.token===token)){$('[data-cg-content]').innerHTML=renderResults(v);$('[data-cg-count]').textContent=`${v.entries.length} guide results · Act ${v.act}`;$('[data-cg-control=search]').focus({preventScroll:true});}
   }
  });
  root.addEventListener('change',event=>{const key=event.target.dataset.cgControl;if(!key||key==='search')return;if(key==='guideChoice')c.setGuideChoice(event.target.value);else if(key==='act')c.setAct(event.target.value);else if(key==='romance')c.setRomance(event.target.value);else c.filter(key,key==='switchOnly'?event.target.checked:event.target.value);});
