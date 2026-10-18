@@ -56,3 +56,25 @@ module.exports={header,frame,u32,golden,goldenPlain,lsf,sections,checksum};
 const outerZstd = () => Uint8Array.from(Buffer.from('KLUv/SC55QMAEkYXJZArjQG/urtT/X+/bqGO3LsMb05by+6Q0tJ0qfh7Rf8EMgjZMgX/TzKfheHmx91dzq80CkZwHKCml4h7qguBZkIkThtFK5i1wkIn/YM/MvyBEz8incH/+QGMx2oECwApEwAUUBRRPxm0LDkGwsjcFbONotxZiRoMmg==','base64'));
 module.exports.outerZstd=outerZstd;
 module.exports.outerPlainSha256='1e32716c72442cc1c447dedb85c3c15f8b075947327b452b0aa8b7f3250403dd';
+
+// Structural envelopes authored independently of the production inspector.
+function multiFrame(blocks,options={}) {
+  return concat([header(options),...blocks.flatMap(b=>{
+    const data=b.encoded ?? (b.stored?b.plain:literalLz4(b.plain));
+    return [u32(data.length+(b.stored?0x80000000:0)),data];
+  }),u32(0)]);
+}
+function inspectionLsf(options={}) {
+  return lsf({...options,mutateSection(d,s){
+    for(const name of ['nodes','attributes','values']){
+      const plain=options.large?new Uint8Array(70000):s[name],at=Math.floor(plain.length/2);
+      d[name]=multiFrame([{plain:plain.subarray(0,at),stored:!!options.large},{plain:plain.subarray(at),stored:!!options.large}],{dependent:true});
+    }
+    options.mutateSection?.(d,s);
+  },mutateHeader(h,v){
+    if(options.large)for(const i of [2,3,4])v.setUint32(16+i*8,70000,true);
+    options.mutateHeader?.(h,v);
+  }});
+}
+module.exports.multiFrame=multiFrame;
+module.exports.inspectionLsf=inspectionLsf;

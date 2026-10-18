@@ -84,7 +84,7 @@
       if (remaining <= 0) { stop('timeout', 'error'); return Promise.reject(errorFor('timeout')); }
       return new Promise((resolve, reject) => {
         const requestId = ++requestSerial;
-        const pending = { requestId, expected: type === 'inspect' ? 'inspection' : 'member', resolve, reject, started: timers.now(), timer: null };
+        const pending = { requestId, expected: type === 'inspect' ? 'inspection' : type === 'inspect-resource-frames' ? 'resource-framing' : 'member', resolve, reject, started: timers.now(), timer: null };
         attempt.pending = pending;
         pending.timer = timers.setTimeout(() => { if (active === attempt && attempt.pending === pending) stop('timeout', 'error'); }, remaining);
         publish({ status: type === 'inspect' ? 'inspecting' : 'reading', attemptId: attempt.id, inspection: attempt.inspection, error: null, elapsedMs: attempt.elapsedMs });
@@ -141,7 +141,13 @@
       if (typeof memberName !== 'string' || !active.inspection.entries.some(entry => entry.name === memberName)) return Promise.reject(errorFor('member-not-found'));
       return submit(active, 'read-member', { memberName }, []);
     }
-    return Object.freeze({ inspect, readMember, cancel, dispose: cancel, getState: () => ({ ...state }) });
+    function inspectResourceFrames(memberName) {
+      if (!active || !active.inspection) return Promise.reject(errorFor('no-active-package'));
+      if (typeof memberName !== 'string' || !active.inspection.entries.some(entry => entry.name === memberName)) return Promise.reject(errorFor('member-not-found'));
+      if (memberName!=='Globals.lsf') return Promise.reject(errorFor('unsupported-resource'));
+      return submit(active,'inspect-resource-frames',{memberName},[]);
+    }
+    return Object.freeze({ inspect, readMember, inspectResourceFrames, cancel, dispose: cancel, getState: () => ({ ...state }) });
   }
   return Object.freeze({ createController, HARD_LIMITS });
 });

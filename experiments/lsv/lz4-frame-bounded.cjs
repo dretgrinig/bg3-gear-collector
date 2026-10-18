@@ -22,7 +22,7 @@
     h=Math.imul(h^(h>>>15),0x85ebca77);h=Math.imul(h^(h>>>13),0xc2b2ae3d);h^=h>>>16;
     return (h>>>8)&255;
   }
-  function inspect(data,expected,options={}){
+  function descriptor(data,expected,options,singleBlock){
     const limits=getParser().mergeLimits(options.limits);check(options.signal);
     if(!(data instanceof Uint8Array))fail('invalid-structure','Expected LZ4 frame bytes.');
     if(data.length>limits.fileBytes||!Number.isSafeInteger(expected)||expected<0||expected>limits.memberBytes)fail('size-limit','LZ4 frame exceeds its input/output bound.');
@@ -34,7 +34,7 @@
     if(flags&0x14)fail('unsupported-codec','LZ4 block/content checksum variants remain unsupported.');
     const blockMaximum=BLOCK_MAXIMUM[(bd>>>4)&7];
     if(!blockMaximum)fail('invalid-structure','Invalid LZ4 block maximum.');
-    if(expected>blockMaximum)fail('size-limit','LZ4 output exceeds the single-block maximum.');
+    if(singleBlock&&expected>blockMaximum)fail('size-limit','LZ4 output exceeds the single-block maximum.');
     let at=6;
     if(flags&8){
       need(data,at,8);let size=0n;for(let i=0;i<8;i++)size|=BigInt(data[at+i])<<BigInt(i*8);at+=8;
@@ -42,6 +42,10 @@
       if(size!==BigInt(expected))fail('invalid-structure','LZ4 content size disagrees with the section.');
     }
     need(data,at,1);if(data[at]!==headerChecksum(data,4,at))fail('invalid-structure','Invalid LZ4 header checksum.');at++;
+    return {at,flags,bd,blockMaximum,limits};
+  }
+  function inspect(data,expected,options={}){
+    const header=descriptor(data,expected,options,true),{flags,blockMaximum}=header;let at=header.at;
     const tag=u32(data,at);at+=4;
     if(tag===0){
       if(expected!==0)fail('invalid-structure','Empty LZ4 frame disagrees with section size.');
@@ -56,6 +60,39 @@
     if(stored&&size!==expected)fail('invalid-structure','Stored LZ4 block disagrees with section size.');
     return Object.freeze({empty:false,stored,size,payloadOffset,blockMaximum,independent:!!(flags&32)});
   }
+  // Envelope validation only: compressed payloads and regenerated sizes are
+  // deliberately not decoded or certified. This does not widen inspect/decode.
+  const MAX_FRAME_BLOCKS=4096;
+  async function inspectFraming(data,expected,options={}){
+    const started=Date.now(),header=descriptor(data,expected,options,false),{flags,bd,blockMaximum,limits}=header;
+    const tick=()=>{check(options.signal);if(Date.now()-started>=limits.timeoutMs)fail('timeout','LZ4 framing inspection exceeded its execution budget.');};
+    const report={status:'framing-validated',payloadValidation:'not-attempted',magic:0x184d2204,version:1,flg:flags,bd,
+      independent:!!(flags&32),dependent:!(flags&32),blockMaximum,contentSizePresent:!!(flags&8),
+      contentSize:(flags&8)?expected:null,dictionary:false,blockChecksum:false,contentChecksum:false,
+      headerChecksumValid:true,expectedExpandedBytes:expected,frameBytes:data.length,
+      blockCount:0,storedBlocks:0,compressedBlocks:0,encodedPayloadBytes:0,blocks:[],endMark:false,trailingBytes:false};
+    // All report fields are fixed ASCII labels, booleans and bounded integers.
+    // Charge each small descriptor before retaining it; no payload bytes enter it.
+    let reportSize=JSON.stringify(report).length,at=header.at;
+    if(reportSize>limits.reportBytes)fail('report-limit','LZ4 framing report exceeds its byte limit.');
+    while(true){
+      tick();const tag=u32(data,at);at+=4;
+      if(tag===0){report.endMark=true;break;}
+      if(report.blockCount>=MAX_FRAME_BLOCKS)fail('size-limit','LZ4 framing block-count limit exceeded.');
+      const stored=!!(tag>>>31),size=tag%0x80000000;
+      if(size>blockMaximum)fail('size-limit','LZ4 block exceeds its declared maximum.');
+      need(data,at,size);
+      const block={index:report.blockCount,stored,storedBytes:size,payloadOffset:at};
+      reportSize+=JSON.stringify(block).length+1;
+      if(reportSize>limits.reportBytes)fail('report-limit','LZ4 framing report exceeds its byte limit.');
+      report.blocks.push(block);report.blockCount++;report[stored?'storedBlocks':'compressedBlocks']++;
+      report.encodedPayloadBytes+=size;at+=size;
+      if(report.blockCount%64===0){await new Promise(resolve=>setTimeout(resolve,0));tick();}
+    }
+    if(at!==data.length)fail('unsupported-codec','Trailing/concatenated LZ4 data remains unsupported.');
+    tick();if(JSON.stringify(report).length>limits.reportBytes)fail('report-limit','LZ4 framing report exceeds its byte limit.');
+    tick();return report;
+  }
   async function decode(data,expected,options={}){
     const frame=inspect(data,expected,options);check(options.signal);
     if(frame.empty)return new Uint8Array(0);
@@ -65,5 +102,5 @@
     check(options.signal);if(output.length!==expected)fail('invalid-structure','Decoded LZ4 frame length disagrees with section size.');
     return output;
   }
-  return Object.freeze({inspect,decode});
+  return Object.freeze({inspect,decode,inspectFraming});
 });

@@ -294,3 +294,124 @@ artifact remains the same 13 files, byte-identical to HEAD, with research exclud
 The approved unchanged-rerun gate is satisfied; any further support change or
 private-member measurement requires separate authorization. No cap increase,
 fallback, broader resource support, Phase C or product integration is implied.
+
+## Approved Globals framing-inspection checkpoint
+
+The initial authorized Globals-only measurement successfully extracted the outer
+Zstandard member but stopped at the existing single-block LZ4 output bound before
+validating the first frame's checksum or traversing blocks. After focused Work
+approval, the separately authorized framing-only measurement below established
+its actual envelopes without implementation changes or internal section decoding.
+This checkpoint adds no multi-block decompression.
+
+### Explicit research operation
+
+`controller.inspectResourceFrames('Globals.lsf')` sends the separate
+`inspect-resource-frames` Worker request after package inspection. The exact
+member must be listed in that package; other members are rejected before reading.
+The existing parser performs outer extraction with the existing shared budget.
+The Worker then calls `resource.inspectResourceFrames()` and returns a
+`resource-framing` response with no payload buffer and no transferables. No
+workbench/product UI or deployment path is added.
+
+Resource decoding and framing inspection share one LSF header/section-layout
+parser. Inspection is restricted to v7 / format 0 / LZ4. It reports the physical
+strings/nodes/attributes/values/keys layout, validates all section ranges and
+prospective expansion against the existing attempt budget, and inspects framed
+non-string sections. It neither expands nor parses raw strings or any table/value
+section. Section expansion is not charged as consumed because it never occurs;
+outer member extraction remains charged normally.
+
+`lz4-frame-bounded.inspectFraming()` validates standard magic/version, descriptor
+flags and BD, optional content size against the LSF declaration, the mandatory
+header checksum, every block header/stored size/payload range, EndMark and exact
+frame exhaustion. It permits multiple block envelopes for observation only.
+Dictionaries, block/content checksum variants, reserved options, legacy/skippable
+frames, concatenation and trailing bytes remain rejected. Both independent and
+dependent flags can be observed without decoding history.
+
+A fixed 4,096-data-block limit applies to each frame, including empty stored
+blocks; a 4,097th block rejects. Reports contain only bounded structural metadata:
+frame flags/sizes, checksum validation, declared expected output, block counts,
+stored/compressed counts, each block's index/payload offset/stored size/type, and
+EndMark/exhaustion status. Their status is `framing-validated`, with payload
+validation and section decoding explicitly `not-attempted`. No names, values,
+identifiers, decoded tables or payload bytes are returned. In particular, framing
+success does not certify compressed payload syntax, regenerated lengths, valid
+matches/history, LSF graph validity or gameplay semantics.
+
+Existing input/member 128 MiB, cumulative expansion 512 MiB, cumulative active
+Worker 30-second and entry/string/depth/report limits are retained. Framing loops
+check cancellation/deadlines and yield every 64 blocks. Reports are bounded during
+construction and again at resource/Worker boundaries. There are no decoded-section
+output allocations or section-decoder calls. The original `inspect()`/`decode()`
+policy remains single-block; archive/raw LZ4 and Zstandard code is unchanged.
+
+### Synthetic verification and next gate
+
+Independent fixtures cover compressed/stored/mixed multi-block envelopes,
+independent/dependent flags, optional content size, large declared output, valid
+EndMark, the 4,096 boundary, malformed later blocks and excluded variants. Tests
+also instrument allocations and decoder calls, and cover metadata-only Worker
+replies, private-field stripping, extraction-only accounting, controller response
+isolation, cancellation, cumulative deadlines and report limits. Framing-only
+acceptance of opaque compressed bytes is explicitly distinguished from decoding.
+
+Run the focused inspection and complete existing research checks with:
+
+```sh
+node --test tests/lsv-frame-inspection.test.cjs
+node --test tests/lsv*.test.cjs
+node --test tests/pages-build.test.cjs
+```
+
+The first 58 framing/resource regressions produced 57 failures before the new API
+existed; all now pass. Focused research verification passes 383 checks. Disposable
+Chrome verification passes 42 synthetic checks, including the original 33 and
+nine new framing-operation checks, with zero runtime errors/unexpected requests,
+no existing browser profile, blocked storage/cookies and loopback-only GETs.
+
+### Approved Globals framing-only measurement
+
+The approved `inspectResourceFrames('Globals.lsf')` operation extracted the outer
+Zstandard member successfully: 2,140,453 compressed bytes to exactly 4,829,384
+declared/actual bytes. It validated LSF v7 / format 0 and the reviewed section
+layout, with compression metadata `22 00 00 00`.
+
+Nodes, attributes and values all used standard LZ4 frames with magic
+`0x184d2204`, FLG `0x40` and BD `0x40`: dependent blocks, a 64 KiB maximum block,
+no content-size field, no dictionary, no block checksum and no content checksum.
+Every mandatory header checksum and EndMark validated; frame consumption was exact
+with no trailing bytes.
+
+| Section | Stored bytes | Declared expanded bytes | Blocks | Compressed | Stored |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Nodes | 959,457 | 2,361,408 | 37 | 37 | 0 |
+| Attributes | 1,232,438 | 3,631,656 | 56 | 56 | 0 |
+| Values | 2,605,163 | 11,853,092 | 181 | 179 | 2 |
+| Total | | | 274 | 272 | 2 |
+
+Framing validation succeeded. Payload validation remained `not-attempted`;
+instrumentation recorded zero internal section-decoder calls, zero resource-decode
+calls and zero decoded-section output allocation attempts. No internal section
+expansion was charged: consumed expansion remained 4,832,104 bytes, including the
+manifest and outer member. The declared 17,949,949 internal expanded bytes were
+not decoded. Existing cancellation/deadline guards remained active, with no timeout
+or cancellation. Source fingerprint and relevant stats remained unchanged;
+payloads remained in Worker memory, with no network/persistence attempts or private
+values, paths, hashes, identifiers or save contents entering git. Globals resource
+and semantic decoding remain unattempted by this framing-only operation.
+
+### Known later structural boundary
+
+Under format 0's 12-byte records, the declared Globals sections imply 196,784 node
+records and 302,638 attribute records. Both exceed the existing 65,536-record
+structural table cap in `resource.cjs`. That cap is unchanged. Successful codec
+decoding alone will not establish complete Globals structural compatibility;
+a subsequent resource-limit result must stop the measurement. Any change to
+structural table handling requires separate design and approval.
+
+Work approved the inspection-only checkpoint and its unchanged framing rerun.
+Multi-block decoding, further resource support, another private measurement and
+Phase C require separate authorization. Research remains excluded from the
+unchanged public artifact.
