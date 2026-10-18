@@ -2,7 +2,7 @@
   'use strict';
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else {
-    root.importScripts('./zstd-bounded.cjs', './parser.cjs', './resource.cjs');
+    root.importScripts('./zstd-bounded.cjs', './parser.cjs', './lz4-frame-bounded.cjs', './resource.cjs');
     const api = factory();
     const handler = api.createWorkerHandler({ parser: root.BG3LsvParser, resource: root.BG3LsvResource, postMessage: (message, transfer) => root.postMessage(message, transfer) });
     root.addEventListener('message', event => handler.handleMessage(event));

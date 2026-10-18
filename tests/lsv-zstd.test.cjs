@@ -64,7 +64,7 @@ test('truncated Huffman-weight FSE initialization rejects through the real class
     context.postMessage = (message, transfer) => parentPort.postMessage(message, transfer);
     context.addEventListener = (type, fn) => { if (type === 'message') parentPort.on('message', data => fn({ data })); };
     context.importScripts = (...names) => {
-      require('node:assert/strict').deepEqual(names, ['./zstd-bounded.cjs', './parser.cjs', './resource.cjs']);
+      require('node:assert/strict').deepEqual(names, ['./zstd-bounded.cjs', './parser.cjs', './lz4-frame-bounded.cjs', './resource.cjs']);
       for (const name of names) vm.runInContext(fs.readFileSync(path.join(workerData.sourceRoot, name), 'utf8'), context);
     };
     vm.createContext(context);

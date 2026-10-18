@@ -174,3 +174,123 @@ added. Four further initialization regressions failed before the mandatory
 initial-state availability guard was added; all four now reject. The final full
 run includes both corrections. Work approved the initialization fix and then
 approved the codec checkpoint for commit after reviewing the new LSF/LZ4 boundary.
+
+
+## Approved bounded LSF/LZ4 checkpoint
+
+This later checkpoint adds only LSF v7, metadata format 0, compressed non-string
+`nodes`, `attributes` and `values` sections. Work approved the implementation
+before the authorized meta.lsf-only rerun recorded below. The private save was
+not read during implementation, and `Globals.lsf` remains unattempted. Phase C,
+gameplay interpretation and product integration remain out of scope. The
+preceding Zstandard checkpoint and measurements above remain historical evidence.
+
+Pinned LSLib `LSFReader.cs` consumes a 64-byte header with expanded/stored pairs in
+strings/keys/nodes/attributes/values order, while payloads occur in
+strings/nodes/attributes/values/keys order. It uses raw LZ4 for strings and the
+standard LZ4 stream decoder for compressed non-string sections. References:
+https://github.com/Norbyte/lslib/blob/6f5f6987d10d8485876b8368431c948e4dea4f83/LSLib/LS/Resources/LSF/LSFReader.cs
+https://github.com/Norbyte/lslib/blob/6f5f6987d10d8485876b8368431c948e4dea4f83/LSLib/LS/Compression.cs
+
+`experiments/lsv/lz4-frame-bounded.cjs` is independently authored against the LZ4
+frame format v1.6.4 and the XXH32 specification v0.2.0:
+https://github.com/lz4/lz4/blob/v1.10.0/doc/lz4_Frame_format.md
+https://github.com/Cyan4973/xxHash/blob/v0.8.3/doc/xxhash_spec.md
+No general codec dependency is added. Its descriptor checksum uses only the
+specified short-input XXH32 algorithm (2 or 10 descriptor bytes). The test fixture
+checksum is independently implemented with BigInt modular arithmetic, and the
+fixed 60/40 descriptor checksum 82 and an authored real-match frame provide an
+additional fixed reference. All fixture material is synthetic. One outer
+compressed-Zstandard fixture was encoded once by Node v24.19.0 / Zstandard 1.5.7
+from the public synthetic LSF recipe and is pinned with its expected output hash.
+Tests do not invoke an encoder or derive expected bytes from the decoder.
+
+### Supported subset and validation
+
+- One standard frame, version 1, with one data block, or a valid empty frame.
+- Stored or compressed block; independent or dependent flag. A single dependent
+  block starts with empty history, so no cross-block history is introduced.
+- Standard block maximum codes (64 KiB through 4 MiB); actual allocation depends
+  on the validated section output size, never the advertised block maximum.
+- Optional 64-bit content size must fit existing caps and equal the section size.
+- Mandatory descriptor checksum, reserved bits, all input ranges, block length,
+  EndMark, exact frame consumption and exact output length are validated.
+- Only the validated compressed block payload enters the unchanged bounded raw
+  LZ4 decoder. Stored lengths agree before allocation/copy; empty output is zero.
+
+Dictionaries, block/content checksum variants, multiple data blocks, concatenated
+frames, skippable/legacy frames, trailing bytes and unknown options remain
+unsupported. Malformed headers/checksums/ranges and invalid raw matches reject.
+The wrapper is not added to archive codec dispatch. Other LSF versions/layouts
+retain their previous policy. Raw string-table handling, table/attribute/graph
+validation and all existing limits remain unchanged.
+
+Resource parsing validates all section ranges and preflights every framed
+section before any section decompression. It reserves total section expansion
+in the existing shared attempt budget before decoding/allocating section output.
+The wrapper uses one bounded destination through the existing raw decoder;
+there is no additional member-sized copy. Worker loading includes the new module;
+request isolation, transfer behavior, cancellation and the cumulative 30-second
+active execution deadline are unchanged. Invalid/unsupported resource structure
+continues to be reported separately from successful outer-member extraction.
+Real-save processing remains Worker-only. Research remains excluded from dist.
+
+### Synthetic verification
+
+Run:
+
+```sh
+node --test tests/lsv-lz4-frame.test.cjs tests/lsv-resource.test.cjs \
+  tests/lsv-worker.test.cjs tests/lsv-spike.test.cjs \
+  tests/lsv-fixtures.test.cjs tests/lsv-zstd.test.cjs
+node --test tests/pages-build.test.cjs
+```
+
+Coverage includes compressed/stored/empty frames, both block flags, optional
+content size, raw strings with framed nodes/attributes/values, output byte parity,
+outer Zstandard and real Worker loading, shared budget, pre-allocation rejection,
+cancellation, malformed framing and unsupported layout/codec variants. Existing
+Worker deadline/replacement tests remain active. A fresh disposable Chrome run
+passed 33 synthetic checks, including five new nested-codec cases and four new
+negative resource cases, with zero runtime errors or unexpected requests. Only
+allowlisted localhost GETs were allowed, storage/cookies were blocked, and no
+existing browser profile or private save was used.
+
+### Approved meta.lsf-only compatibility measurement
+
+After Work approval, the unchanged implementation successfully extracted
+`meta.lsf` through the existing Worker workflow: 1,263 compressed bytes to exactly
+1,526 declared/actual bytes. The resource was LSF v7, metadata format 0, with LZ4
+section compression. Physical section order was strings, nodes, attributes,
+values, keys. Strings used raw LZ4; nodes, attributes and values used standard
+LZ4 frames; keys were empty.
+
+All three framed sections had standard magic `0x184d2204`, FLG `0x40` and BD
+`0x40`: dependent mode, a 64 KiB block maximum, no content-size field, no
+dictionary, and no block/content checksum. Each had a valid mandatory header
+checksum, exactly one compressed data block, an EndMark and no trailing bytes.
+The dependent first block used empty history; no multi-block support was needed.
+
+| Section | Stored bytes | Exact expanded bytes |
+| --- | ---: | ---: |
+| Strings | 635 | 1,617 |
+| Nodes | 152 | 228 |
+| Attributes | 284 | 540 |
+| Values | 391 | 499 |
+| Keys | 0 | 0 |
+
+Every section validated and decoded to its exact declared length. Resource
+structural decoding succeeded with 19 nodes and 45 attributes. Gameplay semantics
+were not interpreted. Shared cumulative expansion was 4,246 bytes after outer
+extraction and 7,130 bytes after section decoding. No resource limit, timeout or
+cancellation occurred. Source fingerprint and relevant file stats stayed equal;
+payloads remained in memory with no network/persistence attempts. No private
+values, source paths/hashes, identifiers or payload contents entered git.
+`Globals.lsf` was not attempted. No implementation changes were needed.
+
+Checkpoint verification: focused .lsv 315/315, disposable Chrome 33/33, packaging
+15/15, and complete repository suite 4,729/4,729, with zero failures. The public
+artifact remains the same 13 files, byte-identical to HEAD, with research excluded.
+The approved unchanged-rerun gate is satisfied; any further support change or
+private-member measurement requires separate authorization. No cap increase,
+fallback, broader resource support, Phase C or product integration is implied.

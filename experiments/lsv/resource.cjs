@@ -2,9 +2,9 @@
  * reference (6f5f6987d10d8485876b8368431c948e4dea4f83). See docs/lsv-phase-a.md.
  * No filesystem, network, persistence, or semantic ECS interpretation. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(() => require('./parser.cjs'));
-  else root.BG3LsvResource = factory(() => root.BG3LsvParser);
-})(typeof globalThis === 'object' ? globalThis : self, function (getParser) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(() => require('./parser.cjs'), () => require('./lz4-frame-bounded.cjs'));
+  else root.BG3LsvResource = factory(() => root.BG3LsvParser, () => root.BG3Lz4FrameBounded);
+})(typeof globalThis === 'object' ? globalThis : self, function (getParser, getLz4Frame) {
   'use strict';
   const CAPS = Object.freeze({fileBytes:128*1024*1024,entries:512,memberBytes:128*1024*1024,cumulativeBytes:512*1024*1024,stringBytes:1024*1024,depth:64,timeoutMs:30000,reportBytes:10*1024*1024});
   const TABLE_CAP = 65536; // Extra conservative probe bound, independent of manifest entries.
@@ -160,17 +160,23 @@
       // Empty tables can still carry compressed framing; decode it and retain
       // the exact expanded-length check below, including an expected zero.
       if (codec==='none' && pair.declaredDiskSize!==0 && pair.declaredDiskSize!==expandedSize) fail('INVALID_LSF_STRUCTURE','LSF section size declaration is inconsistent.');
-      if (method==='lz4' && name!=='strings') fail('UNSUPPORTED_LSF_CODEC','LSF framed LZ4 sections are outside this Phase A probe.');
+      if (method==='lz4' && name!=='strings' && !(version===7 && format===0 && ['nodes','attributes','values'].includes(name))) fail('UNSUPPORTED_LSF_CODEC','LSF framed LZ4 is supported only for v7 format-0 nodes/attributes/values.');
       reader.need(compressedSize); sections.push({name,offset:reader.position,compressedSize,expandedSize,codec:method}); reader.position+=compressedSize;
     }
     reader.end();
+    // Preflight all framed sections before allocating any decoded section buffer.
+    for (const section of sections) if (section.codec==='lz4' && section.name!=='strings') {
+      check(); const frame=getLz4Frame();
+      if (!frame || typeof frame.inspect!=='function' || typeof frame.decode!=='function') fail('UNSUPPORTED_LSF_CODEC','Bounded LZ4 frame decoder is unavailable.');
+      frame.inspect(bytes.subarray(section.offset,section.offset+section.compressedSize),section.expandedSize,{limits,signal:options.signal});
+    }
     if (options.budget !== undefined) {
       const budget=options.budget,descriptor=budget && typeof budget==='object' && Object.getOwnPropertyDescriptor(budget,'expandedBytes');
       if (!descriptor || !Object.hasOwn(descriptor,'value') || !descriptor.writable || !Number.isSafeInteger(descriptor.value) || descriptor.value<0) fail('INVALID_INPUT','Invalid attempt expansion budget.');
       if (cumulative>limits.cumulativeBytes-descriptor.value) fail('RESOURCE_LIMIT','LSF expansion exceeds the shared attempt byte limit.');
       budget.expandedBytes=descriptor.value+cumulative;
     }
-    const decoded=Object.create(null); for (const section of sections) { check(); const data=bytes.subarray(section.offset,section.offset+section.compressedSize); decoded[section.name]=section.codec==='none'?data:await getParser().decompress(section.codec,data,section.expandedSize,{limits,signal:options.signal}); if (decoded[section.name].length!==section.expandedSize) fail('INVALID_LSF_STRUCTURE','LSF decoded section length does not match its header.'); }
+    const decoded=Object.create(null); for (const section of sections) { check(); const data=bytes.subarray(section.offset,section.offset+section.compressedSize); decoded[section.name]=section.codec==='none'?data:section.codec==='lz4'&&section.name!=='strings'?await getLz4Frame().decode(data,section.expandedSize,{limits,signal:options.signal}):await getParser().decompress(section.codec,data,section.expandedSize,{limits,signal:options.signal}); if (decoded[section.name].length!==section.expandedSize) fail('INVALID_LSF_STRUCTURE','LSF decoded section length does not match its header.'); }
     const resolveName=namesFrom(decoded.strings,limits,check),long=format===1,nodeReader=tableReader(decoded.nodes,long?16:12),nodes=[];
     while (nodeReader.position<nodeReader.bytes.length) { check(); const name=resolveName(nodeReader.u32()); const parent=long?nodeReader.i32():null, first=long?null:nodeReader.i32(), sibling=long?nodeReader.i32():-1; nodes.push({name,parent:long?parent:nodeReader.i32(),first:long?nodeReader.i32():first,sibling}); }
     const attrReader=tableReader(decoded.attributes,long?16:12),attrs=[],previousByOwner=new Map(); let valueOffset=0;
