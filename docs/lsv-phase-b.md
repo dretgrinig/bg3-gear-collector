@@ -532,3 +532,14 @@ This checkpoint requires Work review and remains uncommitted/unpushed. The next
 ownership-preview milestone is blocked on separately proven explicit inventory
 relations, not on further relaxation of structural/codec limits. Research stays
 outside the unchanged public artifact; no UI/Story/progress/backend changes occur.
+
+## Ownership relation research (uncommitted Work checkpoint)
+
+The research-only bounded UUID co-reference explorer is documented in
+[lsv-ownership.md](lsv-ownership.md). The full supported UUID surface of Globals
+was inspected without decoding NewAge. CurrentTemplate/template reuse, player
+profile metadata and status-source references do not prove current inventory
+ownership. All 4,435 candidates remain unknown; no classifier/import UI or writes
+are enabled. Existing codecs, structural/identity limits and the 42-file public
+artifact remain unchanged. A controlled human-created inventory-to-ground save
+pair and a separately reviewed serialization/handle contract are the next gates.
