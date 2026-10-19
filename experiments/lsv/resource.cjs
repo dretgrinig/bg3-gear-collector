@@ -261,6 +261,75 @@
   }
   async function decodeResource(input,options={}) {return (await openResource(input,options)).summary;}
   // Separate v7/format-0 research capability. Generic openResource stays unchanged.
+  // Closed, research-only equality session. Owned arena; never retain decoded views.
+  const equalitySessions=new WeakMap();
+  const EQ_CAPS=Object.freeze({records:128,endpoints:256,pairEndpoints:512,privateBytes:32768,stateBytes:524288,outputBytes:131072,pairOutputBytes:262144,envelopeBytes:524288,workSteps:500000});
+  function createEqualitySession(config='{}'){
+    if(typeof config!=='string'||config.length>2048)fail('INVALID_INPUT','Invalid equality policy.');
+    let lower;try{lower=JSON.parse(config);}catch{fail('INVALID_INPUT','Invalid equality policy.');}
+    if(!lower||typeof lower!=='object'||Array.isArray(lower))fail('INVALID_INPUT','Invalid equality policy.');
+    const caps={...EQ_CAPS};for(const k of Object.keys(lower)){if(!Object.hasOwn(caps,k)||!Number.isSafeInteger(lower[k])||lower[k]<1||lower[k]>caps[k])fail('RESOURCE_LIMIT','Invalid equality bound.');caps[k]=lower[k];}
+    const token=Object.freeze(Object.create(null));
+    equalitySessions.set(token,{caps,arena:new Uint8Array(caps.privateBytes),used:0,classes:[],handles:new Set(),endpoints:0,reservation:caps.privateBytes+4096,stage:'new',started:0,reportB:null,reportA:null,query:null,dead:false});return token;
+  }
+  function ageEqualitySession(token,elapsed){const s=equalityState(token);if(s.stage!=='new'||!Number.isSafeInteger(elapsed)||elapsed<0||elapsed>=30000)fail('INVALID_INPUT','Invalid session age.');s.started=performance.now()-elapsed;}
+  function equalityState(token){const s=equalitySessions.get(token);if(!s||s.dead)fail('INVALID_INPUT','Equality session unavailable.');if(s.started&&performance.now()-s.started>=90000){destroyEqualitySession(token);fail('TIMEOUT','Equality session expired.');}return s;}
+  function destroyEqualitySession(token){const s=equalitySessions.get(token);if(s&&!s.dead){s.arena.fill(0);s.arena=null;s.classes.length=0;s.handles.clear();s.query=null;s.reportB=null;s.reportA=null;s.dead=true;s.stage='destroyed';}}
+  function equalityPredicate(token){
+    const s=equalityState(token),b=s.reportB;
+    if(!b)return {eligible:false,reason:'B_NOT_COMPLETE'};
+    const profiles=b.profiles;
+    const predicates={complete:b.complete===true,records:b.records.length>=2&&b.records.length<=128,informative:b.memberships.length===b.records.length*2,diverse:profiles.length>=2,repeated:b.multiplicities.some(x=>x.count>1),fresh:s.stage==='B',ttl:90000-(performance.now()-s.started)>=32000};
+    return {eligible:Object.values(predicates).every(Boolean),predicates,profiles};
+  }
+  function equalityProfiles(report,charge){
+    const byRecord=new Map(report.records.map(r=>{charge();return [r.handle,{}]}));for(const m of report.memberships){charge();byRecord.get(m.record)[m.field]=m.class;}
+    const profiles=new Map();for(const r of byRecord.values()){charge(4);if(!r.CurrentTemplate||!r.Level)continue;const k=r.CurrentTemplate+':'+r.Level;if(!profiles.has(k))profiles.set(k,{CurrentTemplate:r.CurrentTemplate,Level:r.Level,count:0});profiles.get(k).count++;}return [...profiles.values()];
+  }
+  function beginEquality(token,side,query,tick,retain,caps){
+    const s=equalityState(token);
+    if(!['B','A'].includes(side)||side==='B'&&s.stage!=='new'||side==='A'&&(!equalityPredicate(token).eligible||s.query!==query))fail('INVALID_INPUT','Equality attempt unavailable.');
+    if(side==='B'){if(!s.started)s.started=performance.now();s.query=query;}s.stage=side==='B'?'runningB':'runningA';
+    let work=0,rows=[],memberships=[],localClasses=new Set(),endpoints=0;
+    const charge=(n=1)=>{if(!Number.isSafeInteger(n)||n<0||n>s.caps.workSteps-work)fail('RESOURCE_LIMIT','Equality work exceeded.');tick(n);work+=n;equalityState(token);};
+    const bytes=n=>charge(Math.ceil(n/64));
+    const reserve=n=>{charge();if(n>s.caps.stateBytes-s.reservation)fail('RESOURCE_LIMIT','Equality state exceeded.');s.reservation+=n;retain(n);};
+    charge(Math.ceil(s.reservation/64));retain(s.reservation);
+    if(s.reservation>s.caps.stateBytes||s.reservation>caps.bookkeepingBytes)fail('RESOURCE_LIMIT','Equality state exceeded.');
+    const handle=()=>{for(let i=0;i<8;i++){charge();const a=new Uint8Array(16);globalThis.crypto.getRandomValues(a);bytes(16);const h=Array.from(a,x=>x.toString(16).padStart(2,'0')).join('');if(!s.handles.has(h)){reserve(128);s.handles.add(h);return h;}}fail('RESOURCE_LIMIT','Anonymous handle allocation failed.');};
+    const record=path=>{charge();if(path!=='Items/ItemFactory/Items/Item')fail('INVALID_LSF_STRUCTURE','Selected equality path is not approved.');if(rows.length>=s.caps.records)fail('RESOURCE_LIMIT','Equality record limit exceeded.');reserve(256);const r={handle:handle(),path};rows.push(r);return r.handle;};
+    const field=(record,field,type,data)=>{
+      charge();if(!['CurrentTemplate','Level'].includes(field))return;
+      if(field==='CurrentTemplate'&&(type!==31||data.length!==16)||field==='Level'&&(type!==22||data.length<1||data.length>64))fail('INVALID_LSF_STRUCTURE','Equality field representation is not approved.');
+      // Whole-resource value validation already proved UTF-8 and terminators.
+      bytes(data.length);let informative=false;for(const b of data){charge();if(b!==0)informative=true;}if(!informative)return;
+      if(++endpoints>s.caps.endpoints||++s.endpoints>s.caps.pairEndpoints)fail('RESOURCE_LIMIT','Equality endpoint limit exceeded.');
+      let cls;
+      for(const c of s.classes){charge();if(c.field!==field||c.type!==type||c.length!==data.length)continue;let same=true;for(let i=0;i<data.length;i++){charge();if(s.arena[c.start+i]!==data[i]){same=false;break;}}if(same){cls=c;break;}}
+      if(!cls){if(s.classes.length>=s.caps.pairEndpoints||data.length>s.caps.privateBytes-s.used)fail('RESOURCE_LIMIT','Equality scalar storage exceeded.');reserve(256);bytes(data.length);const start=s.used;s.arena.set(data,start);s.used+=data.length;cls={handle:handle(),field,type,start,length:data.length};s.classes.push(cls);}
+      if(!localClasses.has(cls.handle)&&localClasses.size>=s.caps.endpoints)fail('RESOURCE_LIMIT','Equality class limit exceeded.');localClasses.add(cls.handle);reserve(128);memberships.push({record,field,class:cls.handle});
+    };
+    const finish=base=>{
+      charge();const out={kind:'anonymous-lsf-equality',version:1,scopeMode:side,complete:true,sourceIntegrity:'pending host verification',records:rows,classes:s.classes.filter(c=>{charge();return localClasses.has(c.handle)}).map(c=>{charge();return {handle:c.handle,field:c.field,type:c.type}}),memberships,coverage:{selectedOnly:true,approvedFields:['CurrentTemplate','Level'],missingDefault:'non-informative',recordHandles:'attempt-local; not instance IDs'},ownership:'unknown',instanceContinuity:'unknown',direction:'unproven',accounting:{...base,equalityWorkSteps:0,equalityStateBytes:s.reservation,privateScalarBytesReserved:s.caps.privateBytes}};
+      delete out.accounting.equalityIncludedWork;
+      for(const x of rows)charge();for(const x of memberships)charge();for(const x of out.classes)charge();
+      let pair;
+      out.profiles=equalityProfiles(out,charge);const counts=new Map();for(const m of memberships){charge(2);counts.set(m.class,(counts.get(m.class)||0)+1);}out.multiplicities=[...counts].map(([handle,count])=>{charge();return {handle,count};});
+      if(side==='A'){
+        const profiles=new Map();for(const [label,report]of [['B',s.reportB],['A',out]])for(const p of report.profiles){charge(3);const k=p.CurrentTemplate+':'+p.Level;if(!profiles.has(k))profiles.set(k,{CurrentTemplate:p.CurrentTemplate,Level:p.Level,A:0,B:0});profiles.get(k)[label]+=p.count;}
+        pair={kind:'anonymous-lsf-equality-pair',version:1,complete:true,profiles:[...profiles.values()],ownership:'unknown',instanceContinuity:'unknown',direction:'unproven',question:'Selected joint-profile multiplicities only'};
+        const n=encode.encode(JSON.stringify(pair)).length;reserve(n*3+2048);bytes(n*4+512);if(n>s.caps.pairOutputBytes)fail('RESOURCE_LIMIT','Equality pair output exceeded.');
+      }
+      const n=encode.encode(JSON.stringify(out)).length;reserve(n*3+2048);out.accounting.equalityStateBytes=s.reservation;bytes(n*4+512);if(n>s.caps.outputBytes)fail('RESOURCE_LIMIT','Equality output exceeded.');
+      out.accounting.equalityWorkSteps=work;out.accounting.workSteps=base.workSteps+work-(base.equalityIncludedWork||0);delete out.accounting.equalityIncludedWork;
+      const envelope=pair?{B:s.reportB,observation:out,comparison:pair}:out;
+      const envelopeBytes=encode.encode(JSON.stringify(envelope)).length;reserve(2048);out.accounting.equalityStateBytes=s.reservation;bytes(envelopeBytes*4+512);if(envelopeBytes+32768>s.caps.envelopeBytes)fail('RESOURCE_LIMIT','Equality envelope exceeded.');charge();
+      charge(rows.length*16+memberships.length*8+out.classes.length*8+128);
+      s[side==='B'?'reportB':'reportA']=out;s.stage=side;return envelope;
+    };
+    const verify=result=>{const observation=result.observation||result;if(encode.encode(JSON.stringify(observation)).length>s.caps.outputBytes||result.comparison&&encode.encode(JSON.stringify(result.comparison)).length>s.caps.pairOutputBytes||encode.encode(JSON.stringify(result)).length+32768>s.caps.envelopeBytes)fail('RESOURCE_LIMIT','Final equality output exceeded.');};
+    return {record,field,finish,verify,charge,get reservation(){return s.reservation},get work(){return work}};
+  }
   const TARGETED_CAPS=Object.freeze({nodes:600000,attributes:1100000,bookkeepingBytes:12*1024*1024,evidenceBytes:4*1024*1024,selectors:32,selectedRecords:1024,contextNodes:4096,equalities:8192,outputBytes:512*1024,workSteps:24000000});
   const TARGETED_LABELS=new Set('Items Item ItemFactory Creators Creator Characters Character CharacterFactory Inventories Inventory InventoryItem InventoryList Container Containers Holder Owner Player Party Parties Players Equipment Equipped CacheTemplates Template ItemList NewAge UUID Entity TemplateID CurrentTemplate Stats Amount Object ParentContainer ParentInventory PrimaryInventory InventoryId InventoryID World Position Transform Level Root'.split(' '));
   function createTargetedInspector(options={}) {
@@ -271,6 +340,7 @@
     const selectors=[],uuidPattern=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
     const byUuid=new Map(),byStats=new Map();
     for(let i=0;i<selectorCount;i++){const s=own(source,String(i)),kind=own(s,'kind'),value=own(s,'value');if(typeof value!=='string'||value.length>256||!(kind==='uuid'&&uuidPattern.test(value)&&value!=='00000000-0000-0000-0000-000000000000'||kind==='stats'&&/^[A-Za-z_][A-Za-z0-9_]{0,255}$/.test(value)))fail('INVALID_INPUT','Invalid exact selector.');const canonical=kind==='uuid'?value.toLowerCase():value,map=kind==='uuid'?byUuid:byStats;if(map.has(canonical))fail('INVALID_INPUT','Duplicate selector.');map.set(canonical,i);selectors.push({kind,handle:'selector-'+(i+1)});}
+    const eqToken=own(options,'equalitySession',true),eqSide=own(options,'equalitySide',true);let eq=null,eqReserved=0,eqBookkeeping=0;
     const begun=Date.now(),budget={expandedBytes:0},snapshots=[];let work=0,evidence=0,peakBookkeeping=0,outputEstimate=4096,active=false,failed=false,finished=false,phase='ready',contextCount=0,equalityCount=0;
     function tick(n=1){if(failed)fail('INVALID_INPUT','Targeted attempt failed.');if(!Number.isSafeInteger(n)||n<0||n>caps.workSteps-work)fail('RESOURCE_LIMIT','Aggregate targeted work exceeded.');work+=n;if(signal?.aborted)fail('CANCELLED','Targeted inspection cancelled.');if(Date.now()-begun>=limits.timeoutMs)fail('TIMEOUT','Targeted inspection deadline exceeded.');}
     const byteWork=n=>tick(Math.ceil(n/64));
@@ -278,6 +348,8 @@
     const pause=async i=>{if((i&2047)===0){tick();await new Promise(r=>setTimeout(r,0));tick();}};
     const retain=n=>{if(!Number.isSafeInteger(n)||n<0||n>caps.evidenceBytes-evidence)fail('RESOURCE_LIMIT','Selected evidence memory exceeded.');evidence+=n;};
     const output=n=>{if(n>caps.outputBytes-outputEstimate)fail('RESOURCE_LIMIT','Targeted output exceeded.');outputEstimate+=n;};
+    if(eqToken!==undefined)eq=beginEquality(eqToken,eqSide,JSON.stringify([Array.from(byStats),Array.from(byUuid)]),tick,n=>{if(n>caps.bookkeepingBytes-eqBookkeeping-eqReserved)fail('RESOURCE_LIMIT','Equality bookkeeping exceeded.');eqReserved+=n;retain(n);},caps);
+    if(eq){const preparationWork=own(options,'preparationWork',true)??0;if(!Number.isSafeInteger(preparationWork)||preparationWork<0)fail('INVALID_INPUT','Invalid preparation reservation.');tick(preparationWork);}
     const safeName=s=>TARGETED_LABELS.has(s)?s:'[other]';
     const typedPrototype=Object.getPrototypeOf(Uint8Array.prototype),typedGet=k=>Object.getOwnPropertyDescriptor(typedPrototype,k).get,bufferGet=typedGet('buffer'),offsetGet=typedGet('byteOffset'),lengthGet=typedGet('byteLength'),arrayLengthGet=Object.getOwnPropertyDescriptor(ArrayBuffer.prototype,'byteLength').get;
     const checkedBytes=(input,copy=true)=>{let b;try{if(ArrayBuffer.isView(input)&&input instanceof Uint8Array){const buffer=bufferGet.call(input),offset=offsetGet.call(input),length=lengthGet.call(input);arrayLengthGet.call(buffer);b=new Uint8Array(buffer,offset,length);}else if(input instanceof ArrayBuffer){arrayLengthGet.call(input);b=new Uint8Array(input);}else fail('INVALID_INPUT','Invalid input.');new Uint8Array(b.buffer,0,0);}catch{fail('INVALID_INPUT','Invalid or detached input.');}if(b.length>limits.memberBytes||b.length>limits.fileBytes)fail('RESOURCE_LIMIT','Selected input exceeds its byte limit.');byteWork(b.length);return copy?b.slice():b;};
@@ -286,7 +358,7 @@
       if(layout.version!==7||layout.format!==0)fail('UNSUPPORTED_LSF_LAYOUT','Targeted inspection requires LSF v7 format 0.');
       const section=name=>layout.sections.find(s=>s.name===name),count=(name,cap)=>{const n=section(name).expandedSize;if(n%12)fail('INVALID_LSF_STRUCTURE','Truncated record table.');if(n/12>cap)fail('RESOURCE_LIMIT','Targeted record count exceeded.');return n/12;};
       const nc=count('nodes',caps.nodes),ac=count('attributes',caps.attributes),typedBytes=6*nc+4*ac+Math.ceil(ac/8)+4*limits.depth;
-      if(!Number.isSafeInteger(typedBytes)||typedBytes>caps.bookkeepingBytes)fail('RESOURCE_LIMIT','Targeted bookkeeping exceeded.');
+      eqBookkeeping=typedBytes;if(!Number.isSafeInteger(typedBytes)||typedBytes>caps.bookkeepingBytes-eqReserved)fail('RESOURCE_LIMIT','Targeted bookkeeping exceeded.');
       for(const s of layout.sections){tick();if(s.codec==='lz4'&&s.name!=='strings'){const frame=getLz4Frame();if(!frame?.inspectForDecode||!frame.decode)fail('UNSUPPORTED_LSF_CODEC','Bounded codec unavailable.');await frame.inspectForDecode(bytes.subarray(s.offset,s.offset+s.compressedSize),s.expandedSize,{limits:remaining(),signal});}}
       sectionBudget({budget},limits,layout.cumulative,true);const decoded=Object.create(null);
       for(const s of layout.sections){tick();byteWork(s.compressedSize+s.expandedSize);const data=bytes.subarray(s.offset,s.offset+s.compressedSize);decoded[s.name]=s.codec==='none'?data:s.codec==='lz4'&&s.name!=='strings'?await getLz4Frame().decode(data,s.expandedSize,{limits:remaining(),signal}):await getParser().decompress(s.codec,data,s.expandedSize,{limits:remaining(),signal});if(decoded[s.name].length!==s.expandedSize)fail('INVALID_LSF_STRUCTURE','Decoded section length mismatch.');}
@@ -296,7 +368,7 @@
       const parent=i=>nv.getInt32(i*12+8,true),first=i=>nv.getInt32(i*12+4,true),attrOwner=i=>av.getInt32(i*12+8,true);
       const previous=new Int32Array(nc),next=new Int32Array(ac),state=new Uint8Array(nc),depths=new Uint8Array(nc),used=new Uint8Array(Math.ceil(ac/8)),stack=new Int32Array(limits.depth);previous.fill(-1);next.fill(-1);byteWork(typedBytes);
       const roots=new Set();let scratchPeak=typedBytes,offset=0;
-      const scratch=entries=>{const n=typedBytes+64*(roots.size+entries);if(n>caps.bookkeepingBytes)fail('RESOURCE_LIMIT','Validation scratch exceeded.');scratchPeak=Math.max(scratchPeak,n);};
+      const scratch=entries=>{const n=typedBytes+64*(roots.size+entries);if(n>caps.bookkeepingBytes-eqReserved)fail('RESOURCE_LIMIT','Validation scratch exceeded.');eqBookkeeping=n;scratchPeak=Math.max(scratchPeak,n);};
       for(let i=0;i<nc;i++){tick();if((i&2047)===0)await pause(i);const name=resolve(nv.getUint32(i*12,true)),p=parent(i);ref(p,nc);ref(first(i),ac);if(p===-1){if(roots.has(name))fail('INVALID_LSF_STRUCTURE','Duplicate root name.');scratch(1);roots.add(name);scratch(0);}}
       for(let i=0;i<ac;i++){tick();if((i&2047)===0)await pause(i);resolve(av.getUint32(i*12,true));const tl=av.getUint32(i*12+4,true),length=tl>>>6,owner=attrOwner(i);ref(owner,nc);if(owner===-1)fail('INVALID_LSF_STRUCTURE','Unreachable attribute.');if(offset>decoded.values.length||length>decoded.values.length-offset)fail('INVALID_LSF_STRUCTURE','Attribute range exceeds values.');byteWork(length);validateValue(tl&63,decoded.values.subarray(offset,offset+length),limits,()=>tick());offset+=length;const prev=previous[owner];if(prev!==-1)next[prev]=i;previous[owner]=i;}
       if(offset!==decoded.values.length)fail('INVALID_LSF_STRUCTURE','Trailing compact values.');
@@ -310,15 +382,18 @@
       const matchValue=(i,name,length,at)=>{tick();const type=av.getUint32(i*12+4,true)&63,data=decoded.values.subarray(at,at+length);if(type===31&&byUuid.size){byteWork(16);const h=Array.from(data,b=>b.toString(16).padStart(2,'0')),v=h.slice(0,4).reverse().join('')+'-'+h.slice(4,6).reverse().join('')+'-'+h.slice(6,8).reverse().join('')+'-'+h.slice(8,10).join('')+'-'+h.slice(10).join('');return byUuid.get(v);}if([20,21,22,23,29,30].includes(type)&&length===37&&byUuid.size){byteWork(length);const value=textFor(data.subarray(0,length-1),limits.stringBytes);if(uuidPattern.test(value))return byUuid.get(value.toLowerCase());}if(name==='Stats'&&type===22&&byStats.size&&length<=257){byteWork(length);return byStats.get(textFor(data.subarray(0,length-1),limits.stringBytes));}return undefined;};
       offset=0;
       for(let i=0;i<ac;i++){tick();if((i&2047)===0)await pause(i);const name=byStats.size?resolve(av.getUint32(i*12,true)):null,tl=av.getUint32(i*12+4,true),length=tl>>>6,at=offset;offset+=length;const token=matchValue(i,name,length,at);if(token===undefined)continue;if(++equalityCount>caps.equalities)fail('RESOURCE_LIMIT','Equality observations exceeded.');const owner=attrOwner(i);if(!selected.has(owner)){if(selected.size>=caps.selectedRecords)fail('RESOURCE_LIMIT','Selected record count exceeded.');context(owner);retain(256);output(256);selected.set(owner,{node:owner,matches:[],attributes:[]});}retain(96);output(128);selected.get(owner).matches.push({attribute:i,selector:selectors[token].handle,kind:'exact-equality',direction:'unproven'});occurrences[token].count++;}
+      const eqRecords=eq?new Map():null;
+      if(eq)for(const owner of selected.keys()){let cur=owner;const path=[];while(cur!==-1){eq.charge();path.push(resolve(nv.getUint32(cur*12,true)));cur=parent(cur);}eqRecords.set(owner,eq.record(path.reverse().join('/')));}
       // One additional linear value-offset walk; no per-candidate full-table scan.
-      offset=0;for(let i=0;selected.size&&i<ac;i++){tick();if((i&2047)===0)await pause(i);const tl=av.getUint32(i*12+4,true),length=tl>>>6,owner=attrOwner(i),at=offset;offset+=length;if(!selected.has(owner))continue;retain(160);output(192);const name=safeName(resolve(av.getUint32(i*12,true)));selected.get(owner).attributes.push({index:i,name,type:tl&63,byteLength:length,valueOffset:at,opaque:(tl&63)===25});}
+      offset=0;for(let i=0;selected.size&&i<ac;i++){tick();if((i&2047)===0)await pause(i);const tl=av.getUint32(i*12+4,true),length=tl>>>6,owner=attrOwner(i),at=offset;offset+=length;if(!selected.has(owner))continue;retain(160);output(192);const name=safeName(resolve(av.getUint32(i*12,true)));if(eq)eq.field(eqRecords.get(owner),name,tl&63,decoded.values.subarray(at,at+length));selected.get(owner).attributes.push({index:i,name,type:tl&63,byteLength:length,valueOffset:at,opaque:(tl&63)===25});}
+      if(eq){scratchPeak+=eq.reservation;if(scratchPeak>caps.bookkeepingBytes)fail('RESOURCE_LIMIT','Equality bookkeeping exceeded.');}
       tick();peakBookkeeping=Math.max(peakBookkeeping,scratchPeak);return {status:'validated',version:7,metadataFormat:0,structure:{nodes:nc,attributes:ac},selected:[...selected.values()],context:[...contexts.values()],occurrences,metrics:{typedBookkeepingBytes:typedBytes,bookkeepingPeakBytes:scratchPeak,decodedSectionBytes:layout.cumulative,workAfter:work},opaquePayloads:'not-inspected',schemaRedaction:'redacted labels do not establish schema identity'};
     }
-    async function exclusive(fn){if(failed||finished||active){failed=true;snapshots.length=0;fail('INVALID_INPUT','Targeted attempt is unavailable.');}active=true;try{if(snapshots.length>=2)fail('RESOURCE_LIMIT','At most two captures.');tick();const r=await fn();tick();snapshots.push(r);phase='captured';}catch(e){failed=true;snapshots.length=0;throw e;}finally{active=false;}}
+    async function exclusive(fn){if(failed||finished||active){failed=true;snapshots.length=0;fail('INVALID_INPUT','Targeted attempt is unavailable.');}active=true;try{if(snapshots.length>=(eq?1:2))fail('RESOURCE_LIMIT','At most two captures.');tick();const r=await fn();tick();snapshots.push(r);phase='captured';}catch(e){failed=true;snapshots.length=0;if(eqToken!==undefined)destroyEqualitySession(eqToken);throw e;}finally{active=false;}}
     async function captureResource(input){return exclusive(()=>capture(input));}
     async function capturePackage(input,memberName){return exclusive(async()=>{if(typeof memberName!=='string'||!memberName.startsWith('LevelCache/')||!memberName.endsWith('.lsf'))fail('INVALID_INPUT','Select an exact level-cache member.');const bytes=checkedBytes(input,false);byteWork(bytes.length);if(limits.entries*272>limits.cumulativeBytes-budget.expandedBytes)fail('RESOURCE_LIMIT','Manifest expansion preflight exceeded.');const p=getParser(),pkg=await p.inspectPackage(bytes,{limits:remaining(),signal});const manifestBytes=pkg.entries.length*272;if(manifestBytes>limits.cumulativeBytes-budget.expandedBytes)fail('RESOURCE_LIMIT','Expansion budget exceeded.');budget.expandedBytes+=manifestBytes;byteWork(manifestBytes);if(!pkg.entries.some(e=>e.name===memberName))fail('INVALID_INPUT','Selected member is absent.');const member=await p.readMember(pkg,memberName,{limits:remaining(),signal,budget});tick();return capture(member,true);});}
-    function finish(){if(failed||finished||active){failed=true;snapshots.length=0;fail('INVALID_INPUT','Targeted attempt is unavailable.');}try{tick();if(!snapshots.length)fail('INVALID_INPUT','No validated resources.');retain(1024);output(1024);const comparison={sameInstance:'unproven',ownership:'unknown',occurrences:selectors.map((s,i)=>{tick();return {selector:s.handle,A:snapshots[0].occurrences[i].count,B:snapshots[1]?.occurrences[i].count??null};})};const report={kind:'targeted-lsf-observations',status:'validated',ownership:'unknown',classificationEnabled:false,resources:snapshots.slice(),comparison,usage:{workSteps:work,expandedBytes:budget.expandedBytes,retainedEvidenceBytes:evidence,bookkeepingPeakBytes:peakBookkeeping,outputAccountedBytes:outputEstimate,contextNodes:contextCount,equalityObservations:equalityCount}};byteWork(outputEstimate*2);tick();report.usage.workSteps=work;const json=JSON.stringify(report);if(encode.encode(json).length>caps.outputBytes)fail('RESOURCE_LIMIT','Targeted output exceeded.');tick(0);finished=true;phase='finished';snapshots.length=0;return report;}catch(e){failed=true;snapshots.length=0;throw e;}}
+    function finish(){if(failed||finished||active){failed=true;snapshots.length=0;fail('INVALID_INPUT','Targeted attempt is unavailable.');}try{tick();if(!snapshots.length)fail('INVALID_INPUT','No validated resources.');retain(1024);output(1024);const comparison={sameInstance:'unproven',ownership:'unknown',occurrences:selectors.map((s,i)=>{tick();return {selector:s.handle,A:snapshots[0].occurrences[i].count,B:snapshots[1]?.occurrences[i].count??null};})};const report={kind:'targeted-lsf-observations',status:'validated',ownership:'unknown',classificationEnabled:false,resources:snapshots.slice(),comparison,usage:{workSteps:work,expandedBytes:budget.expandedBytes,retainedEvidenceBytes:evidence,bookkeepingPeakBytes:peakBookkeeping,outputAccountedBytes:outputEstimate,contextNodes:contextCount,equalityObservations:equalityCount}};byteWork(outputEstimate*2);tick();report.usage.workSteps=work;const json=JSON.stringify(report);if(encode.encode(json).length>caps.outputBytes)fail('RESOURCE_LIMIT','Targeted output exceeded.');tick(0);const result=eq?eq.finish({...report.usage,equalityIncludedWork:eq.work}):report;if(eq){const observation=result.observation||result;observation.accounting.bookkeepingPeakBytes=Math.max(observation.accounting.bookkeepingPeakBytes,eqBookkeeping+eqReserved);observation.accounting.retainedEvidenceBytes=evidence;observation.accounting.workSteps=work;observation.accounting.equalityWorkSteps=eq.work;eq.verify(result);tick(0);const freeze=x=>{if(x&&typeof x==='object'){for(const v of Object.values(x))freeze(v);Object.freeze(x);}return x;};freeze(result);}finished=true;phase='finished';snapshots.length=0;return result;}catch(e){failed=true;snapshots.length=0;if(eqToken!==undefined)destroyEqualitySession(eqToken);throw e;}}
     return Object.freeze({captureResource,capturePackage,finish,usage:()=>({phase,workSteps:work,poisoned:failed})});
   }
-  return Object.freeze({parseSaveInfo,decodeResource,openResource,inspectResourceFrames,STRUCTURAL_LIMITS:STRUCTURAL_CAPS,createTargetedInspector,TARGETED_LIMITS:TARGETED_CAPS});
+  return Object.freeze({parseSaveInfo,decodeResource,openResource,inspectResourceFrames,STRUCTURAL_LIMITS:STRUCTURAL_CAPS,createTargetedInspector,TARGETED_LIMITS:TARGETED_CAPS,createEqualitySession,destroyEqualitySession,equalityPredicate,ageEqualitySession});
 });
