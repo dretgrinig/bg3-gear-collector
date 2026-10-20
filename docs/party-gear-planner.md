@@ -79,9 +79,8 @@ Manual equipment locks are hard, explicit reservations are hard, personal claims
 are soft. Capacity is one per canonical identity, never save occurrence count.
 Graceful Cloth identities stay separate; no inferred aliases or copies.
 
-Full-loadout compatibility covers paired rings, 2H/offhand exclusion, weapon
-configuration and confirmed armour/shield/weapon proficiencies. Every reviewed
-compatible item and cross-slot pair seeds full-loadout evaluation. Deterministic
+Full-loadout compatibility covers paired rings, melee dual wielding, 2H/offhand exclusion, weapon
+configuration and confirmed armour/shield/weapon proficiencies. Every reviewed compatible item seeds full-loadout evaluation, followed by a deterministic bounded cross-slot pair prefix (512 seeds). Deterministic
 coordinate sweeps refine those loadouts, with scarce-resource alternatives and a
 bare baseline retained. No prose-derived generic gear score is used for pruning.
 Up to 8 loadouts per character + unassigned; independent exhaustive joint search
@@ -105,9 +104,9 @@ source/reservations), excluding only the redundant request counter.
 ## Coverage and assumptions
 
 All 555 identities are explicitly accounted in `planner/gear-data.json` with exact
-canonical key/sourceRow/full existing strong-ID set. 14 SUPPORTED, 32 PARTIAL,
-509 UNMODELED, 0 INAPPLICABLE. This is mechanics coverage, not acquisition coverage.
-46 reviewed items have effect metadata with source/applicability/stacking/trigger/
+canonical key/sourceRow/full existing strong-ID set. 20 SUPPORTED, 73 PARTIAL,
+462 UNMODELED, 0 INAPPLICABLE. This is mechanics coverage, not acquisition coverage.
+93 reviewed items have effect metadata with source/applicability/stacking/trigger/
 duration/rules/support/fixture. Others are unranked, not silently scored zero.
 An unmodeled hard lock prevents a supported numerical plan.
 
@@ -192,8 +191,8 @@ this milestone does not accept unknown layouts by bypassing validation. Profile
 compatibility metadata is structural research only; no new ownership evidence.
 
 Next priorities: review that current LSMF envelope and public class/feat mappings;
-review additional mechanics beyond the 46-item initial comparison surface;
-extend action schedules/resources/dual-weapon sets and subclass rules with
+review additional mechanics beyond the 93-item current comparison surface;
+extend action schedules/resources/inactive-weapon sets and subclass rules with
 independent oracles. Boss/Party scenario extensions can reuse typed build fields,
 scenario, strategy action source/budgets/concentration, per-loadout metric vectors,
 resource capacities and the deterministic joint solver. They must not add hidden
@@ -213,3 +212,77 @@ Weapon proficiency accepts an exact reviewed weapon type as well as a confirmed
 simple/martial category. A Wizard can declare Quarterstaff without being granted
 all simple weapons. Generic class fixtures use explicitly partial relevant
 proficiency lists, never invented universal armour/weapon training.
+
+## Save-source UX and mechanics hardening
+
+Build source is the visible first step: **Load build from BG3 save** or **Create
+build manually**. The save picker and drop area are never inside a disclosure.
+Selection requires an explicit current-Story session association. Replacement,
+Clear, association removal and security-context changes cancel obsolete work and
+clear detected observations/candidates without deleting manual corrections.
+Unsupported/malformed profiles offer a clear manual continuation. Detection remains
+limited to the same reviewed reference profile; no new save surface or codec.
+
+The source state is per selected character: manual or save-assisted, with idle,
+selected, reading, decoded, unsupported or invalid substate. File objects and
+candidates stay in session memory; no file name is transmitted or logged.
+
+Typed reusable rules in effects.cjs specify scope, target, explicit condition,
+magnitude/dice/type, frequency, hand, stacking, duration, cost, support and source.
+combat.cjs models one bonus-action pool, Thief Fast Hands, melee offhand ability
+conditions, Champion crit, explicit Sneak Attack, Smite first-hit resource
+distributions, Paladin 11's Improved Smite, declared styles and optional All In.
+Weapon enchantment/dice/riders are per active hand. Rerolls and flat/dice crit
+semantics use independent numerical oracles. GWM bonus attacks are kill-round
+gated; the additional crit-trigger branch remains unmodeled, not guaranteed.
+
+New reviewed families include STR-damage weapons, casting-ability weapons,
+conditional elemental/psychic/radiant riders, crit thresholds, on-crit flat
+riders, concentration/coating effects, elemental cantrip augmentation,
+Spellmight auto-toggle, Scarlet Remittance declared stacks, unarmed/ranged
+bonuses, setters/capped bonuses/penalties, DC/AC/initiative/concentration gear,
+one-use long-rest Arcane Battery and finite on-hit reactions. No DRS chains,
+inactive stat-stick sets, extra spatial targets or automatic kills are inferred.
+
+All 555 identities carry conservative recommendation-importance triage. Unknown
+equipment roles are HIGH until reviewed. Distribution: HIGH 17 SUPPORTED /
+72 PARTIAL / 415 UNMODELED; MEDIUM 3 / 1 / 47; LOW 0. This is an explicit
+triage boundary, not a claim that 555 mechanics were fully researched. In Full,
+Needs manual review lists high-impact unmodeled and partial competitors.
+Unmodeled items are excluded; partial items compare only reviewed dimensions.
+No exact superiority over omitted effects is claimed. Minimal/Light construct
+none of this review/ranking/mechanics DOM and never evaluate hidden mechanics.
+
+Search has hard local evaluation allowances within the unchanged aggregate
+20k / 2M / 5s ceilings. Resource-heavy Smite searches get smaller local budgets
+(900 personal / 300 scarcity) so a four-character six-round plan remains useful.
+Truncation is explicit; it is not a global optimum claim. Public packaging
+remains the same 51 paths. All original Tracker, guide, import, parser, codec,
+progress, transport, service-worker and deployment settings are unchanged.
+
+Primary facts: per-item Wiki sources in gear-data.json and the rule pages:
+[Offhand](https://bg3.wiki/wiki/Off-Hand_Attack_(Melee)),
+[Fast Hands](https://bg3.wiki/wiki/Fast_Hands),
+[Sneak Attack](https://bg3.wiki/wiki/Sneak_Attack_(Melee)),
+[Divine Smite](https://bg3.wiki/wiki/Divine_Smite),
+[Improved Smite](https://bg3.wiki/wiki/Improved_Divine_Smite),
+[Organ Rearranger](https://bg3.wiki/wiki/Organ_Rearranger),
+[All In](https://bg3.wiki/wiki/Great_Weapon_Master:_All_In),
+[Sharpshooter](https://bg3.wiki/wiki/Sharpshooter:_All_In).
+The current Wiki's Gloves of Crushing double-applied attack passive is explicitly
+approximate/patch-sensitive. Historical Graceful Cloth (Araj) remains unmodeled
+and distinct from the current Esther item; no DEX bonus was copied across.
+
+The common-build quality matrix covers melee/ranged martial, dual wield, 2H,
+shield, monk, throw, rogue/Thief, crit, Smite, spell/multi/control/support,
+multiclass order, burst and conservation. Native browser regressions exercise
+picker, drop, association, replacement, malformed/unsupported fallback, Clear,
+timeout, oversize, late Worker rejection, 2–4 party members, four widths and
+spoiler/Story isolation in disposable contexts. Private saves never enter tests.
+
+Melee Caster was cross-checked against the shared passive notes, not just its
+misleading attack-only tooltip: both Sylvan Scimitar and Infernal Rapier use the
+highest available class casting modifier for attack and damage, and never grant
+it to the other hand. A sole noncasting Fighter/Rogue uses the explicit casting
+ability assumption because origin/default ability is not inferred.
+[Reviewed passive](https://bg3.wiki/wiki/Melee_Caster).
