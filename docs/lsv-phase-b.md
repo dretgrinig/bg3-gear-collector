@@ -532,3 +532,18 @@ This checkpoint requires Work review and remains uncommitted/unpushed. The next
 ownership-preview milestone is blocked on separately proven explicit inventory
 relations, not on further relaxation of structural/codec limits. Research stays
 outside the unchanged public artifact; no UI/Story/progress/backend changes occur.
+
+## Ownership relation research (uncommitted Work checkpoint)
+
+The research-only bounded UUID co-reference explorer is documented in
+[lsv-ownership.md](lsv-ownership.md). The full supported UUID surface of Globals
+was inspected without decoding NewAge. CurrentTemplate/template reuse, player
+profile metadata and status-source references do not prove current inventory
+ownership. All 4,435 candidates remain unknown; no classifier/import UI or writes
+are enabled. Existing codecs, structural/identity limits and the 42-file public
+artifact remain unchanged. A controlled human-created inventory-to-ground save
+pair and a separately reviewed serialization/handle contract are the next gates.
+
+## Round 1 neighborhood/product-contract checkpoint (uncommitted)
+
+The approved equality checkpoint is committed as `b3f456d178881e89efc1adc0630879a82549a701`. The new optional profile-associated schema-neighborhood projection remains research-only. After passing all synthetic gates, one private B attempt stopped with `RESOURCE_LIMIT`; source unchanged, no partial evidence, zero A opens, no retry. Ownership and instance continuity remain unknown. See [bounded neighborhood report](lsv-neighborhood-round1.md) and the frozen [read-only preview contract](lsv-import-preview-contract.md). The conservative Round 2 preview is buildable without further ownership research; no product import is enabled by this checkpoint.

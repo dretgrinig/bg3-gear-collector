@@ -4,7 +4,7 @@
   else {
     root.importScripts('./zstd-bounded.cjs', './parser.cjs', './lz4-frame-bounded.cjs', './resource.cjs');
     const api = factory();
-    const handler = api.createWorkerHandler({ parser: root.BG3LsvParser, resource: root.BG3LsvResource, loadInventory: () => { if(!root.BG3LsvInventory)root.importScripts('./inventory.cjs');return root.BG3LsvInventory; }, postMessage: (message, transfer) => root.postMessage(message, transfer) });
+    const handler = api.createWorkerHandler({ parser: root.BG3LsvParser, resource: root.BG3LsvResource, loadInventory: () => { if(!root.BG3LsvInventory)root.importScripts('./inventory.cjs');return root.BG3LsvInventory; }, loadRelations: () => { if(!root.BG3LsvRelations)root.importScripts('./relations.cjs');return root.BG3LsvRelations; }, postMessage: (message, transfer) => root.postMessage(message, transfer) });
     root.addEventListener('message', event => handler.handleMessage(event));
   }
 })(typeof self === 'object' ? self : globalThis, function () {
@@ -95,7 +95,7 @@
     return boundedReport({kind:'lsf-framing',status:'framing-validated',version:7,metadataFormat:0,compressionFlags:flags,physicalSectionOrder:names,sectionExpansionBytes:safeInteger(result.sectionExpansionBytes),sectionDecoding:'not-attempted',sections},limits);
   }
   function createWorkerHandler(options) {
-    const { parser, resource, inventory, loadInventory, postMessage } = options;
+    const { parser, resource, inventory, loadInventory, relations, loadRelations, postMessage } = options;
     if (!parser || typeof parser.inspectPackage !== 'function' || typeof parser.readMember !== 'function' || typeof postMessage !== 'function') throw new Error('Worker dependencies are unavailable.');
     const now = () => typeof performance === 'object' ? performance.now() : Date.now();
     let attemptId = null, pkg = null, limits = LIMITS, operation = null;
@@ -104,7 +104,7 @@
       const message = event && event.data;
       if (!message || typeof message.attemptId !== 'string' || message.attemptId.length < 1 || message.attemptId.length > 128 || !Number.isSafeInteger(message.requestId) || message.requestId < 1) return;
       if (attemptId !== null && message.attemptId !== attemptId) return;
-      if (message.type !== 'inspect' && message.type !== 'read-member' && message.type !== 'inspect-resource-frames' && message.type !== 'extract-globals-items') return;
+      if (message.type !== 'inspect' && message.type !== 'read-member' && message.type !== 'inspect-resource-frames' && message.type !== 'extract-globals-items' && message.type !== 'inspect-globals-relations') return;
       if (attemptId === null && message.type !== 'inspect') return;
       if (attemptId === null) attemptId = message.attemptId;
       const envelope = { attemptId, requestId: message.requestId };
@@ -125,8 +125,8 @@
           postMessage({ ...envelope, type: 'inspection', result }, []);
         } else {
           if (!pkg || typeof message.memberName !== 'string' || !pkg.entries.some(entry => entry.name === message.memberName)) fail('member-not-found');
-          const framingOnly=message.type==='inspect-resource-frames',extractItems=message.type==='extract-globals-items';
-          if ((framingOnly||extractItems) && message.memberName!=='Globals.lsf') fail('unsupported-resource');
+          const framingOnly=message.type==='inspect-resource-frames',extractItems=message.type==='extract-globals-items',inspectRelations=message.type==='inspect-globals-relations';
+          if ((framingOnly||extractItems||inspectRelations) && message.memberName!=='Globals.lsf') fail('unsupported-resource');
           const entry = pkg.entries.find(candidate => candidate.name === message.memberName), started = now();
           const bytes = await parser.readMember(pkg, message.memberName, { signal, budget });
           if (!(bytes instanceof Uint8Array) || !(bytes.buffer instanceof ArrayBuffer) || bytes.byteLength > limits.memberBytes) fail('size-limit');
@@ -137,6 +137,14 @@
             const report=boundedReport({byteLength:bytes.byteLength,codec:entry.codec,resource:framingSummary(result,limits),metrics:{readMs,totalMs:Math.max(0,now()-started),cumulativeExpandedBytes:safeInteger(budget.expandedBytes)}},limits);
             postMessage({...envelope,type:'resource-framing',result:report},[]);
             return;
+          }
+          if(inspectRelations){
+            const explorer=relations||(typeof loadRelations==='function'?loadRelations():null);
+            if(!resource||typeof resource.openResource!=='function'||!explorer||typeof explorer.inspectGlobalsRelations!=='function')fail('unsupported-resource');
+            const index=await resource.openResource(bytes,{limits,signal,budget,structuralLimits:message.structuralLimits});
+            const result=await explorer.inspectGlobalsRelations(index,{limits,signal,relationLimits:message.relationLimits});
+            const report=boundedReport({...result,metrics:{...result.metrics,readMs,sectionDecodeMs:index.metrics.sectionDecodeMs,structuralMs:index.metrics.structuralMs,structuralIndexBytes:index.metrics.indexBytes,decodedSectionBytes:index.metrics.decodedSectionBytes,totalMs:Math.max(0,now()-started),cumulativeExpandedBytes:safeInteger(budget.expandedBytes)}},limits);
+            postMessage({...envelope,type:'globals-relations',result:report},[]);return;
           }
           if(extractItems){
             const identityReader=inventory||(typeof loadInventory==='function'?loadInventory():null);
