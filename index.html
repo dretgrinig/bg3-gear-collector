@@ -11,6 +11,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
 <title>BG3 Gear Tracker</title>
 <link rel="stylesheet" href="assets/companion-guide.css">
+<link rel="stylesheet" href="assets/save-preview.css">
 <style>
 :root{--bg:#0d0f11;--panel:#181b1f;--panel2:#21252a;--line:#343a40;--text:#f1f3f5;--muted:#abb2ba;--gold:#d4af37;--green:#37b24d;--red:#e8590c;--blue:#4dabf7}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b0d0f,#15181b);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -81,7 +82,7 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
 <p class=sub>Your gear. Your Story.</p>
 </div></header>
 <div id="trackerView">
-<div class="wrap"><button type="button" id="openCompanionGuide" class="smallbtn" onclick="openCompanionContentGuide()">Companion Content Guide</button></div>
+<div class="wrap"><button type="button" id="openCompanionGuide" class="smallbtn" onclick="openCompanionContentGuide()">Companion Content Guide</button> <button type="button" id="openSavePreview" class="smallbtn" onclick="openSaveEvidencePreview()">Save evidence preview</button></div>
 <section class="wrap dashboard" aria-label="Story, progress and filters">
 <div class=storybar id=storyBar>
  <div>
@@ -183,6 +184,7 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
 <footer>BG3 Gear Tracker · Act 1–3</footer>
 </div></main>
 </div>
+<dialog id="savePreview" class="bg3-save-preview"></dialog>
 <section id="companionGuide" aria-label="Companion Content Guide" hidden></section>
 <script>
 window.BG3_CLOUD_CONFIG = {
@@ -1101,6 +1103,7 @@ let companionGuideView=null,companionGuideImport=null,companionGuideImportAttemp
 let companionGuideStableScope='',companionGuideHadScope=false;
 let companionGuideContext=Object.freeze({identity:'companion-context-0',revision:0,mode:'minimal'}),companionGuideScroll={x:0,y:0};
 function notifyCompanionGuideContext(){
+ if(typeof notifySavePreviewContext==="function")notifySavePreviewContext();
  const mode=spoilerMode(),scopeKey=JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,explicitSignOut,CLOUD_CONFIG.supabaseUrl||null]);
  if(scopeKey!==companionGuideScopeKey){
   if(companionGuideHadScope){try{localStorage.removeItem('bg3-companion-guide-draft-v1')}catch(_){}}
@@ -1159,6 +1162,29 @@ function openCompanionContentGuide(){
  tracker.hidden=true;guide.hidden=false;window.scrollTo(0,0);void loadCompanionGuideView();
 }
 // End Companion Content Guide shell adapter.
+// Local read-only save preview: never writes to Tracker/Story state.
+let savePreviewView=null,savePreviewLoading=null,savePreviewLoadAttempt=0,savePreviewCatalogueVersion=0,savePreviewCatalogueRef=null;
+function savePreviewContext(){if(savePreviewCatalogueRef!==ITEMS){savePreviewCatalogueRef=ITEMS;savePreviewCatalogueVersion++}return {identity:JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,authGeneration,backendGeneration,savePreviewCatalogueVersion]),mode:spoilerMode()}}
+function notifySavePreviewContext(){savePreviewView?.setContext()}
+function savePreviewCatalogue(){
+ if(!embeddedComplete||ITEMS.length!==555)throw {code:"CATALOGUE_NOT_READY"};
+ return JSON.stringify(ITEMS.map(x=>({act:x.act,name:x.name,gameIds:x.gameIds})));
+}
+function savePreviewRows(mode){
+ const full=mode==="full";
+ return ITEMS.map(x=>({key:key(x),name:x.name,act:x.act,type:x.type||"",rarity:x.rarity||"",region:full?x.area||"":mode==="light"?broadAreaFor(x):"",...(full?{detailText:[x.location,x.properties,x.description].filter(Boolean).join("\n"),reference:validItemReference(x.source)?x.source:""}:{})}));
+}
+async function openSaveEvidencePreview(){
+ const button=$("openSavePreview"),dialog=$("savePreview");if(!dialog||dialog.open||savePreviewLoading||$("trackerView")?.hidden)return;
+ if(savePreviewView){savePreviewView.open();return;}
+ const original=button.textContent;button.textContent="Loading save preview…";button.disabled=true;
+ const path='./assets/save-preview.js'+(savePreviewLoadAttempt?'?attempt='+savePreviewLoadAttempt:'');savePreviewLoadAttempt++;
+ savePreviewLoading=import(path).then(module=>{
+  savePreviewView=module.mountSavePreview(dialog,{getContext:savePreviewContext,getCatalogue:savePreviewCatalogue,getRows:savePreviewRows,onClose:()=>button.focus({preventScroll:true})});if(!$("trackerView")?.hidden)savePreviewView.open();
+ }).catch(()=>{button.textContent="Retry save preview";}).finally(()=>{button.disabled=false;if(savePreviewView)button.textContent=original;savePreviewLoading=null;});
+}
+// End local read-only save preview adapter.
+
 
 function initializeStorySpoilers(story){
  const scope=spoilerScopeFor(story);if(!scope)return;

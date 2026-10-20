@@ -25,10 +25,10 @@ test('CLI invalid input is fixed diagnostics without raw private fields or paths
 test('new research tooling is excluded from the exact unchanged 42-file artifact',()=>{
  const {execFileSync}=require('node:child_process'),{buildPages}=require('../scripts/build-pages.cjs'),root=path.resolve(__dirname,'..'),dir=fs.mkdtempSync(path.join(os.tmpdir(),'bg3-evidence-packaging-'));
  try{
-  const expected=['index.html','versioned-progress.js','config.js','data/acquisition.v1.json','data/companion-guide.v1.json','manifest.json','service-worker.js','404.html',...execFileSync('git',['ls-tree','--name-only','-r','HEAD','assets','icons'],{cwd:root,encoding:'utf8'}).trim().split('\n')].sort();assert.equal(expected.length,42);
-  for(const p of expected){fs.mkdirSync(path.dirname(path.join(dir,p)),{recursive:true});fs.writeFileSync(path.join(dir,p),execFileSync('git',['show','HEAD:'+p],{cwd:root,maxBuffer:32*1024*1024}))}
+  const publicBaseline='f052fe8dff6d3ef372c483b1906d41fc13e5c1df';const expected=['index.html','versioned-progress.js','config.js','data/acquisition.v1.json','data/companion-guide.v1.json','manifest.json','service-worker.js','404.html',...execFileSync('git',['ls-tree','--name-only','-r',publicBaseline,'assets','icons'],{cwd:root,encoding:'utf8'}).trim().split('\n')].sort();assert.equal(expected.length,42);
+  for(const p of expected){fs.mkdirSync(path.dirname(path.join(dir,p)),{recursive:true});fs.writeFileSync(path.join(dir,p),execFileSync('git',['show',publicBaseline+':'+p],{cwd:root,maxBuffer:32*1024*1024}))}
   for(const p of ['experiments/lsv/targeted-evidence.cjs','scripts/measure-lsv-targeted-evidence.cjs','scripts/qa-lsv-targeted-evidence.cjs','tests/lsv-targeted-evidence.test.cjs','docs/lsv-targeted-evidence.md']){fs.mkdirSync(path.dirname(path.join(dir,p)),{recursive:true});fs.writeFileSync(path.join(dir,p),'excluded synthetic sentinel')}
-  assert.deepEqual(buildPages(dir),expected);for(const p of expected)assert.deepEqual(fs.readFileSync(path.join(dir,'dist',p)),execFileSync('git',['show','HEAD:'+p],{cwd:root,maxBuffer:32*1024*1024}));
+  assert.deepEqual(buildPages(dir),expected);for(const p of expected)assert.deepEqual(fs.readFileSync(path.join(dir,'dist',p)),execFileSync('git',['show',publicBaseline+':'+p],{cwd:root,maxBuffer:32*1024*1024}));
  }finally{fs.rmSync(dir,{recursive:true,force:true})}
 });
 

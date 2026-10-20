@@ -1,0 +1,22 @@
+[
+  [
+    "<link rel=\"stylesheet\" href=\"assets/save-preview.css\">\n",
+    ""
+  ],
+  [
+    "<div class=\"wrap\"><button type=\"button\" id=\"openCompanionGuide\" class=\"smallbtn\" onclick=\"openCompanionContentGuide()\">Companion Content Guide</button> <button type=\"button\" id=\"openSavePreview\" class=\"smallbtn\" onclick=\"openSaveEvidencePreview()\">Save evidence preview</button></div>\n",
+    "<div class=\"wrap\"><button type=\"button\" id=\"openCompanionGuide\" class=\"smallbtn\" onclick=\"openCompanionContentGuide()\">Companion Content Guide</button></div>\n"
+  ],
+  [
+    "<dialog id=\"savePreview\" class=\"bg3-save-preview\"></dialog>\n",
+    ""
+  ],
+  [
+    " if(typeof notifySavePreviewContext===\"function\")notifySavePreviewContext();\n",
+    ""
+  ],
+  [
+    "// Local read-only save preview: never writes to Tracker/Story state.\nlet savePreviewView=null,savePreviewLoading=null,savePreviewLoadAttempt=0,savePreviewCatalogueVersion=0,savePreviewCatalogueRef=null;\nfunction savePreviewContext(){if(savePreviewCatalogueRef!==ITEMS){savePreviewCatalogueRef=ITEMS;savePreviewCatalogueVersion++}return {identity:JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,authGeneration,backendGeneration,savePreviewCatalogueVersion]),mode:spoilerMode()}}\nfunction notifySavePreviewContext(){savePreviewView?.setContext()}\nfunction savePreviewCatalogue(){\n if(!embeddedComplete||ITEMS.length!==555)throw {code:\"CATALOGUE_NOT_READY\"};\n return JSON.stringify(ITEMS.map(x=>({act:x.act,name:x.name,gameIds:x.gameIds})));\n}\nfunction savePreviewRows(mode){\n const full=mode===\"full\";\n return ITEMS.map(x=>({key:key(x),name:x.name,act:x.act,type:x.type||\"\",rarity:x.rarity||\"\",region:full?x.area||\"\":mode===\"light\"?broadAreaFor(x):\"\",...(full?{detailText:[x.location,x.properties,x.description].filter(Boolean).join(\"\\n\"),reference:validItemReference(x.source)?x.source:\"\"}:{})}));\n}\nasync function openSaveEvidencePreview(){\n const button=$(\"openSavePreview\"),dialog=$(\"savePreview\");if(!dialog||dialog.open||savePreviewLoading||$(\"trackerView\")?.hidden)return;\n if(savePreviewView){savePreviewView.open();return;}\n const original=button.textContent;button.textContent=\"Loading save preview\u2026\";button.disabled=true;\n const path='./assets/save-preview.js'+(savePreviewLoadAttempt?'?attempt='+savePreviewLoadAttempt:'');savePreviewLoadAttempt++;\n savePreviewLoading=import(path).then(module=>{\n  savePreviewView=module.mountSavePreview(dialog,{getContext:savePreviewContext,getCatalogue:savePreviewCatalogue,getRows:savePreviewRows,onClose:()=>button.focus({preventScroll:true})});if(!$(\"trackerView\")?.hidden)savePreviewView.open();\n }).catch(()=>{button.textContent=\"Retry save preview\";}).finally(()=>{button.disabled=false;if(savePreviewView)button.textContent=original;savePreviewLoading=null;});\n}\n// End local read-only save preview adapter.\n\n",
+    ""
+  ]
+]

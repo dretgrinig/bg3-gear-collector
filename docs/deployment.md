@@ -28,15 +28,30 @@ Run `node scripts/build-pages.cjs` from a checkout. The script checks required
 inputs, rejects symlinks, removes old `dist/`, then copies an explicit file and
 asset-directory allowlist. It never copies the repository root recursively.
 
-Current output:
+Current checkout output (**46 files**):
 
 ```text
 404.html
 assets/acquisition-pilot.js
 assets/bg.jpg
-assets/companion-guide.css
 assets/companion-guide-model.js
+assets/companion-guide-visibility.js
+assets/companion-guide.css
 assets/companion-guide.js
+assets/guide-v2/anonymous-companion.webp
+assets/guide-v2/back.webp
+assets/guide-v2/bg-desktop.webp
+assets/guide-v2/bg-mobile.webp
+assets/guide-v2/browse.webp
+assets/guide-v2/filter.webp
+assets/guide-v2/lock.webp
+assets/guide-v2/panel-texture.webp
+assets/guide-v2/party.webp
+assets/guide-v2/romance.webp
+assets/guide-v2/route.webp
+assets/guide-v2/search.webp
+assets/guide-v2/selected.webp
+assets/guide-v2/swap.webp
 assets/portraits/astarion.webp
 assets/portraits/gale.webp
 assets/portraits/halsin.webp
@@ -47,6 +62,10 @@ assets/portraits/minsc.webp
 assets/portraits/minthara.webp
 assets/portraits/shadowheart.webp
 assets/portraits/wyll.webp
+assets/save-preview-core.js
+assets/save-preview-worker.js
+assets/save-preview.css
+assets/save-preview.js
 config.js
 data/acquisition.v1.json
 data/companion-guide.v1.json
@@ -104,3 +123,7 @@ route. Open it from the start area and verify return focus/scroll, Full utility,
 Minimal/Light projection, local reveals, retry, and context invalidation at
 320/390/768/1280 px. Guide browsing must cause no persistence/backend writes.
 The original prototype, test fixtures, docs and research remain outside dist.
+
+## Local save-preview runtime
+
+The current intended public artifact is 46 files: the existing 42-file guide/tracker package plus `assets/save-preview.js`, `assets/save-preview.css`, `assets/save-preview-core.js` and `assets/save-preview-worker.js`. The two generated assets are committed deterministic outputs of `node scripts/build-save-preview.cjs`; Pages continues only to package committed bytes with the existing command/output directory. Research/source/test/documentation paths remain excluded. No production settings change is required. See [save preview](save-preview.md) for the local-only boundary.
