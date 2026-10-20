@@ -1162,9 +1162,42 @@ function openCompanionContentGuide(){
  tracker.hidden=true;guide.hidden=false;window.scrollTo(0,0);void loadCompanionGuideView();
 }
 // End Companion Content Guide shell adapter.
-// Local read-only save preview: never writes to Tracker/Story state.
+// Local save evidence; explicit user selections use normal Tracker mutations.
 let savePreviewView=null,savePreviewLoading=null,savePreviewLoadAttempt=0,savePreviewCatalogueVersion=0,savePreviewCatalogueRef=null;
 function savePreviewContext(){if(savePreviewCatalogueRef!==ITEMS){savePreviewCatalogueRef=ITEMS;savePreviewCatalogueVersion++}return {identity:JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,authGeneration,backendGeneration,savePreviewCatalogueVersion]),mode:spoilerMode()}}
+// Ephemeral user-confirmed additive plans. No save evidence enters this adapter.
+const savePreviewPlans=new WeakSet();
+function savePreviewProgress(){
+ const states=Object.create(null);for(const x of ITEMS)states[key(x)]=ownItem(storyRecords,key(x))?.status||"todo";
+ return {editable:canEditProgress(),states};
+}
+function savePreviewPrepare(keys,expected){
+ const ctx=savePreviewContext();
+ if(!embeddedComplete||ITEMS.length!==555||!canEditProgress()||ctx.identity!==expected.identity||ctx.mode!==expected.mode||!Array.isArray(keys)||!keys.length||keys.length>555)throw Error("Preview changed. Review your selection again.");
+ const catalogue=new Set(savePreviewRows(ctx.mode).map(x=>x.key)),selected=[...new Set(keys)].sort();
+ if(selected.some(k=>typeof k!=="string"||!catalogue.has(k)))throw Error("Selection is no longer available.");
+ reconcileStoredRecords();
+ const capture=captureProgressAction("save-preview"),snapshot=selected.map(k=>[k,ownItem(storyRecords,k)?.status||"todo",ownItem(storyRecords,k)?.client_updated_at||null]);
+ const plan=Object.freeze({capture,identity:ctx.identity,mode:ctx.mode,items:ITEMS,snapshot:Object.freeze(snapshot.map(Object.freeze)),newCount:snapshot.filter(([,s])=>s!=="found").length,alreadyCount:snapshot.filter(([,s])=>s==="found").length});
+ savePreviewPlans.add(plan);return plan;
+}
+function savePreviewApply(plan){
+ if(!savePreviewPlans.has(plan))return {stale:true};savePreviewPlans.delete(plan);
+ const current=()=>{const c=savePreviewContext();return progressActionCurrent(plan.capture)&&c.identity===plan.identity&&c.mode===plan.mode&&ITEMS===plan.items};
+ if(!current())return {stale:true};reconcileStoredRecords();
+ if(!current()||plan.snapshot.some(([k,s,t])=>(ownItem(storyRecords,k)?.status||"todo")!==s||(ownItem(storyRecords,k)?.client_updated_at||null)!==t))return {stale:true};
+ let applied=0,already=0,failed=0;
+ for(const [k] of plan.snapshot){
+  if(!current()){failed++;continue}
+  if(ownItem(storyRecords,k)?.status==="found"){already++;continue}
+  try{markRecord(k,"found")}catch{/* Verify the actual canonical state even if persistence/sync reporting failed. */}
+  if(ownItem(storyRecords,k)?.status==="found")applied++;else failed++;
+ }
+ // Canonical mutations already save and schedule normal sync. Refresh once.
+ render();
+ const memory=progressMemory.get(progressMemoryKey(activeStoryId));
+ return {applied,already,failed,durable:memory?.durable===true};
+}
 function notifySavePreviewContext(){savePreviewView?.setContext()}
 function savePreviewCatalogue(){
  if(!embeddedComplete||ITEMS.length!==555)throw {code:"CATALOGUE_NOT_READY"};
@@ -1180,10 +1213,10 @@ async function openSaveEvidencePreview(){
  const original=button.textContent;button.textContent="Loading save preview…";button.disabled=true;
  const path='./assets/save-preview.js'+(savePreviewLoadAttempt?'?attempt='+savePreviewLoadAttempt:'');savePreviewLoadAttempt++;
  savePreviewLoading=import(path).then(module=>{
-  savePreviewView=module.mountSavePreview(dialog,{getContext:savePreviewContext,getCatalogue:savePreviewCatalogue,getRows:savePreviewRows,onClose:()=>button.focus({preventScroll:true})});if(!$("trackerView")?.hidden)savePreviewView.open();
+  savePreviewView=module.mountSavePreview(dialog,{getContext:savePreviewContext,getCatalogue:savePreviewCatalogue,getRows:savePreviewRows,getProgress:savePreviewProgress,prepareApply:savePreviewPrepare,applyPlan:savePreviewApply,onClose:()=>button.focus({preventScroll:true})});if(!$("trackerView")?.hidden)savePreviewView.open();
  }).catch(()=>{button.textContent="Retry save preview";}).finally(()=>{button.disabled=false;if(savePreviewView)button.textContent=original;savePreviewLoading=null;});
 }
-// End local read-only save preview adapter.
+// End local save preview adapter.
 
 
 function initializeStorySpoilers(story){

@@ -1,5 +1,10 @@
 # Read-only save evidence preview — frozen Round 2 contract v1
 
+## Current authorization — explicit user-confirmed Apply extension
+
+The subsequent approved Apply-to-Tracker milestone supersedes the original read-only **UI/write prohibition** in decisions 13, 26, 28, 30 and implementation stages E/F/H/J. The parser/DTO/matching/ownership/privacy/absence contract remains unchanged. Ownership is still unknown. Exact safely projected matches may be explicitly selected (default none), reviewed and confirmed as the existing Tracker status `found` in the pinned Story through its normal canonical mutation/persistence/sync path. No implicit selection, ambiguity resolution, absence rewrite, evidence persistence/upload or new transport is authorized. Normal progress records alone may persist/sync after explicit confirmation. See [the current product contract](save-preview.md) for one-use plans, races, partial failure and QA. The original decisions below remain the historical read-only baseline except for that narrow, explicit extension.
+
+
 Status: implementation-ready Round 1 contract. Research-only documentation; no product behavior is enabled here. Ownership proof and instance continuity are not prerequisites for this preview. **No additional research is required to implement this conservative MVP.**
 
 ## Thirty binding product decisions
