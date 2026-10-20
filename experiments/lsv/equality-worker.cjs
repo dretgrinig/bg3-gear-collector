@@ -32,7 +32,7 @@
    const proto=Object.getPrototypeOf(Uint8Array.prototype),get=k=>Object.getOwnPropertyDescriptor(proto,k).get;
    try{if(get(Symbol.toStringTag).call(bytes)!=='Uint8Array')throw {};const backing=get('buffer').call(bytes),offset=get('byteOffset').call(bytes),length=get('byteLength').call(bytes);bytes=new Uint8Array(backing,offset,length);}catch{throw {code:'INVALID_INPUT'};}
    const p=JSON.parse(plan);controller=new AbortController();
-   const inspector=R.createTargetedInspector({selectors:p.selectors,signal:controller.signal,equalitySession:token,equalitySide:m.action,limits:{timeoutMs:m.timeoutMs},targetedLimits:m.targetedLimits,preparationWork:m.preparationWork});
+   const inspector=R.createTargetedInspector({selectors:p.selectors,signal:controller.signal,equalitySession:token,equalitySide:m.action,limits:{timeoutMs:m.timeoutMs},targetedLimits:m.targetedLimits,preparationWork:m.preparationWork,neighborhood:m.neighborhood===undefined?undefined:JSON.stringify(m.neighborhood)});
    if(m.resource===true)await inspector.captureResource(bytes);else await inspector.capturePackage(bytes,p.memberName);
    const report=inspector.finish();stage=m.action;
    if(m.action==='A')destroy();

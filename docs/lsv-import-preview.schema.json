@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:bg3:save-evidence-preview:v1",
+  "title": "Read-only Save evidence preview v1",
+  "description": "Canonical catalogue keys only; semantic snapshot membership, uniqueness, total record counts <=16384 and <=8MiB must also be validated. Counts are not spoiler-visible view models. No raw save identifiers.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "SAVE_EVIDENCE_PREVIEW"
+        },
+        "status": {
+          "const": "READY"
+        },
+        "coverage": {
+          "const": "GLOBALS_ITEMFACTORY_STATS_ONLY"
+        },
+        "catalogueRevision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "matchedEvidence": {
+          "type": "array",
+          "maxItems": 1024,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "class": {
+                "const": "MATCHED_CATALOGUE_EVIDENCE"
+              },
+              "catalogueKey": {
+                "type": "string",
+                "pattern": "^act [123]\\|[^\\r\\n]+$",
+                "maxLength": 518
+              },
+              "evidence": {
+                "const": "EXACT_STATS_FAMILY"
+              },
+              "occurrences": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 16384
+              },
+              "ownership": {
+                "const": "unknown"
+              },
+              "instance": {
+                "const": "unresolved"
+              }
+            },
+            "required": [
+              "class",
+              "catalogueKey",
+              "evidence",
+              "occurrences",
+              "ownership",
+              "instance"
+            ]
+          }
+        },
+        "ambiguous": {
+          "type": "array",
+          "maxItems": 16384,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "class": {
+                "const": "AMBIGUOUS_CATALOGUE_MATCH"
+              },
+              "groupId": {
+                "type": "string",
+                "pattern": "^group-[1-9][0-9]{0,4}$"
+              },
+              "candidateKeys": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 1024,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^act [123]\\|[^\\r\\n]+$",
+                  "maxLength": 518
+                }
+              },
+              "evidence": {
+                "const": "EXACT_STATS_FAMILY"
+              },
+              "occurrences": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 16384
+              },
+              "ownership": {
+                "const": "unknown"
+              },
+              "instance": {
+                "const": "unresolved"
+              }
+            },
+            "required": [
+              "class",
+              "groupId",
+              "candidateKeys",
+              "evidence",
+              "occurrences",
+              "ownership",
+              "instance"
+            ]
+          }
+        },
+        "unmatched": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "class": {
+              "const": "UNMATCHED_SAVE_RECORD"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16384
+            }
+          },
+          "required": [
+            "class",
+            "count"
+          ]
+        },
+        "unsupported": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "class": {
+              "const": "UNSUPPORTED_RECORD_IDENTITY"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16384
+            }
+          },
+          "required": [
+            "class",
+            "count"
+          ]
+        },
+        "limitations": {
+          "const": [
+            "NOT_OWNERSHIP",
+            "NO_ABSENCE_INFERENCE",
+            "INSTANCE_UNRESOLVED",
+            "PARTIAL_SAVE_SCOPE"
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "status",
+        "coverage",
+        "catalogueRevision",
+        "matchedEvidence",
+        "ambiguous",
+        "unmatched",
+        "unsupported",
+        "limitations"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "SAVE_EVIDENCE_PREVIEW"
+        },
+        "status": {
+          "enum": [
+            "MALFORMED",
+            "UNSUPPORTED",
+            "RESOURCE_LIMIT",
+            "TIMEOUT",
+            "CANCELLED",
+            "CATALOGUE_NOT_READY",
+            "FAILED"
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "status"
+      ]
+    }
+  ]
+}

@@ -22,7 +22,7 @@ function instrument(s){
  mark('      for(let i=0;i<nc;i++){tick();if((i&2047)===0)await pause(i);const names=',"      __p.stage('duplicates',work);\n");
  mark('      for(let i=0;i<ac;i++){tick();if(!(used',"      __p.stage('coverage',work);\n");
  mark("      phase='selection';", "      __p.stage('selectionSetup',work);\n");
- mark('      for(let i=0;i<ac;i++){tick();if((i&2047)===0)await pause(i);const name=byStats',"      __p.stage('selection',work);\n");
+ mark(s.includes('const tl=av.getUint32(i*12+4,true),name=byStats')?'      for(let i=0;i<ac;i++){tick();if((i&2047)===0)await pause(i);const tl=av.getUint32(i*12+4,true),name=byStats':'      for(let i=0;i<ac;i++){tick();if((i&2047)===0)await pause(i);const name=byStats',"      __p.stage('selection',work);\n");
  mark('      offset=0;for(let i=0;selected.size',"      __p.stage('selectedDescriptors',work);\n");
  const call='validateValue(tl&63,decoded.values.subarray(offset,offset+length),limits,()=>tick());';
  const start=s.indexOf('  function createTargetedInspector');let tail=s.slice(start);if(tail.split(call).length!==2)throw Error('Value marker drift');tail=tail.replace(call,"if((i&1023)===0){const __v=performance.now();"+call+"__p.sampleValue(performance.now()-__v);}else{"+call+"}");s=s.slice(0,start)+tail;

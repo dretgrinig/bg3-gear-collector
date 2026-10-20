@@ -12,7 +12,7 @@ function createMeasurement(json){
  if(typeof json!=='string'||json.length>16384)fail('INVALID_INPUT');
  let config;try{config=JSON.parse(json);}catch{fail('INVALID_INPUT');}
  if(!config||typeof config!=='object'||Array.isArray(config))fail('INVALID_INPUT');
- const {groundB,inventoryA,plan,syntheticGatesPassed,timeoutMs=30000,bounds,targetedLimits}=config;
+ const {groundB,inventoryA,plan,syntheticGatesPassed,timeoutMs=30000,bounds,targetedLimits,neighborhood}=config;
  if(typeof groundB!=='string'||groundB.length>4096||inventoryA!==undefined&&(typeof inventoryA!=='string'||inventoryA.length>4096)||!plan||typeof plan!=='object'||Array.isArray(plan)||!/^LevelCache\/[A-Za-z0-9_-]+\.lsf$/.test(plan.memberName)||!Array.isArray(plan.selectors)||plan.selectors.length!==1||plan.selectors[0]?.kind!=='stats'||typeof plan.selectors[0].value!=='string'||!/^[A-Za-z_][A-Za-z0-9_]{0,255}$/.test(plan.selectors[0].value)||!Number.isSafeInteger(timeoutMs)||timeoutMs<1||timeoutMs>30000)fail('INVALID_INPUT');
  const pinned=JSON.stringify(plan),state={used:false,cancelled:false,worker:null,terminate:null};
  const control=Object.freeze(Object.create(null));controls.set(control,state);
@@ -33,7 +33,7 @@ function createMeasurement(json){
     let remaining=Math.floor(deadline-performance.now());if(remaining<1)fail('TIMEOUT');
     // Reserve initial/final read+hash byte work and bounded host/protocol overhead
     // in the SAME Worker counter before decoding. No final-integrity reset.
-    const response=await request({action:side,plan:pinned,timeoutMs:remaining,elapsedMs:Math.ceil(performance.now()-begun),bounds,targetedLimits,preparationWork:Math.ceil(snapshot.bytes.length*4/64)+4096},snapshot.bytes,remaining);
+    const response=await request({action:side,plan:pinned,timeoutMs:remaining,elapsedMs:Math.ceil(performance.now()-begun),bounds,targetedLimits,neighborhood,preparationWork:Math.ceil(snapshot.bytes.length*4/64)+4096},snapshot.bytes,remaining);
     if(response.status!=='validated')fail(allowed.has(response.error)?response.error:'INVALID_INPUT');report=response.report;
    }catch(e){error=safe(e);}finally{
     if(snapshot){integrity=snapshot.verify()?'unchanged':'not verified';snapshot.close();snapshot.bytes.fill(0);if(integrity!=='unchanged'){error='SOURCE_CHANGED';report=undefined;}}
