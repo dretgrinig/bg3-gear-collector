@@ -4,7 +4,7 @@
     ""
   ],
   [
-    "<div class=\"wrap\"><button type=\"button\" id=\"openCompanionGuide\" class=\"smallbtn\" onclick=\"openCompanionContentGuide()\">Companion Content Guide</button> <button type=\"button\" id=\"openSavePreview\" class=\"smallbtn\" onclick=\"openSaveEvidencePreview()\">Save evidence preview</button></div>\n",
+    "<div class=\"wrap\"><button type=\"button\" id=\"openCompanionGuide\" class=\"smallbtn\" onclick=\"openCompanionContentGuide()\">Companion Content Guide</button> <button type=\"button\" id=\"openSavePreview\" class=\"smallbtn\" onclick=\"openSaveEvidencePreview()\">Import from BG3 save</button></div>\n",
     "<div class=\"wrap\"><button type=\"button\" id=\"openCompanionGuide\" class=\"smallbtn\" onclick=\"openCompanionContentGuide()\">Companion Content Guide</button></div>\n"
   ],
   [
