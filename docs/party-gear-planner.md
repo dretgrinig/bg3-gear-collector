@@ -44,8 +44,9 @@ validated progression references. Candidates are anonymous and explicitly chosen
 never automatically added as an active party. No partial fields on structural
 failure. Unknown/missing/unsupported profile => manual completion.
 
-Currently promoted automatic field: **observed effective abilities**. Identity,
-active party, current level/classes/subclasses, feats/ASIs, base abilities,
+The reference profile promotes **observed effective abilities** only. The separately
+validated 1.1 profile below also promotes direct current level and exact reviewed
+current class/subclass totals. Identity, active party, class order, feats/ASIs, base abilities,
 proficiencies, prepared spells, invocations/styles/metamagic/manoeuvres, permanent
 passives, holder/slot/equipment and ownership remain Unknown/manual. Public GUID
 mappings and respec/current-progression semantics are not independently proven;
@@ -175,28 +176,119 @@ No private fixture, save path/hash, raw entity ID or payload belongs in this fil
 
 ## Sanitized real-save compatibility result
 
-The previously authorized save was read through the production build-reader
-Worker after synthetic and native-browser gates. Archive/Globals structural
-processing respected existing limits. Its LSMF header profile is `134217985`,
-which differs from the independently supported reference envelope profile `1`.
-No automatic fields were promoted. Manual completion and optimization succeeded.
-The source fingerprint/stat remained unchanged. No private values, paths, hashes
-or payloads were retained in git. This is an explicit unsupported-profile
-boundary, not a claim that the real save has no characters or build information.
+The original measurement rejected profile `134217985` (not profile `1`). That
+unsupported result was correct for the earlier reference-only implementation.
+The current reader now has a separate, independently implemented strict profile:
+`lsmf-08000101-tag123`. The authorized read-only rerun surfaced **four anonymous
+candidates**, each with direct level, current class split, mapped subclass and
+observed effective abilities. No private
+values or identifiers are recorded here. Source fingerprint/stat stayed unchanged.
 
-The current positive auto-detection coverage is synthetic/native-Worker proof
-for the pinned reference profile, **not demonstrated real-save build recovery**.
-Expanding that reader requires independently reviewing the evidenced envelope;
-this milestone does not accept unknown layouts by bypassing validation. Profile
-compatibility metadata is structural research only; no new ownership evidence.
+## Strict real-profile capability and safe limits
 
-Next priorities: review that current LSMF envelope and public class/feat mappings;
-review additional mechanics beyond the 93-item current comparison surface;
-extend action schedules/resources/inactive-weapon sets and subclass rules with
-independent oracles. Boss/Party scenario extensions can reuse typed build fields,
-scenario, strategy action source/budgets/concentration, per-loadout metric vectors,
-resource capacities and the deterministic joint solver. They must not add hidden
-cross-unit scores or infer live resources/spatial relations.
+The 48-byte header must have exact profile `0x08000101`, marker 32, reserved tail
+zero, and exact arena/table/name accounting. Name length is u32; the following
+u32 is constrained to the observed opaque tag 123, never used as an entity count
+or identity. Interpreted components have exact names, versions and strides:
+Level 0/32, EntityId 0/16, Character 0/1, Player 0/1, Stats 3/36, direct Level
+0/4, Classes 0/16. Unknown component contents/versions remain opaque and cannot
+supply fields.
+A different tag/profile/layout stays unsupported; there is no profile bypass.
+
+The complete directory and owner-map envelope are checked before output: finite
+counts/ranges, array/name overlap, unique names/entities, unique component maps,
+exact owner count, unique/in-range owner indices, metadata alias rejection.
+Empty owner-map buckets require exactly three all-ones pointers plus count zero.
+The Level component is selected by exact name, not its directory position.
+
+Candidates require the SAME explicit owner index in player, character and stats
+maps. Direct level is independently read from that owner's current level
+component, only in the supported 1–12 range. It is never progression length,
+XP, class total, identity or adjacent row. These values are partial Detected fields
+in the existing BuildSnapshot. Observed abilities never become base abilities.
+A candidate is not a proven companion identity or current-party membership.
+Selection is explicit; reading never adds a planner party automatically.
+
+Current classes use that SAME owner's direct ClassesComponent vector, with
+bounded 40-byte ClassInfo records and metadata/fixed-array alias checks. The
+public serialized reference describes its level as u64; BG3SE's primary ClassInfo
+declaration instead defines **int32 Level** plus alignment padding. The u64
+attempt was rejected; independent int32 fixtures with zero/nonzero/all-ones
+padding and the read-only rerun established the narrow supported layout. Padding
+is not a level or an identifier. Class GUIDs use the reviewed pair-swapped
+encoding, then a finite pinned map (12 base classes / 46 mapped subclasses).
+
+Every class level must be 1–12, class names unique and their sum exactly equal
+to the independently detected direct current level. Unknown class IDs, duplicate
+classes or contradictory totals yield Classes Unknown; invalid pointers/ranges
+reject the whole result. Unknown or wrong-class subclass IDs stay Unknown with
+an issue, never a companion/default subclass. Mapped subclasses must meet the
+existing class level threshold. Current class totals are unordered: **no level
+order, starting class or current level-up choices are inferred**. Progression and
+character-creation history are never used to patch missing current fields.
+
+Feats/ASI, base abilities, proficiencies, spells, choices and passives remain
+Unknown/manual. An unknown list is never confirmed empty. Manual overrides remain
+in force; a separately overridden level that conflicts with detected class totals
+keeps Classes Unknown until the user resolves the discrepancy.
+
+Party was investigated independently. A Player marker and party-member component
+exist, but a component name or matching count is not proof of the exact current
+party relation. Live Party Member definitions include runtime EntityHandles; no
+reviewed serialized translation was established. No IN CURRENT PARTY claim ships.
+
+Equipment was investigated independently. Wielding references have a structural
+EntityId shape, but that is not the full character → current slot → exact item
+instance → catalogue proof. Serialized MemberData does not justify treating every
+tail word as a slot. Public sources disagree about stale container rows and
+runtime handles. Main/offhand and ring 1/2 are never assigned by order, stats
+family, CurrentTemplate or occurrence. **Zero automatic equipped slots**, ownership
+Unknown, no inventory quantities or Tracker-found changes.
+
+Manual overrides survive subsequent reads, Clear and replacement. Detection is
+retained underneath overrides while valid; Clear removes detected values and
+provenance immediately from both DTO and DOM. Unconfirmed manual drafts survive
+candidate selection. Selection change cancels pending work before another
+character is rendered. Existing Story/account/spoiler/close/new-file/deadline
+invalidation and single-use Workers remain active. Anonymous candidates expose
+no companion names before the existing Act visibility gate.
+
+The only private payload read is Globals through the existing validated archive,
+resource and exact root NewAge/NewAge capability. No meta, SaveInfo, LevelCache,
+StorySave, thumbnail or new codec was needed. Payloads stay in memory. No raw
+buffer capability reaches UI. Per-field output is restricted to level, reviewed class/subclass totals, observed scores, opaque
+session references and fixed issue codes. No raw UUIDs are returned. Source diagnostics use
+counts only; browser captures use synthetic/manual data before private reading.
+
+The unchanged limits are 128 MiB file/member, 512 MiB aggregate expansion, 30s
+aggregate UI/Worker deadline and 2M identity steps. The validated read consumed
+about 22.8 MB expansion; browser reading was within the deadline. Performance is
+not a promise that other profiles/saves will decode. All structure failure paths
+return no partial candidates. Generic parser, codecs and research limits remain
+unchanged. Public packaging retains 51 paths; source/test/docs remain excluded.
+
+Permanent independent synthetic tests cover both profiles, malformed directories,
+versions, tags, unsafe integers, overlaps/aliases, duplicate entities/maps/owners,
+wrong-owner association, row reordering, opaque history/equipment, exact class/subclass and unknown-ID gates, exact
+work-limit boundary, cancellation, DTO provenance and manual overrides. Native QA
+uses the actual generated Worker, four widths and disposable contexts with all
+backend/write requests blocked. The real file never enters a fixture or screenshot.
+
+Primary references (read as format leads, never executed/imported):
+[original ImHex format research](https://github.com/LennardF1989/BG3-ImHex-Patterns/blob/master/ImHex/includes/bg3/lsmf.pat),
+[pinned NewAge reference](https://github.com/NodeJSmith/bg3-newage/tree/c3372b1988109a2fd1d35897e1895e387f7a916e),
+[serialized-format research](https://github.com/danielsamuels/bg3-savefile-parser/blob/9578ff7c46a1aa40c805f6b7beecf907f10fb3b8/FORMAT.md),
+[header/type-record cross-check](https://github.com/Wahkah/BG3SE/blob/main/src/bgse/formats/lsmf.py),
+[live Stats/ClassInfo definitions](https://github.com/Norbyte/bg3se/blob/main/BG3Extender/GameDefinitions/Components/Stats.h),
+[live Party definitions](https://github.com/Norbyte/bg3se/blob/main/BG3Extender/GameDefinitions/Components/Party.h),
+[live Inventory definitions](https://github.com/Norbyte/bg3se/blob/main/BG3Extender/GameDefinitions/Components/Inventory.h).
+Live structures and heuristic upstream joins are not serialized semantic proof.
+
+Next milestone: independently prove the explicit identity/party/entity relation
+and current progression/choice semantics using controlled ground truth on authorized surfaces.
+Keep unsupported fields Unknown; do not repair them with adjacency, XP, build
+similarity or pre-respec history. Equipment additionally needs a reviewed current
+slot/instance/catalogue chain, independently of party/build detection.
 
 Additional spell-action rotations under Haste/Bloodlust/Action Surge are explicitly
 UNMODELED rather than evaluated as if the extra actions did not exist. Disable
@@ -220,8 +312,8 @@ build manually**. The save picker and drop area are never inside a disclosure.
 Selection requires an explicit current-Story session association. Replacement,
 Clear, association removal and security-context changes cancel obsolete work and
 clear detected observations/candidates without deleting manual corrections.
-Unsupported/malformed profiles offer a clear manual continuation. Detection remains
-limited to the same reviewed reference profile; no new save surface or codec.
+Unsupported/malformed profiles offer a clear manual continuation. The source UX also supports the strict 1.1 profile documented above; no new save
+surface or codec is introduced.
 
 The source state is per selected character: manual or save-assisted, with idle,
 selected, reading, decoded, unsupported or invalid substate. File objects and

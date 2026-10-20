@@ -1,5 +1,6 @@
 /* Generated single-use local build reader. */
-(()=>{const zstd=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;default:throw Error('Unavailable dependency');}};
+(()=>{const classIds={"version":1,"source":"https://github.com/danielsamuels/bg3-savefile-parser/blob/9578ff7c46a1aa40c805f6b7beecf907f10fb3b8/data/gamedata.json","classes":{"d8cadb42-0ff9-4049-afaf-e5d78d06a399":"Barbarian","92cd50b6-eb1b-4824-8adb-853e90c34c90":"Bard","114e7aee-d1d4-4371-8d90-8a2080592faf":"Cleric","457d0a6e-9da8-4f95-a225-18382f0e94b5":"Druid","721dfac3-92d4-41f5-b773-b7072a86232f":"Fighter","c4598bdb-fc07-40dd-a62c-90cc138bd76f":"Monk","ff4d9497-023c-434a-bd14-82fc367e991c":"Paladin","36be18ba-23db-4dff-bfa6-ae105ce43144":"Ranger","e8b1eab0-ef11-40a2-8a0b-cee8d062bf2a":"Rogue","784001e2-c96d-4153-beb6-2adbef5abc92":"Sorcerer","b4225a4b-4bbe-4d97-9e3c-4719dbd1487c":"Warlock","a865965f-501b-46e9-9eaa-7748e8c04d09":"Wizard"},"subclasses":{"e6a0eb75-7a01-4f40-8563-24ba2615e99b":{"class":"Wizard","name":"Abjuration"},"b36d247e-d39f-4ae9-9476-3ec315c55789":{"class":"Paladin","name":"Oath of the Ancients"},"ede4778e-7602-440f-9075-b4bc8dc31cea":{"class":"Rogue","name":"Arcane Trickster"},"733ddf8c-9ec4-4c5a-85e3-c70fd3df3c24":{"class":"Warlock","name":"The Archfey"},"b53a8061-f31d-4985-adfe-d4d691a918d9":{"class":"Rogue","name":"Assassin"},"e668c6f1-5149-4b10-ab7e-3637ed444066":{"class":"Fighter","name":"Battle Master"},"6fd9547d-cc28-400e-bfa9-3a85baa70f24":{"class":"Ranger","name":"Beast Master"},"32eee7d8-1b2f-4de5-b9ee-78fbd286c6ef":{"class":"Barbarian","name":"Berserker"},"0a01dc6b-ab1a-4c0e-8a5e-4787fe1f2caf":{"class":"Fighter","name":"Champion"},"7458da78-34b7-4150-a42f-37197ab04510":{"class":"Druid","name":"Circle of the Land"},"3eab0689-e51b-4634-a690-0375d3cb2716":{"class":"Druid","name":"Circle of the Moon"},"4b61af6c-4a44-436e-aa0a-0d11a2d6b8ee":{"class":"Druid","name":"Circle of the Spores"},"7a3feb8d-dda7-46ec-9029-1f302f537432":{"class":"Wizard","name":"Conjuration"},"1c761ad0-6f5f-409e-ac1d-ddf6f85c1fc4":{"class":"Paladin","name":"Oath of Devotion"},"7577b0e1-a517-4f82-8f72-05a227dc5e88":{"class":"Wizard","name":"Divination"},"36286b0a-26f9-4b4e-9311-fd1404301d20":{"class":"Sorcerer","name":"Draconic Bloodline"},"b722614a-303f-411a-bb19-a1882ad1f4cc":{"class":"Fighter","name":"Eldritch Knight"},"46d31950-6917-444e-ac87-706702825215":{"class":"Wizard","name":"Enchantment"},"c059dca1-c17d-4dce-8260-83ede5070eac":{"class":"Wizard","name":"Evocation"},"8866db28-7dda-4fd6-93ed-20eca16314f0":{"class":"Warlock","name":"The Fiend"},"22894c32-54cf-49ea-b366-44bfcf01bb2a":{"class":"Monk","name":"Way of the Four Elements"},"d5f10e55-84e3-409b-aa64-2098c9550319":{"class":"Ranger","name":"Gloom Stalker"},"e1e4a21f-9405-46ec-81a0-ccc8d58d9736":{"class":"Warlock","name":"The Great Old One"},"0aa1cff9-c45f-4d00-a95b-99a7aa96dd06":{"class":"Ranger","name":"Hunter"},"436c9e1a-3a39-48dd-b753-7cee1bd19c00":{"class":"Wizard","name":"Illusion"},"ebe18794-b5e1-41c4-befa-4b9d6922b0ec":{"class":"Cleric","name":"Knowledge Domain"},"4b5da2f5-b999-4623-8bff-a63df5560fb3":{"class":"Cleric","name":"Life Domain"},"c54d7591-b305-4f22-b2a7-1bf5c4a3470a":{"class":"Cleric","name":"Light Domain"},"d21368ac-c776-465c-9dcf-6123dd52734f":{"class":"Bard","name":"College of Lore"},"6dec76d0-df22-411c-8a78-3d6fb843ae50":{"class":"Cleric","name":"Nature Domain"},"fbb8347b-20e3-4846-ba91-0552cd12fc5f":{"class":"Wizard","name":"Necromancy"},"6fb3831e-45d8-4b30-9714-6fe73988921b":{"class":"Paladin","name":"Oathbreaker"},"2a5e3097-384c-4d29-8d6e-054fdfd26b80":{"class":"Monk","name":"Way of the Open Hand"},"bf46d73f-d406-4cb8-9a1d-e6e758ca02c7":{"class":"Monk","name":"Way of Shadow"},"d379fdae-b401-4731-8d50-277c73919ae3":{"class":"Sorcerer","name":"Storm Sorcery"},"c4bd5252-d68a-4330-9431-5e8ab24c5f29":{"class":"Bard","name":"College of Swords"},"89bacf1b-8f15-4972-ada7-bf59c7c78441":{"class":"Cleric","name":"Tempest Domain"},"32c7b8df-a6ec-4848-a9db-c0dce781beb9":{"class":"Rogue","name":"Thief"},"2e585948-d775-451d-b58b-15b75321d11e":{"class":"Barbarian","name":"Wildheart"},"a12f2924-30b4-4185-9db9-2c5b383ff449":{"class":"Wizard","name":"Transmutation"},"f013d01b-3310-43f7-81bf-a51130442b5e":{"class":"Cleric","name":"Trickery Domain"},"2b46330d-0ada-4eb5-a131-3d250a41ca6a":{"class":"Bard","name":"College of Valour"},"3cc3d397-c47d-4966-87ae-88827f73f645":{"class":"Paladin","name":"Oath of Vengeance"},"b9ccf90e-b35b-4b73-b896-8ed2d32ae8c6":{"class":"Cleric","name":"War Domain"},"14374d37-a70e-41a8-9dc5-85a23f8b5dd2":{"class":"Sorcerer","name":"Wild Magic"},"d6bf00fc-3518-4d63-ba8b-03532c1abc4d":{"class":"Barbarian","name":"Wild Magic"}}};
+const zstd=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;case "./newage-1108.cjs":return realProfile;case "./class-ids.json":return classIds;default:throw Error('Unavailable dependency');}};
 /* Research-only checked Zstandard decoder.
  * Entropy table construction and code/baseline algorithms derived from fzstd
  * 0.1.1 by Arjun Barrett: https://github.com/101arrowz/fzstd/tree/v0.1.1
@@ -650,7 +651,7 @@
   });
 });
 return module.exports;})();
-const parser=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;default:throw Error('Unavailable dependency');}};
+const parser=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;case "./newage-1108.cjs":return realProfile;case "./class-ids.json":return classIds;default:throw Error('Unavailable dependency');}};
 /* Phase A research spike: independent bounded LSPK v18 reader. No product integration. */
 (function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./zstd-bounded.cjs'):root.BG3ZstdBounded);if(typeof module==='object'&&module.exports)module.exports=api;else root.BG3LsvParser=api})(typeof globalThis==='object'?globalThis:this,function(zstd){
 'use strict';
@@ -759,7 +760,7 @@ async function readMember(pkg,name,options={}){
 return Object.freeze({LIMITS,SpikeError,mergeLimits,inspectPackage,readMember,decompress,decodeLz4BlockInto,classify});
 });
 return module.exports;})();
-const lz4=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;default:throw Error('Unavailable dependency');}};
+const lz4=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;case "./newage-1108.cjs":return realProfile;case "./class-ids.json":return classIds;default:throw Error('Unavailable dependency');}};
 /* Research-only, restricted standard LZ4 frame reader. No product integration.
  * Independently authored against LZ4 frame format v1.6.4 and XXH32 specification
  * v0.2.0. Only the short (<16-byte) descriptor checksum is needed here.
@@ -910,7 +911,7 @@ const lz4=(()=>{const module={exports:{}};const exports=module.exports;const req
   return Object.freeze({inspect,decode,inspectFraming,inspectForDecode});
 });
 return module.exports;})();
-const resource=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;default:throw Error('Unavailable dependency');}};
+const resource=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;case "./newage-1108.cjs":return realProfile;case "./class-ids.json":return classIds;default:throw Error('Unavailable dependency');}};
 /* Phase A structural probe, independently authored against LSLib's MIT format
  * reference (6f5f6987d10d8485876b8368431c948e4dea4f83). See docs/lsv-phase-a.md.
  * No filesystem, network, persistence, or semantic ECS interpretation. */
@@ -1155,12 +1156,101 @@ const resource=(()=>{const module={exports:{}};const exports=module.exports;cons
 return Object.freeze({openResource,STRUCTURAL_LIMITS:STRUCTURAL_CAPS});
 });
 return module.exports;})();
-const newage=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;default:throw Error('Unavailable dependency');}};
+const realProfile=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;case "./newage-1108.cjs":return realProfile;case "./class-ids.json":return classIds;default:throw Error('Unavailable dependency');}};
+/* Independently validated 1.1 / flags 0x0800 serialized profile.
+ * The descriptor +12 word is an opaque observed tag, NOT an entity join.
+ * Only explicit owner maps join rows. No progression/history/body adjacency. */
+'use strict';
+const reviewedIds=require('./class-ids.json');
+function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
+ const fail=(code='INVALID_STRUCTURE')=>{throw Object.assign(Error('Build profile rejected safely.'),{code})};
+ if(!(input instanceof Uint8Array)||input.byteLength>134217728||!Number.isSafeInteger(deadline)||!Number.isSafeInteger(maxSteps)||maxSteps<1||maxSteps>2000000)fail('RESOURCE_LIMIT');
+ deadline=Math.min(deadline,Date.now()+30000);let steps=0;const tick=()=>{if(++steps>maxSteps)fail('RESOURCE_LIMIT');if(signal?.aborted)fail('CANCELLED');if(Date.now()>=deadline)fail('TIMEOUT')};tick();
+ const v=new DataView(input.buffer,input.byteOffset,input.byteLength),nil=0xffffffffffffffffn;
+ if(input.length<48||v.getUint32(0,true)!==0x464d534c)fail();
+ if(v.getUint32(4,true)!==0x08000101||v.getUint16(38,true)!==32||v.getBigUint64(40,true)!==0n)fail('UNSUPPORTED_PROFILE');
+ const uint=p=>{if(!Number.isSafeInteger(p)||p<0||p>input.length-8)fail();const n=v.getBigUint64(p,true);if(n>BigInt(Number.MAX_SAFE_INTEGER))fail();return Number(n)};
+ const ptr=p=>v.getBigUint64(p,true)===nil?null:uint(p);
+ const arena=uint(16),tableSize=uint(24),nameBytes=v.getUint32(32,true),count=v.getUint16(36,true);
+ if(!count||count>4096||!arena||arena>input.length-48||tableSize!==nameBytes+count*48||arena+tableSize!==input.length-48)fail();
+ const at=(offset,length)=>{tick();if(!Number.isSafeInteger(offset)||!Number.isSafeInteger(length)||offset<0||length<0||offset>arena||length>arena-offset)fail();return 48+offset};
+ const td=new TextDecoder('utf-8',{fatal:true}),components=[],byName=new Map(),spans=[],nameSpans=[];
+ for(let i=0;i<count;i++){
+  tick();const p=48+arena+nameBytes+i*48,no=uint(p),len=v.getUint32(p+8,true),tag=v.getUint32(p+12,true),size=v.getUint32(p+24,true),version=v.getUint32(p+28,true),n=uint(p+32),offset=ptr(p+40);
+  if(tag!==123)fail('UNSUPPORTED_PROFILE');
+  if(!len||len>256||no>nameBytes||len>nameBytes-no||!size||n>655360||size*n>134217728)fail();
+  let name;try{name=td.decode(input.subarray(48+arena+no,48+arena+no+len))}catch{fail()}
+  if(!/^[A-Za-z0-9_.]+$/.test(name)||byName.has(name))fail('UNSUPPORTED_PROFILE');
+  nameSpans.push([no,no+len]);if(n){if(offset===null)fail();at(offset,size*n);spans.push([offset,offset+size*n])}else if(offset!==null)at(offset,0);
+  const c={index:i,name,size,version,n,offset,owners:null};components.push(c);byName.set(name,c);
+ }
+ function noOverlap(list){list.sort((a,b)=>a[0]-b[0]);for(let i=1;i<list.length;i++){tick();if(list[i][0]<list[i-1][1])fail()}}
+ noOverlap(spans);noOverlap(nameSpans);
+ const component=(name,size)=>{const c=byName.get(name);if(c&&(c.size!==size||c.version!==Number(/\.v(\d+)\./.exec(name)[1])))fail('UNSUPPORTED_PROFILE');return c};
+ const level=component('core.v0.Level',32),ids=component('core.v0.EntityId',16);
+ if(!level||level.n!==1||!ids)fail('UNSUPPORTED_PROFILE');
+ const pair=(p,size,max)=>{const a=ptr(p),b=ptr(p+8);if(a===null||b===null){if(a!==b)fail();return {start:0,n:0}}if(b<a||(b-a)%size||(b-a)/size>max)fail();at(a,b-a);return {start:a,n:(b-a)/size}};
+ const lp=at(level.offset,32),entities=pair(lp,16,400000),maps=pair(lp+16,32,4096),unique=new Set();
+ if(!entities.n)fail();
+ for(let i=0;i<entities.n;i++){tick();const p=at(entities.start+16*i,16),key=Array.from(input.subarray(p,p+16)).join(',');if(unique.has(key))fail();unique.add(key)}
+ const metadata=[];
+ const overlaps=(a,b)=>a[0]<b[1]&&b[0]<a[1];
+ const metadataRange=(start,bytes,entityList=false)=>{if(!bytes)return;const region=[start,start+bytes];for(const span of spans)if((tick(),overlaps(region,span))){if(!(entityList&&ids.offset<=start&&region[1]<=ids.offset+16*ids.n&&(start-ids.offset)%16===0))fail()}for(const prior of metadata)if((tick(),overlaps(region,prior))&&!(region[0]===prior[0]&&region[1]===prior[1]&&prior.ownerList))fail();metadata.push(region)};
+ metadataRange(entities.start,entities.n*16,true);metadataRange(maps.start,maps.n*32);
+ const mapped=new Set();
+ for(let i=0;i<maps.n;i++){
+  const p=at(maps.start+32*i,32),ci=ptr(p+16),n=uint(p+24),refs=pair(p,4,655360);
+  // Empty buckets have exactly three sentinel words and a zero count.
+  if(ci===null){if(n!==0||ptr(p)!==null||ptr(p+8)!==null)fail();continue}
+  if(ci>=count||ci===level.index||mapped.has(ci)||n!==components[ci].n||refs.n!==n)fail();
+  if(refs.n){const region=[refs.start,refs.start+refs.n*4];region.ownerList=true;for(const span of spans)if((tick(),overlaps(region,span)))fail();for(const prior of metadata)if((tick(),overlaps(region,prior))&&!(prior.ownerList&&region[0]===prior[0]&&region[1]===prior[1]))fail();metadata.push(region)}
+  mapped.add(ci);const owners=[],seen=new Set();for(let k=0;k<n;k++){const owner=v.getUint32(at(refs.start+4*k,4),true);if(owner>=entities.n||seen.has(owner))fail();seen.add(owner);owners.push(owner)}components[ci].owners=owners;
+ }
+ // Validate relevant layouts before emitting ANY candidate. Everything else is opaque.
+ const stats=component('game.stats.v3.StatsComponent',36),character=component('game.character.v0.CharacterComponent',1),player=component('game.v0.PlayerComponent',1),currentLevel=component('game.stats.v0.LevelComponent',4),currentClasses=component('game.stats.v0.ClassesComponent',16);
+ const ownerRows=c=>{const out=new Map();for(const [row,owner]of (c?.owners||[]).entries()){tick();out.set(owner,row)}return out};
+ const statRows=ownerRows(stats),characterRows=ownerRows(character),levelRows=ownerRows(currentLevel),classRows=ownerRows(currentClasses),characters=[];
+ const guid=p=>{const order=[3,2,1,0,5,4,7,6,9,8,11,10,13,12,15,14],h=order.map(i=>input[p+i].toString(16).padStart(2,'0')).join('');return [h.slice(0,8),h.slice(8,12),h.slice(12,16),h.slice(16,20),h.slice(20)].join('-')};
+
+ for(const owner of player?.owners||[]){
+  tick();if(!statRows.has(owner)||!characterRows.has(owner))continue;
+  if(characters.length>=32)fail('RESOURCE_LIMIT');
+  const p=at(stats.offset+36*statRows.get(owner),36),observedEffective={};
+  for(const [i,a]of ['STR','DEX','CON','INT','WIS','CHA'].entries()){const n=v.getInt32(p+8+4*i,true);if(n<1||n>30)fail('UNSUPPORTED_PROFILE');observedEffective[a]=n}
+  const proficiency=v.getInt32(p+32,true);if(proficiency<2||proficiency>4)fail('UNSUPPORTED_PROFILE');
+  // Level is a separate direct current-state component, never history length/XP.
+  let detectedLevel=null;if(levelRows.has(owner)){const n=v.getInt32(at(currentLevel.offset+4*levelRows.get(owner),4),true);if(n>=1&&n<=12)detectedLevel=n}
+  let classes=null,subclassUnknown=false;
+  if(classRows.has(owner)){
+   const rows=pair(at(currentClasses.offset+16*classRows.get(owner),16),40,12),parsed=[],used=new Set();let mapped=true,total=0;
+   if(rows.n&&(rows.start<spans.at(-1)[1]||metadata.some(region=>overlaps([rows.start,rows.start+rows.n*40],region))))fail();
+   for(let i=0;i<rows.n;i++){
+    const q=at(rows.start+i*40,40),id=guid(q),sub=guid(q+16),levels=v.getInt32(q+32,true),name=reviewedIds.classes[id];
+    // ClassInfo.Level is int32; bytes +36..39 are padding, not a u64 level.
+    if(levels<1||levels>12)fail();total+=levels;
+    if(!name||used.has(name)){mapped=false;continue}used.add(name);let subclass=null;
+    if(sub!=='00000000-0000-0000-0000-000000000000'){
+     const exact=reviewedIds.subclasses[sub],minimum={Barbarian:3,Bard:3,Cleric:1,Druid:2,Fighter:3,Monk:3,Paladin:1,Ranger:3,Rogue:3,Sorcerer:1,Warlock:1,Wizard:2};
+     if(exact?.class===name&&levels>=minimum[name])subclass=exact.name;else subclassUnknown=true;
+    }
+    parsed.push({name,levels,subclass});
+   }
+   if(mapped&&parsed.length&&detectedLevel!==null&&total===detectedLevel)classes=parsed;
+  }
+  characters.push({characterId:'character-'+(characters.length+1),observedEffective,level:detectedLevel,classes,issues:['IDENTITY_UNKNOWN','PARTY_UNKNOWN','BASE_ABILITIES_UNKNOWN',classes?'CURRENT_CLASS_SPLIT_ONLY':'CLASSES_UNMAPPED',...(subclassUnknown?['SUBCLASS_UNKNOWN']:[]),'EQUIPMENT_UNKNOWN','PROGRESSION_NOT_CONFIRMED_CURRENT']});
+ }
+ tick();return {version:1,status:'decoded',profile:'lsmf-08000101-tag123',characters,ownership:'unknown',steps};
+}
+module.exports=Object.freeze({decode});
+return module.exports;})();
+const newage=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;case "./newage-1108.cjs":return realProfile;case "./class-ids.json":return classIds;default:throw Error('Unavailable dependency');}};
 /* Independently implemented LSMF envelope + exact owner-map capability.
  * Reference: NodeJSmith/bg3-newage c3372b1 (MIT), not imported/executed.
  * No names, XP joins, ownership, equipment, or side-table positional joins. */
 'use strict';
+const profile1108=require('./newage-1108.cjs');
 function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
+ if(input instanceof Uint8Array&&input.length>=48){const header=new DataView(input.buffer,input.byteOffset,48);if(header.getUint32(0,true)===0x464d534c&&header.getUint32(4,true)===0x08000101)return profile1108.decode(input,{signal,deadline,maxSteps})}
  const bad=(code='INVALID_STRUCTURE')=>{throw Object.assign(Error('Build structure could not be safely decoded.'),{code})};
  if(!(input instanceof Uint8Array)||input.byteLength>128*1024*1024)bad('RESOURCE_LIMIT');let steps=0;
  const tick=()=>{if(++steps>maxSteps)bad('RESOURCE_LIMIT');if(signal?.aborted)bad('CANCELLED');if(Date.now()>=deadline)bad('TIMEOUT')};tick();
@@ -1189,7 +1279,7 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
 }
 module.exports=Object.freeze({decode});
 return module.exports;})();
-const reader=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;default:throw Error('Unavailable dependency');}};
+const reader=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;case "./newage-1108.cjs":return realProfile;case "./class-ids.json":return classIds;default:throw Error('Unavailable dependency');}};
 /* Single aggregate 30s deadline / shared expansion budget. Globals only. */
 'use strict';
 const P=require('../experiments/lsv/parser.cjs'),R=require('../experiments/lsv/resource.cjs'),N=require('./newage.cjs');
