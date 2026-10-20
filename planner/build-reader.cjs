@@ -1,0 +1,9 @@
+/* Single aggregate 30s deadline / shared expansion budget. Globals only. */
+'use strict';
+const P=require('../experiments/lsv/parser.cjs'),R=require('../experiments/lsv/resource.cjs'),N=require('./newage.cjs');
+async function read(input,{signal,remainingMs=30000,resource=R}={}){const deadline=Date.now()+Math.min(remainingMs,30000),budget={expandedBytes:0};const check=()=>{if(signal?.aborted)throw {code:'CANCELLED'};if(Date.now()>=deadline)throw {code:'TIMEOUT'}};const options=()=>{check();return {limits:{timeoutMs:Math.max(1,deadline-Date.now())},budget,signal}};
+ try{check();if(remainingMs<1||remainingMs>30000)throw {code:'RESOURCE_LIMIT'};const pkg=await P.inspectPackage(input,options());budget.expandedBytes=pkg.entries.length*272;const bytes=await P.readMember(pkg,'Globals.lsf',options());const index=await resource.openResource(bytes,options());if(index.summary.version!==7||index.metadataFormat!==0)throw {code:'UNSUPPORTED_PROFILE'};
+ let selected=null;for(let i=0;i<index.summary.structure.nodeCount;i++){if((i&1023)===0)check();const node=index.node(i);if(node.name!=='NewAge')continue;if(node.parent!==-1)throw {code:'INVALID_STRUCTURE'};for(const a of index.attributes(i))if(a.name==='NewAge'){if(selected!==null||a.type!==25)throw {code:'INVALID_STRUCTURE'};selected=a.index}}
+ if(selected===null||typeof index.buildScratch!=='function')throw {code:'UNSUPPORTED_PROFILE'};const blob=index.buildScratch(selected);const result=N.decode(blob,{signal,deadline});check();return {...result,expandedBytes:budget.expandedBytes};
+ }catch(e){const code=Object.getOwnPropertyDescriptor(e||{},'code')?.value;return {version:1,status:['RESOURCE_LIMIT','CANCELLED','TIMEOUT','UNSUPPORTED_PROFILE'].includes(code)?code:'UNSUPPORTED_OR_MALFORMED',characters:[],ownership:'unknown'}}}
+module.exports=Object.freeze({read});

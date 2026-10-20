@@ -1,0 +1,22 @@
+[
+  [
+    "<link rel=\"stylesheet\" href=\"assets/save-preview.css\">\n<link rel=\"stylesheet\" href=\"assets/planner.css\">\n",
+    "<link rel=\"stylesheet\" href=\"assets/save-preview.css\">\n"
+  ],
+  [
+    "<div id=\"trackerView\">\n<div class=\"wrap\"><button type=\"button\" id=\"openPlanner\" class=\"smallbtn\" onclick=\"openPartyGearPlanner()\">Party &amp; Gear Planner</button></div>\n",
+    "<div id=\"trackerView\">\n"
+  ],
+  [
+    "<section id=\"companionGuide\" aria-label=\"Companion Content Guide\" hidden></section>\n<section id=\"partyGearPlanner\" aria-label=\"Party &amp; Gear Planner\" hidden></section>",
+    "<section id=\"companionGuide\" aria-label=\"Companion Content Guide\" hidden></section>"
+  ],
+  [
+    "function notifySavePreviewContext(){savePreviewView?.setContext();if(typeof notifyPlannerContext===\"function\")notifyPlannerContext()}",
+    "function notifySavePreviewContext(){savePreviewView?.setContext()}"
+  ],
+  [
+    "// Read-only Party & Gear Planner adapter. No mutation capability is passed.\nlet plannerView=null,plannerLoading=null,plannerScope='',plannerEpoch=0,plannerCatalogueRef=null,plannerCatalogueRevision=0,plannerProgressSignature='',plannerProgressRevision=0,plannerScroll={x:0,y:0};\nfunction plannerSnapshot(){\n const scope=JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,authGeneration,backendGeneration]);\n if(scope!==plannerScope){plannerScope=scope;plannerEpoch++}\n if(plannerCatalogueRef!==ITEMS){plannerCatalogueRef=ITEMS;plannerCatalogueRevision++}\n const items=ITEMS.map(x=>({key:key(x),name:x.name,act:x.act,type:x.type||\"\",rarity:x.rarity||\"\",status:activeProgressUnknown?\"unknown\":ownItem(storyRecords,key(x))?.status||\"todo\"}));\n const signature=JSON.stringify(items.map(x=>[x.key,x.status]));if(signature!==plannerProgressSignature){plannerProgressSignature=signature;plannerProgressRevision++}\n return {version:1,contextEpoch:'planner-context-'+plannerEpoch,catalogueRevision:plannerCatalogueRevision,progressRevision:plannerProgressRevision,mode:spoilerMode(),state:!embeddedComplete||!activeStoryId||activeProgressUnknown?'unavailable':currentUser&&!String(activeStoryId).startsWith('local-')?'cached':'ready',items};\n}\nfunction notifyPlannerContext(){plannerView?.setContext()}\nfunction returnFromPartyPlanner(){\n plannerView?.setOpen(false);$(\"partyGearPlanner\").hidden=true;$(\"trackerView\").hidden=false;$(\"openPlanner\")?.focus({preventScroll:true});window.scrollTo(plannerScroll.x,plannerScroll.y);\n}\nasync function openPartyGearPlanner(){\n const tracker=$(\"trackerView\"),host=$(\"partyGearPlanner\");if(!tracker||!host||tracker.hidden||plannerLoading)return;\n plannerScroll={x:window.scrollX||0,y:window.scrollY||0};tracker.hidden=true;host.hidden=false;\n if(plannerView){plannerView.setOpen(true);plannerView.focus();window.scrollTo(0,0);return}\n const message=document.createElement('p');message.textContent='Loading Party & Gear Planner\u2026';const back=document.createElement('button');back.type='button';back.textContent='Return to Tracker';back.onclick=returnFromPartyPlanner;host.replaceChildren(message,back);back.focus({preventScroll:true});\n plannerLoading=import('./assets/planner.js').then(module=>{plannerView=module.mountPlanner(host,{getSnapshot:plannerSnapshot,onReturn:returnFromPartyPlanner});plannerView.setOpen(!host.hidden);if(!host.hidden){plannerView.focus();window.scrollTo(0,0)}}).catch(()=>{message.textContent='Could not load the planner. Tracker state is unchanged. Return and try again.'}).finally(()=>{plannerLoading=null});\n}\n// End read-only planner adapter.\n// Local save evidence; explicit user selections use normal Tracker mutations.\n",
+    "// Local save evidence; explicit user selections use normal Tracker mutations.\n"
+  ]
+]

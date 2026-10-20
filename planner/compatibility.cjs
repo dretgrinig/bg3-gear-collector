@@ -1,0 +1,7 @@
+'use strict';
+const M=require('./model.cjs');
+const SLOTS=Object.freeze(['weapon','offhand','body','head','cloak','hands','feet','amulet','ring1','ring2']);
+function compatible(item,build,strategy){const prof=M.value(build.proficiencies);if(item.requires&&(!prof||!prof.includes(item.requires)))return false;if(item.slot==='weapon'){if(strategy.kind==='ranged'&&!item.ranged)return false;if(['melee','throw'].includes(strategy.kind)&&item.ranged)return false;if(strategy.kind==='unarmed')return false;if(strategy.kind==='throw'&&!item.effects.returning)return false;if(!(strategy.pact&&M.value(build.classes)?.some(c=>c.name==='Warlock'&&c.levels>=3))&&(!prof||!prof.includes(item.weaponClass)&&!prof.includes(item.weaponType)))return false}return !!item.slot}
+function validateLoadout(items,build,strategy){const keys=new Set(),slots=new Set();for(const [slot,item]of Object.entries(items)){if(!SLOTS.includes(slot)||slots.has(slot)||keys.has(item.key)||!compatible(item,build,strategy)||!(item.slot===slot||item.slot==='ring'&&['ring1','ring2'].includes(slot)))return false;slots.add(slot);keys.add(item.key)}if(items.weapon?.twoHanded&&items.offhand)return false;return true}
+function signature(loadout){const rings=['ring1','ring2'].flatMap(s=>loadout[s]?[loadout[s].key]:[]).sort();return JSON.stringify([...Object.entries(loadout).filter(([s])=>!['ring1','ring2'].includes(s)).map(([s,x])=>[s,x.key]),...rings.map((key,i)=>['ring'+(i+1),key])].sort(([a],[b])=>a.localeCompare(b)))}
+module.exports=Object.freeze({SLOTS,compatible,validateLoadout,signature});

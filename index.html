@@ -12,6 +12,7 @@
 <title>BG3 Gear Tracker</title>
 <link rel="stylesheet" href="assets/companion-guide.css">
 <link rel="stylesheet" href="assets/save-preview.css">
+<link rel="stylesheet" href="assets/planner.css">
 <style>
 :root{--bg:#0d0f11;--panel:#181b1f;--panel2:#21252a;--line:#343a40;--text:#f1f3f5;--muted:#abb2ba;--gold:#d4af37;--green:#37b24d;--red:#e8590c;--blue:#4dabf7}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b0d0f,#15181b);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -82,6 +83,7 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
 <p class=sub>Your gear. Your Story.</p>
 </div></header>
 <div id="trackerView">
+<div class="wrap"><button type="button" id="openPlanner" class="smallbtn" onclick="openPartyGearPlanner()">Party &amp; Gear Planner</button></div>
 <div class="wrap"><button type="button" id="openCompanionGuide" class="smallbtn" onclick="openCompanionContentGuide()">Companion Content Guide</button> <button type="button" id="openSavePreview" class="smallbtn" onclick="openSaveEvidencePreview()">Import from BG3 save</button></div>
 <section class="wrap dashboard" aria-label="Story, progress and filters">
 <div class=storybar id=storyBar>
@@ -186,6 +188,7 @@ if (window.location.hostname === "develop.bg3-gear-collector.pages.dev") {
 </div>
 <dialog id="savePreview" class="bg3-save-preview"></dialog>
 <section id="companionGuide" aria-label="Companion Content Guide" hidden></section>
+<section id="partyGearPlanner" aria-label="Party &amp; Gear Planner" hidden></section>
 <script>
 window.BG3_CLOUD_CONFIG = {
   supabaseUrl: "https://xpcnbloizronlbilcbxf.supabase.co",
@@ -1162,6 +1165,28 @@ function openCompanionContentGuide(){
  tracker.hidden=true;guide.hidden=false;window.scrollTo(0,0);void loadCompanionGuideView();
 }
 // End Companion Content Guide shell adapter.
+// Read-only Party & Gear Planner adapter. No mutation capability is passed.
+let plannerView=null,plannerLoading=null,plannerScope='',plannerEpoch=0,plannerCatalogueRef=null,plannerCatalogueRevision=0,plannerProgressSignature='',plannerProgressRevision=0,plannerScroll={x:0,y:0};
+function plannerSnapshot(){
+ const scope=JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,authGeneration,backendGeneration]);
+ if(scope!==plannerScope){plannerScope=scope;plannerEpoch++}
+ if(plannerCatalogueRef!==ITEMS){plannerCatalogueRef=ITEMS;plannerCatalogueRevision++}
+ const items=ITEMS.map(x=>({key:key(x),name:x.name,act:x.act,type:x.type||"",rarity:x.rarity||"",status:activeProgressUnknown?"unknown":ownItem(storyRecords,key(x))?.status||"todo"}));
+ const signature=JSON.stringify(items.map(x=>[x.key,x.status]));if(signature!==plannerProgressSignature){plannerProgressSignature=signature;plannerProgressRevision++}
+ return {version:1,contextEpoch:'planner-context-'+plannerEpoch,catalogueRevision:plannerCatalogueRevision,progressRevision:plannerProgressRevision,mode:spoilerMode(),state:!embeddedComplete||!activeStoryId||activeProgressUnknown?'unavailable':currentUser&&!String(activeStoryId).startsWith('local-')?'cached':'ready',items};
+}
+function notifyPlannerContext(){plannerView?.setContext()}
+function returnFromPartyPlanner(){
+ plannerView?.setOpen(false);$("partyGearPlanner").hidden=true;$("trackerView").hidden=false;$("openPlanner")?.focus({preventScroll:true});window.scrollTo(plannerScroll.x,plannerScroll.y);
+}
+async function openPartyGearPlanner(){
+ const tracker=$("trackerView"),host=$("partyGearPlanner");if(!tracker||!host||tracker.hidden||plannerLoading)return;
+ plannerScroll={x:window.scrollX||0,y:window.scrollY||0};tracker.hidden=true;host.hidden=false;
+ if(plannerView){plannerView.setOpen(true);plannerView.focus();window.scrollTo(0,0);return}
+ const message=document.createElement('p');message.textContent='Loading Party & Gear Planner…';const back=document.createElement('button');back.type='button';back.textContent='Return to Tracker';back.onclick=returnFromPartyPlanner;host.replaceChildren(message,back);back.focus({preventScroll:true});
+ plannerLoading=import('./assets/planner.js').then(module=>{plannerView=module.mountPlanner(host,{getSnapshot:plannerSnapshot,onReturn:returnFromPartyPlanner});plannerView.setOpen(!host.hidden);if(!host.hidden){plannerView.focus();window.scrollTo(0,0)}}).catch(()=>{message.textContent='Could not load the planner. Tracker state is unchanged. Return and try again.'}).finally(()=>{plannerLoading=null});
+}
+// End read-only planner adapter.
 // Local save evidence; explicit user selections use normal Tracker mutations.
 let savePreviewView=null,savePreviewLoading=null,savePreviewLoadAttempt=0,savePreviewCatalogueVersion=0,savePreviewCatalogueRef=null;
 function savePreviewContext(){if(savePreviewCatalogueRef!==ITEMS){savePreviewCatalogueRef=ITEMS;savePreviewCatalogueVersion++}return {identity:JSON.stringify([spoilerScope(),currentUser?.id||null,activeStoryId,authGeneration,backendGeneration,savePreviewCatalogueVersion]),mode:spoilerMode()}}
@@ -1198,7 +1223,7 @@ function savePreviewApply(plan){
  const memory=progressMemory.get(progressMemoryKey(activeStoryId));
  return {applied,already,failed,durable:memory?.durable===true};
 }
-function notifySavePreviewContext(){savePreviewView?.setContext()}
+function notifySavePreviewContext(){savePreviewView?.setContext();if(typeof notifyPlannerContext==="function")notifyPlannerContext()}
 function savePreviewCatalogue(){
  if(!embeddedComplete||ITEMS.length!==555)throw {code:"CATALOGUE_NOT_READY"};
  return JSON.stringify(ITEMS.map(x=>({act:x.act,name:x.name,gameIds:x.gameIds})));
