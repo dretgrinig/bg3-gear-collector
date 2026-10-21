@@ -2,7 +2,7 @@
  * The descriptor +12 word is an opaque observed tag, NOT an entity join.
  * Only explicit owner maps join rows. No progression/history/body adjacency. */
 'use strict';
-const reviewedIds=require('./class-ids.json');
+const reviewedIds=require('./class-ids.json'),reviewedOrigins=require('./origin-ids.json');
 function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
  const fail=(code='INVALID_STRUCTURE')=>{throw Object.assign(Error('Build profile rejected safely.'),{code})};
  if(!(input instanceof Uint8Array)||input.byteLength>134217728||!Number.isSafeInteger(deadline)||!Number.isSafeInteger(maxSteps)||maxSteps<1||maxSteps>2000000)fail('RESOURCE_LIMIT');
@@ -50,6 +50,8 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
  // Validate relevant layouts before emitting ANY candidate. Everything else is opaque.
  const stats=component('game.stats.v3.StatsComponent',36),character=component('game.character.v0.CharacterComponent',1),player=component('game.v0.PlayerComponent',1),currentLevel=component('game.stats.v0.LevelComponent',4),currentClasses=component('game.stats.v0.ClassesComponent',16);
  const ownerRows=c=>{const out=new Map();for(const [row,owner]of (c?.owners||[]).entries()){tick();out.set(owner,row)}return out};
+ const origin=component('game.character_creation.v0.OriginComponent',16),custom=component('game.character_creation.v0.IsCustomComponent',1),avatar=component('game.avatar.v0.AvatarComponent',16);
+ const originRows=ownerRows(origin),customRows=ownerRows(custom),avatarRows=ownerRows(avatar);
  const statRows=ownerRows(stats),characterRows=ownerRows(character),levelRows=ownerRows(currentLevel),classRows=ownerRows(currentClasses),characters=[];
  const guid=p=>{const order=[3,2,1,0,5,4,7,6,9,8,11,10,13,12,15,14],h=order.map(i=>input[p+i].toString(16).padStart(2,'0')).join('');return [h.slice(0,8),h.slice(8,12),h.slice(12,16),h.slice(16,20),h.slice(20)].join('-')};
 
@@ -78,8 +80,11 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
    }
    if(mapped&&parsed.length&&detectedLevel!==null&&total===detectedLevel)classes=parsed;
   }
-  characters.push({characterId:'character-'+(characters.length+1),observedEffective,level:detectedLevel,classes,issues:['IDENTITY_UNKNOWN','PARTY_UNKNOWN','BASE_ABILITIES_UNKNOWN',classes?'CURRENT_CLASS_SPLIT_ONLY':'CLASSES_UNMAPPED',...(subclassUnknown?['SUBCLASS_UNKNOWN']:[]),'EQUIPMENT_UNKNOWN','PROGRESSION_NOT_CONFIRMED_CURRENT']});
+  let identity=null;if(originRows.has(owner)){const id=guid(at(origin.offset+16*originRows.get(owner),16)),exact=reviewedOrigins.origins[id];if(exact){if(exact.kind==='custom'){if(customRows.has(owner)&&avatarRows.has(owner))identity={...exact}}else if(exact.kind==='origin'||!customRows.has(owner))identity={...exact}}}
+  characters.push({...(origin?{identity}:{}),characterId:'character-'+(characters.length+1),observedEffective,level:detectedLevel,classes,issues:[...(identity?[]:['IDENTITY_UNKNOWN']),'PARTY_UNKNOWN','BASE_ABILITIES_UNKNOWN',classes?'CURRENT_CLASS_SPLIT_ONLY':'CLASSES_UNMAPPED',...(subclassUnknown?['SUBCLASS_UNKNOWN']:[]),'EQUIPMENT_UNKNOWN','PROGRESSION_NOT_CONFIRMED_CURRENT']});
  }
+ // Repeated public identity across different current candidates is ambiguous.
+ const occurrences=new Map();for(const c of characters){tick();if(c.identity)occurrences.set(c.identity.key,(occurrences.get(c.identity.key)||0)+1)}for(const c of characters){tick();if(c.identity&&occurrences.get(c.identity.key)>1){c.identity=null;c.issues.unshift('AMBIGUOUS_IDENTITY','IDENTITY_UNKNOWN')}}
  tick();return {version:1,status:'decoded',profile:'lsmf-08000101-tag123',characters,ownership:'unknown',steps};
 }
 module.exports=Object.freeze({decode});

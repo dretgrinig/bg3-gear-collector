@@ -34,7 +34,7 @@ narrow private ScratchBuffer capability from the same validated generic resource
 source; that capability checks exact node/attribute/type and is not exported to
 UI. Its generation boundary is checked and permanently tested.
 
-Independent LSMF v1 envelope reader: relative base 48; component table records 48;
+Reference-profile LSMF v1 envelope reader: relative base 48; component table records 48;
 core.v0.Level version 0 / 32 bytes; owner map records 32 / indices u32; reviewed
 Stats v3 version 0 / 36 bytes; progression v3 version 0 / 16 bytes; level-up data
 v3 version 0 / 96 bytes. Table/range/count/overlap/duplicate/reference validation
@@ -46,7 +46,7 @@ failure. Unknown/missing/unsupported profile => manual completion.
 
 The reference profile promotes **observed effective abilities** only. The separately
 validated 1.1 profile below also promotes direct current level and exact reviewed
-current class/subclass totals. Identity, active party, class order, feats/ASIs, base abilities,
+current class/subclass totals. The exact origin extension below separately permits reviewed identity. Active party, class order, feats/ASIs, base abilities,
 proficiencies, prepared spells, invocations/styles/metamagic/manoeuvres, permanent
 passives, holder/slot/equipment and ownership remain Unknown/manual. Public GUID
 mappings and respec/current-progression semantics are not independently proven;
@@ -378,3 +378,24 @@ highest available class casting modifier for attack and damage, and never grant
 it to the other hand. A sole noncasting Fighter/Rogue uses the explicit casting
 ability assumption because origin/default ability is not inferred.
 [Reviewed passive](https://bg3.wiki/wiki/Melee_Caster).
+
+## Exact origin identity extension
+
+The strict 1.1 profile now permits one additional field: an explicitly allowlisted
+origin definition attached through the **same validated owner** as Player,
+Character and Stats. See [the proof and remaining boundaries](planner-identity-equipment.md).
+This supersedes earlier checkpoint statements that every candidate is anonymous;
+the reference profile still emits anonymous observations only. Build fields,
+current-party uncertainty, equipment uncertainty and all resource ceilings stay
+as described above. Neither class defaults nor inferred body/stats adjacency
+participate in identity resolution.
+
+Identity stays session-local in the existing BuildSnapshot detected/override
+field. The existing explicit Act roster gates candidate headings, selected party,
+editor values and conflict labels before DOM/accessibility output. Dark Urge is
+shown only after an Act reveal in Full. Counts/order do not depend on concealed
+identity. Clear/replacement/context invalidation clears detections; manual
+corrections remain. Candidates may be explicitly used or ignored; no automatic
+party is constructed. The Full-only equipped panel distinguishes all twelve
+melee/ranged/accessory slots while leaving unproven slots Unknown. It does not
+create equipment locks, claim ownership or mutate Tracker progress.
