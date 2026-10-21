@@ -83,8 +83,8 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
   let identity=null;if(originRows.has(owner)){const id=guid(at(origin.offset+16*originRows.get(owner),16)),exact=reviewedOrigins.origins[id];if(exact){if(exact.kind==='custom'){if(customRows.has(owner)&&avatarRows.has(owner))identity={...exact}}else if(exact.kind==='origin'||!customRows.has(owner))identity={...exact}}}
   characters.push({...(origin?{identity}:{}),characterId:'character-'+(characters.length+1),observedEffective,level:detectedLevel,classes,issues:[...(identity?[]:['IDENTITY_UNKNOWN']),'PARTY_UNKNOWN','BASE_ABILITIES_UNKNOWN',classes?'CURRENT_CLASS_SPLIT_ONLY':'CLASSES_UNMAPPED',...(subclassUnknown?['SUBCLASS_UNKNOWN']:[]),'EQUIPMENT_UNKNOWN','PROGRESSION_NOT_CONFIRMED_CURRENT']});
  }
- // Repeated public identity across different current candidates is ambiguous.
- const occurrences=new Map();for(const c of characters){tick();if(c.identity)occurrences.set(c.identity.key,(occurrences.get(c.identity.key)||0)+1)}for(const c of characters){tick();if(c.identity&&occurrences.get(c.identity.key)>1){c.identity=null;c.issues.unshift('AMBIGUOUS_IDENTITY','IDENTITY_UNKNOWN')}}
+ // A named origin must be unique; Custom is a reusable category, not a person.
+ const occurrences=new Map();for(const c of characters){tick();if(c.identity&&c.identity.kind!=='custom')occurrences.set(c.identity.key,(occurrences.get(c.identity.key)||0)+1)}for(const c of characters){tick();if(c.identity&&occurrences.get(c.identity.key)>1){c.identity=null;c.issues.unshift('AMBIGUOUS_IDENTITY','IDENTITY_UNKNOWN')}}
  tick();return {version:1,status:'decoded',profile:'lsmf-08000101-tag123',characters,ownership:'unknown',steps};
 }
 module.exports=Object.freeze({decode});

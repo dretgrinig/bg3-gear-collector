@@ -13,9 +13,11 @@ private save identifiers. The GUID byte order matches the engine's explicit
 Custom additionally requires the same owner's IsCustom v0 tag and Avatar v0
 component. An unknown origin never defaults to Custom, Tav, a companion or a
 hireling. Dark Urge uses its separate exact definition. A contradictory custom
-marker on a companion is withheld. A repeated mapped identity on different
+marker on a companion is withheld. A repeated named companion/origin on different
 current candidates is ambiguous for both; there is no first-row tie break.
-Non-player/history origin records cannot create or name candidates. Directory
+Custom is a category and may repeat across separately proven current avatars;
+opaque candidate identities remain distinct. Non-player/history origin records
+cannot create or name candidates. Directory
 reordering, class changes and build similarity do not affect identity.
 
 Primary implementation references:
@@ -112,7 +114,8 @@ identity/provenance immediately. Fixed origin keys only cross the Worker boundar
 never raw save IDs or user character names. UI applies the existing shared Act
 roster before headings, labels, ARIA, selects, party/conflict names and unknown
 counts. Concealed identities retain neutral candidate positions/counts. Custom
-uses a neutral public label; Dark Urge additionally requires Full. Ignore removes
+uses a neutral public label; Dark Urge additionally requires Full, including manually selected origin labels
+after a stricter-mode transition. Ignore removes
 only the chosen session candidate and moves focus to a surviving control.
 
 All payloads stay inside the single-use bounded save Worker. No save is uploaded,
