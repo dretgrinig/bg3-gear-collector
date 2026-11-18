@@ -188,12 +188,16 @@ values or identifiers are recorded here. Source fingerprint/stat stayed unchange
 
 The 48-byte header must have exact profile `0x08000101`, marker 32, reserved tail
 zero, and exact arena/table/name accounting. Name length is u32; the following
-u32 is constrained to the observed opaque tag 123, never used as an entity count
-or identity. Interpreted components have exact names, versions and strides:
+u32 is constrained to one uniform observed opaque tag, either 123 or 63, never
+used as an entity count or identity. Each variant has a separate reported profile
+ID and passes the same full validator; see
+[the compatibility audit](planner-profile63.md). Interpreted components have exact
+names, versions and strides:
 Level 0/32, EntityId 0/16, Character 0/1, Player 0/1, Stats 3/36, direct Level
 0/4, Classes 0/16. Unknown component contents/versions remain opaque and cannot
 supply fields.
-A different tag/profile/layout stays unsupported; there is no profile bypass.
+Any other tag, mixed tags or unsupported interpreted layout stays rejected; there
+is no profile bypass.
 
 The complete directory and owner-map envelope are checked before output: finite
 counts/ranges, array/name overlap, unique names/entities, unique component maps,

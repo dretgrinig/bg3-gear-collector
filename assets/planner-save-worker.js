@@ -1158,7 +1158,8 @@ return Object.freeze({openResource,STRUCTURAL_LIMITS:STRUCTURAL_CAPS});
 });
 return module.exports;})();
 const realProfile=(()=>{const module={exports:{}};const exports=module.exports;const require=p=>{switch(p){case "./zstd-bounded.cjs":return zstd;case "./parser.cjs":return parser;case "./lz4-frame-bounded.cjs":return lz4;case "../experiments/lsv/parser.cjs":return parser;case "../experiments/lsv/resource.cjs":return resource;case "./newage.cjs":return newage;case "./newage-1108.cjs":return realProfile;case "./class-ids.json":return classIds;case "./origin-ids.json":return originIds;default:throw Error('Unavailable dependency');}};
-/* Independently validated 1.1 / flags 0x0800 serialized profile.
+/* Independently validated 1.1 / flags 0x0800 serialized profiles.
+ * Only uniform descriptor tags 123 and 63 are supported, with the same validator.
  * The descriptor +12 word is an opaque observed tag, NOT an entity join.
  * Only explicit owner maps join rows. No progression/history/body adjacency. */
 'use strict';
@@ -1175,10 +1176,11 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
  const arena=uint(16),tableSize=uint(24),nameBytes=v.getUint32(32,true),count=v.getUint16(36,true);
  if(!count||count>4096||!arena||arena>input.length-48||tableSize!==nameBytes+count*48||arena+tableSize!==input.length-48)fail();
  const at=(offset,length)=>{tick();if(!Number.isSafeInteger(offset)||!Number.isSafeInteger(length)||offset<0||length<0||offset>arena||length>arena-offset)fail();return 48+offset};
- const td=new TextDecoder('utf-8',{fatal:true}),components=[],byName=new Map(),spans=[],nameSpans=[];
+ const td=new TextDecoder('utf-8',{fatal:true}),components=[],byName=new Map(),spans=[],nameSpans=[];let descriptorTag=null;
  for(let i=0;i<count;i++){
   tick();const p=48+arena+nameBytes+i*48,no=uint(p),len=v.getUint32(p+8,true),tag=v.getUint32(p+12,true),size=v.getUint32(p+24,true),version=v.getUint32(p+28,true),n=uint(p+32),offset=ptr(p+40);
-  if(tag!==123)fail('UNSUPPORTED_PROFILE');
+  if(i===0){if(tag!==123&&tag!==63)fail('UNSUPPORTED_PROFILE');descriptorTag=tag}
+  if(tag!==descriptorTag)fail('UNSUPPORTED_PROFILE');
   if(!len||len>256||no>nameBytes||len>nameBytes-no||!size||n>655360||size*n>134217728)fail();
   let name;try{name=td.decode(input.subarray(48+arena+no,48+arena+no+len))}catch{fail()}
   if(!/^[A-Za-z0-9_.]+$/.test(name)||byName.has(name))fail('UNSUPPORTED_PROFILE');
@@ -1245,7 +1247,7 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
  }
  // A named origin must be unique; Custom is a reusable category, not a person.
  const occurrences=new Map();for(const c of characters){tick();if(c.identity&&c.identity.kind!=='custom')occurrences.set(c.identity.key,(occurrences.get(c.identity.key)||0)+1)}for(const c of characters){tick();if(c.identity&&occurrences.get(c.identity.key)>1){c.identity=null;c.issues.unshift('AMBIGUOUS_IDENTITY','IDENTITY_UNKNOWN')}}
- tick();return {version:1,status:'decoded',profile:'lsmf-08000101-tag123',characters,ownership:'unknown',steps};
+ tick();return {version:1,status:'decoded',profile:descriptorTag===123?'lsmf-08000101-tag123':'lsmf-08000101-tag63',characters,ownership:'unknown',steps};
 }
 module.exports=Object.freeze({decode});
 return module.exports;})();

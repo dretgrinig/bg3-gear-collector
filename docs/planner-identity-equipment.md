@@ -2,7 +2,9 @@
 
 ## Shipped proof
 
-The existing strict `lsmf-08000101-tag123` decoder validates all directory, fixed
+The strict `lsmf-08000101-tag123` and `lsmf-08000101-tag63` profiles share the
+[same independently checked layout validator](planner-profile63.md). It validates
+all directory, fixed
 array, owner map, overlap and duplicate invariants first. On an eligible current
 Player + Character + Stats owner, Origin v0 must be exactly 16 bytes and its GUID
 must be an exact member of `planner/origin-ids.json`. That finite map contains the
