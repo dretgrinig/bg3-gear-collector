@@ -1217,6 +1217,45 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
  const statRows=ownerRows(stats),characterRows=ownerRows(character),levelRows=ownerRows(currentLevel),classRows=ownerRows(currentClasses),characters=[];
  const guid=p=>{const order=[3,2,1,0,5,4,7,6,9,8,11,10,13,12,15,14],h=order.map(i=>input[p+i].toString(16).padStart(2,'0')).join('');return [h.slice(0,8),h.slice(8,12),h.slice(12,16),h.slice(16,20),h.slice(20)].join('-')};
 
+ // Current-state evidence is deliberately limited to the controlled 63 profile.
+ // All work uses this decoder's existing counter/deadline/cancellation closure.
+ function currentEvidence(){
+  const roleSpec=[['game.party.v0.MemberComponent',48],['game.party.v0.CompositionComponent',32],['game.party.v0.ViewComponent',1],['game.recruit.v0.RecruitedByComponent',8],['game.camp.v1.PresenceComponent',1]];
+  if(descriptorTag!==63||roleSpec.some(([name])=>!byName.has(name)))return null;
+  const [member,composition,view,recruit,camp]=roleSpec.map(([name,size])=>component(name,size));
+  if([member,composition,view,recruit,camp].some(c=>c.owners===null)||composition.owners.length!==1||view.owners.length!==1||composition.owners[0]!==view.owners[0])return null;
+  const partyOwner=composition.owners[0],mr=ownerRows(member),rr=ownerRows(recruit),cr=ownerRows(camp),players=new Set(player?.owners||[]),entityOwners=new Map();
+  for(let i=0;i<entities.n;i++){tick();const p=at(entities.start+i*16,16);entityOwners.set(Array.from(input.subarray(p,p+16)).join(','),i)}
+  const entityRef=p=>{const offset=ptr(p);if(offset===null)return null;if(offset<ids.offset||offset>=ids.offset+ids.n*16||(offset-ids.offset)%16)fail();const q=at(offset,16),owner=entityOwners.get(Array.from(input.subarray(q,q+16)).join(','));if(owner===undefined)fail();return owner};
+  const identities=new Map();for(const [owner,row]of originRows){tick();if(!statRows.has(owner)||!characterRows.has(owner))continue;const exact=reviewedOrigins.origins[guid(at(origin.offset+row*16,16))];if(exact?.kind==='custom'){if(customRows.has(owner)&&avatarRows.has(owner))identities.set(owner,{...exact})}else if(exact?.kind==='companion'&&!customRows.has(owner))identities.set(owner,{...exact})}
+  const memberTarget=owner=>mr.has(owner)?entityRef(at(member.offset+mr.get(owner)*48,48)+16):null;
+  const anchors=[];for(const [owner,id]of identities){tick();if(id.kind==='custom'&&players.has(owner)&&memberTarget(owner)===partyOwner)anchors.push(owner)}
+  if(anchors.length!==1)return null;const anchor=anchors[0],roles=new Map([[anchor,'active']]);
+  for(const [owner,id]of identities){tick();if(id.kind!=='companion'||!rr.has(owner)||entityRef(at(recruit.offset+rr.get(owner)*8,8))!==anchor)continue;if(players.has(owner)&&memberTarget(owner)===partyOwner)roles.set(owner,'active');else if(!players.has(owner)&&!mr.has(owner)&&cr.has(owner))roles.set(owner,'benched')}
+  const body=new Map(),bodySpec=[['game.inventory.v0.MemberData',16],['game.inventory.v0.MemberComponent',8],['game.inventory.v1.IsOwnedComponent',8],['game.inventory.v0.WieldingComponent',8],['game.inventory.v0.OwnerComponent',24],['game.inventory.v4.DataComponent',16],['game.inventory.v3.Type',8],['game.item.v0.ItemComponent',1]];
+  if(bodySpec.some(([name])=>!byName.has(name)))return {roles,identities,body};
+  const [data,members,owned,wielding,owners,inventoryData,inventoryType,items]=bodySpec.map(([name,size])=>component(name,size));
+  if([members,owned,wielding,owners,inventoryData,items].some(c=>c.owners===null))return {roles,identities,body};
+  const ownedRows=ownerRows(owned),memberRows=ownerRows(members),wieldRows=ownerRows(wielding),ownerInventoryRows=ownerRows(owners),dataRows=ownerRows(inventoryData),itemRows=ownerRows(items),inventoryHolder=new Map(),membership=new Map(),membersByInventory=new Map(),wielder=new Map(),heldByCharacter=new Map();
+  for(const [inv,row]of ownedRows){tick();const holder=entityRef(at(owned.offset+row*8,8));if(holder===null)fail();inventoryHolder.set(inv,holder)}
+  for(const [item,row]of memberRows){tick();const offset=ptr(at(members.offset+row*8,8));if(offset===null||offset<data.offset||offset>=data.offset+data.n*16||(offset-data.offset)%16)fail();const p=at(offset,16),inv=entityRef(p),slot=v.getInt16(p+8,true);if(inv===null)fail();const m={item,inv,slot};membership.set(item,m);if(!membersByInventory.has(inv))membersByInventory.set(inv,[]);membersByInventory.get(inv).push(m)}
+  for(const [item,row]of wieldRows){tick();const holder=entityRef(at(wielding.offset+row*8,8));if(holder===null)fail();wielder.set(item,holder);if(!heldByCharacter.has(holder))heldByCharacter.set(holder,[]);heldByCharacter.get(holder).push(item)}
+  const typeOf=inv=>{if(!dataRows.has(inv))return null;const p=at(inventoryData.offset+dataRows.get(inv)*16,16),offset=ptr(p);if(offset===null||offset<inventoryType.offset||offset>=inventoryType.offset+inventoryType.n*8||(offset-inventoryType.offset)%8)fail();const type=uint(at(offset,8));return type<=6?type:null};
+  for(const [owner,role]of roles){tick();if(role!=='active'||!ownerInventoryRows.has(owner))continue;const p=at(owners.offset+ownerInventoryRows.get(owner)*24,24),list=pair(p,8,655360);if(list.n>64)fail('RESOURCE_LIMIT');if(!list.n)continue;const region=[list.start,list.start+list.n*8];for(const span of spans){tick();if(overlaps(region,span))fail()}for(const prior of metadata){tick();if(overlaps(region,prior))fail()}metadata.push(region);
+   const primary=entityRef(p+16),inventories=new Set(),equipment=[];let valid=true;
+   for(let i=0;i<list.n;i++){const inv=entityRef(at(list.start+i*8,8));if(inv===null||inventories.has(inv))fail();inventories.add(inv);if(inventoryHolder.get(inv)!==owner)valid=false;if(typeOf(inv)===1)equipment.push(inv)}
+   if(!valid||primary===null||!inventories.has(primary)||typeOf(primary)!==0||equipment.length!==1)continue;const equipmentInventory=equipment[0],entries=membersByInventory.get(equipmentInventory)||[];
+   // A carried item with slot number 1 is not body equipment. The inventory's
+   // explicit type, exact holder and Wielding edge must all agree.
+   if(entries.some(m=>{tick();return m.slot<0||m.slot>20||!itemRows.has(m.item)}))continue;
+   if((heldByCharacter.get(owner)||[]).some(item=>{tick();const m=membership.get(item);return !m||m.inv!==equipmentInventory||m.slot<0||m.slot>20||!itemRows.has(item)}))continue;
+   const occupants=entries.filter(m=>{tick();return m.slot===1});
+   if(!occupants.length)body.set(owner,'empty');else if(occupants.length===1&&wielder.get(occupants[0].item)===owner)body.set(owner,'occupied-unknown');
+  }
+  return {roles,identities,body};
+ }
+ const current=currentEvidence(),characterOwners=[];
+
  for(const owner of player?.owners||[]){
   tick();if(!statRows.has(owner)||!characterRows.has(owner))continue;
   if(characters.length>=32)fail('RESOURCE_LIMIT');
@@ -1243,10 +1282,12 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
    if(mapped&&parsed.length&&detectedLevel!==null&&total===detectedLevel)classes=parsed;
   }
   let identity=null;if(originRows.has(owner)){const id=guid(at(origin.offset+16*originRows.get(owner),16)),exact=reviewedOrigins.origins[id];if(exact){if(exact.kind==='custom'){if(customRows.has(owner)&&avatarRows.has(owner))identity={...exact}}else if(exact.kind==='origin'||!customRows.has(owner))identity={...exact}}}
-  characters.push({...(origin?{identity}:{}),characterId:'character-'+(characters.length+1),observedEffective,level:detectedLevel,classes,issues:[...(identity?[]:['IDENTITY_UNKNOWN']),'PARTY_UNKNOWN','BASE_ABILITIES_UNKNOWN',classes?'CURRENT_CLASS_SPLIT_ONLY':'CLASSES_UNMAPPED',...(subclassUnknown?['SUBCLASS_UNKNOWN']:[]),'EQUIPMENT_UNKNOWN','PROGRESSION_NOT_CONFIRMED_CURRENT']});
+  characterOwners.push(owner);characters.push({...(origin?{identity}:{}),characterId:'character-'+(characters.length+1),observedEffective,level:detectedLevel,classes,issues:[...(identity?[]:['IDENTITY_UNKNOWN']),'PARTY_UNKNOWN','BASE_ABILITIES_UNKNOWN',classes?'CURRENT_CLASS_SPLIT_ONLY':'CLASSES_UNMAPPED',...(subclassUnknown?['SUBCLASS_UNKNOWN']:[]),'EQUIPMENT_UNKNOWN','PROGRESSION_NOT_CONFIRMED_CURRENT']});
  }
+ for(const [owner,role]of current?.roles||[]){if(role!=='benched')continue;tick();if(characters.length>=32)fail('RESOURCE_LIMIT');characterOwners.push(owner);characters.push({identity:current.identities.get(owner),characterId:'character-'+(characters.length+1),observedEffective:null,level:null,classes:null,issues:['PARTY_UNKNOWN','BASE_ABILITIES_UNKNOWN','BUILD_AT_CAMP_UNREVIEWED','CLASSES_UNMAPPED','EQUIPMENT_UNKNOWN','PROGRESSION_NOT_CONFIRMED_CURRENT']})}
  // A named origin must be unique; Custom is a reusable category, not a person.
  const occurrences=new Map();for(const c of characters){tick();if(c.identity&&c.identity.kind!=='custom')occurrences.set(c.identity.key,(occurrences.get(c.identity.key)||0)+1)}for(const c of characters){tick();if(c.identity&&occurrences.get(c.identity.key)>1){c.identity=null;c.issues.unshift('AMBIGUOUS_IDENTITY','IDENTITY_UNKNOWN')}}
+ if(current)for(let i=0;i<characters.length;i++){tick();const c=characters[i],owner=characterOwners[i],role=current.roles.get(owner);if(!c.identity||!role)continue;c.party=role;c.issues=c.issues.filter(x=>x!=='PARTY_UNKNOWN');c.issues.push(role==='active'?'PARTY_ACTIVE':'PARTY_BENCHED');if(current.body.has(owner)){c.equipment=[{slot:'body',state:current.body.get(owner)}];c.issues.push(current.body.get(owner)==='empty'?'BODY_SLOT_EMPTY':'BODY_SLOT_OCCUPIED_UNMAPPED')}}
  tick();return {version:1,status:'decoded',profile:descriptorTag===123?'lsmf-08000101-tag123':'lsmf-08000101-tag63',characters,ownership:'unknown',steps};
 }
 module.exports=Object.freeze({decode});
