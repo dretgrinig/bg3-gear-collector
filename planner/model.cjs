@@ -1,6 +1,6 @@
 /* Closed session DTOs. No I/O, persistence, ownership or progress mutation. */
 'use strict';
-const catalogueKeys=new Map(require('./gear-data.json').items.map(x=>[x.key,x.slot]));
+const slotRules=require('./equipment-slots.cjs');
 const CLASSES=Object.freeze({
  Barbarian:['Berserker','Giant','Wild Magic','Wildheart'],Bard:['College of Glamour','College of Lore','College of Swords','College of Valour'],Cleric:['Death Domain','Knowledge Domain','Life Domain','Light Domain','Nature Domain','Tempest Domain','Trickery Domain','War Domain'],Druid:['Circle of the Land','Circle of the Moon','Circle of the Spores','Circle of the Stars'],Fighter:['Arcane Archer','Battle Master','Champion','Eldritch Knight'],Monk:['Way of the Drunken Master','Way of the Four Elements','Way of the Open Hand','Way of Shadow'],Paladin:['Oath of the Ancients','Oath of Devotion','Oath of Vengeance','Oath of the Crown','Oathbreaker'],Ranger:['Beast Master','Gloom Stalker','Hunter','Swarmkeeper'],Rogue:['Arcane Trickster','Assassin','Swashbuckler','Thief'],Sorcerer:['Draconic Bloodline','Shadow Magic','Storm Sorcery','Wild Magic'],Warlock:['The Archfey','The Fiend','The Great Old One','The Hexblade'],Wizard:['Abjuration','Bladesinging','Conjuration','Divination','Enchantment','Evocation','Illusion','Necromancy','Transmutation']});
 const SUBCLASS_LEVEL=Object.freeze({Barbarian:3,Bard:3,Cleric:1,Druid:2,Fighter:3,Monk:3,Paladin:1,Ranger:3,Rogue:3,Sorcerer:1,Warlock:1,Wizard:2});
@@ -22,7 +22,7 @@ function validateBuild(raw){const b=clean(raw);if(!Object.hasOwn(b,'party'))b.pa
  for(const k of ['feats','choices','proficiencies','spells','passives','equipment']){const v=value(b[k]);if(v!==null&&(!Array.isArray(v)||v.length>128))fail()}
  return b;
 }
-function validateBodyEvidence(entries){if(!Array.isArray(entries)||!entries.length||entries.length>4)fail();const slots=new Set();for(const e of entries){closed(e,['slot','state','key']);if(!['body','weapon','ring1','ring2'].includes(e.slot)||slots.has(e.slot))fail();slots.add(e.slot);if(e.state==='detected'){if(catalogueKeys.get(e.key)!==(e.slot==='ring1'||e.slot==='ring2'?'ring':e.slot))fail()}else if(!['empty','occupied-unknown'].includes(e.state)||Object.hasOwn(e,'key')||e.state==='empty'&&e.slot!=='body')fail()}}
+function validateBodyEvidence(entries){if(!Array.isArray(entries)||!entries.length||entries.length>slotRules.reviewed.length)fail();const slots=new Set();for(const e of entries){closed(e,['slot','state','key']);if(!slotRules.reviewed.some(([,name])=>name===e.slot)||slots.has(e.slot))fail();slots.add(e.slot);if(e.state==='detected'){if(!slotRules.compatible(e.key,e.slot))fail()}else if(!['empty','occupied-unknown'].includes(e.state)||Object.hasOwn(e,'key')||e.state==='empty'&&e.slot!=='body')fail()}}
 function validateField(f){closed(f,['detected','override','source','completeness','evidenceRefs','issueCodes']);if(!['detected','confirmed','manual','calculated','unknown'].includes(f.source)||!['complete','partial','unknown'].includes(f.completeness)||!Array.isArray(f.evidenceRefs)||!Array.isArray(f.issueCodes))fail();if(f.evidenceRefs.some(x=>!/^evidence-\d+$/.test(x))||f.issueCodes.some(x=>!/^[_A-Z0-9]+$/.test(x)))fail()}
 // Only the reviewed reader capability can populate these fields. Manual
 // overrides survive reread/clear; unsupported fields cannot enter the DTO here.

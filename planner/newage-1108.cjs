@@ -3,7 +3,7 @@
  * The descriptor +12 word is an opaque observed tag, NOT an entity join.
  * Only explicit owner maps join rows. No progression/history/body adjacency. */
 'use strict';
-const binding=require('./gear-binding.cjs');
+const binding=require('./gear-binding.cjs'),slotRules=require('./equipment-slots.cjs');
 const reviewedIds=require('./class-ids.json'),reviewedOrigins=require('./origin-ids.json');
 function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000,resourceIndex=null}={}){
  const fail=(code='INVALID_STRUCTURE')=>{throw Object.assign(Error('Build profile rejected safely.'),{code})};
@@ -94,7 +94,7 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000,resourc
    if((heldByCharacter.get(owner)||[]).some(item=>{tick();const m=membership.get(item);return !m||m.inv!==equipmentInventory||m.slot<0||m.slot>20||!itemRows.has(item)}))continue;
    const occupants=entries.filter(m=>{tick();return m.slot===1});
    if(!occupants.length)body.set(owner,'empty');else if(occupants.length===1&&wielder.get(occupants[0].item)===owner)body.set(owner,'occupied-unknown');
-   const found=[];for(const [number,slot]of [[1,'body'],[3,'weapon'],[7,'ring1'],[12,'ring2']]){const current=entries.filter(m=>{tick();return m.slot===number});if(current.length!==1||wielder.get(current[0].item)!==owner)continue;const key=catalogueKey(current[0].item,slot);found.push(key?{slot,state:'detected',key}:{slot,state:'occupied-unknown'})}if(body.get(owner)==='empty')found.unshift({slot:'body',state:'empty'});if(found.length)gear.set(owner,found);
+   const found=[];for(const [number,slot]of slotRules.reviewed){const current=entries.filter(m=>{tick();return m.slot===number});if(current.length!==1||wielder.get(current[0].item)!==owner)continue;const key=catalogueKey(current[0].item,slot);found.push(key?{slot,state:'detected',key}:{slot,state:'occupied-unknown'})}if(body.get(owner)==='empty')found.unshift({slot:'body',state:'empty'});if(found.length)gear.set(owner,found);
   }
   return {roles,identities,body,gear};
  }
