@@ -1,0 +1,204 @@
+{
+  "version": 1,
+  "source": "https://github.com/danielsamuels/bg3-savefile-parser/blob/9578ff7c46a1aa40c805f6b7beecf907f10fb3b8/data/gamedata.json",
+  "classes": {
+    "d8cadb42-0ff9-4049-afaf-e5d78d06a399": "Barbarian",
+    "92cd50b6-eb1b-4824-8adb-853e90c34c90": "Bard",
+    "114e7aee-d1d4-4371-8d90-8a2080592faf": "Cleric",
+    "457d0a6e-9da8-4f95-a225-18382f0e94b5": "Druid",
+    "721dfac3-92d4-41f5-b773-b7072a86232f": "Fighter",
+    "c4598bdb-fc07-40dd-a62c-90cc138bd76f": "Monk",
+    "ff4d9497-023c-434a-bd14-82fc367e991c": "Paladin",
+    "36be18ba-23db-4dff-bfa6-ae105ce43144": "Ranger",
+    "e8b1eab0-ef11-40a2-8a0b-cee8d062bf2a": "Rogue",
+    "784001e2-c96d-4153-beb6-2adbef5abc92": "Sorcerer",
+    "b4225a4b-4bbe-4d97-9e3c-4719dbd1487c": "Warlock",
+    "a865965f-501b-46e9-9eaa-7748e8c04d09": "Wizard"
+  },
+  "subclasses": {
+    "e6a0eb75-7a01-4f40-8563-24ba2615e99b": {
+      "class": "Wizard",
+      "name": "Abjuration"
+    },
+    "b36d247e-d39f-4ae9-9476-3ec315c55789": {
+      "class": "Paladin",
+      "name": "Oath of the Ancients"
+    },
+    "ede4778e-7602-440f-9075-b4bc8dc31cea": {
+      "class": "Rogue",
+      "name": "Arcane Trickster"
+    },
+    "733ddf8c-9ec4-4c5a-85e3-c70fd3df3c24": {
+      "class": "Warlock",
+      "name": "The Archfey"
+    },
+    "b53a8061-f31d-4985-adfe-d4d691a918d9": {
+      "class": "Rogue",
+      "name": "Assassin"
+    },
+    "e668c6f1-5149-4b10-ab7e-3637ed444066": {
+      "class": "Fighter",
+      "name": "Battle Master"
+    },
+    "6fd9547d-cc28-400e-bfa9-3a85baa70f24": {
+      "class": "Ranger",
+      "name": "Beast Master"
+    },
+    "32eee7d8-1b2f-4de5-b9ee-78fbd286c6ef": {
+      "class": "Barbarian",
+      "name": "Berserker"
+    },
+    "0a01dc6b-ab1a-4c0e-8a5e-4787fe1f2caf": {
+      "class": "Fighter",
+      "name": "Champion"
+    },
+    "7458da78-34b7-4150-a42f-37197ab04510": {
+      "class": "Druid",
+      "name": "Circle of the Land"
+    },
+    "3eab0689-e51b-4634-a690-0375d3cb2716": {
+      "class": "Druid",
+      "name": "Circle of the Moon"
+    },
+    "4b61af6c-4a44-436e-aa0a-0d11a2d6b8ee": {
+      "class": "Druid",
+      "name": "Circle of the Spores"
+    },
+    "7a3feb8d-dda7-46ec-9029-1f302f537432": {
+      "class": "Wizard",
+      "name": "Conjuration"
+    },
+    "1c761ad0-6f5f-409e-ac1d-ddf6f85c1fc4": {
+      "class": "Paladin",
+      "name": "Oath of Devotion"
+    },
+    "7577b0e1-a517-4f82-8f72-05a227dc5e88": {
+      "class": "Wizard",
+      "name": "Divination"
+    },
+    "36286b0a-26f9-4b4e-9311-fd1404301d20": {
+      "class": "Sorcerer",
+      "name": "Draconic Bloodline"
+    },
+    "b722614a-303f-411a-bb19-a1882ad1f4cc": {
+      "class": "Fighter",
+      "name": "Eldritch Knight"
+    },
+    "46d31950-6917-444e-ac87-706702825215": {
+      "class": "Wizard",
+      "name": "Enchantment"
+    },
+    "c059dca1-c17d-4dce-8260-83ede5070eac": {
+      "class": "Wizard",
+      "name": "Evocation"
+    },
+    "8866db28-7dda-4fd6-93ed-20eca16314f0": {
+      "class": "Warlock",
+      "name": "The Fiend"
+    },
+    "22894c32-54cf-49ea-b366-44bfcf01bb2a": {
+      "class": "Monk",
+      "name": "Way of the Four Elements"
+    },
+    "d5f10e55-84e3-409b-aa64-2098c9550319": {
+      "class": "Ranger",
+      "name": "Gloom Stalker"
+    },
+    "e1e4a21f-9405-46ec-81a0-ccc8d58d9736": {
+      "class": "Warlock",
+      "name": "The Great Old One"
+    },
+    "0aa1cff9-c45f-4d00-a95b-99a7aa96dd06": {
+      "class": "Ranger",
+      "name": "Hunter"
+    },
+    "436c9e1a-3a39-48dd-b753-7cee1bd19c00": {
+      "class": "Wizard",
+      "name": "Illusion"
+    },
+    "ebe18794-b5e1-41c4-befa-4b9d6922b0ec": {
+      "class": "Cleric",
+      "name": "Knowledge Domain"
+    },
+    "4b5da2f5-b999-4623-8bff-a63df5560fb3": {
+      "class": "Cleric",
+      "name": "Life Domain"
+    },
+    "c54d7591-b305-4f22-b2a7-1bf5c4a3470a": {
+      "class": "Cleric",
+      "name": "Light Domain"
+    },
+    "d21368ac-c776-465c-9dcf-6123dd52734f": {
+      "class": "Bard",
+      "name": "College of Lore"
+    },
+    "6dec76d0-df22-411c-8a78-3d6fb843ae50": {
+      "class": "Cleric",
+      "name": "Nature Domain"
+    },
+    "fbb8347b-20e3-4846-ba91-0552cd12fc5f": {
+      "class": "Wizard",
+      "name": "Necromancy"
+    },
+    "6fb3831e-45d8-4b30-9714-6fe73988921b": {
+      "class": "Paladin",
+      "name": "Oathbreaker"
+    },
+    "2a5e3097-384c-4d29-8d6e-054fdfd26b80": {
+      "class": "Monk",
+      "name": "Way of the Open Hand"
+    },
+    "bf46d73f-d406-4cb8-9a1d-e6e758ca02c7": {
+      "class": "Monk",
+      "name": "Way of Shadow"
+    },
+    "d379fdae-b401-4731-8d50-277c73919ae3": {
+      "class": "Sorcerer",
+      "name": "Storm Sorcery"
+    },
+    "c4bd5252-d68a-4330-9431-5e8ab24c5f29": {
+      "class": "Bard",
+      "name": "College of Swords"
+    },
+    "89bacf1b-8f15-4972-ada7-bf59c7c78441": {
+      "class": "Cleric",
+      "name": "Tempest Domain"
+    },
+    "32c7b8df-a6ec-4848-a9db-c0dce781beb9": {
+      "class": "Rogue",
+      "name": "Thief"
+    },
+    "2e585948-d775-451d-b58b-15b75321d11e": {
+      "class": "Barbarian",
+      "name": "Wildheart"
+    },
+    "a12f2924-30b4-4185-9db9-2c5b383ff449": {
+      "class": "Wizard",
+      "name": "Transmutation"
+    },
+    "f013d01b-3310-43f7-81bf-a51130442b5e": {
+      "class": "Cleric",
+      "name": "Trickery Domain"
+    },
+    "2b46330d-0ada-4eb5-a131-3d250a41ca6a": {
+      "class": "Bard",
+      "name": "College of Valour"
+    },
+    "3cc3d397-c47d-4966-87ae-88827f73f645": {
+      "class": "Paladin",
+      "name": "Oath of Vengeance"
+    },
+    "b9ccf90e-b35b-4b73-b896-8ed2d32ae8c6": {
+      "class": "Cleric",
+      "name": "War Domain"
+    },
+    "14374d37-a70e-41a8-9dc5-85a23f8b5dd2": {
+      "class": "Sorcerer",
+      "name": "Wild Magic"
+    },
+    "d6bf00fc-3518-4d63-ba8b-03532c1abc4d": {
+      "class": "Barbarian",
+      "name": "Wild Magic"
+    }
+  }
+}
