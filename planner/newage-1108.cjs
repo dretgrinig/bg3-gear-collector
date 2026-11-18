@@ -3,8 +3,9 @@
  * The descriptor +12 word is an opaque observed tag, NOT an entity join.
  * Only explicit owner maps join rows. No progression/history/body adjacency. */
 'use strict';
+const binding=require('./gear-binding.cjs');
 const reviewedIds=require('./class-ids.json'),reviewedOrigins=require('./origin-ids.json');
-function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
+function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000,resourceIndex=null}={}){
  const fail=(code='INVALID_STRUCTURE')=>{throw Object.assign(Error('Build profile rejected safely.'),{code})};
  if(!(input instanceof Uint8Array)||input.byteLength>134217728||!Number.isSafeInteger(deadline)||!Number.isSafeInteger(maxSteps)||maxSteps<1||maxSteps>2000000)fail('RESOURCE_LIMIT');
  deadline=Math.min(deadline,Date.now()+30000);let steps=0;const tick=()=>{if(++steps>maxSteps)fail('RESOURCE_LIMIT');if(signal?.aborted)fail('CANCELLED');if(Date.now()>=deadline)fail('TIMEOUT')};tick();
@@ -72,15 +73,17 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
   const anchors=[];for(const [owner,id]of identities){tick();if(id.kind==='custom'&&players.has(owner)&&memberTarget(owner)===partyOwner)anchors.push(owner)}
   if(anchors.length!==1)return null;const anchor=anchors[0],roles=new Map([[anchor,'active']]);
   for(const [owner,id]of identities){tick();if(id.kind!=='companion'||!rr.has(owner)||entityRef(at(recruit.offset+rr.get(owner)*8,8))!==anchor)continue;if(players.has(owner)&&memberTarget(owner)===partyOwner)roles.set(owner,'active');else if(!players.has(owner)&&!mr.has(owner)&&cr.has(owner))roles.set(owner,'benched')}
-  const body=new Map(),bodySpec=[['game.inventory.v0.MemberData',16],['game.inventory.v0.MemberComponent',8],['game.inventory.v1.IsOwnedComponent',8],['game.inventory.v0.WieldingComponent',8],['game.inventory.v0.OwnerComponent',24],['game.inventory.v4.DataComponent',16],['game.inventory.v3.Type',8],['game.item.v0.ItemComponent',1]];
-  if(bodySpec.some(([name])=>!byName.has(name)))return {roles,identities,body};
+  const body=new Map(),gear=new Map(),bodySpec=[['game.inventory.v0.MemberData',16],['game.inventory.v0.MemberComponent',8],['game.inventory.v1.IsOwnedComponent',8],['game.inventory.v0.WieldingComponent',8],['game.inventory.v0.OwnerComponent',24],['game.inventory.v4.DataComponent',16],['game.inventory.v3.Type',8],['game.item.v0.ItemComponent',1]];
+  if(bodySpec.some(([name])=>!byName.has(name)))return {roles,identities,body,gear};
   const [data,members,owned,wielding,owners,inventoryData,inventoryType,items]=bodySpec.map(([name,size])=>component(name,size));
-  if([members,owned,wielding,owners,inventoryData,items].some(c=>c.owners===null))return {roles,identities,body};
+  if([members,owned,wielding,owners,inventoryData,items].some(c=>c.owners===null))return {roles,identities,body,gear};
   const ownedRows=ownerRows(owned),memberRows=ownerRows(members),wieldRows=ownerRows(wielding),ownerInventoryRows=ownerRows(owners),dataRows=ownerRows(inventoryData),itemRows=ownerRows(items),inventoryHolder=new Map(),membership=new Map(),membersByInventory=new Map(),wielder=new Map(),heldByCharacter=new Map();
   for(const [inv,row]of ownedRows){tick();const holder=entityRef(at(owned.offset+row*8,8));if(holder===null)fail();inventoryHolder.set(inv,holder)}
   for(const [item,row]of memberRows){tick();const offset=ptr(at(members.offset+row*8,8));if(offset===null||offset<data.offset||offset>=data.offset+data.n*16||(offset-data.offset)%16)fail();const p=at(offset,16),inv=entityRef(p),slot=v.getInt16(p+8,true);if(inv===null)fail();const m={item,inv,slot};membership.set(item,m);if(!membersByInventory.has(inv))membersByInventory.set(inv,[]);membersByInventory.get(inv).push(m)}
   for(const [item,row]of wieldRows){tick();const holder=entityRef(at(wielding.offset+row*8,8));if(holder===null)fail();wielder.set(item,holder);if(!heldByCharacter.has(holder))heldByCharacter.set(holder,[]);heldByCharacter.get(holder).push(item)}
   const typeOf=inv=>{if(!dataRows.has(inv))return null;const p=at(inventoryData.offset+dataRows.get(inv)*16,16),offset=ptr(p);if(offset===null||offset<inventoryType.offset||offset>=inventoryType.offset+inventoryType.n*8||(offset-inventoryType.offset)%8)fail();const type=uint(at(offset,8));return type<=6?type:null};
+  const template=component('game.templates.v0.TemplateComponent',24),templateType=component('game.templates.v0.ETemplateHandleType',8),templateRows=ownerRows(template);let resolve=null;
+  function catalogueKey(item,slot){if(!resourceIndex||!template||!templateType||!templateRows.has(item))return null;const p=at(template.offset+24*templateRows.get(item),24),start=ptr(p),length=v.getUint32(p+8,true),kind=ptr(p+16);if(start===null||length!==36||kind===null||kind<templateType.offset||kind>=templateType.offset+templateType.n*8||(kind-templateType.offset)%8)return null;const type=uint(at(kind,8));if(![0,1,3].includes(type))return null;const q=at(start,length);let value='';for(let i=0;i<36;i++){tick();value+=String.fromCharCode(input[q+i])}if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value))return null;if(resolve===null)resolve=binding.create(resourceIndex,tick);return resolve(guid(at(entities.start+item*16,16)),value,slot)}
   for(const [owner,role]of roles){tick();if(role!=='active'||!ownerInventoryRows.has(owner))continue;const p=at(owners.offset+ownerInventoryRows.get(owner)*24,24),list=pair(p,8,655360);if(list.n>64)fail('RESOURCE_LIMIT');if(!list.n)continue;const region=[list.start,list.start+list.n*8];for(const span of spans){tick();if(overlaps(region,span))fail()}for(const prior of metadata){tick();if(overlaps(region,prior))fail()}metadata.push(region);
    const primary=entityRef(p+16),inventories=new Set(),equipment=[];let valid=true;
    for(let i=0;i<list.n;i++){const inv=entityRef(at(list.start+i*8,8));if(inv===null||inventories.has(inv))fail();inventories.add(inv);if(inventoryHolder.get(inv)!==owner)valid=false;if(typeOf(inv)===1)equipment.push(inv)}
@@ -91,8 +94,9 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
    if((heldByCharacter.get(owner)||[]).some(item=>{tick();const m=membership.get(item);return !m||m.inv!==equipmentInventory||m.slot<0||m.slot>20||!itemRows.has(item)}))continue;
    const occupants=entries.filter(m=>{tick();return m.slot===1});
    if(!occupants.length)body.set(owner,'empty');else if(occupants.length===1&&wielder.get(occupants[0].item)===owner)body.set(owner,'occupied-unknown');
+   const found=[];for(const [number,slot]of [[1,'body'],[3,'weapon'],[7,'ring1'],[12,'ring2']]){const current=entries.filter(m=>{tick();return m.slot===number});if(current.length!==1||wielder.get(current[0].item)!==owner)continue;const key=catalogueKey(current[0].item,slot);found.push(key?{slot,state:'detected',key}:{slot,state:'occupied-unknown'})}if(body.get(owner)==='empty')found.unshift({slot:'body',state:'empty'});if(found.length)gear.set(owner,found);
   }
-  return {roles,identities,body};
+  return {roles,identities,body,gear};
  }
  const current=currentEvidence(),characterOwners=[];
 
@@ -127,7 +131,7 @@ function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
  for(const [owner,role]of current?.roles||[]){if(role!=='benched')continue;tick();if(characters.length>=32)fail('RESOURCE_LIMIT');characterOwners.push(owner);characters.push({identity:current.identities.get(owner),characterId:'character-'+(characters.length+1),observedEffective:null,level:null,classes:null,issues:['PARTY_UNKNOWN','BASE_ABILITIES_UNKNOWN','BUILD_AT_CAMP_UNREVIEWED','CLASSES_UNMAPPED','EQUIPMENT_UNKNOWN','PROGRESSION_NOT_CONFIRMED_CURRENT']})}
  // A named origin must be unique; Custom is a reusable category, not a person.
  const occurrences=new Map();for(const c of characters){tick();if(c.identity&&c.identity.kind!=='custom')occurrences.set(c.identity.key,(occurrences.get(c.identity.key)||0)+1)}for(const c of characters){tick();if(c.identity&&occurrences.get(c.identity.key)>1){c.identity=null;c.issues.unshift('AMBIGUOUS_IDENTITY','IDENTITY_UNKNOWN')}}
- if(current)for(let i=0;i<characters.length;i++){tick();const c=characters[i],owner=characterOwners[i],role=current.roles.get(owner);if(!c.identity||!role)continue;c.party=role;c.issues=c.issues.filter(x=>x!=='PARTY_UNKNOWN');c.issues.push(role==='active'?'PARTY_ACTIVE':'PARTY_BENCHED');if(current.body.has(owner)){c.equipment=[{slot:'body',state:current.body.get(owner)}];c.issues.push(current.body.get(owner)==='empty'?'BODY_SLOT_EMPTY':'BODY_SLOT_OCCUPIED_UNMAPPED')}}
+ if(current)for(let i=0;i<characters.length;i++){tick();const c=characters[i],owner=characterOwners[i],role=current.roles.get(owner);if(!c.identity||!role)continue;c.party=role;c.issues=c.issues.filter(x=>x!=='PARTY_UNKNOWN');c.issues.push(role==='active'?'PARTY_ACTIVE':'PARTY_BENCHED');if(current.gear.has(owner)||current.body.has(owner)){c.equipment=current.gear.get(owner)||[{slot:'body',state:current.body.get(owner)}];if(current.body.has(owner))c.issues.push(current.body.get(owner)==='empty'?'BODY_SLOT_EMPTY':c.equipment.some(e=>e.slot==='body'&&e.state==='detected')?'BODY_SLOT_DETECTED':'BODY_SLOT_OCCUPIED_UNMAPPED')}}
  tick();return {version:1,status:'decoded',profile:descriptorTag===123?'lsmf-08000101-tag123':'lsmf-08000101-tag63',characters,ownership:'unknown',steps};
 }
 module.exports=Object.freeze({decode});

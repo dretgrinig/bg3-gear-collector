@@ -3,8 +3,8 @@
  * No names, XP joins, ownership, equipment, or side-table positional joins. */
 'use strict';
 const profile1108=require('./newage-1108.cjs');
-function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000}={}){
- if(input instanceof Uint8Array&&input.length>=48){const header=new DataView(input.buffer,input.byteOffset,48);if(header.getUint32(0,true)===0x464d534c&&header.getUint32(4,true)===0x08000101)return profile1108.decode(input,{signal,deadline,maxSteps})}
+function decode(input,{signal,deadline=Date.now()+30000,maxSteps=2000000,resourceIndex=null}={}){
+ if(input instanceof Uint8Array&&input.length>=48){const header=new DataView(input.buffer,input.byteOffset,48);if(header.getUint32(0,true)===0x464d534c&&header.getUint32(4,true)===0x08000101)return profile1108.decode(input,{signal,deadline,maxSteps,resourceIndex})}
  const bad=(code='INVALID_STRUCTURE')=>{throw Object.assign(Error('Build structure could not be safely decoded.'),{code})};
  if(!(input instanceof Uint8Array)||input.byteLength>128*1024*1024)bad('RESOURCE_LIMIT');let steps=0;
  const tick=()=>{if(++steps>maxSteps)bad('RESOURCE_LIMIT');if(signal?.aborted)bad('CANCELLED');if(Date.now()>=deadline)bad('TIMEOUT')};tick();

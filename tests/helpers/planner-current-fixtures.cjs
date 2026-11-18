@@ -1,6 +1,6 @@
 /* Independent fabricated current-state graph; no private save data. */
 'use strict';
-function fixture({tag=63,bench=false,body='equipped',includeFollower=false,includeCampNpc=false,extraParty=false,duplicateOrigin=false,origin='Astarion'}={}){
+function fixture({tag=63,bench=false,body='equipped',includeFollower=false,includeCampNpc=false,extraParty=false,duplicateOrigin=false,origin='Astarion',slot=1,holder=1,withTemplate=false}={}){
  const nil=0xffffffffffffffffn,names=['custom','companion','other','party','main-a','equipment-a','main-b','equipment-b','body-item','carried-item','duplicate-item','follower','camp-npc'],N=names.length;
  const ids=Buffer.concat(names.map((_,i)=>{const b=Buffer.alloc(16,0x30+i);b.writeUInt32LE(i+1);return b})),defs=[];
  const add=(name,size,owners,count=owners?.length||0)=>{const c={name,size,count,owners,bytes:Buffer.alloc(size*count)};defs.push(c);return c};
@@ -19,15 +19,17 @@ function fixture({tag=63,bench=false,body='equipped',includeFollower=false,inclu
  const md=add('game.inventory.v0.MemberData',16,null,itemOwners.length),mc=add('game.inventory.v0.MemberComponent',8,itemOwners),wield=add('game.inventory.v0.WieldingComponent',8,body==='unequipped'?[]:body==='duplicate'?[8,10]:[8]);
  // History stays present across unequip but cannot make an item currently equipped.
  const history=add('game.inventory.v0.WieldingHistoryComponent',16,[8]),wielded=add('game.inventory.v0.WieldedComponent',16,[8]);ids.subarray(16,32).copy(history.bytes);ids.subarray(16,32).copy(wielded.bytes);
+ const template=withTemplate?add('game.templates.v0.TemplateComponent',24,body==='duplicate'?[8,10]:[8]):null,templateType=withTemplate?add('game.templates.v0.ETemplateHandleType',8,null,1):null;
  let length=0;const chunks=[],append=b=>{const p=length;chunks.push(b);length+=b.length;return p};for(const c of defs)c.offset=append(c.bytes);
  const ref=i=>BigInt(id.offset+16*i);for(let i=0;i<members.count;i++)members.bytes.writeBigUInt64LE(ref(3),48*i+16);for(let i=0;i<recruit.count;i++)recruit.bytes.writeBigUInt64LE(ref(0),8*i);
  [1,1,2,2].forEach((n,i)=>owned.bytes.writeBigUInt64LE(ref(n),8*i));[0,1,0,1].forEach((n,i)=>data.bytes.writeBigUInt64LE(BigInt(type.offset+8*n),16*i));
- for(let i=0;i<itemOwners.length;i++){const moved=i===0&&body==='unequipped';md.bytes.writeBigUInt64LE(ref(i===1||moved?4:5),i*16);md.bytes.writeInt16LE(i===1?1:moved?45:1,i*16+8);mc.bytes.writeBigUInt64LE(BigInt(md.offset+16*i),i*8)}for(let i=0;i<wield.count;i++)wield.bytes.writeBigUInt64LE(ref(1),i*8);
+ for(let i=0;i<itemOwners.length;i++){const moved=i===0&&body==='unequipped';md.bytes.writeBigUInt64LE(ref(i===1||moved?4:holder===1?5:7),i*16);md.bytes.writeInt16LE(i===1?1:moved?45:slot,i*16+8);mc.bytes.writeBigUInt64LE(BigInt(md.offset+16*i),i*8)}for(let i=0;i<wield.count;i++)wield.bytes.writeBigUInt64LE(ref(holder),i*8);
  const ownerVectors=[];for(const invs of [[4,5],[6,7]]){const b=Buffer.alloc(16);invs.forEach((n,i)=>b.writeBigUInt64LE(ref(n),i*8));ownerVectors.push(append(b))}for(let i=0;i<2;i++){owner.bytes.writeBigUInt64LE(BigInt(ownerVectors[i]),i*24);owner.bytes.writeBigUInt64LE(BigInt(ownerVectors[i]+16),i*24+8);owner.bytes.writeBigUInt64LE(ref(i?6:4),i*24+16)}
+ const templateId='10203040-5060-7080-91a2-b3c4d5e6f708';if(template){const start=append(Buffer.from(templateId));for(let i=0;i<template.count;i++){template.bytes.writeBigUInt64LE(BigInt(start),i*24);template.bytes.writeUInt32LE(36,i*24+8);template.bytes.writeUInt32LE(329,i*24+12);template.bytes.writeBigUInt64LE(BigInt(templateType.offset),i*24+16)}}
  const maps=[];for(const c of defs){if(!c.owners)continue;const b=Buffer.alloc(c.count*4);c.owners.forEach((n,i)=>b.writeUInt32LE(n,i*4));const start=append(b),m=Buffer.alloc(32);m.writeBigUInt64LE(BigInt(start));m.writeBigUInt64LE(BigInt(start+b.length),8);m.writeBigUInt64LE(BigInt(defs.indexOf(c)),16);m.writeBigUInt64LE(BigInt(c.count),24);c.mapOffset=null;maps.push({c,b:m})}
  const mapStart=length;for(const m of maps){m.c.mapOffset=append(m.b)}level.bytes.writeBigUInt64LE(BigInt(id.offset));level.bytes.writeBigUInt64LE(BigInt(id.offset+ids.length),8);level.bytes.writeBigUInt64LE(BigInt(mapStart),16);level.bytes.writeBigUInt64LE(BigInt(mapStart+maps.length*32),24);
  const arena=Buffer.concat(chunks),nameBytes=Buffer.concat(defs.map(c=>Buffer.from(c.name))),table=Buffer.alloc(defs.length*48);let no=0;for(const[cindex,c]of defs.entries()){const p=cindex*48;table.writeBigUInt64LE(BigInt(no),p);table.writeUInt32LE(c.name.length,p+8);table.writeUInt32LE(tag,p+12);table.writeUInt32LE(c.size,p+24);table.writeUInt32LE(Number(/\.v(\d+)\./.exec(c.name)[1]),p+28);table.writeBigUInt64LE(BigInt(c.count),p+32);table.writeBigUInt64LE(BigInt(c.offset),p+40);c.descriptor=48+arena.length+nameBytes.length+p;no+=c.name.length}
  const h=Buffer.alloc(48);h.write('LSMF');h.writeUInt32LE(0x08000101,4);h.writeBigUInt64LE(BigInt(arena.length),16);h.writeBigUInt64LE(BigInt(nameBytes.length+table.length),24);h.writeUInt32LE(nameBytes.length,32);h.writeUInt16LE(defs.length,36);h.writeUInt16LE(32,38);
- return {bytes:new Uint8Array(Buffer.concat([h,arena,nameBytes,table])),components:defs,byName:new Map(defs.map(c=>[c.name,c])),names,ref,ownerVectors};
+ return {bytes:new Uint8Array(Buffer.concat([h,arena,nameBytes,table])),components:defs,byName:new Map(defs.map(c=>[c.name,c])),names,ref,ownerVectors,templateId,entityBytes:Uint8Array.from(ids.subarray(128,144)),guid};
 }
 module.exports={fixture};

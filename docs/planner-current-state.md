@@ -1,115 +1,148 @@
-# Controlled current-state evidence: partial promotion
+# Controlled current party and equipment evidence
 
-This checkpoint adds only the relations supported by controlled differentials.
-It does not establish general ownership, named current equipment, quantity,
-Found state or automatic party/allocation. All existing parser/resource limits,
-aggregate work counter, cancellation and deadline remain in force.
+Only proved current-state relations enter the existing session BuildSnapshot.
+This is not an ownership, quantity, Found or Story-progress classifier. All
+existing structural/resource limits, the aggregate work counter, cancellation
+and the reader deadline remain in force. No backend or deployment configuration
+changes are included.
 
-## Evidence boundary
+## Scope and corrected controlled record
 
-Five controlled inputs are compared as A/B (dismissal), A/C (ring transfer),
-A/D (weapon transfer), A/E (body unequip). Inputs, extracted payloads, entity
-keys and fingerprints remain private and in memory. Only Globals, its exact
-root NewAge ScratchBuffer and the already authorized scoped ItemFactory were
-examined. No LevelCache, StorySave or other payload is needed.
+Five controlled inputs compare A/B dismissal, A/C ring transfer, A/D weapon
+transfer, A/E body unequip. Private payloads, instance keys and fingerprints stay
+in memory. Only Globals, its exact root NewAge ScratchBuffer and the authorized
+scoped ItemFactory are inspected. No LevelCache, StorySave or unrelated payload
+is needed. The user explicitly clarified that earlier item names/directions may
+be mislabeled notes: structural differentials are primary evidence.
 
-The supported current-state graph is restricted to descriptor 63. Descriptor
-123 retains its previous output and work-count semantics. Unknown/missing
-capabilities, ambiguous identities, multiple party roots and multiplayer-like
-multiple custom anchors cannot create a current-state claim.
+The exact observed transitions are:
 
-## Party
+| Pair | Catalogue identity | Current transition |
+| --- | --- | --- |
+| A/B | Dismissed companion | current party -> camp / not active |
+| A/C | Ring of Twilight | Astarion ring 7 -> Shadowheart ring 7 |
+| A/C | The Whispering Promise | Shadowheart ring 7 -> Astarion ring 7 |
+| A/D | Knife of the Undermountain King | Astarion melee main hand 3 -> Shadowheart melee main hand 3 |
+| A/D | The Blood of Lathander | Shadowheart melee main hand 3 -> Astarion melee main hand 3 |
+| A/D | Sword of Life Stealing | Astarion slot 4 -> ordinary Main inventory, no current Wielding |
+| A/E | Shared Graceful Cloth definition | Astarion body 1 -> ordinary Main inventory, no current Wielding |
 
-An exact character Origin, Character/Stats owner maps, and a unique reviewed
-Custom/Avatar/Player anchor are required. The serialized MemberComponent's
-EntityId reference at +16 must reach the single entity carrying the current
-CompositionComponent and ViewComponent. RecruitedBy must reach the same custom
-anchor. Active requires Player AND Member to that root. Benched requires camp
-Presence, the same recruit relation, and neither Player nor Member.
+Each changed physical instance retains its exact live EntityId key. Both sides
+of automatic swaps are retained; historical components and still-present carried
+items do not substitute for current Wielding. Slot 4 displacement is documented,
+not generalized into offhand/shield/two-handed detection. Ring numbers do not
+claim left/right semantics.
 
-In A/B the dismissed companion loses current Member/Player and gains camp
-Presence; the remaining current-root edges persist. Candidate count, Player
-alone, origin identity, order and history are not party evidence. A generic
-Player/follower-like record or camp NPC without the reviewed identity/recruit
-chain stays Unknown. Summons Container is not interpreted as a summoned role.
-Duplicate named origins withdraw their identity and current-state claims.
+## Party proof
 
-Proved camp candidates may be included for explicit selection. They have only
-identity/party evidence: their level, classes and observed abilities stay
-Unknown. This avoids extending the old current-build reader to camp records.
-The planner party remains user-selected; detection does not create drafts.
+Current-state interpretation is restricted to descriptor 63. Descriptor 123
+retains its previous results/work-count semantics. Unknown capabilities,
+multiple roots/custom anchors, ambiguous identities and unreviewed layouts
+cannot create a claim.
 
-## Body occupancy: Empty versus Unknown
+An exact Origin and Character/Stats owner maps identify the candidate. A unique
+Custom/Avatar/Player anchor's MemberComponent EntityId reference at +16 must reach
+the sole entity carrying current CompositionComponent and ViewComponent. A named
+companion additionally requires RecruitedBy to that same anchor. Active requires
+Player AND Member to the current root. Camp / non-active requires camp Presence,
+the same recruit relation, and neither Player nor Member.
 
-The explicit chain is character Owner -> inventory vector -> inventory Data ->
-Type (Main=0 / Equipment=1), corroborated by inventory IsOwned -> holder. Primary
-must be the separately typed Main inventory and exactly one Equipment inventory
-must be identified. Item Member points to a complete MemberData inventory/slot
-row. Current Wielding must agree with that equipment inventory's holder.
+In A/B the dismissed companion loses Member/Player and gains camp Presence;
+the remaining active edges persist. A/C/D/E have four current members, B three.
+Candidate count, Player alone, origin identity, ordering and history are not
+party proof. Generic Player/follower-like records and camp NPCs lacking the
+reviewed identity/recruit chain stay Unknown. Summons Container is not a summoned
+role discriminator. Duplicate named origins withdraw current-state claims.
+Camp candidates expose identity/party only; level/classes/observed abilities
+remain Unknown. Detection does not automatically fill planner drafts or claim
+camp availability/aliveness.
 
-In A/E the same live entity moves Equipment/body slot 1 -> ordinary Main
-inventory and loses current Wielding, while history/Wielded remains. Another
-ordinary inventory item has slot 1 throughout: slot number alone is therefore
-insufficient. Only a positively identified Equipment container with complete,
-consistent current membership can prove an empty body slot. Missing capability,
-duplicate occupant or conflicting edge yields Unknown; malformed references
-reject. All work shares the original decoder budget.
+## Current equipment and true Empty
 
-The existing session BuildSnapshot receives either body `empty` or
-`occupied-unknown`. No catalogue key or raw instance ID crosses the Worker.
-Other slots remain Unknown. Manual equipment overrides survive reread/clear;
-clearing, replacement and stricter modes remove detected current evidence.
-Equipment details remain Full-only. Existing Act identity projection is reused.
+Character Owner -> its inventory vector -> inventory Data -> explicit Type
+(Main=0 / Equipment=1), corroborated by inventory IsOwned -> same holder, identifies
+one Equipment inventory separate from the Primary Main inventory. Item Member
+must point to a valid MemberData inventory/slot row. Current Wielding must reach
+the same character on the same live item entity. Complete, consistent membership
+and exact owner maps are required; malformed references reject.
 
-## Unresolved named equipment / catalogue bridge
+Only body 1, melee main hand 3 and numbered ring slots 7/12 are promoted.
+Duplicate occupants, conflicting holders and incomplete evidence stay Unknown.
+Only body has the controlled Empty proof. Missing other slots remain Unknown.
+In E the body instance survives in Main slot 45 and loses Wielding; another Main
+item still has slot 1, proving that slot number alone is unsafe. History/Wielded
+components survive and are deliberately not used as current state.
 
-Live entity GUID references, not positions or shared templates, provide the
-candidate continuity key. Exact NewAge Template and scoped Creator.Entity /
-TemplateID relations agree throughout the inspected item population. The
-CurrentTemplate/Stats catalogue hypothesis nevertheless contradicts the supplied
-ring/weapon direction: the named ring and mace map from Shadowheart to Astarion,
-while the reverse-moving instances map to Ring of Twilight and Knife of the
-Undermountain King. This discrepancy is unresolved and is NOT a product rule.
-No named current gear or transfer recommendation is promoted from it.
+## Exact catalogue bridge
 
-The body item's exact Stats is shared by both distinct Graceful Cloth catalogue
-identities. No variant is chosen. CurrentTemplate is never used as a unique
-physical-instance key, and Creator/Item rows are never joined positionally.
-Ownership remains unknown; body occupancy is not an ownership classifier.
+NewAge's live entity key joins to scoped Creator.Entity through exact engine
+GUID byte normalization. TemplateComponent's bounded UUID string must agree
+with Creator.TemplateID; the scoped Item.CurrentTemplate group must contain
+exactly one record with a valid Stats token. That exact case-sensitive token must
+map to exactly one reviewed catalogue key, with a compatible equipment category.
+Creator entities, templates and all inspected item Template strings agree across
+the five inputs. Entity references identify physical instances; templates do not.
 
-## Public references and verification
+Scope is exact root Items/ItemFactory/Creators/Creator and
+Items/ItemFactory/Items/Item. No name, position, occurrence-count, XP or fuzzy
+fallback exists. Duplicate Creators or template groups, wrong field types/lengths,
+unknown tokens, mismatching templates, incompatible slots and multi-key aliases
+withhold the named item. Stats aliases are exact existing reviewed definition
+IDs, not inferred display-name synonyms. No private entity IDs cross the Worker.
 
-Engine declarations are structural cross-checks, not proof of serialized offsets:
+The shared Graceful Cloth Stats maps to both Esther and Araj catalogue identities.
+It remains occupied-unknown in A and Empty in E, with no variant selected.
+Duplicate-template ambiguity is withheld rather than inventing copy allocation.
+All other unproved slots and broader save profiles retain Unknown/manual behavior.
 
-- [Party components](https://github.com/Norbyte/bg3se/blob/e2e640c9fa51448847bf8cf7907c90674299c2ac/BG3Extender/GameDefinitions/Components/Party.h)
-- [Inventory components](https://github.com/Norbyte/bg3se/blob/e2e640c9fa51448847bf8cf7907c90674299c2ac/BG3Extender/GameDefinitions/Components/Inventory.h)
-- [Slot enum](https://github.com/Norbyte/bg3se/blob/e2e640c9fa51448847bf8cf7907c90674299c2ac/BG3Extender/GameDefinitions/Enumerations/Stats.inl)
-- [Inventory-type enum](https://github.com/Norbyte/bg3se/blob/e2e640c9fa51448847bf8cf7907c90674299c2ac/BG3Extender/GameDefinitions/Enumerations/ECS.inl)
+## Product and safety
 
-Independent fabricated fixtures cover active/bench, stale relations, follower-like
-records, ambiguous roots, duplicate identities, current/history/inventory,
-Empty/Unknown, wrong holders, invalid references, input preservation, aggregate
-work limits and cancellation. Integration checks cover the actual generated
-reader, closed DTO boundary, legacy session upgrade, manual overrides and
-unchanged optimizer results. Disposable browser QA covers real Workers,
-320/390/768/1280, focus/keyboard, clear/replacement, stricter spoilers and tracker
-node/progress isolation. The same 51 public paths remain; only the planner UI,
-core and two generated planner Workers change. No backend or deployment
-configuration changes are included.
+The existing BuildSnapshot stores party provenance and partial equipment entries:
+`empty`, `occupied-unknown` or `detected` with an exact catalogue key. No parallel
+model, ownership flag, quantity or private ID is added. Manual corrections survive
+reread/Clear; source replacement, clearing and stricter spoiler modes invalidate
+old detection. The existing Act identity projection is reused. Gear is Full-only.
 
-Controlled rerun: all five generated-reader runs decoded successfully within
-unchanged limits (approximately 12–15 seconds each, at most 353,850 identity
-steps). A/C/D/E have four proved current members, B has three; the dismissed
-companion is explicitly non-active/camp-present. The controlled body's occupancy
-is detected in A–D and Empty in E. Previously supported Player build fields are
-unchanged in all five inputs. Source bytes/stat remain identical and no private
-identifier is exported. Eighteen separate legacy synthetic result/error/step-count
-comparisons also remain exact.
+Recommendation cards annotate current holder/slot versus proposed holder for
+items with evidence. Multiple observed uses never imply interchangeable copies.
+Existing scoring, source pools, one-copy capacity, reservations and conflict
+allocation remain unchanged. No automatic lock or Found/progress write is made.
 
-Local verification: 42 new permanent tests; focused integration/profile/model/
-engine group 183/183; complete repository suite 6,439/6,439; packaging 15/15.
-New isolated current-state Chrome scenarios: 106/106 across all four widths,
-zero runtime errors and backend/write requests. Existing shared planner browser
-scenarios also passed before the new scenarios. Generated bundles are exact and
-deterministic; all 51 source/dist byte comparisons pass, with the other 47
-public files byte-identical to baseline. No deployment configuration changed.
+## Public structural references and verification
+
+Engine declarations corroborate components/enums; serialized offsets are proved
+by the controlled graph, not assumed from native-memory layouts:
+
+- [Party](https://github.com/Norbyte/bg3se/blob/e2e640c9fa51448847bf8cf7907c90674299c2ac/BG3Extender/GameDefinitions/Components/Party.h)
+- [Inventory](https://github.com/Norbyte/bg3se/blob/e2e640c9fa51448847bf8cf7907c90674299c2ac/BG3Extender/GameDefinitions/Components/Inventory.h)
+- [Slots](https://github.com/Norbyte/bg3se/blob/e2e640c9fa51448847bf8cf7907c90674299c2ac/BG3Extender/GameDefinitions/Enumerations/Stats.inl)
+- [Inventory types](https://github.com/Norbyte/bg3se/blob/e2e640c9fa51448847bf8cf7907c90674299c2ac/BG3Extender/GameDefinitions/Enumerations/ECS.inl)
+
+Independent fabricated tests cover dismissal, stale/follower-like/ambiguous party
+records, exact transfers, history/inventory exclusion, Empty/Unknown, duplicate
+identities/templates, incorrect holders, malformed references, catalogue ambiguity,
+closed DTOs, manual overrides and unchanged scoring/source capacity. Factory work
+shares the same decoder counter/deadline/cancellation; no phase resets it.
+Disposable native-browser QA uses real Workers, all four widths, keyboard/focus,
+clear/replacement, Full/Light/Minimal and tracker/storage/pending isolation.
+Research, source, docs, scripts and tests remain excluded from the same 51-file
+public package. Only the planner UI, core and two planner Workers change.
+
+## Completed checkpoint evidence
+
+- All five final generated-reader runs decoded within unchanged limits; exact
+  party, ring/main-hand identities and body Empty/occupied states matched the
+  corrected controlled differentials. Earlier Player build fields stayed exact.
+  Each input took approximately 13–15 seconds and at most 669,261 identity steps.
+  Source fingerprint/stat remained unchanged; no private IDs were exported.
+- Eighteen legacy synthetic comparisons retained exact results/errors/step counts.
+- Seventy new permanent tests; all planner tests 474/474.
+- Complete repository suite 6,467/6,467; packaging tests 15/15.
+- Complete isolated native Chrome QA 641/641 across 320/390/768/1280; no runtime
+  errors or backend/write requests. New current-state cases separately passed
+  122/122. Actual single-use Workers, keyboard/focus, stricter modes, tracker
+  nodes/progress/pending and disposable-storage isolation are covered.
+- Deterministic bundles and the same 51 public paths; 51/51 source/output byte
+  parity, with 47 public files byte-identical to baseline. Only planner UI/core
+  and the two planner Workers differ. No generic LSV parser/codec, structural cap, canonical
+  catalogue, auth, transport, PWA or production setting changes.
