@@ -11,6 +11,61 @@ async function run(p){const at=performance.now();await p.getByRole('button',{nam
 async function load(p,{link=false,buffer=synthetic,name='fabricated.lsv'}={}){await p.getByRole('button',{name:'Load build from BG3 save',exact:true}).click();await p.locator('#pg-save-file').setInputFiles({name,mimeType:'application/octet-stream',buffer:Buffer.from(buffer)});if(link)await p.locator('#pg-associate').check();await p.getByRole('button',{name:'Read build',exact:true}).click();await p.getByRole('button',{name:/Use (?:anonymous )?detected character 1/}).waitFor({timeout:35000})}
 async function use(p){await p.getByRole('button',{name:/Use (?:anonymous )?detected character 1/}).click()}
 async function preserved(p,message){check(await p.evaluate(()=>JSON.stringify(storyRecords)===__trackerRecords&&syncPending===__trackerPending&&JSON.stringify(Object.entries(localStorage))===__plannerStorageBaseline),message)}
+// Exercise real checkbox events, reader/optimizer Workers and source gating.
+async function revoked(p,label){
+ check(!await p.locator('#pg-associate').isChecked(),label+' checkbox stays unchecked');
+ check((await p.locator('#pg-affinity').innerText()).includes('Unverified'),label+' provenance stays unverified');
+ check(await p.locator('#pg-source').inputValue()==='theoretical',label+' theoretical remains selected');
+ check(await p.locator('.pg-result').count()===0,label+' previous recommendations absent');
+ await use(p);await manual(p);await p.locator('#pg-source').selectOption('story');
+ check(await p.locator('#pg-reserve-item').count()===0,label+' Story Gear reservation candidates gated');
+ await p.getByRole('button',{name:'Run recommendations',exact:true}).click();
+ check((await p.locator('#partyGearPlanner [role=status]').innerText()).includes('not linked'),label+' actual recommendation request blocked');
+ check(await p.locator('.pg-result').count()===0,label+' no Story Gear recommendation output');
+}
+async function reconfirmed(p,label){
+ check(await p.locator('#pg-associate').isChecked(),label+' checkbox confirms latest intent');
+ check((await p.locator('#pg-affinity').innerText()).includes('confirmed by you'),label+' provenance manually confirmed');
+ check((await p.locator('.pg-provenance').innerText()).includes('timeline unverified'),label+' no freshness promotion');
+ check(await p.locator('#pg-source').inputValue()==='story',label+' Story Gear selected');
+ check(await p.locator('#pg-reserve-item').count()===1,label+' Story Gear reservations restored');
+ await run(p);check(await p.locator('.pg-result').count()===3,label+' actual optimizer accepts renewed confirmation');
+}
+const revocationOnly=process.env.BG3_QA_REVOCATION_ONLY;
+if(revocationOnly&&!['draft','worker','all'].includes(revocationOnly))throw Error('Unknown revocation QA selection');
+for(const width of [320,390,768,1280]){
+ if(!revocationOnly||['draft','all'].includes(revocationOnly)){
+  const {c,p}=await context(width);try{
+   await open(p);await load(p,{link:true});
+   check((await p.locator('#pg-affinity').innerText()).includes('confirmed by you'),width+' REVOKE_ACROSS_DRAFT_SWITCH initially confirmed');
+   await p.getByRole('button',{name:'Add character',exact:true}).click();await p.getByRole('button',{name:'Load build from BG3 save',exact:true}).click();
+   check(await p.locator('#pg-associate').isChecked(),width+' other draft reflects shared confirmation');
+   await p.locator('#pg-associate').uncheck();check((await p.locator('#pg-affinity').innerText()).includes('Unverified'),width+' other draft explicitly revoked');
+   await p.locator('#pg-party-character-1').click();check(!await p.locator('#pg-associate').isChecked(),width+' returning draft visibly revoked');
+   await p.getByRole('button',{name:'Read build',exact:true}).click();await p.getByRole('button',{name:/Use (?:anonymous )?detected character 1/}).waitFor({timeout:35000});
+   await revoked(p,width+' REVOKE_ACROSS_DRAFT_SWITCH');
+   for(const id of ['character-2','character-1']){await p.locator('#pg-party-'+id).click();check(!await p.locator('#pg-associate').isChecked(),width+' NO_DRAFT_STATE_RESURRECTION '+id)}
+   // The second draft was only a revocation surface, not a confirmed optimizer build.
+   await p.locator('#pg-party-character-2').click();await p.getByRole('button',{name:'Remove selected character',exact:true}).click();
+   await p.locator('#pg-associate').focus();await p.keyboard.press('Space');await reconfirmed(p,width+' FRESH_CONFIRM_AFTER_REVOKE checkbox');
+   await preserved(p,width+' draft revocation/reconfirmation no storage/progress writes');
+  }finally{await c.close()}
+ }
+ if(!revocationOnly||['worker','all'].includes(revocationOnly)){
+  const {c,p}=await context(width);let release;const held=new Promise(r=>{release=r});let notify;const requested=new Promise(r=>{notify=r});try{
+   await open(p);await p.getByRole('button',{name:'Load build from BG3 save',exact:true}).click();
+   await c.route('**/assets/planner-save-worker.js',async route=>{notify();await held;try{await route.continue()}catch{}});
+   await p.locator('#pg-save-file').setInputFiles({name:'fabricated-revocation.lsv',mimeType:'application/octet-stream',buffer:Buffer.from(synthetic)});
+   await p.locator('#pg-associate').check();await p.getByRole('button',{name:'Read build',exact:true}).click();
+   await Promise.race([requested,new Promise((_,reject)=>setTimeout(()=>reject(Error('Reader Worker was not requested')),10000))]);
+   await p.locator('#pg-associate').uncheck();check(!await p.locator('#pg-associate').isChecked(),width+' REVOKE_DURING_WORKER unchecked before response');
+   release();await p.getByRole('button',{name:/Use (?:anonymous )?detected character 1/}).waitFor({timeout:35000});await revoked(p,width+' REVOKE_DURING_WORKER');
+   await p.locator('#pg-link').focus();await p.keyboard.press('Enter');await reconfirmed(p,width+' FRESH_CONFIRM_AFTER_REVOKE link');
+   await preserved(p,width+' Worker revocation/reconfirmation no storage/progress writes');
+  }finally{release();await c.close()}
+ }
+}
+if(!revocationOnly){
 for(const width of [320,390,768,1280]){const {c,p}=await context(width);try{
  await open(p);check(await p.locator('.pg-provenance').isVisible(),width+' always visible provenance');await manual(p);await run(p);check(await p.locator('.pg-result').count()===3,width+' manual Story Gear unaffected');
  await load(p);check((await p.locator('#pg-affinity').innerText()).includes('Unverified'),width+' unlinked save never automatic association');check(await p.locator('#pg-source').inputValue()==='theoretical',width+' safe theoretical default');check((await p.locator('.pg-provenance').innerText()).includes('timeline unverified'),width+' freshness separate');await use(p);check((await p.locator('#pg-observed').innerText()).includes('Observed effective'),width+' actual reader Worker fields');await manual(p);await run(p);check(await p.locator('.pg-result').count()===3,width+' unrelated save supports theoretical');await p.locator('#pg-source').selectOption('story');check(await p.locator('#pg-reserve-item').count()===0,width+' unlinked Story candidates absent from reservation controls');await p.getByRole('button',{name:'Run recommendations',exact:true}).click();check(await p.locator('.pg-result').count()===0,width+' unlinked Story Gear blocked');check((await p.locator('#partyGearPlanner [role=status]').innerText()).includes('not linked'),width+' neutral gate warning');check(!/Act [123]|Astarion|Risky Ring/.test(await p.locator('#pg-affinity').innerText()),width+' affinity warning has no hidden content');
@@ -41,5 +96,6 @@ for(const width of [320,390,768,1280]){const {c,p}=await context(width);try{
  await p.locator('#pg-save-file').setInputFiles({name:'switch.lsv',mimeType:'application/octet-stream',buffer:Buffer.from(synthetic)});await p.locator('#pg-associate').check();await p.getByRole('button',{name:'Read build',exact:true}).click();await p.evaluate(async()=>createStory('Parse switch'));await p.waitForTimeout(700);check(await p.locator('#pg-detected-choices section').count()===0,'Story switch during parse rejects old Worker');check((await p.locator('#pg-affinity').innerText()).includes('no save association'),'Story switch during parse cannot link old context');
  await c.unroute('**/assets/planner-save-worker.js');await load(p);check(await p.getByRole('button',{name:/Use (?:anonymous )?detected character 1/}).count()===1,'reader recovers after cancellation/failure');
 }finally{await c.close()}}
+}
 check(errors.length===0,'zero runtime errors');check(writes.length===0,'zero backend/write requests');console.log(JSON.stringify({passed:checks.length,checks,errors,writes,captures,hosted:!!host},null,2));
 }finally{await browser?.close();if(server)await new Promise(r=>server.close(r))}})().catch(e=>{console.error('Save-safety QA failed after '+checks.length+' checks; last: '+checks.at(-1)+'; '+String(e.message).slice(0,500));process.exitCode=1});
