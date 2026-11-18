@@ -87,13 +87,19 @@ bare baseline retained. No prose-derived generic gear score is used for pruning.
 Up to 8 loadouts per character + unassigned; independent exhaustive joint search
 is bounded by 9^4 = 6,561 combinations. Hard locks cannot become unassigned.
 
-#1 is personal preference, not a claim of party assignment. #2 excludes the
-canonical #1 loadout (ring permutations are not alternatives), holds other proposed
-assignments fixed, and enforces locks/reservations/capacity. No feasible #2 is
-explicitly reported. Conflicting hard intent is infeasible and never discarded.
-Equal-unit damage objectives are summed; mixed-role plans use explicit character
-order lexicographically, never a hidden DPR+AC+control scalar. AC is a documented
-secondary tie-break within a character's modeled objective; identical metrics prefer fewer claimed resources. Loadouts and full explanations use native disclosures so mobile output stays compact.
+#1 is the feasible whole-party choice. #2/#3 exclude the previous canonical
+loadout signature(s), keep other characters' #1 assignments fixed, and enforce
+locks/reservations/capacity. Ring permutations are not alternatives. Unavailable
+ranks are reported explicitly. Alternatives are one-character substitutions;
+they must not be combined into an unvalidated simultaneous party plan.
+The old `first` API field remains an isolated-preference diagnostic, not visible
+recommendation #1; `assigned`, `second`, `third` are the visible ranks.
+Conflicting hard intent is infeasible and never discarded. Equal-unit objectives
+are summed; mixed roles retain explicit stable creation-ID priority rather than
+a hidden DPR+control+healing scalar. AC, then fewer claimed resources, break
+objective ties. Stable ID/source/lock ordering removes input-order dependence.
+See [Top-3 contract](planner-party-top3.md) for current input, camp inclusion,
+scoped counterfactuals and bounded refinement.
 
 All results say **Best among evaluated candidates**. They are not global optima.
 One shared budget spans generation/evaluation/allocation: <=20k evaluations,
