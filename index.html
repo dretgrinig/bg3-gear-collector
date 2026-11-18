@@ -1174,7 +1174,7 @@ function plannerSnapshot(){
  if(plannerCatalogueRef!==ITEMS){plannerCatalogueRef=ITEMS;plannerCatalogueRevision++}
  const items=ITEMS.map(x=>({key:key(x),name:x.name,act:x.act,type:x.type||"",rarity:x.rarity||"",status:activeProgressUnknown?"unknown":ownItem(storyRecords,key(x))?.status||"todo"}));
  const signature=JSON.stringify(items.map(x=>[x.key,x.status]));if(signature!==plannerProgressSignature){plannerProgressSignature=signature;plannerProgressRevision++}
- return {version:1,contextEpoch:'planner-context-'+plannerEpoch,catalogueRevision:plannerCatalogueRevision,progressRevision:plannerProgressRevision,mode:spoilerMode(),state:!embeddedComplete||!activeStoryId||activeProgressUnknown?'unavailable':currentUser&&!String(activeStoryId).startsWith('local-')?'cached':'ready',items};
+ return {version:1,contextEpoch:'planner-context-'+plannerEpoch,catalogueRevision:plannerCatalogueRevision,progressRevision:plannerProgressRevision,mode:spoilerMode(),storyLabel:stories.find(st=>st.id===activeStoryId)?.name?.slice(0,100)||'No selected Story',state:!embeddedComplete||!activeStoryId||activeProgressUnknown?'unavailable':currentUser&&!String(activeStoryId).startsWith('local-')?'cached':'ready',items};
 }
 function notifyPlannerContext(){plannerView?.setContext()}
 function returnFromPartyPlanner(){

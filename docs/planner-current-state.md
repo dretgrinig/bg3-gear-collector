@@ -99,9 +99,11 @@ All other unproved slots and broader save profiles retain Unknown/manual behavio
 
 The existing BuildSnapshot stores party provenance and partial equipment entries:
 `empty`, `occupied-unknown` or `detected` with an exact catalogue key. No parallel
-model, ownership flag, quantity or private ID is added. Manual corrections survive
-reread/Clear; source replacement, clearing and stricter spoiler modes invalidate
-old detection. The existing Act identity projection is reused. Gear is Full-only.
+model, ownership flag, quantity or private ID is added. v0.11.1 resets save-scoped
+corrections on reread/replacement/Clear; manual-only drafts predating a save remain
+session drafts until save-assisted. See [save / Story safety](planner-save-safety.md).
+Stricter spoiler modes invalidate old evidence. The Act identity projection is
+reused. Gear is Full-only.
 
 Recommendation cards annotate current holder/slot versus proposed holder for
 items with evidence. Multiple observed uses never imply interchangeable copies.

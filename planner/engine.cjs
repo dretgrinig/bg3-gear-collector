@@ -1,6 +1,7 @@
 /* One deterministic full-loadout kernel for manual and detected snapshots. */
 'use strict';
 const M=require('./model.cjs'),Maths=require('./math.cjs'),C=require('./compatibility.cjs'),DATA=require('./gear-data.json'),F=require('./effects.cjs'),Combat=require('./combat.cjs');
+const Safety=require('./save-safety.cjs');
 const trustedBuilds=new WeakSet(),trustedStrategies=new WeakSet(),trustedScenarios=new WeakSet();
 const TYPES=Object.freeze(['melee','ranged','throw','unarmed','spell','multi','control','support']);
 const SPELLS=Object.freeze({fireBolt:{dice:[1,10],cantrip:true,element:'fire',attack:true},eldritchBlast:{dice:[1,10],cantrip:true,element:'force',attack:true,beams:true},scorchingRay:{dice:[2,6],element:'fire',attack:true,beams:3,slot:2},holdPerson:{control:true,concentration:true,slot:2},healingWord:{heal:[1,4],slot:1,bonus:true},bless:{support:true,concentration:true,slot:1}});
@@ -98,7 +99,7 @@ function currentEquipment(build,strategy,pool,projected,tick){const entries=[],i
  }
  return {view:{source,entries,issues:[...issues].sort()},seed};
 }
-function run(raw,options={}){const started=Date.now(),request=M.clean(raw,4*1048576);M.closed(request,['version','snapshot','source','party','scenario','reservations','revision']);if(request.version!==1||!Array.isArray(request.party)||request.party.length<1||request.party.length>4)M.fail();const snapshot=M.snapshot(request.snapshot),source=M.sourcePool(snapshot,request.source),t=validateScenario(request.scenario),budget=exports.budget(options),ids=new Set();trustedScenarios.add(t);if(!source)return {status:'unavailable',message:'Story progress is unavailable. It is not an empty gear pool.'};
+function run(raw,options={}){const started=Date.now(),request=M.clean(raw,4*1048576);M.closed(request,['version','snapshot','source','party','scenario','reservations','revision','saveSafety']);if(request.version!==1||!Array.isArray(request.party)||request.party.length<1||request.party.length>4)M.fail();const snapshot=M.snapshot(request.snapshot);if(request.source==='story'&&(request.saveSafety?.loaded||Safety.detected(request.party))&&!Safety.allowed(request.saveSafety,snapshot.contextEpoch))return {status:'association-required',message:'This save is not linked to the selected Story. Use this save without Story Gear or confirm a session link.'};const source=M.sourcePool(snapshot,request.source),t=validateScenario(request.scenario),budget=exports.budget(options),ids=new Set();trustedScenarios.add(t);if(!source)return {status:'unavailable',message:'Story progress is unavailable. It is not an empty gear pool.'};
  // Projection precedes current evidence, mechanics, ranking, counts and conflicts.
  if(snapshot.mode!=='full')return {status:'protected',message:'Detailed comparisons require Full. Gear is unranked.',items:source.map(({key,name,type,status})=>({key,name,type,status}))};
  const reviewed=new Map(DATA.items.map(x=>[x.key,x])),projected=new Map(snapshot.items.flatMap(x=>reviewed.has(x.key)?[[x.key,reviewed.get(x.key)]]:[])),pool=source.map(r=>reviewed.get(r.key)).filter(Boolean).sort((a,b)=>a.key.localeCompare(b.key)),reservations=request.reservations;
