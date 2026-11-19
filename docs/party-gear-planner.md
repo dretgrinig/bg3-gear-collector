@@ -255,10 +255,11 @@ runtime handles. Main/offhand and ring 1/2 are never assigned by order, stats
 family, CurrentTemplate or occurrence. **Zero automatic equipped slots**, ownership
 Unknown, no inventory quantities or Tracker-found changes.
 
-Manual overrides survive subsequent reads, Clear and replacement. Detection is
-retained underneath overrides while valid; Clear removes detected values and
-provenance immediately from both DTO and DOM. Unconfirmed manual drafts survive
-candidate selection. Selection change cancels pending work before another
+v0.11.1 retains detection underneath an override only while the loaded selection
+remains valid. New saves, rereads and Clear reset save-scoped overrides and drafts;
+manual-only session drafts predating a save are retained until save-assisted.
+Switching detected characters resets the previous character-specific assumptions.
+See [save / Story safety](planner-save-safety.md). Selection change cancels pending work before another
 character is rendered. Existing Story/account/spoiler/close/new-file/deadline
 invalidation and single-use Workers remain active. Anonymous candidates expose
 no companion names before the existing Act visibility gate.
@@ -319,15 +320,18 @@ proficiency lists, never invented universal armour/weapon training.
 
 Build source is the visible first step: **Load build from BG3 save** or **Create
 build manually**. The save picker and drop area are never inside a disclosure.
-Selection requires an explicit current-Story session association. Replacement,
-Clear, association removal and security-context changes cancel obsolete work and
-clear detected observations/candidates without deleting manual corrections.
+v0.11.1 allows local reading without a Story association, using Theoretical by
+default. Story Gear requires an explicit manual link for the current loaded save
+and Story context. Unlink retains informational evidence but blocks Story Gear.
+Replacement/Clear reset save-scoped corrections; security-context changes clear
+evidence and session builds. Pending obsolete work is cancelled.
 Unsupported/malformed profiles offer a clear manual continuation. The source UX also supports the strict 1.1 profile documented above; no new save
 surface or codec is introduced.
 
-The source state is per selected character: manual or save-assisted, with idle,
-selected, reading, decoded, unsupported or invalid substate. File objects and
-candidates stay in session memory; no file name is transmitted or logged.
+Source controls remain per selected character: manual or save-assisted, with idle,
+selected, reading, decoded, unsupported or invalid substate. One successful loaded
+save supplies shared candidates; each draft chooses a character explicitly. File
+objects/candidates stay in session memory; no file name is transmitted or logged.
 
 Typed reusable rules in effects.cjs specify scope, target, explicit condition,
 magnitude/dice/type, frequency, hand, stacking, duration, cost, support and source.
@@ -404,8 +408,9 @@ Identity stays session-local in the existing BuildSnapshot detected/override
 field. The existing explicit Act roster gates candidate headings, selected party,
 editor values and conflict labels before DOM/accessibility output. Dark Urge is
 shown only after an Act reveal in Full. Counts/order do not depend on concealed
-identity. Clear/replacement/context invalidation clears detections; manual
-corrections remain. Candidates may be explicitly used or ignored; no automatic
+identity. Clear/replacement resets save-scoped detections and manual corrections;
+context invalidation clears session builds. Manual-only pre-save drafts follow the
+separate scope documented in save / Story safety. Candidates may be explicitly used or ignored; no automatic
 party is constructed. The Full-only equipped panel distinguishes all twelve
 melee/ranged/accessory slots while leaving unproven slots Unknown. It does not
 create equipment locks, claim ownership or mutate Tracker progress.
